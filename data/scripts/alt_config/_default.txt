@@ -30,6 +30,12 @@ secondaryDraftConfigCSV: "scripts/externalRules/SecondaryFloodDraftLimitConfig.c
 NoDraftConfigCSV: "scripts/externalRules/NoDraftConfig.csv"
 
 ###########################################
+#FIRO_SPACE rule curve
+#Generic-year daily elevation curve read by scripts/externalRules/FIRO_SPACE.py
+
+firoSpaceConfigCSV: "scripts/externalRules/FIRO_SPACEConfig.csv"
+
+###########################################
 #Salem/Albany mainstem flow augmentation
 
 #Method options:
