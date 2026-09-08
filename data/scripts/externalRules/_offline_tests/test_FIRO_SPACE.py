@@ -110,6 +110,8 @@ class Rule(object):
         self._vars[k] = v
     def varGet(self, k):
         return self._vars[k]
+    def varExists(self, k):
+        return k in self._vars
 
 class RTS(object):
     def __init__(self, date, minutes=1440):
@@ -219,5 +221,48 @@ check("sparse: Cougar skips blank 01Jan, flat before 01Apr",
       F.getTargetElev(curves["Cougar"], HecTime(datetime.date(2023,1,1))), 1600.0)
 
 os.remove(sparse)
+
+print("\n=== 7. An edited CSV is picked up without restarting ResSim ===")
+reloadCsv = os.path.join(_HERE, "_reload_tmp.csv")
+
+class PinnedNetwork(Network):
+    """Points the rule at the temp CSV regardless of the configured path."""
+    def makeAbsolutePathFromWatershed(self, rel):
+        return reloadCsv
+
+def writeCurve(elev, stamp):
+    fh = open(reloadCsv, "w")
+    fh.write("Month,Day,Detroit\n1,1,%s\n12,31,%s\n" % (elev, elev))
+    fh.close()
+    os.utime(reloadCsv, (stamp, stamp))   # force a distinct modified time
+
+netR = PinnedNetwork({"Elev": TS(prev=1450.0), "Stor": TS(prev=1450000.0),
+                      "Flow-IN": TS(cur=1000.0)})
+ruleR = Rule("Detroit")
+
+writeCurve("1400.0", 1000000000)
+F.initRuleScript(ruleR, netR)
+ov1 = F.runRuleScript(ruleR, netR, RTS(datetime.date(2023, 1, 15)))
+check("pool 1450 vs curve 1400 -> MIN (draft down)", ov1.type, "MIN")
+
+# Edit the file mid-session. Pool at 1450 is now BELOW the curve.
+writeCurve("1500.0", 1000000060)
+ov2 = F.runRuleScript(ruleR, netR, RTS(datetime.date(2023, 1, 15)))
+check("after edit -> MAX (fill up), i.e. new values took effect", ov2.type, "MAX")
+check("reload was reported to the compute log",
+      len([m for m in netR.messages if "loaded Detroit" in m]), 2)
+
+# Same content, untouched file: must NOT reload
+before = len(netR.messages)
+F.runRuleScript(ruleR, netR, RTS(datetime.date(2023, 1, 16)))
+check("unchanged file does not trigger a reload", len(netR.messages), before)
+
+F.RELOAD_CSV_IF_CHANGED = False
+writeCurve("1400.0", 1000000120)
+ov3 = F.runRuleScript(ruleR, netR, RTS(datetime.date(2023, 1, 15)))
+check("RELOAD_CSV_IF_CHANGED=False pins the loaded values", ov3.type, "MAX")
+F.RELOAD_CSV_IF_CHANGED = True
+os.remove(reloadCsv)
+
 print("\n" + ("ALL PASSED" if not fails else "FAILURES: %s" % fails))
 sys.exit(1 if fails else 0)

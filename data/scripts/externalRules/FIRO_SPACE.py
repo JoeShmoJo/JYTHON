@@ -47,6 +47,8 @@ Config CSV format (wide, one row per day of a generic year):
 Author: Josh Roach
 """
 
+import os
+
 from hec.rss.model import OpValue
 from hec.rss.model import OpRule
 from hec.heclib.util import HecTime
@@ -76,6 +78,13 @@ MODE = "BOTH"
 
 # Per-reservoir overrides of MODE, e.g. {"Lookout Point": "DRAFT_ONLY"}
 MODE_BY_RESERVOIR = {}
+
+# Re-read the config CSV mid-session whenever the file changes on disk.
+# ResSim keeps rule variables and imported modules alive for the life of the
+# session, so without this an edited CSV is not picked up until ResSim restarts.
+# Set to False for long production runs if the once-per-timestep file check
+# ever shows up as a cost.
+RELOAD_CSV_IF_CHANGED = True
 
 # Set True to print target elevation / release to the ResSim compute log each step
 DEBUG = False
@@ -206,29 +215,49 @@ def getTargetElev(firoCurve, hTime):
     return firoCurve.interp(_genericDayOfYear(hTime))
 
 
-def initRuleScript(currentRule, network):
-    """Runs once at the start of the compute."""
-    resvName = _getResvName(currentRule)
+def _fileStamp(fileName):
+    """
+    A string that changes whenever the file changes: "<modified time>|<size>".
+    Size is included because a quick edit can land inside the same clock second
+    as the previous read, which would leave the modified time looking identical.
+    """
+    try:
+        return "%f|%d" % (os.path.getmtime(fileName), os.path.getsize(fileName))
+    except:
+        return "missing"
 
-    # Prefer the alt_config entry; fall back to the hardcoded default
+
+def _resolveConfigPath(network):
+    """Full path to the config CSV: the alt_config entry, or the default."""
     configCSV = DEFAULT_CONFIG_CSV
     try:
-        # bare except: varGet raises a Java exception if the key is absent,
-        # and Java exceptions are not reliably caught by "except Exception" in Jython
+        # bare except: varGet raises a Java exception if the key is absent, and
+        # Java exceptions are not reliably caught by "except Exception" in Jython.
+        # Scripted rules may also initialize before state variables do.
         altSetupSV = network.getStateVariable("Alternative_Setup")
         configFromAlt = altSetupSV.varGet(CONFIG_KEY)
         if configFromAlt:
             configCSV = configFromAlt
     except:
         pass
+    return network.makeAbsolutePathFromWatershed(configCSV)
 
-    csvFileName = network.makeAbsolutePathFromWatershed(configCSV)
+
+def _initialize(currentRule, network):
+    """
+    Read the config CSV and stash everything this rule needs on the rule object.
+    Called from initRuleScript, and again mid-compute if the CSV changes on disk.
+    """
+    resvName = _getResvName(currentRule)
+    csvFileName = _resolveConfigPath(network)
     firoCurves = loadFiroConfig(csvFileName)
     if resvName not in firoCurves:
+        projectsFound = list(firoCurves.keys())
+        projectsFound.sort()
         raise AssertionError(
             "%s is using the FIRO_SPACE rule, but has no elevations in the "
             "config file: %s\nProjects found in that file: %s"
-            % (resvName, csvFileName, ", ".join(sorted(firoCurves.keys()))))
+            % (resvName, csvFileName, ", ".join(projectsFound)))
 
     mode = MODE_BY_RESERVOIR.get(resvName, MODE).upper()
     if mode not in ("BOTH", "DRAFT_ONLY", "FILL_ONLY"):
@@ -236,9 +265,44 @@ def initRuleScript(currentRule, network):
             "FIRO_SPACE mode for %s must be BOTH, DRAFT_ONLY or FILL_ONLY, not '%s'"
             % (resvName, mode))
 
-    currentRule.varPut("firoCurve", firoCurves[resvName])
+    firoCurve = firoCurves[resvName]
+    currentRule.varPut("firoCurve", firoCurve)
     currentRule.varPut("elevStorTable", getElevationStorageTable(resvName, network))
     currentRule.varPut("mode", mode)
+    currentRule.varPut("firoCsvPath", csvFileName)
+    currentRule.varPut("firoCsvStamp", _fileStamp(csvFileName))
+
+    # One line per load, so the compute log always shows which numbers are in
+    # play. If an edited CSV is not being picked up, this is where it shows.
+    # The curve is padded a year either side, hence the divide by 3.
+    numBreakpoints = int(len(firoCurve.x_list) / 3)
+    janOne = firoCurve.interp(1.0)
+    julOne = firoCurve.interp(182.0)
+    network.printMessage(
+        "FIRO_SPACE: loaded %s, %d breakpoints, 01Jan=%.2f 01Jul=%.2f, mode=%s, from %s"
+        % (resvName, numBreakpoints, janOne, julOne, mode, csvFileName))
+    return firoCurve
+
+
+def _reloadIfConfigChanged(currentRule, network):
+    """
+    ResSim keeps rule variables alive across computes within a session, so an
+    edited CSV would otherwise not be seen until ResSim restarts. Re-read it
+    whenever the file on disk changes.
+    """
+    if not currentRule.varExists("firoCurve"):
+        _initialize(currentRule, network)
+        return
+    if not RELOAD_CSV_IF_CHANGED:
+        return
+    csvFileName = currentRule.varGet("firoCsvPath")
+    if _fileStamp(csvFileName) != currentRule.varGet("firoCsvStamp"):
+        _initialize(currentRule, network)
+
+
+def initRuleScript(currentRule, network):
+    """Runs at the start of the compute."""
+    _initialize(currentRule, network)
     return True
 
 
@@ -246,6 +310,7 @@ def runRuleScript(currentRule, network, currentRuntimestep):
     """Runs every timestep of the compute."""
     opValue = OpValue()
     resvName = _getResvName(currentRule)
+    _reloadIfConfigChanged(currentRule, network)
     firoCurve = currentRule.varGet("firoCurve")
     elevStorTable = currentRule.varGet("elevStorTable")
     mode = currentRule.varGet("mode")
