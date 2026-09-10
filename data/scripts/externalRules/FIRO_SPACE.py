@@ -49,11 +49,29 @@ NOTE ON THE FILL HALF
 Config CSV format (wide, one row per day of a generic year):
     Month,Day,Detroit,Hills Creek,Lookout Point,...
     1,1,1450.0,1448.0,825.0,...
-    1,2,1450.0,1448.0,825.1,...
-    Blank cells are allowed and simply mean "no breakpoint for that project on
-    that date" -- the curve interpolates across the gap. So a project can be
-    specified with a handful of breakpoints instead of all 365 rows.
+    1,2,1450.0,,825.1,...
+    1,3,1450.0,NONE,825.2,...
+
+    A day has a target only where that day's cell holds a number. A blank cell,
+    or any of the NO_TARGET_TOKENS ("NONE", "OFF", "NA", "N/A", "-", "--"),
+    means NO TARGET on that day: the rule returns a limit that does not bind and
+    the rest of the stack operates the project. So you can leave whole stretches
+    of the year uncontrolled just by clearing those cells.
+
+    Column headers are matched to ResSim reservoir names ignoring surrounding
+    whitespace and letter case, so a stray space after a name in the header does
+    not silently hide the column.
+
+    A reservoir with no numbers at all -- a column of blanks, or no column --
+    is simply never controlled. That is not an error, so one config file can
+    serve a whole watershed while only some projects use the rule. Set
+    REQUIRE_RESERVOIR_IN_CONFIG to True to make it an error instead.
+
     Lines starting with # are comments. A "Notes" column is ignored.
+
+    Targets are held in a 365-entry per-day lookup table rather than an
+    Interpolate object, because "this day has no target" is not something a
+    continuous interpolation can express.
 
 Author: Josh Roach
 """
@@ -67,7 +85,6 @@ from hec.heclib.util import HecTime
 from NWDJyLib.cFile import fileOpenReadClose, stripOutCommentLines, \
     getCSVDictReader, convertCSVDictReaderToListDict
 from NWDJyLib.cTimes import getHecTimeFromRuntimestep
-from NWDJyLib.Utils.SimplePy import Interpolate
 from NWDJyLib.ResSim.cResSim import getElevationStorageTable
 
 ################################################################################
@@ -87,6 +104,21 @@ GLIDE_DAYS = 3.0
 # Only used by MODE "BOTH": how far below the curve the pool must be before the
 # rule switches from the MIN limit to the MAX limit that forces a refill.
 DEADBAND_FT = 0.10
+
+# Cell values that explicitly mean "no target today", in addition to a blank
+# cell. Compared after stripping whitespace and upper-casing.
+NO_TARGET_TOKENS = ["NONE", "OFF", "NA", "N/A", "-", "--", "SKIP"]
+
+# Bridge a run of undefined days this long or shorter by interpolating between
+# the numbers on either side. 0 means never bridge, so every blank day is an
+# uncontrolled day -- the usual choice for a full 365-row daily file. Set it to
+# 365 to specify a project with a handful of breakpoints and let the rule
+# interpolate the rest of the year, the way a ResSim zone would.
+INTERPOLATE_GAPS_UP_TO_DAYS = 0
+
+# False: a reservoir with no numbers in the config is simply never controlled,
+# and the compute continues. True: that is a hard error that stops the compute.
+REQUIRE_RESERVOIR_IN_CONFIG = False
 
 # "DRAFT_ONLY" -> MIN release only. Holds the pool at or below the curve and
 #                 lets it refill at whatever rate the rest of the stack allows.
@@ -115,7 +147,9 @@ DEBUG = False
 CFSDAY_TO_AF = (60 * 60 * 24) / 43560.0  # multiply a daily cfs by this to get ac-ft (~1.98)
 
 # Column headers in the config CSV that are not reservoir names
-NON_RESERVOIR_COLUMNS = ["Month", "Day", "Notes", ""]
+NON_RESERVOIR_COLUMNS = ["MONTH", "DAY", "NOTES", ""]
+
+DAYS_IN_YEAR = 365
 
 ################################################################################
 # FUNCTION DEFINITIONS
@@ -159,15 +193,89 @@ def _genericDayOfYear(hTime):
         day = 28
     probe = HecTime()
     probe.setYearMonthDay(2001, month, day, 1440)  # 1440 = 2400 hours
-    return float(probe.dayOfYear())
+    return int(probe.dayOfYear())
+
+
+def _findColumnForReservoir(resvName, columnNames):
+    """
+    Match a ResSim reservoir name to a config column, tolerating a stray space
+    or a difference in capitalization. Returns the column name, or None.
+    """
+    for col in columnNames:
+        if col == resvName:
+            return col
+    wanted = resvName.strip().upper()
+    for col in columnNames:
+        if col.strip().upper() == wanted:
+            return col
+    return None
+
+
+def _readCell(cell):
+    """
+    Interpret one cell: a float if it holds a number, or None for a blank cell
+    or one of the NO_TARGET_TOKENS. Raises for anything else, so a typo in an
+    elevation is caught rather than silently turning into an uncontrolled day.
+    """
+    if cell is None:
+        return None
+    text = str(cell).strip()
+    if text == "" or text.upper() in NO_TARGET_TOKENS:
+        return None
+    return float(text)   # ValueError here is caught by the caller
+
+
+def _buildDayTable(dayElevDict):
+    """
+    Turn {dayOfYear: elevation} into a 365-entry lookup table, indexed 1..365,
+    holding a float on days with a target and None on days without one.
+    Runs of undefined days up to INTERPOLATE_GAPS_UP_TO_DAYS long are filled in
+    by interpolating between the numbers on either side, wrapping across 31Dec.
+    """
+    table = [None] * (DAYS_IN_YEAR + 1)   # index 0 is unused
+    definedDays = list(dayElevDict.keys())
+    definedDays.sort()
+    if not definedDays:
+        return table
+    for day in definedDays:
+        table[day] = dayElevDict[day]
+    if INTERPOLATE_GAPS_UP_TO_DAYS <= 0:
+        return table
+    for i in range(len(definedDays)):
+        startDay = definedDays[i]
+        endDay = definedDays[(i + 1) % len(definedDays)]
+        gap = endDay - startDay
+        if gap <= 0:
+            gap += DAYS_IN_YEAR   # wraps past 31Dec, or the only breakpoint
+        numMissing = gap - 1
+        if numMissing <= 0 or numMissing > INTERPOLATE_GAPS_UP_TO_DAYS:
+            continue
+        elevStart = dayElevDict[startDay]
+        elevEnd = dayElevDict[endDay]
+        for k in range(1, gap):
+            day = startDay + k
+            if day > DAYS_IN_YEAR:
+                day -= DAYS_IN_YEAR
+            table[day] = elevStart + (elevEnd - elevStart) * (float(k) / gap)
+    return table
+
+
+def countTargetDays(dayTable):
+    """How many days of the year this reservoir actually has a target."""
+    total = 0
+    for day in range(1, DAYS_IN_YEAR + 1):
+        if dayTable[day] is not None:
+            total += 1
+    return total
 
 
 def loadFiroConfig(configCSV):
     """
-    Read the FIRO_SPACE config CSV and return a dictionary of interpolation curves.
+    Read the FIRO_SPACE config CSV.
 
     :param str configCSV: full path to the config CSV
-    :return: {reservoirName: Interpolate object keyed on day-of-year}
+    :return: {columnName: 365-entry day table} for every reservoir column found,
+             including columns that turn out to be entirely blank
     :rtype: dict
     """
     lines = fileOpenReadClose(configCSV)
@@ -177,13 +285,16 @@ def loadFiroConfig(configCSV):
 
     # .fieldnames is only populated after iterating, which the line above did
     fieldNames = [f for f in list(csvDict.fieldnames) if f is not None]
-    resvNames = [f for f in fieldNames if f.strip() not in NON_RESERVOIR_COLUMNS]
+    resvNames = []
+    for f in fieldNames:
+        if f.strip().upper() not in NON_RESERVOIR_COLUMNS:
+            resvNames.append(f)
     if not resvNames:
         raise AssertionError(
             "No reservoir columns found in %s. Expected headers like "
-            "'Month,Day,Detroit,Hills Creek,...'" % configCSV)
+            "'Month,Day,Detroit,Hills Creek,...'\nHeaders actually read: %s"
+            % (configCSV, ", ".join([repr(f) for f in fieldNames])))
 
-    # Collect {reservoir: {dayOfYear: elevation}}
     breakpoints = {}
     for resvName in resvNames:
         breakpoints[resvName] = {}
@@ -196,44 +307,38 @@ def loadFiroConfig(configCSV):
                 "Bad or missing Month/Day on data row %d of %s"
                 % (rowNum + 1, configCSV))
         hTime = HecTime()
-        hTime.setYearMonthDay(2001, month, day, 1440)  # 2001 is an arbitrary non-leap year
-        dayOfYear = float(hTime.dayOfYear())
+        hTime.setYearMonthDay(2001, month, day, 1440)  # 2001 is a non-leap year
+        dayOfYear = hTime.dayOfYear()
         for resvName in resvNames:
-            cell = rowDict.get(resvName)
-            if cell is None or str(cell).strip() == "":
-                continue  # blank cell just means no breakpoint here
             try:
-                elev = float(cell)
+                elev = _readCell(rowDict.get(resvName))
             except ValueError:
                 raise AssertionError(
-                    "Could not read '%s' as an elevation for %s on row %d of %s"
-                    % (cell, resvName, rowNum + 1, configCSV))
+                    "Could not read '%s' as an elevation for %s on row %d of %s. "
+                    "Use a number, or leave it blank / use one of %s to mean "
+                    "no target that day."
+                    % (rowDict.get(resvName), resvName, rowNum + 1, configCSV,
+                       "/".join(NO_TARGET_TOKENS)))
+            if elev is None:
+                continue
             if dayOfYear in breakpoints[resvName]:
                 raise AssertionError(
                     "Duplicate entry for %s on month %d day %d in %s"
                     % (resvName, month, day, configCSV))
             breakpoints[resvName][dayOfYear] = elev
 
-    # Turn each into an Interpolate object, padded +/- 1 year so that
-    # interpolation works everywhere from day 1 to day 365
     firoCurves = {}
     for resvName in resvNames:
-        dayElevDict = breakpoints[resvName]
-        if not dayElevDict:
-            continue  # column present but entirely blank -- project not configured
-        days = sorted(dayElevDict.keys())
-        elevs = [dayElevDict[d] for d in days]
-        daysMinus1Yr = [d - 365.0 for d in days]
-        daysPlus1Yr = [d + 365.0 for d in days]
-        firoCurves[resvName] = Interpolate(
-            daysMinus1Yr + days + daysPlus1Yr,
-            elevs + elevs + elevs)
+        firoCurves[resvName] = _buildDayTable(breakpoints[resvName])
     return firoCurves
 
 
-def getTargetElev(firoCurve, hTime):
-    """FIRO_SPACE elevation for the given date."""
-    return firoCurve.interp(_genericDayOfYear(hTime))
+def getTargetElev(dayTable, hTime):
+    """
+    FIRO_SPACE elevation for the given date, or None if there is no target
+    that day and the rule should leave the project alone.
+    """
+    return dayTable[_genericDayOfYear(hTime)]
 
 
 def _fileStamp(fileName):
@@ -272,13 +377,28 @@ def _initialize(currentRule, network):
     resvName = _getResvName(currentRule)
     csvFileName = _resolveConfigPath(network)
     firoCurves = loadFiroConfig(csvFileName)
-    if resvName not in firoCurves:
-        projectsFound = list(firoCurves.keys())
-        projectsFound.sort()
-        raise AssertionError(
-            "%s is using the FIRO_SPACE rule, but has no elevations in the "
-            "config file: %s\nProjects found in that file: %s"
-            % (resvName, csvFileName, ", ".join(projectsFound)))
+
+    columnNames = list(firoCurves.keys())
+    columnNames.sort()
+    column = _findColumnForReservoir(resvName, columnNames)
+    dayTable = None
+    if column is not None:
+        dayTable = firoCurves[column]
+    numTargetDays = 0
+    if dayTable is not None:
+        numTargetDays = countTargetDays(dayTable)
+
+    if numTargetDays == 0:
+        # No curve for this project. Not an error by default: the rule simply
+        # never controls, so one config file can serve a whole watershed.
+        message = (
+            "FIRO_SPACE: %s has no target elevations in %s, so this rule will "
+            "not control it. Columns in that file: %s"
+            % (resvName, csvFileName, ", ".join(columnNames)))
+        if REQUIRE_RESERVOIR_IN_CONFIG:
+            raise AssertionError(message)
+        network.printMessage(message)
+        dayTable = [None] * (DAYS_IN_YEAR + 1)
 
     mode = MODE_BY_RESERVOIR.get(resvName, MODE).upper()
     if mode not in ("BOTH", "DRAFT_ONLY", "FILL_ONLY"):
@@ -286,23 +406,33 @@ def _initialize(currentRule, network):
             "FIRO_SPACE mode for %s must be BOTH, DRAFT_ONLY or FILL_ONLY, not '%s'"
             % (resvName, mode))
 
-    firoCurve = firoCurves[resvName]
-    currentRule.varPut("firoCurve", firoCurve)
+    currentRule.varPut("firoCurve", dayTable)
     currentRule.varPut("elevStorTable", getElevationStorageTable(resvName, network))
     currentRule.varPut("mode", mode)
     currentRule.varPut("firoCsvPath", csvFileName)
     currentRule.varPut("firoCsvStamp", _fileStamp(csvFileName))
 
-    # One line per load, so the compute log always shows which numbers are in
-    # play. If an edited CSV is not being picked up, this is where it shows.
-    # The curve is padded a year either side, hence the divide by 3.
-    numBreakpoints = int(len(firoCurve.x_list) / 3)
-    janOne = firoCurve.interp(1.0)
-    julOne = firoCurve.interp(182.0)
-    network.printMessage(
-        "FIRO_SPACE: loaded %s, %d breakpoints, 01Jan=%.2f 01Jul=%.2f, mode=%s, from %s"
-        % (resvName, numBreakpoints, janOne, julOne, mode, csvFileName))
-    return firoCurve
+    if numTargetDays > 0:
+        # One line per load, so the compute log always shows which numbers are
+        # in play. If an edited CSV is not being picked up, this is where it
+        # shows. Days without a target are reported so a stretch of blanks that
+        # was not intended is obvious.
+        janOne = dayTable[1]
+        julOne = dayTable[182]
+        network.printMessage(
+            "FIRO_SPACE: loaded %s from column '%s', %d of %d days have a "
+            "target (%d uncontrolled), 01Jan=%s 01Jul=%s, mode=%s, from %s"
+            % (resvName, column, numTargetDays, DAYS_IN_YEAR,
+               DAYS_IN_YEAR - numTargetDays,
+               _fmtElev(janOne), _fmtElev(julOne), mode, csvFileName))
+    return dayTable
+
+
+def _fmtElev(elev):
+    """Format an elevation for the log, showing days with no target plainly."""
+    if elev is None:
+        return "no target"
+    return "%.2f" % elev
 
 
 def _reloadIfConfigChanged(currentRule, network):
@@ -336,9 +466,17 @@ def runRuleScript(currentRule, network, currentRuntimestep):
     elevStorTable = currentRule.varGet("elevStorTable")
     mode = currentRule.varGet("mode")
 
-    # Today's target, as elevation and as storage
+    # Today's target, as elevation and as storage. A day with no target means
+    # the rule stands down and lets the rest of the stack operate the project.
     hTime = getHecTimeFromRuntimestep(currentRuntimestep)
     targetElev = getTargetElev(firoCurve, hTime)
+    if targetElev is None:
+        if DEBUG:
+            network.printMessage(
+                "FIRO_SPACE %s %s: no target today, not controlling"
+                % (resvName, hTime.dateAndTime()))
+        opValue.init(OpRule.RULETYPE_MIN, 0.0)
+        return opValue
     targetStor = elevStorTable.interpolate(targetElev)
 
     # Pool state at the end of the previous timestep, and this timestep's inflow
