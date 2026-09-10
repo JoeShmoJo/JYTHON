@@ -155,7 +155,8 @@ check("29Feb maps to 28Feb",
 
 print("\n=== 3. Direction of the limit ===")
 CFS_TO_AF_DAY = (60*60*24)/43560.0
-def run(elevPrev, inflow, date=datetime.date(2023,1,15)):
+def run(elevPrev, inflow, date=datetime.date(2023,1,15), mode="DRAFT_ONLY", glide=3.0):
+    F.MODE, F.GLIDE_DAYS = mode, glide
     target = F.getTargetElev(curve, HecTime(date))
     net2 = Network({"Elev": TS(prev=elevPrev),
                     "Stor": TS(prev=elevPrev*1000.0),
@@ -165,21 +166,29 @@ def run(elevPrev, inflow, date=datetime.date(2023,1,15)):
     ov = F.runRuleScript(r, net2, RTS(date))
     return ov, target
 
+# Default mode: a MIN limit everywhere, continuous through the crossing.
 ov, target = run(elevPrev=1490.0, inflow=1000.0)   # 5.5 ft above the curve
 check("above curve -> MIN", ov.type, "MIN")
 check("above curve -> release > inflow", ov.value > 1000.0, True)
 ov, target = run(elevPrev=1480.0, inflow=1000.0)   # 4.5 ft below the curve
-check("below curve -> MAX", ov.type, "MAX")
+check("below curve -> still MIN, but slack", ov.type, "MIN")
 check("below curve -> release < inflow", ov.value < 1000.0, True)
-ov, target = run(elevPrev=1484.5, inflow=1000.0)   # on the curve
-check("on curve -> MIN 0 (does not bind)", (ov.type, ov.value), ("MIN", 0.0))
-ov, _ = run(elevPrev=1484.55, inflow=1000.0)       # inside the deadband
-check("inside deadband -> does not bind", (ov.type, ov.value), ("MIN", 0.0))
+
+# The property that killed the oscillation: no cliff at the crossing.
+ov, target = run(elevPrev=1484.5, inflow=1000.0)   # exactly on the curve
+check("on curve -> MIN equals inflow (continuous)", ov.value, 1000.0, 1e-6)
+above = run(elevPrev=1484.5 + 0.001, inflow=1000.0)[0].value
+below = run(elevPrev=1484.5 - 0.001, inflow=1000.0)[0].value
+check("no discontinuity across the crossing", abs(above - below) < 1.0, True)
+
+# MODE "BOTH" adds the forced refill
+ov, _ = run(elevPrev=1480.0, inflow=1000.0, mode="BOTH")
+check("BOTH: below curve -> MAX (forces refill)", ov.type, "MAX")
 
 print("\n=== 4. Mass balance: does the release land on target? ===")
-# Reachable in one timestep: the pool should land exactly on the curve.
+# GLIDE_DAYS = 1 asks the pool to land exactly on the curve in one timestep.
 for elevPrev, inflow in [(1490.0, 1000.0), (1520.0, 5000.0), (1483.0, 4000.0)]:
-    ov, target = run(elevPrev, inflow)
+    ov, target = run(elevPrev, inflow, mode="BOTH", glide=1.0)
     storNew = elevPrev * 1000.0 + (inflow - ov.value) * CFS_TO_AF_DAY
     check("elev %.1f in %.0f cfs -> lands on target" % (elevPrev, inflow),
           storNew / 1000.0, target, 1e-6)
@@ -187,7 +196,7 @@ for elevPrev, inflow in [(1490.0, 1000.0), (1520.0, 5000.0), (1483.0, 4000.0)]:
 # Not reachable: pool is below the curve and inflow alone cannot close the gap,
 # so the required release is negative and clamps to 0 -- gates shut, fill as
 # fast as physically possible, without overshooting the curve.
-ov, target = run(elevPrev=1480.0, inflow=1000.0)
+ov, target = run(elevPrev=1480.0, inflow=1000.0, mode="BOTH", glide=1.0)
 check("unreachable fill -> MAX clamps to 0", (ov.type, ov.value), ("MAX", 0.0))
 storNew = 1480.0 * 1000.0 + (1000.0 - ov.value) * CFS_TO_AF_DAY
 check("unreachable fill -> moves toward curve", storNew / 1000.0 > 1480.0, True)
@@ -206,8 +215,8 @@ except AssertionError as e:
     check("unconfigured reservoir raises AssertionError", "Fall Creek" in str(e), True)
 
 F.MODE_BY_RESERVOIR = {"Detroit": "DRAFT_ONLY"}
-ov, _ = run(elevPrev=1480.0, inflow=1000.0)
-check("DRAFT_ONLY suppresses the fill branch", (ov.type, ov.value), ("MIN", 0.0))
+ov, _ = run(elevPrev=1480.0, inflow=1000.0, mode="BOTH")
+check("per-reservoir override beats MODE", ov.type, "MIN")
 F.MODE_BY_RESERVOIR = {}
 
 print("\n=== 6. Sparse breakpoints (blank cells) ===")
@@ -240,6 +249,7 @@ netR = PinnedNetwork({"Elev": TS(prev=1450.0), "Stor": TS(prev=1450000.0),
                       "Flow-IN": TS(cur=1000.0)})
 ruleR = Rule("Detroit")
 
+F.MODE, F.GLIDE_DAYS = "BOTH", 1.0
 writeCurve("1400.0", 1000000000)
 F.initRuleScript(ruleR, netR)
 ov1 = F.runRuleScript(ruleR, netR, RTS(datetime.date(2023, 1, 15)))
@@ -262,6 +272,52 @@ writeCurve("1400.0", 1000000120)
 ov3 = F.runRuleScript(ruleR, netR, RTS(datetime.date(2023, 1, 15)))
 check("RELOAD_CSV_IF_CHANGED=False pins the loaded values", ov3.type, "MAX")
 F.RELOAD_CSV_IF_CHANGED = True
+F.MODE, F.GLIDE_DAYS = "DRAFT_ONLY", 3.0
+os.remove(reloadCsv)
+
+print("\n=== 8. Closed-loop stability (regression for the sawtooth) ===")
+# Drive the rule in a mass-balance loop against a stack that would otherwise
+# release only min flow, which is exactly the situation that made the pool
+# ring between the curve and a foot above it.
+AFPF, CFDAY, CAP = 3500.0, (60 * 60 * 24) / 43560.0, 10000.0
+INFLOW, MINFLOW = 3000.0, 1200.0
+
+def closedLoop(mode, glide, steps=40, startErr=5.0):
+    """Returns the peak-to-peak pool error (ft) over the last 12 steps."""
+    F.MODE, F.GLIDE_DAYS = mode, glide
+    targetStor = 1500.0 * 1000.0
+    err = startErr
+    errors = []
+    for _ in range(steps):
+        stor = targetStor + err * AFPF
+        netL = PinnedNetwork({"Elev": TS(prev=1500.0 + err),
+                              "Stor": TS(prev=stor),
+                              "Flow-IN": TS(cur=INFLOW)})
+        netL.elevStorTable = FlatTable(targetStor, AFPF)
+        ruleL = Rule("Detroit")
+        F.initRuleScript(ruleL, netL)
+        ov = F.runRuleScript(ruleL, netL, RTS(datetime.date(2023, 1, 15)))
+        if ov.type == "MIN":
+            actual = min(max(MINFLOW, ov.value), CAP)
+        else:
+            actual = min(MINFLOW, ov.value)
+        err += (INFLOW - actual) * CFDAY / AFPF
+        errors.append(err)
+    tail = errors[-12:]
+    return max(tail) - min(tail)
+
+class FlatTable(object):
+    """elev -> storage around the flat 1500 ft test curve."""
+    def __init__(self, targetStor, afpf):
+        self.targetStor, self.afpf = targetStor, afpf
+    def interpolate(self, elev):
+        return self.targetStor + (elev - 1500.0) * self.afpf
+
+writeCurve("1500.0", 1000000200)
+ringing = closedLoop(mode="DRAFT_ONLY", glide=3.0)
+check("settles instead of ringing (peak-to-peak < 0.1 ft)", ringing < 0.1, True)
+print("    peak-to-peak over last 12 days: %.3f ft" % ringing)
+F.MODE, F.GLIDE_DAYS = "DRAFT_ONLY", 3.0
 os.remove(reloadCsv)
 
 print("\n" + ("ALL PASSED" if not fails else "FAILURES: %s" % fails))

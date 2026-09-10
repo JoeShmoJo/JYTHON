@@ -20,11 +20,22 @@ runRuleScript (every timestep):
 
     Then it sets ONE limit, depending on which side of the curve the pool is on:
 
-        pool ABOVE FIRO_SPACE -> draft -> RULETYPE_MIN = qTarget
-            (a minimum forces the project to release at least enough to come down)
-        pool BELOW FIRO_SPACE -> fill  -> RULETYPE_MAX = qTarget
-            (a maximum caps the release so the pool comes up)
-        pool within DEADBAND_FT of the curve -> RULETYPE_MIN = 0 (rule does not bind)
+        default ("DRAFT_ONLY") -> RULETYPE_MIN = qTarget, always.
+            Above the curve this forces a draft. Below the curve qTarget falls
+            below inflow, so the limit goes slack on its own and only binds if
+            something else would release so little that the pool overshoots the
+            curve. The result is "hold the pool at or below FIRO_SPACE".
+
+        "BOTH" -> adds a RULETYPE_MAX = qTarget when the pool is below the
+            curve, which actively forces a refill. See the warning below.
+
+    The limit is a CONTINUOUS function of the storage error: as the pool
+    approaches the curve, qTarget approaches inflow. There is deliberately no
+    "rule does not bind" branch. An earlier version returned MIN = 0 when the
+    pool was near the curve, which handed control back to the rest of the stack
+    the instant the target was met and produced a hard one-day-period
+    oscillation -- the pool floated up off the curve, got slammed back down, and
+    repeated. Do not reintroduce a discontinuity here.
 
     This rule only proposes the target. Other rules in the stack are expected to
     constrain the release further (outlet capacity, min flows, ramp rates, etc.).
@@ -67,14 +78,24 @@ from NWDJyLib.ResSim.cResSim import getElevationStorageTable
 CONFIG_KEY = "firoSpaceConfigCSV"
 DEFAULT_CONFIG_CSV = "scripts/externalRules/FIRO_SPACEConfig.csv"
 
-# How close to the curve counts as "on it". Prevents chattering between the
-# MIN branch and the MAX branch when the pool is sitting right on target.
+# Spread the storage correction over this many days rather than demanding the
+# whole thing in one timestep. This is the gain of the controller. 1.0 asks the
+# pool to land exactly on the curve every step, which is jumpy when the rest of
+# the stack cannot deliver the requested release. DraftToRC.py uses 3 days.
+GLIDE_DAYS = 3.0
+
+# Only used by MODE "BOTH": how far below the curve the pool must be before the
+# rule switches from the MIN limit to the MAX limit that forces a refill.
 DEADBAND_FT = 0.10
 
-# "BOTH"       -> draft toward the curve when high, fill toward it when low
-# "DRAFT_ONLY" -> only set the MIN release (never forces a fill)
-# "FILL_ONLY"  -> only set the MAX release (never forces a draft)
-MODE = "BOTH"
+# "DRAFT_ONLY" -> MIN release only. Holds the pool at or below the curve and
+#                 lets it refill at whatever rate the rest of the stack allows.
+#                 Stable. This is the recommended starting point.
+# "BOTH"       -> also sets a MAX release to force a refill when below the curve.
+#                 This actively competes with minimum-flow rules and is the more
+#                 aggressive operation. Try DRAFT_ONLY first.
+# "FILL_ONLY"  -> MAX release only. Never forces a draft.
+MODE = "DRAFT_ONLY"
 
 # Per-reservoir overrides of MODE, e.g. {"Lookout Point": "DRAFT_ONLY"}
 MODE_BY_RESERVOIR = {}
@@ -333,18 +354,25 @@ def runRuleScript(currentRule, network, currentRuntimestep):
         opValue.init(OpRule.RULETYPE_MIN, 0.0)
         return opValue
 
-    # Release that lands the pool exactly on the target at the end of this timestep
+    # Release that walks the pool onto the target over GLIDE_DAYS. At
+    # GLIDE_DAYS = 1 this lands exactly on the target in a single timestep.
     timeStepMinutes = currentRuntimestep.getTimeStepMinutes()
     cfsToAcFt = CFSDAY_TO_AF * timeStepMinutes / 1440.0
-    qTarget = inflow + (storPrev - targetStor) / cfsToAcFt
+    stepsInGlide = GLIDE_DAYS * 1440.0 / timeStepMinutes
+    if stepsInGlide < 1.0:
+        stepsInGlide = 1.0
+    qTarget = inflow + (storPrev - targetStor) / (cfsToAcFt * stepsInGlide)
     qTarget = max(qTarget, 0.0)
 
-    if elevPrev > targetElev + DEADBAND_FT and mode in ("BOTH", "DRAFT_ONLY"):
-        ruleType, ruleValue = OpRule.RULETYPE_MIN, qTarget   # above the curve: draft down
-    elif elevPrev < targetElev - DEADBAND_FT and mode in ("BOTH", "FILL_ONLY"):
-        ruleType, ruleValue = OpRule.RULETYPE_MAX, qTarget   # below the curve: fill up
+    # qTarget is continuous through the crossing: it equals inflow exactly when
+    # the pool is on the curve, is above inflow when high, below inflow when low.
+    # Keep it that way -- see the note in the module docstring.
+    if mode == "FILL_ONLY":
+        ruleType, ruleValue = OpRule.RULETYPE_MAX, qTarget
+    elif mode == "BOTH" and elevPrev < targetElev - DEADBAND_FT:
+        ruleType, ruleValue = OpRule.RULETYPE_MAX, qTarget   # force the refill
     else:
-        ruleType, ruleValue = OpRule.RULETYPE_MIN, 0.0       # on the curve: do not bind
+        ruleType, ruleValue = OpRule.RULETYPE_MIN, qTarget   # hold at or below the curve
 
     if DEBUG:
         network.printMessage(
