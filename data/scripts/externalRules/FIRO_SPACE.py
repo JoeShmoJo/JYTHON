@@ -50,10 +50,8 @@ Config CSV format (wide, one row per day of a generic year):
     Month,Day,Detroit,Hills Creek,Lookout Point,...
     1,1,1450.0,1448.0,825.0,...
     1,2,1450.0,,825.1,...
-    1,3,1450.0,NONE,825.2,...
 
-    A day has a target only where that day's cell holds a number. A blank cell,
-    or any of the NO_TARGET_TOKENS ("NONE", "OFF", "NA", "N/A", "-", "--"),
+    A day has a target only where that day's cell holds a number. A BLANK cell
     means NO TARGET on that day: the rule returns a limit that does not bind and
     the rest of the stack operates the project. So you can leave whole stretches
     of the year uncontrolled just by clearing those cells.
@@ -105,10 +103,6 @@ GLIDE_DAYS = 3.0
 # rule switches from the MIN limit to the MAX limit that forces a refill.
 DEADBAND_FT = 0.10
 
-# Cell values that explicitly mean "no target today", in addition to a blank
-# cell. Compared after stripping whitespace and upper-casing.
-NO_TARGET_TOKENS = ["NONE", "OFF", "NA", "N/A", "-", "--", "SKIP"]
-
 # Bridge a run of undefined days this long or shorter by interpolating between
 # the numbers on either side. 0 means never bridge, so every blank day is an
 # uncontrolled day -- the usual choice for a full 365-row daily file. Set it to
@@ -120,12 +114,11 @@ INTERPOLATE_GAPS_UP_TO_DAYS = 0
 # and the compute continues. True: that is a hard error that stops the compute.
 REQUIRE_RESERVOIR_IN_CONFIG = False
 
-# "DRAFT_ONLY" -> MIN release only. Holds the pool at or below the curve and
-#                 lets it refill at whatever rate the rest of the stack allows.
-#                 Stable. This is the recommended starting point.
-# "BOTH"       -> also sets a MAX release to force a refill when below the curve.
-#                 This actively competes with minimum-flow rules and is the more
-#                 aggressive operation. Try DRAFT_ONLY first.
+# "BOTH"       -> draft toward the curve when above it, and set a MAX release to
+#                 force a refill when below it. The refill limit competes with
+#                 minimum-flow rules, which is the intended behavior here.
+# "DRAFT_ONLY" -> MIN release only. Holds the pool at or below the curve and lets
+#                 it refill at whatever rate the rest of the stack allows.
 # "FILL_ONLY"  -> MAX release only. Never forces a draft.
 MODE = "BOTH"
 
@@ -213,14 +206,14 @@ def _findColumnForReservoir(resvName, columnNames):
 
 def _readCell(cell):
     """
-    Interpret one cell: a float if it holds a number, or None for a blank cell
-    or one of the NO_TARGET_TOKENS. Raises for anything else, so a typo in an
+    Interpret one cell: a float if it holds a number, or None for a blank cell,
+    which means no target that day. Raises for anything else, so a typo in an
     elevation is caught rather than silently turning into an uncontrolled day.
     """
     if cell is None:
         return None
     text = str(cell).strip()
-    if text == "" or text.upper() in NO_TARGET_TOKENS:
+    if text == "":
         return None
     return float(text)   # ValueError here is caught by the caller
 
@@ -315,10 +308,9 @@ def loadFiroConfig(configCSV):
             except ValueError:
                 raise AssertionError(
                     "Could not read '%s' as an elevation for %s on row %d of %s. "
-                    "Use a number, or leave it blank / use one of %s to mean "
-                    "no target that day."
-                    % (rowDict.get(resvName), resvName, rowNum + 1, configCSV,
-                       "/".join(NO_TARGET_TOKENS)))
+                    "Use a number, or leave the cell blank to mean no target "
+                    "that day."
+                    % (rowDict.get(resvName), resvName, rowNum + 1, configCSV))
             if elev is None:
                 continue
             if dayOfYear in breakpoints[resvName]:

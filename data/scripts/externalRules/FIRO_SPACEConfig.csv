@@ -6,9 +6,10 @@
 # alt_config/_default.txt rather than from a FIRO analysis.
 #
 # A day has a target only where that day's cell holds a number.
-# A BLANK cell, or NONE / OFF / NA / N/A / - / -- / SKIP, means NO TARGET that
-# day: the rule stands down and the rest of the rule stack operates the project.
-# So you can leave whole stretches of the year uncontrolled by clearing cells.
+# A BLANK cell means NO TARGET that day: the rule stands down and the rest of
+# the rule stack operates the project. So you can leave whole stretches of the
+# year uncontrolled by clearing those cells. Anything that is neither a number
+# nor blank is an error, so a typo cannot quietly become an uncontrolled day.
 # NOTE: Foster, Dorena, Cottage Grove, Fern Ridge and Blue River are blank on
 # 31Dec, so those five are uncontrolled on that one day. Fill it in if that was
 # not deliberate.
