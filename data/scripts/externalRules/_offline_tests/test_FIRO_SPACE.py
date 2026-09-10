@@ -276,7 +276,7 @@ F.MODE_BY_RESERVOIR = {}
 print("\n=== 6. Blank cells and NO-TARGET days ===")
 sparse = os.path.join(_HERE, "_sparse_tmp.csv")
 open(sparse, "w").write("# sparse test\nMonth,Day,Detroit,Cougar\n1,1,1400,\n"
-                        "4,1,1500,1600\n7,1,NONE,1700\n12,31,1400,1600\n")
+                        "4,1,1500,1600\n7,1,,1700\n12,31,1400,1600\n")
 
 F.INTERPOLATE_GAPS_UP_TO_DAYS = 0
 curves = F.loadFiroConfig(sparse)
@@ -285,7 +285,7 @@ check("a day with a number has a target",
       F.getTargetElev(curves["Detroit"], HecTime(datetime.date(2023, 4, 1))), 1500.0)
 check("a blank day has NO target",
       F.getTargetElev(curves["Detroit"], HecTime(datetime.date(2023, 2, 1))), None)
-check("a NONE day has NO target",
+check("a blank day mid-file has NO target",
       F.getTargetElev(curves["Detroit"], HecTime(datetime.date(2023, 7, 1))), None)
 check("blank first row -> Cougar has no target 01Jan",
       F.getTargetElev(curves["Cougar"], HecTime(datetime.date(2023, 1, 1))), None)
@@ -317,13 +317,14 @@ check("a genuinely absent name does not match",
 os.remove(ws)
 
 bad = os.path.join(_HERE, "_bad_tmp.csv")
-open(bad, "w").write("Month,Day,Detroit\n1,1,1400\n1,2,fourteen hundred\n")
-try:
-    F.loadFiroConfig(bad)
-    check("a typo in an elevation raises", False, True)
-except AssertionError as e:
-    check("a typo in an elevation raises, not silently uncontrolled",
-          "fourteen hundred" in str(e), True)
+for junk in ["fourteen hundred", "NONE"]:
+    open(bad, "w").write("Month,Day,Detroit\n1,1,1400\n1,2,%s\n" % junk)
+    try:
+        F.loadFiroConfig(bad)
+        check("'%s' in a cell raises" % junk, False, True)
+    except AssertionError as e:
+        check("'%s' in a cell raises, not silently uncontrolled" % junk,
+              junk in str(e), True)
 os.remove(bad)
 
 os.remove(sparse)
@@ -412,9 +413,15 @@ class FlatTable(object):
         return self.targetStor + (elev - 1500.0) * self.afpf
 
 writeCurve("1500.0", 1000000200)
-ringing = closedLoop(mode="DRAFT_ONLY", glide=3.0)
-check("settles instead of ringing (peak-to-peak < 0.1 ft)", ringing < 0.1, True)
-print("    peak-to-peak over last 12 days: %.3f ft" % ringing)
+# Start above the curve (drafting) and below it (refilling). The MAX limit that
+# MODE "BOTH" adds only engages below the curve, so both directions matter.
+for modeName in ["DRAFT_ONLY", "BOTH"]:
+    for label, startErr in [("from above", 5.0), ("from below", -5.0)]:
+        ringing = closedLoop(mode=modeName, glide=3.0, startErr=startErr)
+        check("%s %s settles (peak-to-peak < 0.1 ft)" % (modeName, label),
+              ringing < 0.1, True)
+        print("    %-11s %-11s peak-to-peak over last 12 days: %.3f ft"
+              % (modeName, label, ringing))
 F.MODE, F.GLIDE_DAYS = "DRAFT_ONLY", 3.0
 F.INTERPOLATE_GAPS_UP_TO_DAYS = 0
 os.remove(reloadCsv)
