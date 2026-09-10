@@ -19,7 +19,35 @@ RULES_DIR = os.path.dirname(_HERE)
 SCRIPTS_DIR = os.path.dirname(RULES_DIR)
 sys.path.insert(0, SCRIPTS_DIR)
 sys.path.insert(0, RULES_DIR)
-CONFIG_CSV = os.path.join(RULES_DIR, "FIRO_SPACEConfig.csv")
+SHIPPED_CSV = os.path.join(RULES_DIR, "FIRO_SPACEConfig.csv")
+CONFIG_CSV = os.path.join(_HERE, "_fixture_tmp.csv")   # generated below
+
+def writeFixture():
+    """
+    A known two-project curve, so the behaviour tests do not depend on whatever
+    elevations happen to be in the shipped config file.
+    Detroit: 1484.5 through 01Feb, ramp to 1558.5 by 01May, hold to 31Aug,
+    ramp back down by 30Nov. Cougar: flat 1600.
+    """
+    import datetime as _dt
+    def doy(m, d):
+        return _dt.date(2001, m, d).timetuple().tm_yday
+    shape = [(doy(1, 1), 1484.5), (doy(2, 1), 1484.5), (doy(5, 1), 1558.5),
+             (doy(8, 31), 1558.5), (doy(11, 30), 1484.5), (doy(12, 31), 1484.5)]
+    def interp(x):
+        for (x1, y1), (x2, y2) in zip(shape, shape[1:]):
+            if x1 <= x <= x2:
+                return y1 + (y2 - y1) * (x - x1) / float(x2 - x1)
+        return shape[-1][1]
+    out = ["# generated fixture", "Month,Day,Detroit,Cougar"]
+    for n in range(1, 366):
+        date = _dt.date(2001, 1, 1) + _dt.timedelta(days=n - 1)
+        out.append("%d,%d,%.4f,1600.0" % (date.month, date.day, interp(n)))
+    fh = open(CONFIG_CSV, "w")
+    fh.write("\n".join(out) + "\n")
+    fh.close()
+
+writeFixture()
 
 # ---- stub hec.heclib.util.HecTime -------------------------------------------
 class HecTime(object):
@@ -92,7 +120,9 @@ class Network(object):
     def getStateVariable(self, name):
         raise RuntimeError("no such state variable")   # exercises the fallback path
     def makeAbsolutePathFromWatershed(self, rel):
-        return os.path.join(os.path.dirname(SCRIPTS_DIR), rel)
+        # Behaviour tests run against the generated fixture, never the shipped
+        # config, so editing the real curve cannot break them.
+        return CONFIG_CSV
     def printMessage(self, m):
         self.messages.append(m)
 
@@ -130,7 +160,7 @@ def check(label, got, want, tol=1e-6):
     if not ok:
         fails.append(label)
 
-print("=== 1. CSV loads and interpolates ===")
+print("=== 1. CSV loads and interpolates (generated fixture) ===")
 net = Network()
 rule = Rule("Detroit")
 F.initRuleScript(rule, net)
@@ -142,8 +172,20 @@ check("Detroit 01Jun (summer)", F.getTargetElev(curve, HecTime(datetime.date(202
 frac = (60.0 - 32.0) / (121.0 - 32.0)
 check("Detroit 01Mar (mid-refill)", F.getTargetElev(curve, HecTime(datetime.date(2023,3,1))),
       1484.5 + frac * (1558.5 - 1484.5), 0.05)  # CSV stores 1 decimal place
-check("all 5 projects loaded", len(F.loadFiroConfig(
-    CONFIG_CSV)), 5)
+check("both fixture projects loaded", len(F.loadFiroConfig(CONFIG_CSV)), 2)
+
+print("\n=== 1b. The shipped config file still loads ===")
+shipped = F.loadFiroConfig(SHIPPED_CSV)
+check("shipped config has reservoir columns", len(shipped) > 0, True)
+thin = []
+for name in sorted(shipped.keys()):
+    days = F.countTargetDays(shipped[name])
+    if days < 365:
+        thin.append("%s=%d" % (name, days))
+check("every shipped column has most of the year covered",
+      [n for n in shipped if F.countTargetDays(shipped[n]) < 300], [])
+print("    %d projects; columns not covering all 365 days: %s"
+      % (len(shipped), ", ".join(thin) if thin else "none"))
 
 print("\n=== 2. Leap year does not shift the curve ===")
 check("01Mar 2024 (leap) == 01Mar 2023",
@@ -208,26 +250,81 @@ r3 = Rule("Detroit"); F.initRuleScript(r3, net3)
 ov = F.runRuleScript(r3, net3, RTS(datetime.date(2023,1,15)))
 check("DSS missing sentinel -> does not bind", (ov.type, ov.value), ("MIN", 0.0))
 
+netFC = Network({"Elev": TS(prev=1400.0), "Stor": TS(prev=1400000.0),
+                 "Flow-IN": TS(cur=1000.0)})
+ruleFC = Rule("Fall Creek")
+F.initRuleScript(ruleFC, netFC)          # must NOT raise
+ovFC = F.runRuleScript(ruleFC, netFC, RTS(datetime.date(2023, 1, 15)))
+check("reservoir absent from config -> no error, no control",
+      (ovFC.type, ovFC.value), ("MIN", 0.0))
+check("absent reservoir is reported in the log",
+      len([m for m in netFC.messages if "will not control" in m]), 1)
+
+F.REQUIRE_RESERVOIR_IN_CONFIG = True
 try:
     F.initRuleScript(Rule("Fall Creek"), Network())
-    check("unconfigured reservoir raises", False, True)
+    check("REQUIRE_RESERVOIR_IN_CONFIG=True raises", False, True)
 except AssertionError as e:
-    check("unconfigured reservoir raises AssertionError", "Fall Creek" in str(e), True)
+    check("REQUIRE_RESERVOIR_IN_CONFIG=True raises", "Fall Creek" in str(e), True)
+F.REQUIRE_RESERVOIR_IN_CONFIG = False
 
 F.MODE_BY_RESERVOIR = {"Detroit": "DRAFT_ONLY"}
 ov, _ = run(elevPrev=1480.0, inflow=1000.0, mode="BOTH")
 check("per-reservoir override beats MODE", ov.type, "MIN")
 F.MODE_BY_RESERVOIR = {}
 
-print("\n=== 6. Sparse breakpoints (blank cells) ===")
+print("\n=== 6. Blank cells and NO-TARGET days ===")
 sparse = os.path.join(_HERE, "_sparse_tmp.csv")
 open(sparse, "w").write("# sparse test\nMonth,Day,Detroit,Cougar\n1,1,1400,\n"
-                        "4,1,1500,1600\n7,1,,1700\n12,31,1400,1600\n")
+                        "4,1,1500,1600\n7,1,NONE,1700\n12,31,1400,1600\n")
+
+F.INTERPOLATE_GAPS_UP_TO_DAYS = 0
 curves = F.loadFiroConfig(sparse)
-check("sparse: both projects present", sorted(curves.keys()), ["Cougar", "Detroit"])
-check("sparse: Detroit 01Apr breakpoint", F.getTargetElev(curves["Detroit"], HecTime(datetime.date(2023,4,1))), 1500.0)
-check("sparse: Cougar skips blank 01Jan, flat before 01Apr",
-      F.getTargetElev(curves["Cougar"], HecTime(datetime.date(2023,1,1))), 1600.0)
+check("both columns present", sorted(curves.keys()), ["Cougar", "Detroit"])
+check("a day with a number has a target",
+      F.getTargetElev(curves["Detroit"], HecTime(datetime.date(2023, 4, 1))), 1500.0)
+check("a blank day has NO target",
+      F.getTargetElev(curves["Detroit"], HecTime(datetime.date(2023, 2, 1))), None)
+check("a NONE day has NO target",
+      F.getTargetElev(curves["Detroit"], HecTime(datetime.date(2023, 7, 1))), None)
+check("blank first row -> Cougar has no target 01Jan",
+      F.getTargetElev(curves["Cougar"], HecTime(datetime.date(2023, 1, 1))), None)
+check("Detroit target-day count", F.countTargetDays(curves["Detroit"]), 3)
+
+# Opt back in to bridging gaps, the way a ResSim zone would
+F.INTERPOLATE_GAPS_UP_TO_DAYS = 365
+curves = F.loadFiroConfig(sparse)
+check("with bridging: 01Feb interpolates between 01Jan and 01Apr",
+      1400.0 < F.getTargetElev(curves["Detroit"], HecTime(datetime.date(2023, 2, 1))) < 1500.0,
+      True)
+check("with bridging: every day has a target",
+      F.countTargetDays(curves["Detroit"]), 365)
+check("with bridging: wraps across 31Dec",
+      F.getTargetElev(curves["Cougar"], HecTime(datetime.date(2023, 1, 1))) is not None, True)
+F.INTERPOLATE_GAPS_UP_TO_DAYS = 0
+
+print("\n=== 6b. Column-name matching and bad values ===")
+ws = os.path.join(_HERE, "_ws_tmp.csv")
+open(ws, "w").write("Month,Day,Detroit ,  hills creek\n1,1,1400,900\n12,31,1400,900\n")
+wsCurves = F.loadFiroConfig(ws)
+cols = list(wsCurves.keys())
+check("trailing space in header still matches",
+      F._findColumnForReservoir("Detroit", cols), "Detroit ")
+check("different capitalization still matches",
+      F._findColumnForReservoir("Hills Creek", cols), "  hills creek")
+check("a genuinely absent name does not match",
+      F._findColumnForReservoir("Cougar", cols), None)
+os.remove(ws)
+
+bad = os.path.join(_HERE, "_bad_tmp.csv")
+open(bad, "w").write("Month,Day,Detroit\n1,1,1400\n1,2,fourteen hundred\n")
+try:
+    F.loadFiroConfig(bad)
+    check("a typo in an elevation raises", False, True)
+except AssertionError as e:
+    check("a typo in an elevation raises, not silently uncontrolled",
+          "fourteen hundred" in str(e), True)
+os.remove(bad)
 
 os.remove(sparse)
 
@@ -250,6 +347,7 @@ netR = PinnedNetwork({"Elev": TS(prev=1450.0), "Stor": TS(prev=1450000.0),
 ruleR = Rule("Detroit")
 
 F.MODE, F.GLIDE_DAYS = "BOTH", 1.0
+F.INTERPOLATE_GAPS_UP_TO_DAYS = 365   # 2-row test files, bridge the year
 writeCurve("1400.0", 1000000000)
 F.initRuleScript(ruleR, netR)
 ov1 = F.runRuleScript(ruleR, netR, RTS(datetime.date(2023, 1, 15)))
@@ -318,7 +416,9 @@ ringing = closedLoop(mode="DRAFT_ONLY", glide=3.0)
 check("settles instead of ringing (peak-to-peak < 0.1 ft)", ringing < 0.1, True)
 print("    peak-to-peak over last 12 days: %.3f ft" % ringing)
 F.MODE, F.GLIDE_DAYS = "DRAFT_ONLY", 3.0
+F.INTERPOLATE_GAPS_UP_TO_DAYS = 0
 os.remove(reloadCsv)
 
+os.remove(CONFIG_CSV)
 print("\n" + ("ALL PASSED" if not fails else "FAILURES: %s" % fails))
 sys.exit(1 if fails else 0)
