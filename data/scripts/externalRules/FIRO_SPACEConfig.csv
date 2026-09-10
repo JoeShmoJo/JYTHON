@@ -1,18 +1,27 @@
-# FIRO_SPACE rule curve. One row per day of a generic (non-leap) year.,,,,,,,,,,,
-# Read by scripts/externalRules/FIRO_SPACE.py,,,,,,,,,,,
-#,,,,,,,,,,,
-# !!! THE ELEVATIONS IN THIS FILE ARE PLACEHOLDERS !!!,,,,,,,,,,,
-# They exist so the rule can be wired up and tested end to end. Replace every,,,,,,,,,,,
-# column with the actual FIRO_SPACE curve before drawing any conclusions.,,,,,,,,,,,
-# The placeholder shape is: minimum flood pool 01Dec-01Feb, refill 01Feb-01May,,,,,,,,,,
-# full 01May-31Aug, draft 31Aug-30Nov, straight-line in between.,,,,,,,,,
-# Winter values are the SecondaryFloodElev entries from SecondaryFloodDraftLimitConfig.csv.,,,,,,,,,,,
-# Summer values are the irrmTargetElevs entries from alt_config/_default.txt,,,,,,,,,,,
-# except Green Peter, which has no IRRM entry and uses full pool.,,,,,,,,,,
-#,,,,,,,,,,,
-"# Blank cells are allowed and mean ""no breakpoint on this date"" -- the curve",,,,,,,,,,,
-# interpolates across the gap, so a project can use a few rows instead of all 365.,,,,,,,,,,
-# Add a project by adding a column; remove one by deleting its column.,,,,,,,,,,,
+# FIRO_SPACE rule curve. One row per day of a generic (non-leap) year.
+# Read by scripts/externalRules/FIRO_SPACE.py
+#
+# Check the elevations before drawing conclusions from a run. Several columns
+# began as placeholders derived from SecondaryFloodDraftLimitConfig.csv and
+# alt_config/_default.txt rather than from a FIRO analysis.
+#
+# A day has a target only where that day's cell holds a number.
+# A BLANK cell, or NONE / OFF / NA / N/A / - / -- / SKIP, means NO TARGET that
+# day: the rule stands down and the rest of the rule stack operates the project.
+# So you can leave whole stretches of the year uncontrolled by clearing cells.
+# NOTE: Foster, Dorena, Cottage Grove, Fern Ridge and Blue River are blank on
+# 31Dec, so those five are uncontrolled on that one day. Fill it in if that was
+# not deliberate.
+#
+# Add a project by adding a column; remove one by deleting its column. A project
+# with no numbers at all, or with no column here, is simply never controlled --
+# that is not an error, so this one file can cover the whole watershed.
+#
+# Column headers are matched to ResSim reservoir names ignoring surrounding
+# spaces and capitalization, so "Detroit " and "detroit" both work.
+#
+# To specify a project with a few breakpoints and let the rule fill in the rest
+# of the year, set INTERPOLATE_GAPS_UP_TO_DAYS in FIRO_SPACE.py to 365.
 Month,Day,Detroit,Hills Creek,Lookout Point,Cougar,Green Peter,Foster,Dorena,Cottage Grove,Fern Ridge,Blue River
 1,1,1460.0,1448.0,825.00,1532.0,922.0,613.00,770.50,750.00,353.00,1180.0
 1,2,1460.0,1448.0,825.00,1532.0,922.0,613.00,770.50,750.00,353.00,1180.0

@@ -208,26 +208,81 @@ r3 = Rule("Detroit"); F.initRuleScript(r3, net3)
 ov = F.runRuleScript(r3, net3, RTS(datetime.date(2023,1,15)))
 check("DSS missing sentinel -> does not bind", (ov.type, ov.value), ("MIN", 0.0))
 
+netFC = Network({"Elev": TS(prev=1400.0), "Stor": TS(prev=1400000.0),
+                 "Flow-IN": TS(cur=1000.0)})
+ruleFC = Rule("Fall Creek")
+F.initRuleScript(ruleFC, netFC)          # must NOT raise
+ovFC = F.runRuleScript(ruleFC, netFC, RTS(datetime.date(2023, 1, 15)))
+check("reservoir absent from config -> no error, no control",
+      (ovFC.type, ovFC.value), ("MIN", 0.0))
+check("absent reservoir is reported in the log",
+      len([m for m in netFC.messages if "will not control" in m]), 1)
+
+F.REQUIRE_RESERVOIR_IN_CONFIG = True
 try:
     F.initRuleScript(Rule("Fall Creek"), Network())
-    check("unconfigured reservoir raises", False, True)
+    check("REQUIRE_RESERVOIR_IN_CONFIG=True raises", False, True)
 except AssertionError as e:
-    check("unconfigured reservoir raises AssertionError", "Fall Creek" in str(e), True)
+    check("REQUIRE_RESERVOIR_IN_CONFIG=True raises", "Fall Creek" in str(e), True)
+F.REQUIRE_RESERVOIR_IN_CONFIG = False
 
 F.MODE_BY_RESERVOIR = {"Detroit": "DRAFT_ONLY"}
 ov, _ = run(elevPrev=1480.0, inflow=1000.0, mode="BOTH")
 check("per-reservoir override beats MODE", ov.type, "MIN")
 F.MODE_BY_RESERVOIR = {}
 
-print("\n=== 6. Sparse breakpoints (blank cells) ===")
+print("\n=== 6. Blank cells and NO-TARGET days ===")
 sparse = os.path.join(_HERE, "_sparse_tmp.csv")
 open(sparse, "w").write("# sparse test\nMonth,Day,Detroit,Cougar\n1,1,1400,\n"
-                        "4,1,1500,1600\n7,1,,1700\n12,31,1400,1600\n")
+                        "4,1,1500,1600\n7,1,NONE,1700\n12,31,1400,1600\n")
+
+F.INTERPOLATE_GAPS_UP_TO_DAYS = 0
 curves = F.loadFiroConfig(sparse)
-check("sparse: both projects present", sorted(curves.keys()), ["Cougar", "Detroit"])
-check("sparse: Detroit 01Apr breakpoint", F.getTargetElev(curves["Detroit"], HecTime(datetime.date(2023,4,1))), 1500.0)
-check("sparse: Cougar skips blank 01Jan, flat before 01Apr",
-      F.getTargetElev(curves["Cougar"], HecTime(datetime.date(2023,1,1))), 1600.0)
+check("both columns present", sorted(curves.keys()), ["Cougar", "Detroit"])
+check("a day with a number has a target",
+      F.getTargetElev(curves["Detroit"], HecTime(datetime.date(2023, 4, 1))), 1500.0)
+check("a blank day has NO target",
+      F.getTargetElev(curves["Detroit"], HecTime(datetime.date(2023, 2, 1))), None)
+check("a NONE day has NO target",
+      F.getTargetElev(curves["Detroit"], HecTime(datetime.date(2023, 7, 1))), None)
+check("blank first row -> Cougar has no target 01Jan",
+      F.getTargetElev(curves["Cougar"], HecTime(datetime.date(2023, 1, 1))), None)
+check("Detroit target-day count", F.countTargetDays(curves["Detroit"]), 3)
+
+# Opt back in to bridging gaps, the way a ResSim zone would
+F.INTERPOLATE_GAPS_UP_TO_DAYS = 365
+curves = F.loadFiroConfig(sparse)
+check("with bridging: 01Feb interpolates between 01Jan and 01Apr",
+      1400.0 < F.getTargetElev(curves["Detroit"], HecTime(datetime.date(2023, 2, 1))) < 1500.0,
+      True)
+check("with bridging: every day has a target",
+      F.countTargetDays(curves["Detroit"]), 365)
+check("with bridging: wraps across 31Dec",
+      F.getTargetElev(curves["Cougar"], HecTime(datetime.date(2023, 1, 1))) is not None, True)
+F.INTERPOLATE_GAPS_UP_TO_DAYS = 0
+
+print("\n=== 6b. Column-name matching and bad values ===")
+ws = os.path.join(_HERE, "_ws_tmp.csv")
+open(ws, "w").write("Month,Day,Detroit ,  hills creek\n1,1,1400,900\n12,31,1400,900\n")
+wsCurves = F.loadFiroConfig(ws)
+cols = list(wsCurves.keys())
+check("trailing space in header still matches",
+      F._findColumnForReservoir("Detroit", cols), "Detroit ")
+check("different capitalization still matches",
+      F._findColumnForReservoir("Hills Creek", cols), "  hills creek")
+check("a genuinely absent name does not match",
+      F._findColumnForReservoir("Cougar", cols), None)
+os.remove(ws)
+
+bad = os.path.join(_HERE, "_bad_tmp.csv")
+open(bad, "w").write("Month,Day,Detroit\n1,1,1400\n1,2,fourteen hundred\n")
+try:
+    F.loadFiroConfig(bad)
+    check("a typo in an elevation raises", False, True)
+except AssertionError as e:
+    check("a typo in an elevation raises, not silently uncontrolled",
+          "fourteen hundred" in str(e), True)
+os.remove(bad)
 
 os.remove(sparse)
 
@@ -250,6 +305,7 @@ netR = PinnedNetwork({"Elev": TS(prev=1450.0), "Stor": TS(prev=1450000.0),
 ruleR = Rule("Detroit")
 
 F.MODE, F.GLIDE_DAYS = "BOTH", 1.0
+F.INTERPOLATE_GAPS_UP_TO_DAYS = 365   # 2-row test files, bridge the year
 writeCurve("1400.0", 1000000000)
 F.initRuleScript(ruleR, netR)
 ov1 = F.runRuleScript(ruleR, netR, RTS(datetime.date(2023, 1, 15)))
@@ -318,6 +374,7 @@ ringing = closedLoop(mode="DRAFT_ONLY", glide=3.0)
 check("settles instead of ringing (peak-to-peak < 0.1 ft)", ringing < 0.1, True)
 print("    peak-to-peak over last 12 days: %.3f ft" % ringing)
 F.MODE, F.GLIDE_DAYS = "DRAFT_ONLY", 3.0
+F.INTERPOLATE_GAPS_UP_TO_DAYS = 0
 os.remove(reloadCsv)
 
 print("\n" + ("ALL PASSED" if not fails else "FAILURES: %s" % fails))
