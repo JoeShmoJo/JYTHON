@@ -19,7 +19,35 @@ RULES_DIR = os.path.dirname(_HERE)
 SCRIPTS_DIR = os.path.dirname(RULES_DIR)
 sys.path.insert(0, SCRIPTS_DIR)
 sys.path.insert(0, RULES_DIR)
-CONFIG_CSV = os.path.join(RULES_DIR, "FIRO_SPACEConfig.csv")
+SHIPPED_CSV = os.path.join(RULES_DIR, "FIRO_SPACEConfig.csv")
+CONFIG_CSV = os.path.join(_HERE, "_fixture_tmp.csv")   # generated below
+
+def writeFixture():
+    """
+    A known two-project curve, so the behaviour tests do not depend on whatever
+    elevations happen to be in the shipped config file.
+    Detroit: 1484.5 through 01Feb, ramp to 1558.5 by 01May, hold to 31Aug,
+    ramp back down by 30Nov. Cougar: flat 1600.
+    """
+    import datetime as _dt
+    def doy(m, d):
+        return _dt.date(2001, m, d).timetuple().tm_yday
+    shape = [(doy(1, 1), 1484.5), (doy(2, 1), 1484.5), (doy(5, 1), 1558.5),
+             (doy(8, 31), 1558.5), (doy(11, 30), 1484.5), (doy(12, 31), 1484.5)]
+    def interp(x):
+        for (x1, y1), (x2, y2) in zip(shape, shape[1:]):
+            if x1 <= x <= x2:
+                return y1 + (y2 - y1) * (x - x1) / float(x2 - x1)
+        return shape[-1][1]
+    out = ["# generated fixture", "Month,Day,Detroit,Cougar"]
+    for n in range(1, 366):
+        date = _dt.date(2001, 1, 1) + _dt.timedelta(days=n - 1)
+        out.append("%d,%d,%.4f,1600.0" % (date.month, date.day, interp(n)))
+    fh = open(CONFIG_CSV, "w")
+    fh.write("\n".join(out) + "\n")
+    fh.close()
+
+writeFixture()
 
 # ---- stub hec.heclib.util.HecTime -------------------------------------------
 class HecTime(object):
@@ -92,7 +120,9 @@ class Network(object):
     def getStateVariable(self, name):
         raise RuntimeError("no such state variable")   # exercises the fallback path
     def makeAbsolutePathFromWatershed(self, rel):
-        return os.path.join(os.path.dirname(SCRIPTS_DIR), rel)
+        # Behaviour tests run against the generated fixture, never the shipped
+        # config, so editing the real curve cannot break them.
+        return CONFIG_CSV
     def printMessage(self, m):
         self.messages.append(m)
 
@@ -130,7 +160,7 @@ def check(label, got, want, tol=1e-6):
     if not ok:
         fails.append(label)
 
-print("=== 1. CSV loads and interpolates ===")
+print("=== 1. CSV loads and interpolates (generated fixture) ===")
 net = Network()
 rule = Rule("Detroit")
 F.initRuleScript(rule, net)
@@ -142,8 +172,20 @@ check("Detroit 01Jun (summer)", F.getTargetElev(curve, HecTime(datetime.date(202
 frac = (60.0 - 32.0) / (121.0 - 32.0)
 check("Detroit 01Mar (mid-refill)", F.getTargetElev(curve, HecTime(datetime.date(2023,3,1))),
       1484.5 + frac * (1558.5 - 1484.5), 0.05)  # CSV stores 1 decimal place
-check("all 5 projects loaded", len(F.loadFiroConfig(
-    CONFIG_CSV)), 5)
+check("both fixture projects loaded", len(F.loadFiroConfig(CONFIG_CSV)), 2)
+
+print("\n=== 1b. The shipped config file still loads ===")
+shipped = F.loadFiroConfig(SHIPPED_CSV)
+check("shipped config has reservoir columns", len(shipped) > 0, True)
+thin = []
+for name in sorted(shipped.keys()):
+    days = F.countTargetDays(shipped[name])
+    if days < 365:
+        thin.append("%s=%d" % (name, days))
+check("every shipped column has most of the year covered",
+      [n for n in shipped if F.countTargetDays(shipped[n]) < 300], [])
+print("    %d projects; columns not covering all 365 days: %s"
+      % (len(shipped), ", ".join(thin) if thin else "none"))
 
 print("\n=== 2. Leap year does not shift the curve ===")
 check("01Mar 2024 (leap) == 01Mar 2023",
@@ -377,5 +419,6 @@ F.MODE, F.GLIDE_DAYS = "DRAFT_ONLY", 3.0
 F.INTERPOLATE_GAPS_UP_TO_DAYS = 0
 os.remove(reloadCsv)
 
+os.remove(CONFIG_CSV)
 print("\n" + ("ALL PASSED" if not fails else "FAILURES: %s" % fails))
 sys.exit(1 if fails else 0)
