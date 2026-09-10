@@ -95,7 +95,7 @@ DEADBAND_FT = 0.10
 #                 This actively competes with minimum-flow rules and is the more
 #                 aggressive operation. Try DRAFT_ONLY first.
 # "FILL_ONLY"  -> MAX release only. Never forces a draft.
-MODE = "DRAFT_ONLY"
+MODE = "BOTH"
 
 # Per-reservoir overrides of MODE, e.g. {"Lookout Point": "DRAFT_ONLY"}
 MODE_BY_RESERVOIR = {}
