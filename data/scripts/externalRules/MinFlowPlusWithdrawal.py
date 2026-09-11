@@ -24,6 +24,17 @@ runRuleScript (every timestep):
     its withdrawal released. Only when BOTH are absent does the rule stand down
     and let the rest of the stack set the release.
 
+    A reservoir listed in TARGET_MET_AT meets its target at a DOWNSTREAM
+    project instead, and its release is backed out of a mass balance there:
+
+        release = target + downstream fill rate - downstream local inflow
+
+    Green Peter is the only one, because its target is met out of Foster and the
+    South Santiam arrives in between. The fill rate is read from Foster's RULE
+    CURVE rather than from where Foster's pool actually sits, which keeps this
+    feedforward: it tracks a fixed schedule and so cannot oscillate the way a
+    rule chasing a storage error does.
+
     This rule only sets a floor. Other rules in the stack are expected to
     constrain the release further.
 
@@ -78,6 +89,52 @@ DEFAULT_MIN_FLOW_CSV = "scripts/externalRules/MinFlowConfig.csv"
 WITHDRAWAL_KEY = "withdrawalConfigCSV"
 DEFAULT_WITHDRAWAL_CSV = "scripts/externalRules/WithdrawalConfig.csv"
 
+# Reservoirs whose target is actually measured at a DOWNSTREAM project, keyed by
+# the reservoir THIS RULE IS ATTACHED TO. Everything else releases its own total
+# directly and never touches this.
+#
+# Green Peter is the only entry today. Its target is met out of Foster, so the
+# Green Peter release has to be backed out of a mass balance on Foster rather
+# than set to the target itself:
+#
+#     release = target + downstream fill rate - downstream local inflow
+#
+# The fill rate comes from the downstream project's RULE CURVE, not from where
+# its pool actually sits. That makes this term feedforward: it reads a fixed
+# schedule, so unlike a rule that chases a storage error it cannot oscillate.
+# The cost is that it does not pull the downstream pool back onto its curve --
+# see DOWNSTREAM_REFILL_DAYS.
+#
+#   reservoir           the downstream project to balance
+#   localFlowElement    ResSim element holding its cumulative local flow
+#   localFlowParameter  parameter name on that element
+#
+# The local flow pathname is the one used in
+# Willamette/StateVars/Cumloc_Jefferson_Init.py, where it is described as the
+# locals from Green Peter to Foster.
+TARGET_MET_AT = {
+    "Green Peter": {
+        "reservoir": "Foster",
+        "localFlowElement": "Foster_IN",
+        "localFlowParameter": "FLOW-CUMLOC",
+    },
+}
+
+# 0 disables this, which is the default and the behavior asked for.
+#
+# When the downstream pool drifts BELOW its rule curve, nothing in this rule
+# brings it back: the release tracks the curve's slope from wherever the pool
+# happens to sit. A pool ABOVE its curve is a different story -- other rules in
+# the stack set a higher minimum and push it back down -- so only the low side
+# is unhandled, and only until a storm refills it.
+#
+# Set this to a number of days to close that gap: when the downstream pool is
+# below its rule curve, the shortfall is spread over that many days and ADDED to
+# the release. It is deliberately one-sided and only ever raises the minimum, so
+# it cannot fight the rules that handle the high side. Start around 10 if you
+# want it gentle; smaller is more aggressive.
+DOWNSTREAM_REFILL_DAYS = 0
+
 # False: a reservoir with no numbers in either file is simply never controlled,
 # and the compute continues. True: that is a hard error that stops the compute.
 REQUIRE_RESERVOIR_IN_CONFIG = False
@@ -93,6 +150,8 @@ DEBUG = False
 ################################################################################
 # CONSTANTS
 
+CFSDAY_TO_AF = (60 * 60 * 24) / 43560.0  # multiply a daily cfs by this to get ac-ft (~1.98)
+
 # Column headers in the config CSVs that are not reservoir names
 NON_RESERVOIR_COLUMNS = ["MONTH", "DAY", "NOTES", ""]
 
@@ -100,6 +159,21 @@ DAYS_IN_YEAR = 365
 
 ################################################################################
 # FUNCTION DEFINITIONS
+
+
+def _ok(v):
+    """Return float(v) if it is usable, or None if it is missing/NaN/a DSS sentinel."""
+    try:
+        f = float(v)
+    except:
+        return None
+    # NaN is the only value not equal to itself. Avoids needing math.isnan.
+    if f != f:
+        return None
+    # HEC/DSS missing-value sentinels are around 1e38
+    if abs(f) > 1e30:
+        return None
+    return f
 
 
 def _getResvName(currentRule):
@@ -245,6 +319,75 @@ def getTotalMinFlow(minFlowTable, withdrawalTable, hTime):
     return _total(minFlowTable, withdrawalTable, _genericDayOfYear(hTime))
 
 
+def _getLocalFlowTS(network, spec):
+    """
+    The downstream project's cumulative local inflow time series.
+
+    Raises rather than falling back, because without this the mass balance is
+    wrong in a way that looks plausible: the release would be short by exactly
+    the local inflow.
+    """
+    try:
+        return network.getRssRun().getTSRecordByPathParts(
+            spec["localFlowElement"], spec["localFlowParameter"])
+    except:
+        raise AssertionError(
+            "MinFlowPlusWithdrawal could not read the local inflow time series "
+            "'%s' / '%s' needed to balance releases through %s. Check the "
+            "element name against the Willamette watershed, or clear the entry "
+            "in TARGET_MET_AT to release the target directly instead."
+            % (spec["localFlowElement"], spec["localFlowParameter"],
+               spec["reservoir"]))
+
+
+def _releaseForDownstreamTarget(network, currentRuntimestep, spec, target,
+                                localFlowTS):
+    """
+    Back the release out of a mass balance on the downstream project:
+
+        release = target + rule curve fill rate - local inflow
+
+    Filling raises the release, drafting lowers it, and local inflow that
+    already arrives below this project is credited against it.
+
+    :return: (release in cfs, fill rate in cfs, local inflow in cfs). The two
+             components come back only so the compute log and DEBUG can show
+             the arithmetic; a caller that just wants the answer takes [0].
+    """
+    downstreamName = spec["reservoir"]
+    timeStepMinutes = currentRuntimestep.getTimeStepMinutes()
+    cfsToAcFt = CFSDAY_TO_AF * timeStepMinutes / 1440.0
+
+    # Fill or draft rate implied by the downstream rule curve. Stor-ZONE gives
+    # the curve directly in storage, so no elevation conversion is needed --
+    # same read as DraftToRC.py.
+    rcStorTS = network.getTimeSeries(
+        "Reservoir", downstreamName, "Rule Curve", "Stor-ZONE")
+    rcStorNow = _ok(rcStorTS.getCurrentValue(currentRuntimestep))
+    rcStorPrev = _ok(rcStorTS.getPreviousValue(currentRuntimestep))
+    fillCfs = 0.0
+    if rcStorNow is not None and rcStorPrev is not None:
+        fillCfs = (rcStorNow - rcStorPrev) / cfsToAcFt
+
+    # Local inflow arriving between here and the downstream project
+    localCfs = _ok(localFlowTS.getCurrentValue(currentRuntimestep))
+    if localCfs is None:
+        localCfs = 0.0
+
+    # Optional one-sided pull back onto the curve. Only ever adds.
+    if DOWNSTREAM_REFILL_DAYS > 0 and rcStorNow is not None:
+        actualStor = _ok(network.getTimeSeries(
+            "Reservoir", downstreamName, "Pool", "Stor"
+        ).getPreviousValue(currentRuntimestep))
+        if actualStor is not None and actualStor < rcStorNow:
+            stepsInGlide = DOWNSTREAM_REFILL_DAYS * 1440.0 / timeStepMinutes
+            if stepsInGlide < 1.0:
+                stepsInGlide = 1.0
+            fillCfs += (rcStorNow - actualStor) / (cfsToAcFt * stepsInGlide)
+
+    return target + fillCfs - localCfs, fillCfs, localCfs
+
+
 def _fileStamp(fileName):
     """
     A string that changes whenever the file changes: "<modified time>|<size>".
@@ -320,6 +463,24 @@ def _initialize(currentRule, network):
             raise AssertionError(message)
         network.printMessage(message)
 
+    # Only the reservoirs listed in TARGET_MET_AT need the downstream series,
+    # and looking it up once here keeps it off the per-timestep path.
+    # Only set when there IS one. varPut of a None goes through Java, and
+    # varExists is the idiom this file already uses to ask.
+    spec = TARGET_MET_AT.get(resvName)
+    if spec is not None:
+        currentRule.varPut("downstreamSpec", spec)
+        currentRule.varPut("localFlowTS", _getLocalFlowTS(network, spec))
+        network.printMessage(
+            "MinFlowPlusWithdrawal: %s releases to meet its target at %s. Its "
+            "release is target + %s rule curve fill rate - local inflow from "
+            "%s/%s.%s"
+            % (resvName, spec["reservoir"], spec["reservoir"],
+               spec["localFlowElement"], spec["localFlowParameter"],
+               "" if DOWNSTREAM_REFILL_DAYS <= 0 else
+               " Refill toward the curve is spread over %g days."
+               % DOWNSTREAM_REFILL_DAYS))
+
     currentRule.varPut("minFlowTable", minFlowTable)
     currentRule.varPut("withdrawalTable", withdrawalTable)
     currentRule.varPut("minFlowPath", minFlowPath)
@@ -388,15 +549,34 @@ def runRuleScript(currentRule, network, currentRuntimestep):
         opValue.init(OpRule.RULETYPE_MIN, 0.0)
         return opValue
 
+    # Green Peter and any other reservoir in TARGET_MET_AT meets its target at a
+    # downstream project, so its own release comes out of a mass balance there
+    # rather than being the target itself.
+    spec = None
+    if currentRule.varExists("downstreamSpec"):
+        spec = currentRule.varGet("downstreamSpec")
+    fillCfs = None
+    localCfs = None
+    if spec is not None:
+        totalFlow, fillCfs, localCfs = _releaseForDownstreamTarget(
+            network, currentRuntimestep, spec, totalFlow,
+            currentRule.varGet("localFlowTS"))
+
+    # A local inflow larger than the target already satisfies it downstream, so
+    # this project is not asked to release anything on top.
     totalFlow = max(totalFlow, 0.0)
 
     if DEBUG:
         dayOfYear = _genericDayOfYear(hTime)
+        detail = ""
+        if spec is not None:
+            detail = " via %s (fill=%+.0f local=%.0f)" % (
+                spec["reservoir"], fillCfs, localCfs)
         network.printMessage(
-            "MinFlowPlusWithdrawal %s %s: minFlow=%s withdrawal=%s MIN=%.0f"
+            "MinFlowPlusWithdrawal %s %s: minFlow=%s withdrawal=%s%s MIN=%.0f"
             % (_getResvName(currentRule), hTime.dateAndTime(),
                _fmtFlow(minFlowTable[dayOfYear]),
-               _fmtFlow(withdrawalTable[dayOfYear]), totalFlow))
+               _fmtFlow(withdrawalTable[dayOfYear]), detail, totalFlow))
 
     opValue.init(OpRule.RULETYPE_MIN, totalFlow)
     return opValue
