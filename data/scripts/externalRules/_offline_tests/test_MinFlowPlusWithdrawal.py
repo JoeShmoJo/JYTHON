@@ -110,11 +110,36 @@ _mod("NWDJyLib.cTimes", getHecTimeFromRuntimestep=lambda rts: rts.getHecTime())
 import MinFlowPlusWithdrawal as M  # noqa: E402
 
 # ---- fake ResSim objects -----------------------------------------------------
+class TS(object):
+    def __init__(self, prev=None, cur=None):
+        self._prev, self._cur = prev, cur
+    def getPreviousValue(self, rts):
+        return self._prev
+    def getCurrentValue(self, rts):
+        return self._cur
+
+class RssRun(object):
+    def __init__(self, network):
+        self.network = network
+    def getTSRecordByPathParts(self, element, parameter):
+        key = (element, parameter)
+        if key not in self.network.records:
+            raise RuntimeError("no such record %s" % (key,))
+        return self.network.records[key]
+
 class Network(object):
     """Resolves the two config keys to the fixtures unless told to use shipped."""
-    def __init__(self, useShipped=False):
+    def __init__(self, useShipped=False, ts=None, records=None):
         self.useShipped = useShipped
         self.messages = []
+        # {(resvName, group, param): TS}
+        self.ts = ts or {}
+        # {(element, parameter): TS}
+        self.records = records if records is not None else {}
+    def getTimeSeries(self, kind, resvName, group, param):
+        return self.ts[(resvName, group, param)]
+    def getRssRun(self):
+        return RssRun(self)
     def getStateVariable(self, name):
         raise RuntimeError("no such state variable")   # exercises the fallback path
     def makeAbsolutePathFromWatershed(self, rel):
@@ -214,8 +239,8 @@ check("Dorena 15Mar has both (150 + 25)", op.value, 175.0)
 
 ################################################################################
 section("4. a project in neither file is not an error")
-op, net = runDay("Green Peter", datetime.date(2020, 7, 15))
-check("Green Peter gets a non-binding MIN 0", op.value, 0.0)
+op, net = runDay("Blue River", datetime.date(2020, 7, 15))
+check("Blue River gets a non-binding MIN 0", op.value, 0.0)
 check("the compute is told why", "no numbers in either config file"
       in " ".join(net.messages), True)
 
@@ -330,9 +355,8 @@ check("shipped Foster gets a non-binding MIN 0", op.value, 0.0)
 check("and the compute log says why",
       "no numbers in either config file" in " ".join(net.messages), True)
 
-op, _ = runDay("Green Peter", datetime.date(2020, 7, 15), Network(useShipped=True))
-check("shipped Green Peter 15Jul = min flow 800 + both demands 308",
-      op.value, 1108.0)
+check("shipped Green Peter 15Jul target = min flow 800 + both demands 308",
+      shippedMf["Green Peter"][196] + shippedWd["Green Peter"][196], 1108.0)
 
 # Step-hold expansion of BiOpMINFLOW.csv: DET is 1000 from 01Feb and steps to
 # 1500 on 16Mar, so 15Mar must still be 1000.
@@ -346,6 +370,105 @@ op, _ = runDay("Detroit", datetime.date(2020, 7, 15), Network(useShipped=True))
 check("shipped Detroit 15Jul = min flow 1000 + withdrawal 336",
       op.value, det[196] + shippedWd["Detroit"][196])
 check("and that is a real number, not zero", op.value > 0, True)
+
+
+################################################################################
+section("10. Green Peter backs its release out of a mass balance on Foster")
+
+# One foot of Foster is 1000 ac-ft in these fixtures. At a daily timestep,
+# 1 cfs held for a day is 1.98347 ac-ft, so a rule curve rise of 198.347 ac-ft
+# over one step is a fill rate of exactly 100 cfs.
+AF_PER_CFS_DAY = M.CFSDAY_TO_AF
+
+def fosterNetwork(fillCfs=0.0, localCfs=0.0, actualStor=None, rcStor=100000.0):
+    """A network where Foster's rule curve moves at fillCfs and locals are localCfs."""
+    rcPrev = rcStor - fillCfs * AF_PER_CFS_DAY
+    ts = {
+        ("Foster", "Rule Curve", "Stor-ZONE"): TS(prev=rcPrev, cur=rcStor),
+        ("Foster", "Pool", "Stor"): TS(prev=actualStor, cur=actualStor),
+    }
+    records = {("Foster_IN", "FLOW-CUMLOC"): TS(cur=localCfs)}
+    return Network(useShipped=True, ts=ts, records=records)
+
+# Target at Foster on 15Jul is min flow 800 + demand 308 = 1108.
+TARGET_15JUL = 1108.0
+
+op, net = runDay("Green Peter", datetime.date(2020, 7, 15),
+                 fosterNetwork(fillCfs=0.0, localCfs=0.0))
+check("no fill and no local: release is just the target", op.value, TARGET_15JUL)
+
+op, _ = runDay("Green Peter", datetime.date(2020, 7, 15),
+               fosterNetwork(fillCfs=0.0, localCfs=200.0))
+check("local inflow is credited against the release",
+      op.value, TARGET_15JUL - 200.0)
+
+# The worked example: Foster filling at 100 cfs with 200 cfs of local.
+op, _ = runDay("Green Peter", datetime.date(2020, 7, 15),
+               fosterNetwork(fillCfs=100.0, localCfs=200.0))
+check("filling RAISES the release: 1108 + 100 - 200",
+      op.value, TARGET_15JUL + 100.0 - 200.0)
+
+op, _ = runDay("Green Peter", datetime.date(2020, 7, 15),
+               fosterNetwork(fillCfs=-100.0, localCfs=200.0))
+check("drafting LOWERS the release: 1108 - 100 - 200",
+      op.value, TARGET_15JUL - 100.0 - 200.0)
+
+# Closing the loop: what Green Peter releases, plus the local, minus what Foster
+# keeps, must equal the target passing Foster.
+gpr = op.value
+check("mass balance closes on Foster",
+      gpr + 200.0 - (-100.0), TARGET_15JUL)
+
+op, _ = runDay("Green Peter", datetime.date(2020, 7, 15),
+               fosterNetwork(fillCfs=0.0, localCfs=5000.0))
+check("local larger than the target does not ask for a negative release",
+      op.value, 0.0)
+
+# Missing rule curve data (the first timestep) must not poison the release.
+missing = fosterNetwork(fillCfs=0.0, localCfs=100.0)
+missing.ts[("Foster", "Rule Curve", "Stor-ZONE")] = TS(prev=None, cur=None)
+op, _ = runDay("Green Peter", datetime.date(2020, 7, 15), missing)
+check("no rule curve data means no fill term, not a crash",
+      op.value, TARGET_15JUL - 100.0)
+
+# Every other project releases its own total and never touches Foster.
+op, _ = runDay("Detroit", datetime.date(2020, 7, 15), Network(useShipped=True))
+check("Detroit is unaffected by the Green Peter special case",
+      op.value > 0, True)
+
+# A missing local inflow series is a hard error, not a quiet under-release.
+noLocal = fosterNetwork()
+noLocal.records = {}
+try:
+    runDay("Green Peter", datetime.date(2020, 7, 15), noLocal)
+    check("a missing local inflow series raises", False, True)
+except AssertionError as exc:
+    check("the error names the pathname it could not read",
+          "Foster_IN" in str(exc) and "FLOW-CUMLOC" in str(exc), True)
+
+
+################################################################################
+section("11. the optional one-sided refill toward the curve")
+
+check("refill is off by default", M.DOWNSTREAM_REFILL_DAYS, 0)
+
+M.DOWNSTREAM_REFILL_DAYS = 10
+try:
+    # Foster 1000 ac-ft below its curve, spread over 10 days at a daily step,
+    # is 100 ac-ft/day, or 100/1.98347 = 50.4 cfs added to the release.
+    op, _ = runDay("Green Peter", datetime.date(2020, 7, 15),
+                   fosterNetwork(localCfs=0.0, rcStor=100000.0,
+                                 actualStor=99000.0))
+    check("below the curve ADDS to the release",
+          op.value, TARGET_15JUL + (1000.0 / 10.0) / AF_PER_CFS_DAY, tol=1e-4)
+
+    op, _ = runDay("Green Peter", datetime.date(2020, 7, 15),
+                   fosterNetwork(localCfs=0.0, rcStor=100000.0,
+                                 actualStor=101000.0))
+    check("above the curve changes nothing, the rest of the stack handles it",
+          op.value, TARGET_15JUL)
+finally:
+    M.DOWNSTREAM_REFILL_DAYS = 0
 
 
 ################################################################################
