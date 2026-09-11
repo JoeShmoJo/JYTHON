@@ -36,6 +36,15 @@ NoDraftConfigCSV: "scripts/externalRules/NoDraftConfig.csv"
 firoSpaceConfigCSV: "scripts/externalRules/FIRO_SPACEConfig.csv"
 
 ###########################################
+#MinFlowPlusWithdrawal
+#Two generic-year daily flow schedules read by
+#scripts/externalRules/MinFlowPlusWithdrawal.py. The rule adds the two together
+#and sets the total as the minimum release.
+
+minFlowConfigCSV: "scripts/externalRules/MinFlowConfig.csv"
+withdrawalConfigCSV: "scripts/externalRules/WithdrawalConfig.csv"
+
+###########################################
 #Salem/Albany mainstem flow augmentation
 
 #Method options:

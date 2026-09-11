@@ -1,0 +1,23 @@
+# Paste this into the ResSim scripted rule editor for the reservoir.
+#
+# It is only a wrapper. All of the logic lives in
+# scripts/externalRules/MinFlowPlusWithdrawal.py, so edits to that file take
+# effect on the next compute without touching the rule in the model.
+#
+# The reload() is what makes that true: ResSim keeps imported modules alive for
+# the life of the session, so without it an edited .py is not picked up until
+# ResSim restarts.
+
+import sys
+
+def initRuleScript(currentRule, network):
+    modulePath = network.makeAbsolutePathFromWatershed("scripts")
+    if not modulePath in sys.path:
+        sys.path.append(modulePath)
+    from externalRules import MinFlowPlusWithdrawal
+    reload(MinFlowPlusWithdrawal)
+    return MinFlowPlusWithdrawal.initRuleScript(currentRule, network)
+
+def runRuleScript(currentRule, network, currentRuntimestep):
+    from externalRules import MinFlowPlusWithdrawal
+    return MinFlowPlusWithdrawal.runRuleScript(currentRule, network, currentRuntimestep)
