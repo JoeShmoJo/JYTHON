@@ -1,68 +1,22 @@
 # -*- coding: utf-8 -*-
 """
 MinFlowPlusWithdrawal
-Scripted rule that sets the minimum release for a reservoir to the sum of a
-minimum flow requirement and a withdrawal demand, both read from external CSVs
-on a generic-year daily schedule.
+Sets the minimum release to a minimum flow requirement plus a withdrawal demand,
+both read from generic-year daily CSVs in the FIRO_SPACEConfig.csv layout.
 
-How it works
-------------
-initRuleScript (once per compute):
-    Reads two CSVs that share the FIRO_SPACEConfig.csv layout -- one row per day
-    of a generic year, one column per reservoir -- and finds the column matching
-    the reservoir this rule is attached to in each of them.
+Green Peter is a special case. Its target is met at Foster, with the South
+Santiam arriving in between, so its release is backed out of a mass balance on
+Foster instead:
 
-runRuleScript (every timestep):
-    Adds today's two numbers and sets
+    release = target + Foster rule curve fill rate - Foster local inflow
 
-        RULETYPE_MIN = minFlow + withdrawal
-
-    The two files are independent. A reservoir may appear in one and not the
-    other, and a day may be filled in one and blank in the other. A value that
-    is missing on a given day contributes ZERO to the sum rather than voiding
-    it, so a project with a withdrawal demand but no minimum flow still gets
-    its withdrawal released. Only when BOTH are absent does the rule stand down
-    and let the rest of the stack set the release.
-
-    A reservoir listed in TARGET_MET_AT meets its target at a DOWNSTREAM
-    project instead, and its release is backed out of a mass balance there:
-
-        release = target + downstream fill rate - downstream local inflow
-
-    Green Peter is the only one, because its target is met out of Foster and the
-    South Santiam arrives in between. The fill rate is read from Foster's RULE
-    CURVE rather than from where Foster's pool actually sits, which keeps this
-    feedforward: it tracks a fixed schedule and so cannot oscillate the way a
-    rule chasing a storage error does.
-
-    This rule only sets a floor. Other rules in the stack are expected to
-    constrain the release further.
-
-Config CSV format (wide, one row per day of a generic year), same as FIRO_SPACE:
+Config CSV format (one row per day of a generic year):
     Month,Day,Detroit,Hills Creek,Lookout Point,...
     1,1,1200,400,1200,...
-    1,2,1200,,1200,...
 
-    Column headers are matched to ResSim reservoir names ignoring surrounding
-    whitespace and letter case, so a stray space after a name in the header does
-    not silently hide the column.
-
-    A BLANK cell means that file asks for nothing on that day. Blank is NOT the
-    same as 0: a 0 in the minimum flow file with a blank withdrawal still counts
-    as a requirement of 0 and the rule binds at 0, whereas two blanks mean the
-    rule does not bind at all.
-
-    A reservoir with no numbers in either file is simply never controlled. That
-    is not an error, so one pair of files can serve a whole watershed while only
-    some projects use the rule. FOSTER IS ONE OF THESE: Green Peter and Foster
-    operate as a system and every release comes out of Green Peter, so Foster's
-    withdrawal demand lives in the Green Peter column and Foster itself is blank
-    in both files. Attaching this rule at Foster does nothing, by design.
-
-    Lines starting with # are comments. A "Notes" column is ignored.
-
-    Both files are generated -- see the header inside each one. Edit the sources
-    in data/ and rerun the generator rather than editing them by hand.
+A BLANK cell means that file asks for nothing that day, and contributes zero to
+the sum. Only when BOTH files are blank does the rule stand down. Blank is not
+the same as 0: a 0 binds at zero, two blanks do not bind at all.
 
 Author: Josh Roach
 """
@@ -80,79 +34,34 @@ from NWDJyLib.cTimes import getHecTimeFromRuntimestep
 ################################################################################
 # USER INPUT
 
-# alt_config keys holding the paths to the two config CSVs. If a key is not
-# present, the matching default below is used, so this rule runs before
-# alt_config is edited.
+#alt_config keys holding the config paths, and the defaults used if absent
 MIN_FLOW_KEY = "minFlowConfigCSV"
 DEFAULT_MIN_FLOW_CSV = "scripts/externalRules/MinFlowConfig.csv"
-
 WITHDRAWAL_KEY = "withdrawalConfigCSV"
 DEFAULT_WITHDRAWAL_CSV = "scripts/externalRules/WithdrawalConfig.csv"
 
-# Reservoirs whose target is actually measured at a DOWNSTREAM project, keyed by
-# the reservoir THIS RULE IS ATTACHED TO. Everything else releases its own total
-# directly and never touches this.
-#
-# Green Peter is the only entry today. Its target is met out of Foster, so the
-# Green Peter release has to be backed out of a mass balance on Foster rather
-# than set to the target itself:
-#
-#     release = target + downstream fill rate - downstream local inflow
-#
-# The fill rate comes from the downstream project's RULE CURVE, not from where
-# its pool actually sits. That makes this term feedforward: it reads a fixed
-# schedule, so unlike a rule that chases a storage error it cannot oscillate.
-# The cost is that it does not pull the downstream pool back onto its curve --
-# see DOWNSTREAM_REFILL_DAYS.
-#
-#   reservoir           the downstream project to balance
-#   localFlowElement    ResSim element holding its cumulative local flow
-#   localFlowParameter  parameter name on that element
-#
-# The local flow pathname is the one used in
-# Willamette/StateVars/Cumloc_Jefferson_Init.py, where it is described as the
-# locals from Green Peter to Foster.
-TARGET_MET_AT = {
-    "Green Peter": {
-        "reservoir": "Foster",
-        "localFlowElement": "Foster_IN",
-        "localFlowParameter": "FLOW-CUMLOC",
-    },
-}
+#Reservoirs whose target is met at a DOWNSTREAM project, keyed by the reservoir
+#this rule is attached to. The fill rate is read from the downstream RULE CURVE,
+#not from where its pool actually sits, so the term is feedforward and cannot
+#oscillate. Local flow pathname is the one from Cumloc_Jefferson_Init.py.
+TARGET_MET_AT = {"Green Peter": {"reservoir": "Foster",
+                                 "localFlowElement": "Foster_IN",
+                                 "localFlowParameter": "FLOW-CUMLOC"}}
 
-# 0 disables this, which is the default and the behavior asked for.
-#
-# When the downstream pool drifts BELOW its rule curve, nothing in this rule
-# brings it back: the release tracks the curve's slope from wherever the pool
-# happens to sit. A pool ABOVE its curve is a different story -- other rules in
-# the stack set a higher minimum and push it back down -- so only the low side
-# is unhandled, and only until a storm refills it.
-#
-# Set this to a number of days to close that gap: when the downstream pool is
-# below its rule curve, the shortfall is spread over that many days and ADDED to
-# the release. It is deliberately one-sided and only ever raises the minimum, so
-# it cannot fight the rules that handle the high side. Start around 10 if you
-# want it gentle; smaller is more aggressive.
+#0 disables. Days over which to refill a downstream pool that has drifted BELOW
+#its rule curve. One-sided, so it only ever raises the minimum and cannot fight
+#the rules that push the pool back down from above.
 DOWNSTREAM_REFILL_DAYS = 0
 
-# False: a reservoir with no numbers in either file is simply never controlled,
-# and the compute continues. True: that is a hard error that stops the compute.
-REQUIRE_RESERVOIR_IN_CONFIG = False
-
-# Re-read the config CSVs mid-session whenever either changes on disk. ResSim
-# keeps rule variables and imported modules alive for the life of the session,
-# so without this an edited CSV is not picked up until ResSim restarts.
+#Re-read the CSVs mid-session whenever either changes on disk
 RELOAD_CSV_IF_CHANGED = True
 
-# Set True to print the two components and the total to the compute log each step
 DEBUG = False
 
 ################################################################################
 # CONSTANTS
+CFSDAY_TO_AF = (60*60*24)/43560.0 #Multiply a daily CFS by this constant to get acre-feet. It's about 2
 
-CFSDAY_TO_AF = (60 * 60 * 24) / 43560.0  # multiply a daily cfs by this to get ac-ft (~1.98)
-
-# Column headers in the config CSVs that are not reservoir names
 NON_RESERVOIR_COLUMNS = ["MONTH", "DAY", "NOTES", ""]
 
 DAYS_IN_YEAR = 365
@@ -162,16 +71,14 @@ DAYS_IN_YEAR = 365
 
 
 def _ok(v):
-    """Return float(v) if it is usable, or None if it is missing/NaN/a DSS sentinel."""
+    """Return float(v) if it is usable; None if missing/NaN/a DSS sentinel."""
     try:
         f = float(v)
     except:
         return None
-    # NaN is the only value not equal to itself. Avoids needing math.isnan.
-    if f != f:
+    if f != f: #NaN is the only value not equal to itself
         return None
-    # HEC/DSS missing-value sentinels are around 1e38
-    if abs(f) > 1e30:
+    if abs(f) > 1e30: #HEC/DSS missing-value sentinels are around 1e38
         return None
     return f
 
@@ -187,26 +94,21 @@ def _getResvName(currentRule):
 
 def _genericDayOfYear(hTime):
     """
-    Day of year (Jan 1 = 1) for the given date, projected onto a non-leap year.
-
-    Projecting onto 2001 first matters: calling dayOfYear() directly on a real
-    leap-year date shifts everything after Feb 28 by one day relative to the
-    generic-year schedule. Feb 29 is treated as Feb 28.
+    Day of year (Jan 1 = 1), projected onto a non-leap year.
+    Projecting onto 2001 first matters: calling dayOfYear() on a real leap-year
+    date shifts everything after Feb 28 by a day. Feb 29 is treated as Feb 28.
     """
     month = hTime.month()
     day = hTime.day()
     if month == 2 and day == 29:
         day = 28
     probe = HecTime()
-    probe.setYearMonthDay(2001, month, day, 1440)  # 1440 = 2400 hours
+    probe.setYearMonthDay(2001, month, day, 1440)
     return int(probe.dayOfYear())
 
 
 def _findColumnForReservoir(resvName, columnNames):
-    """
-    Match a ResSim reservoir name to a config column, tolerating a stray space
-    or a difference in capitalization. Returns the column name, or None.
-    """
+    """Match a reservoir name to a column, tolerating spaces and case."""
     for col in columnNames:
         if col == resvName:
             return col
@@ -217,101 +119,88 @@ def _findColumnForReservoir(resvName, columnNames):
     return None
 
 
-def _readCell(cell):
-    """
-    Interpret one cell: a float if it holds a number, or None for a blank cell,
-    which means this file asks for nothing that day. Raises for anything else,
-    so a typo in a flow is caught rather than silently becoming a blank.
-    """
-    if cell is None:
-        return None
-    text = str(cell).strip()
-    if text == "":
-        return None
-    return float(text)   # ValueError here is caught by the caller
-
-
 def countDefinedDays(dayTable):
-    """How many days of the year this reservoir actually has a number."""
+    """How many days of the year this reservoir has a number."""
     total = 0
-    for day in range(1, DAYS_IN_YEAR + 1):
+    for day in range(1, DAYS_IN_YEAR+1):
         if dayTable[day] is not None:
-            total += 1
+            total = total + 1
     return total
 
 
 def loadDailyConfig(configCSV, label):
     """
     Read a generic-year daily config CSV.
-
-    :param str configCSV: full path to the config CSV
-    :param str label: what this file holds, for error messages, e.g. "minimum flow"
-    :return: {columnName: 365-entry day table} for every reservoir column found,
-             including columns that turn out to be entirely blank
-    :rtype: dict
+    Returns {columnName: 365-entry day table}, including all-blank columns.
     """
     lines = fileOpenReadClose(configCSV)
     lines = stripOutCommentLines(lines)
     csvDict = getCSVDictReader(lines)
     csvListDict = convertCSVDictReaderToListDict(csvDict)
 
-    # .fieldnames is only populated after iterating, which the line above did
-    fieldNames = [f for f in list(csvDict.fieldnames) if f is not None]
+    #.fieldnames is only populated after iterating, which the line above did
+    fieldNames = []
+    for f in list(csvDict.fieldnames):
+        if f is not None:
+            fieldNames.append(f)
     resvNames = []
     for f in fieldNames:
         if f.strip().upper() not in NON_RESERVOIR_COLUMNS:
             resvNames.append(f)
-    if not resvNames:
-        raise AssertionError(
-            "No reservoir columns found in the %s file %s. Expected headers "
-            "like 'Month,Day,Detroit,Hills Creek,...'\nHeaders actually read: %s"
-            % (label, configCSV, ", ".join([repr(f) for f in fieldNames])))
+    if len(resvNames) == 0:
+        raise AssertionError("No reservoir columns found in the %s file %s. "
+            "Expected headers like 'Month,Day,Detroit,Hills Creek,...'. "
+            "Headers actually read: %s" %(label, configCSV, str(fieldNames)))
 
     tables = {}
     for resvName in resvNames:
-        tables[resvName] = [None] * (DAYS_IN_YEAR + 1)   # index 0 is unused
+        tables[resvName] = [None]*(DAYS_IN_YEAR+1) #index 0 is unused
 
     for rowNum, rowDict in enumerate(csvListDict):
         try:
             month = int(rowDict["Month"])
             day = int(rowDict["Day"])
-        except (ValueError, TypeError, KeyError):
-            raise AssertionError(
-                "Bad or missing Month/Day on data row %d of the %s file %s"
-                % (rowNum + 1, label, configCSV))
+        except:
+            raise AssertionError("Bad or missing Month/Day on data row %d of "
+                "the %s file %s" %(rowNum+1, label, configCSV))
         hTime = HecTime()
-        hTime.setYearMonthDay(2001, month, day, 1440)  # 2001 is a non-leap year
+        hTime.setYearMonthDay(2001, month, day, 1440) #2001 is a non-leap year
         dayOfYear = int(hTime.dayOfYear())
         for resvName in resvNames:
-            try:
-                flow = _readCell(rowDict.get(resvName))
-            except ValueError:
-                raise AssertionError(
-                    "Could not read '%s' as a %s for %s on row %d of %s. Use a "
-                    "number, or leave the cell blank to ask for nothing that day."
-                    % (rowDict.get(resvName), label, resvName, rowNum + 1, configCSV))
-            if flow is None:
+            cell = rowDict.get(resvName)
+            if cell is None:
                 continue
+            text = str(cell).strip()
+            if text == "": #blank means this file asks for nothing today
+                continue
+            try:
+                flow = float(text)
+            except:
+                raise AssertionError("Could not read '%s' as a %s for %s on row "
+                    "%d of %s. Use a number, or leave the cell blank to ask for "
+                    "nothing that day." %(text, label, resvName, rowNum+1, configCSV))
             if tables[resvName][dayOfYear] is not None:
-                raise AssertionError(
-                    "Duplicate entry for %s on month %d day %d in the %s file %s"
-                    % (resvName, month, day, label, configCSV))
+                raise AssertionError("Duplicate entry for %s on month %d day %d "
+                    "in the %s file %s" %(resvName, month, day, label, configCSV))
             tables[resvName][dayOfYear] = flow
     return tables
 
 
 def _total(minFlowTable, withdrawalTable, dayOfYear):
     """
-    The two components added together for one day of year.
-
-    A component that is blank today contributes zero. Returns None only when
-    BOTH are blank, which means the rule should not bind at all.
+    The two components added together for one day.
+    A blank component contributes zero. Returns None only when BOTH are blank,
+    which means the rule should not bind at all.
     """
     minFlow = minFlowTable[dayOfYear]
     withdrawal = withdrawalTable[dayOfYear]
     if minFlow is None and withdrawal is None:
         return None
-    return (minFlow or 0.0) + (withdrawal or 0.0)
+    if minFlow is None:
+        minFlow = 0.0
+    if withdrawal is None:
+        withdrawal = 0.0
+    return minFlow + withdrawal
 
 
 def getTotalMinFlow(minFlowTable, withdrawalTable, hTime):
@@ -319,83 +208,17 @@ def getTotalMinFlow(minFlowTable, withdrawalTable, hTime):
     return _total(minFlowTable, withdrawalTable, _genericDayOfYear(hTime))
 
 
-def _getLocalFlowTS(network, spec):
-    """
-    The downstream project's cumulative local inflow time series.
-
-    Raises rather than falling back, because without this the mass balance is
-    wrong in a way that looks plausible: the release would be short by exactly
-    the local inflow.
-    """
-    try:
-        return network.getRssRun().getTSRecordByPathParts(
-            spec["localFlowElement"], spec["localFlowParameter"])
-    except:
-        raise AssertionError(
-            "MinFlowPlusWithdrawal could not read the local inflow time series "
-            "'%s' / '%s' needed to balance releases through %s. Check the "
-            "element name against the Willamette watershed, or clear the entry "
-            "in TARGET_MET_AT to release the target directly instead."
-            % (spec["localFlowElement"], spec["localFlowParameter"],
-               spec["reservoir"]))
-
-
-def _releaseForDownstreamTarget(network, currentRuntimestep, spec, target,
-                                localFlowTS):
-    """
-    Back the release out of a mass balance on the downstream project:
-
-        release = target + rule curve fill rate - local inflow
-
-    Filling raises the release, drafting lowers it, and local inflow that
-    already arrives below this project is credited against it.
-
-    :return: (release in cfs, fill rate in cfs, local inflow in cfs). The two
-             components come back only so the compute log and DEBUG can show
-             the arithmetic; a caller that just wants the answer takes [0].
-    """
-    downstreamName = spec["reservoir"]
-    timeStepMinutes = currentRuntimestep.getTimeStepMinutes()
-    cfsToAcFt = CFSDAY_TO_AF * timeStepMinutes / 1440.0
-
-    # Fill or draft rate implied by the downstream rule curve. Stor-ZONE gives
-    # the curve directly in storage, so no elevation conversion is needed --
-    # same read as DraftToRC.py.
-    rcStorTS = network.getTimeSeries(
-        "Reservoir", downstreamName, "Rule Curve", "Stor-ZONE")
-    rcStorNow = _ok(rcStorTS.getCurrentValue(currentRuntimestep))
-    rcStorPrev = _ok(rcStorTS.getPreviousValue(currentRuntimestep))
-    fillCfs = 0.0
-    if rcStorNow is not None and rcStorPrev is not None:
-        fillCfs = (rcStorNow - rcStorPrev) / cfsToAcFt
-
-    # Local inflow arriving between here and the downstream project
-    localCfs = _ok(localFlowTS.getCurrentValue(currentRuntimestep))
-    if localCfs is None:
-        localCfs = 0.0
-
-    # Optional one-sided pull back onto the curve. Only ever adds.
-    if DOWNSTREAM_REFILL_DAYS > 0 and rcStorNow is not None:
-        actualStor = _ok(network.getTimeSeries(
-            "Reservoir", downstreamName, "Pool", "Stor"
-        ).getPreviousValue(currentRuntimestep))
-        if actualStor is not None and actualStor < rcStorNow:
-            stepsInGlide = DOWNSTREAM_REFILL_DAYS * 1440.0 / timeStepMinutes
-            if stepsInGlide < 1.0:
-                stepsInGlide = 1.0
-            fillCfs += (rcStorNow - actualStor) / (cfsToAcFt * stepsInGlide)
-
-    return target + fillCfs - localCfs, fillCfs, localCfs
+def _fmtFlow(flow):
+    """Format a flow for the log, showing days with no requirement plainly."""
+    if flow is None:
+        return "no requirement"
+    return "%.0f" %flow
 
 
 def _fileStamp(fileName):
-    """
-    A string that changes whenever the file changes: "<modified time>|<size>".
-    Size is included because a quick edit can land inside the same clock second
-    as the previous read, which would leave the modified time looking identical.
-    """
+    """A string that changes whenever the file changes: "<mtime>|<size>"."""
     try:
-        return "%f|%d" % (os.path.getmtime(fileName), os.path.getsize(fileName))
+        return "%f|%d" %(os.path.getmtime(fileName), os.path.getsize(fileName))
     except:
         return "missing"
 
@@ -404,9 +227,8 @@ def _resolveConfigPath(network, key, default):
     """Full path to a config CSV: the alt_config entry, or the default."""
     configCSV = default
     try:
-        # bare except: varGet raises a Java exception if the key is absent, and
-        # Java exceptions are not reliably caught by "except Exception" in Jython.
-        # Scripted rules may also initialize before state variables do.
+        #bare except: varGet raises a Java exception if the key is absent, and
+        #scripted rules may initialize before state variables do
         altSetupSV = network.getStateVariable("Alternative_Setup")
         configFromAlt = altSetupSV.varGet(key)
         if configFromAlt:
@@ -416,113 +238,119 @@ def _resolveConfigPath(network, key, default):
     return network.makeAbsolutePathFromWatershed(configCSV)
 
 
-def _loadOne(network, resvName, key, default, label):
-    """
-    Read one config file and pull out this reservoir's column.
-
-    :return: (365-entry day table, full path to the file, number of days
-             defined, all reservoir column names in that file)
-    """
-    csvFileName = _resolveConfigPath(network, key, default)
-    tables = loadDailyConfig(csvFileName, label)
-
-    columnNames = list(tables.keys())
-    columnNames.sort()
+def _columnTable(network, resvName, key, default, label):
+    """This reservoir's 365-entry table from one config file, blanks if absent."""
+    tables = loadDailyConfig(_resolveConfigPath(network, key, default), label)
+    columnNames = tables.keys()
     column = _findColumnForReservoir(resvName, columnNames)
     if column is None:
-        dayTable = [None] * (DAYS_IN_YEAR + 1)
-    else:
-        dayTable = tables[column]
-    return dayTable, csvFileName, countDefinedDays(dayTable), columnNames
+        return [None]*(DAYS_IN_YEAR+1)
+    return tables[column]
+
+
+def releaseForDownstreamTarget(network, currentRuntimestep, spec, target):
+    """
+    Back the release out of a mass balance on the downstream project:
+        release = target + rule curve fill rate - local inflow
+    Filling raises the release, drafting lowers it.
+    """
+    downstreamName = spec["reservoir"]
+    timeStepMinutes = currentRuntimestep.getTimeStepMinutes()
+    cfsToAcFt = CFSDAY_TO_AF*timeStepMinutes/1440.
+
+    #Stor-ZONE gives the rule curve directly as storage, same read as DraftToRC.py
+    rcStorTS = network.getTimeSeries("Reservoir", downstreamName, "Rule Curve", "Stor-ZONE")
+    rcStorNow = _ok(rcStorTS.getCurrentValue(currentRuntimestep))
+    rcStorPrev = _ok(rcStorTS.getPreviousValue(currentRuntimestep))
+    fillCfs = 0.0
+    if rcStorNow is not None and rcStorPrev is not None:
+        fillCfs = (rcStorNow-rcStorPrev)/cfsToAcFt
+
+    #A missing local series is a hard error. Defaulting it to zero would
+    #under-release by exactly the local inflow and still look plausible.
+    try:
+        localTS = network.getRssRun().getTSRecordByPathParts(
+            spec["localFlowElement"], spec["localFlowParameter"])
+    except:
+        raise AssertionError("MinFlowPlusWithdrawal could not read the local "
+            "inflow series '%s' / '%s' needed to balance releases through %s. "
+            "Check the element name, or remove the entry from TARGET_MET_AT to "
+            "release the target directly." %(spec["localFlowElement"],
+            spec["localFlowParameter"], downstreamName))
+    localCfs = _ok(localTS.getCurrentValue(currentRuntimestep))
+    if localCfs is None:
+        localCfs = 0.0
+
+    #Optional one-sided pull back onto the curve. Only ever adds.
+    if DOWNSTREAM_REFILL_DAYS > 0 and rcStorNow is not None:
+        storTS = network.getTimeSeries("Reservoir", downstreamName, "Pool", "Stor")
+        actualStor = _ok(storTS.getPreviousValue(currentRuntimestep))
+        if actualStor is not None and actualStor < rcStorNow:
+            stepsInGlide = DOWNSTREAM_REFILL_DAYS*1440./timeStepMinutes
+            if stepsInGlide < 1.0:
+                stepsInGlide = 1.0
+            fillCfs = fillCfs + (rcStorNow-actualStor)/(cfsToAcFt*stepsInGlide)
+
+    if DEBUG:
+        network.printMessage("MinFlowPlusWithdrawal via %s: target=%.0f "
+            "fill=%.0f local=%.0f release=%.0f"
+            %(downstreamName, target, fillCfs, localCfs, target+fillCfs-localCfs))
+    return target + fillCfs - localCfs
 
 
 def _initialize(currentRule, network):
-    """
-    Read both config CSVs and stash everything this rule needs on the rule
-    object. Called from initRuleScript, and again mid-compute if either file
-    changes on disk.
-    """
+    """Read both config CSVs and stash what the rule needs on the rule object."""
     resvName = _getResvName(currentRule)
+    minFlowPath = _resolveConfigPath(network, MIN_FLOW_KEY, DEFAULT_MIN_FLOW_CSV)
+    withdrawalPath = _resolveConfigPath(network, WITHDRAWAL_KEY, DEFAULT_WITHDRAWAL_CSV)
 
-    minFlowTable, minFlowPath, minFlowDays, minFlowCols = _loadOne(
-        network, resvName, MIN_FLOW_KEY, DEFAULT_MIN_FLOW_CSV, "minimum flow")
-    withdrawalTable, withdrawalPath, withdrawalDays, withdrawalCols = _loadOne(
-        network, resvName, WITHDRAWAL_KEY, DEFAULT_WITHDRAWAL_CSV, "withdrawal")
-
-    if minFlowDays == 0 and withdrawalDays == 0:
-        # Nothing for this project in either file. Not an error by default: the
-        # rule simply never controls, so one pair of files can serve a whole
-        # watershed.
-        message = (
-            "MinFlowPlusWithdrawal: %s has no numbers in either config file, so "
-            "this rule will not control it.\n  minimum flow %s has columns: %s"
-            "\n  withdrawal %s has columns: %s"
-            % (resvName, minFlowPath, ", ".join(minFlowCols),
-               withdrawalPath, ", ".join(withdrawalCols)))
-        if REQUIRE_RESERVOIR_IN_CONFIG:
-            raise AssertionError(message)
-        network.printMessage(message)
-
-    # Only the reservoirs listed in TARGET_MET_AT need the downstream series,
-    # and looking it up once here keeps it off the per-timestep path.
-    # Only set when there IS one. varPut of a None goes through Java, and
-    # varExists is the idiom this file already uses to ask.
-    spec = TARGET_MET_AT.get(resvName)
-    if spec is not None:
-        currentRule.varPut("downstreamSpec", spec)
-        currentRule.varPut("localFlowTS", _getLocalFlowTS(network, spec))
-        network.printMessage(
-            "MinFlowPlusWithdrawal: %s releases to meet its target at %s. Its "
-            "release is target + %s rule curve fill rate - local inflow from "
-            "%s/%s.%s"
-            % (resvName, spec["reservoir"], spec["reservoir"],
-               spec["localFlowElement"], spec["localFlowParameter"],
-               "" if DOWNSTREAM_REFILL_DAYS <= 0 else
-               " Refill toward the curve is spread over %g days."
-               % DOWNSTREAM_REFILL_DAYS))
+    minFlowTable = _columnTable(network, resvName, MIN_FLOW_KEY,
+                                DEFAULT_MIN_FLOW_CSV, "minimum flow")
+    withdrawalTable = _columnTable(network, resvName, WITHDRAWAL_KEY,
+                                   DEFAULT_WITHDRAWAL_CSV, "withdrawal")
+    minFlowDays = countDefinedDays(minFlowTable)
+    withdrawalDays = countDefinedDays(withdrawalTable)
 
     currentRule.varPut("minFlowTable", minFlowTable)
     currentRule.varPut("withdrawalTable", withdrawalTable)
     currentRule.varPut("minFlowPath", minFlowPath)
     currentRule.varPut("withdrawalPath", withdrawalPath)
     currentRule.varPut("configStamp",
-                       _fileStamp(minFlowPath) + "+" + _fileStamp(withdrawalPath))
+                       _fileStamp(minFlowPath)+"+"+_fileStamp(withdrawalPath))
 
-    if minFlowDays > 0 or withdrawalDays > 0:
-        # One line per load, so the compute log always shows which numbers are
-        # in play. If an edited CSV is not being picked up, this is where it
-        # shows. A project present in only one of the two files is normal and
-        # reported as such rather than treated as a problem.
-        network.printMessage(
-            "MinFlowPlusWithdrawal: loaded %s -- minimum flow on %d of %d days, "
-            "withdrawal on %d of %d days. 01Jan total=%s, 01Jul total=%s.\n"
-            "  %s\n  %s"
-            % (resvName, minFlowDays, DAYS_IN_YEAR, withdrawalDays, DAYS_IN_YEAR,
-               _fmtFlow(_total(minFlowTable, withdrawalTable, 1)),
-               _fmtFlow(_total(minFlowTable, withdrawalTable, 182)),
-               minFlowPath, withdrawalPath))
+    #Only set when there is one. varPut of a None goes through Java, so ask with
+    #varExists instead, which is how cNatLakeARDB.py asks.
+    spec = TARGET_MET_AT.get(resvName)
+    if spec is not None:
+        currentRule.varPut("downstreamSpec", spec)
 
-
-def _fmtFlow(flow):
-    """Format a flow for the log, showing days with no requirement plainly."""
-    if flow is None:
-        return "no requirement"
-    return "%.0f" % flow
+    if minFlowDays == 0 and withdrawalDays == 0:
+        #Not an error: one pair of files can serve a whole watershed
+        network.printMessage("MinFlowPlusWithdrawal: %s has no numbers in "
+            "either config file, so this rule will not control it. Looked in "
+            "%s and %s" %(resvName, minFlowPath, withdrawalPath))
+        return
+    #One line per load, so the log always shows which numbers are in play
+    via = ""
+    if spec is not None:
+        via = ", released through %s" %spec["reservoir"]
+    network.printMessage("MinFlowPlusWithdrawal: loaded %s%s. Minimum flow on "
+        "%d of %d days, withdrawal on %d of %d days. 01Jan target=%s, "
+        "01Jul target=%s" %(resvName, via, minFlowDays, DAYS_IN_YEAR,
+        withdrawalDays, DAYS_IN_YEAR,
+        _fmtFlow(_total(minFlowTable, withdrawalTable, 1)),
+        _fmtFlow(_total(minFlowTable, withdrawalTable, 182))))
 
 
 def _reloadIfConfigChanged(currentRule, network):
-    """
-    ResSim keeps rule variables alive across computes within a session, so an
-    edited CSV would otherwise not be seen until ResSim restarts. Re-read both
-    files whenever either changes on disk.
-    """
+    """Re-read both files whenever either changes on disk."""
     if not currentRule.varExists("minFlowTable"):
         _initialize(currentRule, network)
         return
     if not RELOAD_CSV_IF_CHANGED:
         return
-    stamp = (_fileStamp(currentRule.varGet("minFlowPath")) + "+"
-             + _fileStamp(currentRule.varGet("withdrawalPath")))
+    stamp = _fileStamp(currentRule.varGet("minFlowPath")) + "+" \
+          + _fileStamp(currentRule.varGet("withdrawalPath"))
     if stamp != currentRule.varGet("configStamp"):
         _initialize(currentRule, network)
 
@@ -542,41 +370,27 @@ def runRuleScript(currentRule, network, currentRuntimestep):
 
     hTime = getHecTimeFromRuntimestep(currentRuntimestep)
     totalFlow = getTotalMinFlow(minFlowTable, withdrawalTable, hTime)
-
     if totalFlow is None:
-        # Nothing asked for today. Stand down and let the rest of the stack
-        # operate the project.
+        #Nothing asked for today, let the rest of the stack operate the project
         opValue.init(OpRule.RULETYPE_MIN, 0.0)
         return opValue
 
-    # Green Peter and any other reservoir in TARGET_MET_AT meets its target at a
-    # downstream project, so its own release comes out of a mass balance there
-    # rather than being the target itself.
-    spec = None
+    #Green Peter meets its target at Foster, so back its release out of a mass
+    #balance there rather than releasing the target itself
     if currentRule.varExists("downstreamSpec"):
         spec = currentRule.varGet("downstreamSpec")
-    fillCfs = None
-    localCfs = None
-    if spec is not None:
-        totalFlow, fillCfs, localCfs = _releaseForDownstreamTarget(
-            network, currentRuntimestep, spec, totalFlow,
-            currentRule.varGet("localFlowTS"))
+        totalFlow = releaseForDownstreamTarget(network, currentRuntimestep,
+                                               spec, totalFlow)
 
-    # A local inflow larger than the target already satisfies it downstream, so
-    # this project is not asked to release anything on top.
+    #Local inflow larger than the target already satisfies it downstream
     totalFlow = max(totalFlow, 0.0)
 
     if DEBUG:
         dayOfYear = _genericDayOfYear(hTime)
-        detail = ""
-        if spec is not None:
-            detail = " via %s (fill=%+.0f local=%.0f)" % (
-                spec["reservoir"], fillCfs, localCfs)
-        network.printMessage(
-            "MinFlowPlusWithdrawal %s %s: minFlow=%s withdrawal=%s%s MIN=%.0f"
-            % (_getResvName(currentRule), hTime.dateAndTime(),
-               _fmtFlow(minFlowTable[dayOfYear]),
-               _fmtFlow(withdrawalTable[dayOfYear]), detail, totalFlow))
+        network.printMessage("MinFlowPlusWithdrawal %s %s: minFlow=%s "
+            "withdrawal=%s MIN=%.0f" %(_getResvName(currentRule),
+            hTime.dateAndTime(), _fmtFlow(minFlowTable[dayOfYear]),
+            _fmtFlow(withdrawalTable[dayOfYear]), totalFlow))
 
     opValue.init(OpRule.RULETYPE_MIN, totalFlow)
     return opValue

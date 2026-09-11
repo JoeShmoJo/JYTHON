@@ -1,16 +1,19 @@
-# Paste this into the ResSim scripted rule editor for the reservoir.
+############################
+# MinFlowPlusWithdrawal scripted rule
 #
-# It is only a wrapper. All of the logic lives in
-# scripts/externalRules/MinFlowPlusWithdrawal.py, so edits to that file take
-# effect on the next compute without touching the rule in the model.
+# Paste this into the ResSim scripted rule editor. All the real code lives in
+# scripts/externalRules/MinFlowPlusWithdrawal.py, so it exists in one place
+# instead of being copied into every reservoir.
 #
-# The reload() is what makes that true: ResSim keeps imported modules alive for
-# the life of the session, so without it an edited .py is not picked up until
-# ResSim restarts.
-
+# The reload() below is the important part. ResSim keeps imported Jython modules
+# alive for the whole session, so without it, edits to the .py are not picked up
+# until ResSim is closed and reopened. Same pattern as
+# scripts/Willamette/StateVars/PctFull_LOP_Init.py
+############################
 import sys
 
 def initRuleScript(currentRule, network):
+    #Make sure the scripts folder is importable, then load the external module
     modulePath = network.makeAbsolutePathFromWatershed("scripts")
     if not modulePath in sys.path:
         sys.path.append(modulePath)
