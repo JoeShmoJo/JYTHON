@@ -437,6 +437,8 @@ check("Detroit is unaffected by the Green Peter special case",
       op.value > 0, True)
 
 # A missing local inflow series is a hard error, not a quiet under-release.
+# It is read at run time rather than cached in init, so this surfaces on the
+# first timestep.
 noLocal = fosterNetwork()
 noLocal.records = {}
 try:
