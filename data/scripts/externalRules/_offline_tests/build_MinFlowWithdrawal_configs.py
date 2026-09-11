@@ -51,6 +51,22 @@ CODE_TO_NAME = {
     "FAL": "Fall Creek",
 }
 
+# Projects whose demand is physically released by a DIFFERENT project, as
+# {project that has the demand: project that releases for it}.
+#
+# Green Peter and Foster operate as a system and every release comes out of
+# Green Peter, so Green Peter has to pass enough water to cover the demand at
+# both. The demand is therefore rolled upstream into the Green Peter column and
+# Foster's column is left blank -- blank, not zero, so the rule stands down at
+# Foster instead of pinning it to a meaningless minimum of 0.
+#
+# The source file's own GPR_FOS column is exactly this roll-up, and the
+# generator asserts that its arithmetic matches it. Remove the entry below to
+# go back to demands sitting with the project that has them.
+DEMAND_RELEASED_FROM = {
+    "Foster": "Green Peter",
+}
+
 # Same order as FIRO_SPACEConfig.csv so the three files line up side by side,
 # with Fall Creek appended because the FIRO curve does not cover it.
 COLUMN_ORDER = [
@@ -161,6 +177,7 @@ def loadWithdrawal(path):
     """Daily 2024 wide format -> {reservoir name: 365-entry table}, no Feb 29."""
     tables = {}
     seen = set()
+    combined = {}      # the source's own GPR_FOS column, used as a cross-check
     for row in readRows(path):
         year, month, day = [int(p) for p in row["Date"].strip().split("-")]
         if month == 2 and day == 29:
@@ -171,10 +188,15 @@ def loadWithdrawal(path):
             if column is None or column.strip().upper() == "DATE":
                 continue
             code = column.strip().upper()
-            # GPR_FOS is exactly GPR + FOS, so carrying it would double count.
-            # See the note in the generated file's header.
-            if code not in CODE_TO_NAME:
+            # GPR_FOS is the source's own GPR + FOS roll-up. It is kept aside to
+            # check this script's arithmetic, not copied out as a column.
+            if code == "GPR_FOS":
+                combined[index] = float(row[column])
                 continue
+            if code not in CODE_TO_NAME:
+                raise AssertionError(
+                    "Unknown project code %r in %s. Add it to CODE_TO_NAME."
+                    % (code, path))
             name = CODE_TO_NAME[code]
             tables.setdefault(name, [None] * (DAYS_IN_YEAR + 1))[index] = float(row[column])
     missing = sorted(set(range(1, DAYS_IN_YEAR + 1)) - seen)
@@ -182,6 +204,37 @@ def loadWithdrawal(path):
         raise AssertionError(
             "%s is missing %d day(s) of the year, first is day %d"
             % (path, len(missing), missing[0]))
+
+    # Roll each demand upstream to whichever project actually releases for it,
+    # then blank the column it came from.
+    for source, releaser in sorted(DEMAND_RELEASED_FROM.items()):
+        if source not in tables:
+            continue
+        target = tables.setdefault(releaser, [None] * (DAYS_IN_YEAR + 1))
+        for index in range(1, DAYS_IN_YEAR + 1):
+            moved = tables[source][index]
+            if moved is None:
+                continue
+            target[index] = (target[index] or 0.0) + moved
+        tables[source] = [None] * (DAYS_IN_YEAR + 1)
+        print("  rolled %s demand into %s" % (source, releaser))
+
+    # The source computed the same roll-up itself. If the two disagree, the
+    # assumption encoded in DEMAND_RELEASED_FROM is wrong -- stop rather than
+    # ship numbers nobody checked.
+    greenPeter = tables.get("Green Peter")
+    if greenPeter is not None and combined:
+        for index in range(1, DAYS_IN_YEAR + 1):
+            expected = combined.get(index)
+            if expected is None:
+                continue
+            if abs((greenPeter[index] or 0.0) - expected) > 1e-6:
+                raise AssertionError(
+                    "Green Peter + Foster is %s on day %d but the source's "
+                    "GPR_FOS column says %s. DEMAND_RELEASED_FROM does not "
+                    "match how %s was built."
+                    % (greenPeter[index], index, expected, path))
+        print("  Green Peter matches the source's GPR_FOS column on all 365 days")
     return tables
 
 
@@ -240,9 +293,14 @@ WITHDRAWAL_HEADER = [
     "# The source is calendar 2024, a leap year. Feb 29 is dropped so this file",
     "# is a generic 365-day year.",
     "#",
-    "# The source also carries a GPR_FOS column that is exactly GPR + FOS. It is",
-    "# NOT copied here, because Green Peter and Foster already appear separately",
-    "# and including it would double count.",
+    "# FOSTER IS DELIBERATELY BLANK. Green Peter and Foster operate as a system",
+    "# and every release comes out of Green Peter, so Foster's demand is carried",
+    "# in the Green Peter column -- Green Peter has to pass enough for both. The",
+    "# Green Peter numbers here equal the source's own GPR_FOS column, which the",
+    "# generator checks on all 365 days.",
+    "#",
+    "# Blank, not zero, so the rule stands down at Foster rather than pinning it",
+    "# to a minimum of 0. Attaching the rule at Foster does nothing by design.",
     "#",
 ]
 

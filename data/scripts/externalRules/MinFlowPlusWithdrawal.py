@@ -43,7 +43,10 @@ Config CSV format (wide, one row per day of a generic year), same as FIRO_SPACE:
 
     A reservoir with no numbers in either file is simply never controlled. That
     is not an error, so one pair of files can serve a whole watershed while only
-    some projects use the rule.
+    some projects use the rule. FOSTER IS ONE OF THESE: Green Peter and Foster
+    operate as a system and every release comes out of Green Peter, so Foster's
+    withdrawal demand lives in the Green Peter column and Foster itself is blank
+    in both files. Attaching this rule at Foster does nothing, by design.
 
     Lines starting with # are comments. A "Notes" column is ignored.
 

@@ -33,7 +33,9 @@ def writeFixtures():
       Detroit  -- in both files. Min flow 1000 all year. Withdrawal 0 except
                   100 from 01May through 30Sep.
       Foster   -- withdrawal only (50 all year), no min flow column at all.
-                  This is the real case: BiOpMINFLOW.csv has no FOS row.
+                  Covers the general "present in one file only" case. Note the
+                  SHIPPED Foster is different: its demand is released from Green
+                  Peter, so it is blank in both files. Section 9 checks that.
       Cougar   -- min flow only (300 all year), withdrawal column all blank.
       Dorena   -- in both files but blank in both for the whole of February,
                   so the rule should stand down on those days.
@@ -305,8 +307,32 @@ for name, table in sorted(shippedMf.items()):
     check("shipped min flow %s covers every day" % name,
           M.countDefinedDays(table), 365)
 for name, table in sorted(shippedWd.items()):
+    if name == "Foster":
+        continue          # blank on purpose, checked below
     check("shipped withdrawal %s covers every day" % name,
           M.countDefinedDays(table), 365)
+
+# Green Peter and Foster operate as a system and every release comes out of
+# Green Peter, so Foster's demand is rolled into the Green Peter column and
+# Foster is blank in both files. Getting this wrong either starves the Foster
+# demand or double counts it, so check both halves.
+check("shipped Foster withdrawal is blank all year",
+      M.countDefinedDays(shippedWd["Foster"]), 0)
+check("shipped Green Peter carries both demands on 01May",
+      shippedWd["Green Peter"][121], 128.0)      # 116 at GPR + 12 at FOS
+check("shipped Green Peter peak carries both",
+      max(v for v in shippedWd["Green Peter"][1:] if v is not None), 308.0)
+
+# Foster is in neither file, so the rule must stand down there rather than pin
+# it to a minimum of 0.
+op, net = runDay("Foster", datetime.date(2020, 7, 15), Network(useShipped=True))
+check("shipped Foster gets a non-binding MIN 0", op.value, 0.0)
+check("and the compute log says why",
+      "no numbers in either config file" in " ".join(net.messages), True)
+
+op, _ = runDay("Green Peter", datetime.date(2020, 7, 15), Network(useShipped=True))
+check("shipped Green Peter 15Jul = min flow 800 + both demands 308",
+      op.value, 1108.0)
 
 # Step-hold expansion of BiOpMINFLOW.csv: DET is 1000 from 01Feb and steps to
 # 1500 on 16Mar, so 15Mar must still be 1000.
