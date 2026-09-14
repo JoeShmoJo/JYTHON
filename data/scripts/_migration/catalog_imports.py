@@ -248,6 +248,38 @@ def main():
         writer.writerow([category, module, len(files), files[0]])
     handle.close()
 
+    # Two plain lists for the in-ResSim smoke test to read. Kept as text so the
+    # Jython side needs no csv parsing.
+    modulePath = os.path.join(HERE, "ressim_modules.txt")
+    handle = open(modulePath, "w")
+    for rel in sorted(fileKinds):
+        if fileKinds[rel] != "ressim":
+            continue
+        dotted = rel[:-3].replace("/", ".")
+        if dotted.endswith(".__init__"):
+            dotted = dotted[:-9]
+        handle.write(dotted + "\n")
+    handle.close()
+
+    javaPath = os.path.join(HERE, "java_classes.txt")
+    javaNames = set()
+    for row in rows:
+        if row["runsUnder"] != "ressim" or row["category"] != "java":
+            continue
+        if row["imports"]:
+            for name in row["imports"].replace("(", "").replace(")", "").split(","):
+                name = name.strip().split(" as ")[0].strip()
+                if name and name != "*":
+                    javaNames.add(row["module"] + "." + name)
+                elif name == "*":
+                    javaNames.add(row["module"])
+        else:
+            javaNames.add(row["module"])
+    handle = open(javaPath, "w")
+    for name in sorted(javaNames):
+        handle.write(name + "\n")
+    handle.close()
+
     counts0 = {}
     for rel in fileKinds:
         counts0[fileKinds[rel]] = counts0.get(fileKinds[rel], 0) + 1
