@@ -8,7 +8,12 @@ For details on how to programatically control ResSim (e.g. open watersheds, run
 simulations), see :any:`ResSimController`
 """
 from hec.script import Constants, Plot
-from hec.client import ClientApp
+#ClientApp moved from hec.client to hec.clientapp.client in ResSim 4.1. Import it
+#both ways so this file runs under 4.1 and 3.5 alike.
+try:
+    from hec.clientapp.client import ClientApp       #ResSim 4.1
+except ImportError:
+    from hec.client import ClientApp                 #ResSim 3.5
 from hec.heclib.dss import HecDss
 from hec.heclib.util import HecTime
 from hec.hecmath import DSS, DSSFileException, HecMathException, TimeSeriesMath

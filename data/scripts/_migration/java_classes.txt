@@ -1,4 +1,5 @@
 hec.client.ClientApp
+hec.clientapp.client.ClientApp
 hec.dssgui.HecDssVue
 hec.heclib.dss.HecDataManager
 hec.heclib.dss.HecDss
@@ -20,7 +21,6 @@ hec.model.PairedValuesExt
 hec.model.RunTimeStep
 hec.model.RunTimeWindow
 hec.model.SeasonalValue
-hec.model.TSDataSet
 hec.model.TSRecord
 hec.rss.model.ConstantRelease
 hec.rss.model.ControlStructure
@@ -29,6 +29,7 @@ hec.rss.model.DiversionElement
 hec.rss.model.DiversionRule
 hec.rss.model.DivertedOutletElement
 hec.rss.model.JunctionElement
+hec.rss.model.LocalTSRecordImpl
 hec.rss.model.MonthlyRelease
 hec.rss.model.MuskingumRouting
 hec.rss.model.NullRouting

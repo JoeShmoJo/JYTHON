@@ -7,7 +7,12 @@
 ###############################################################################
 
 from hec.script import Constants, MessageBox, ClientAppWrapper
-from hec.client import ClientApp
+#ClientApp moved from hec.client to hec.clientapp.client in ResSim 4.1. Import it
+#both ways so this file runs under 4.1 and 3.5 alike.
+try:
+    from hec.clientapp.client import ClientApp       #ResSim 4.1
+except ImportError:
+    from hec.client import ClientApp                 #ResSim 3.5
 import os, sys
 print "\nStarting Script..."
 

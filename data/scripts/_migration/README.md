@@ -16,7 +16,12 @@ assumed: a file is in scope if it defines a ResSim entry point
 that does. Headless batch runners, plotting utilities and DSS download tooling
 are Jython in places but ResSim never loads them, so they are out of scope.
 
-As of this audit: **142 .py files, of which 39 are in scope.** Of NWDJyLib's 25
+As of this audit: **142 .py files, of which 39 are in scope.**
+
+**Known gap:** a script run by hand from ResSim's Scripts pane has no entry point
+to detect -- it is just a module that runs top to bottom. `DP_Menu.py` is one of
+these, and the detector missed it. Treat 39 as a floor. If you run other scripts
+from the Scripts pane, name them and they can be checked directly. Of NWDJyLib's 25
 modules, 10 are reachable.
 
 ## Step 1 - build the catalog

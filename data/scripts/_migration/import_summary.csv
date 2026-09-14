@@ -1,5 +1,6 @@
 category,module,numJythonFiles,exampleFile
 java,hec.client,2,NWDJyLib/ResSim/ResSimController.py
+java,hec.clientapp.client,2,NWDJyLib/ResSim/ResSimController.py
 java,hec.dssgui,1,NWDJyLib/DSS/cDSS.py
 java,hec.heclib.dss,2,NWDJyLib/DSS/cDSS.py
 java,hec.heclib.util,18,NWDJyLib/CanadianOps/cNatLakeARDB.py
