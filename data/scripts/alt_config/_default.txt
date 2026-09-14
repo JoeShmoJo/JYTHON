@@ -45,6 +45,15 @@ minFlowConfigCSV: "scripts/externalRules/MinFlowConfig.csv"
 withdrawalConfigCSV: "scripts/externalRules/WithdrawalConfig.csv"
 
 ###########################################
+#DiversionFromCSV
+#One generic-year daily schedule read by
+#scripts/externalRules/DiversionFromCSV.py. Every diversion and return in the
+#network runs the same script and reads its own column by element name.
+#Point an alternative at a different file to swap BASE for ALT.
+
+diversionConfigCSV: "scripts/externalRules/DiversionConfig_ALT.csv"
+
+###########################################
 #Salem/Albany mainstem flow augmentation
 
 #Method options:
