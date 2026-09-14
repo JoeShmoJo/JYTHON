@@ -15,7 +15,15 @@ from array import array
 from hec.heclib.util import HecTime
 from hec.hecmath import DSS, TimeSeriesMath
 from hec.io import PairedDataContainer, TimeSeriesContainer
-from hec.model import PairedValuesExt, RunTimeStep, RunTimeWindow, TSRecord, TSDataSet, LocalTSRecordImpl
+from hec.model import PairedValuesExt, RunTimeStep, RunTimeWindow, TSRecord
+#LocalTSRecordImpl moved from hec.model to hec.rss.model in ResSim 4.1. Import it
+#both ways so this file runs under 4.1 and 3.5 alike.
+#TSDataSet moved to hec.clientapp.model in the same release. It was imported here
+#but never used, so it is dropped rather than followed.
+try:
+    from hec.rss.model import LocalTSRecordImpl      #ResSim 4.1
+except ImportError:
+    from hec.model import LocalTSRecordImpl          #ResSim 3.5
 from hec.rss.model import OpRule, OpValue, ReservoirElement, RssSystem, ScriptOpRule
 from hec.script import Constants
 from java.lang import Math

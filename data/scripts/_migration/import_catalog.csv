@@ -252,9 +252,9 @@ Plots_Jython/Willamett_EUG_FCst_Plot.py,cpython,hec,hec,java,,16
 Plots_Jython/Willamett_PP_FCst_Plot.py,cpython,hec,hec,java,,16
 SalemAlbanyAugScript/RunningResSimHeadless/RunningResSimHEADLESS/Example2 - RunBatch Application/Running ResSim BATCH/BatchRunControl.py,other-jython,hec,hec,java,,14
 SalemAlbanyAugScript/RunningResSimHeadless/RunningResSimHEADLESS/Example4 - website-based forcasting system/RunFCOResSim.py,other-jython,hec,hec,java,,253
-DP_Menu.py,other-jython,hec.client,hec,java,ClientApp,10
-NWDJyLib/ResSim/ResSimController.py,ressim,hec.client,hec,java,ClientApp,15
-NWDJyLib/ResSim/cResSim.py,ressim,hec.client,hec,java,ClientApp,11
+DP_Menu.py,other-jython,hec.client,hec,java,ClientApp,15
+NWDJyLib/ResSim/ResSimController.py,ressim,hec.client,hec,java,ClientApp,20
+NWDJyLib/ResSim/cResSim.py,ressim,hec.client,hec,java,ClientApp,16
 SalemAlbanyAugScript/RunningResSimHeadless/RunningResSimHEADLESS/Example1 - simple/script.py,other-jython,hec.client,hec,java,ClientApp,10
 SalemAlbanyAugScript/RunningResSimHeadless/RunningResSimHEADLESS/Example3 - NWS/CHPS/script.py,other-jython,hec.client,hec,java,ClientApp,10
 SalemAlbanyAugScript/RunningResSimHeadless/RunningResSimHEADLESS/Example3 - NWS/fews/ressim/YubaFeatherFCO/script.py,other-jython,hec.client,hec,java,ClientApp,10
@@ -272,6 +272,9 @@ Utilities/ElevStor_to_CSV.py,cpython,hec.client,hec,java,ManagerChooser,14
 Utilities/Load_Scripts.py,other-jython,hec.client,hec,java,ManagerChooser,13
 Utilities/Rules_to_CSV.py,cpython,hec.client,hec,java,ManagerChooser,18
 Utilities/Save_Scripts.py,cpython,hec.client,hec,java,ManagerChooser,13
+DP_Menu.py,other-jython,hec.clientapp.client,hec,java,ClientApp,13
+NWDJyLib/ResSim/ResSimController.py,ressim,hec.clientapp.client,hec,java,ClientApp,18
+NWDJyLib/ResSim/cResSim.py,ressim,hec.clientapp.client,hec,java,ClientApp,14
 Plots_Jython/NonExceedancePlots.py,cpython,hec.data.cwmsRating,hec,java,RatingSet,14
 Plots_Jython/Willamett_Conservation System Storage.py,cpython,hec.data.cwmsRating,hec,java,RatingSet,3
 Plots_Jython/Willamett_Conservation plots_ McKenzieAndBelowAndFlows.py,cpython,hec.data.cwmsRating,hec,java,RatingSet,3
@@ -383,7 +386,7 @@ NWDJyLib/DSS/cDSS.py,ressim,hec.heclib.dss,hec,java,HecDataManager,25
 NWDJyLib/DSS/cEnsemble.py,other-jython,hec.heclib.dss,hec,java,HecDss,10
 NWDJyLib/DSS/cEnsemble.py,other-jython,hec.heclib.dss,hec,java,DSSPathname,11
 NWDJyLib/ResSim/ResSimTasks.py,other-jython,hec.heclib.dss,hec,java,DSSPathname,15
-NWDJyLib/ResSim/cResSim.py,ressim,hec.heclib.dss,hec,java,HecDss,12
+NWDJyLib/ResSim/cResSim.py,ressim,hec.heclib.dss,hec,java,HecDss,17
 Plots_Jython/MainstemRFC_CP_FCst_Plot.py,cpython,hec.heclib.dss,hec,java,*,13
 Plots_Jython/NonExceedancePlots.py,cpython,hec.heclib.dss,hec,java,HecDss,17
 Plots_Jython/RFCFlowsCorvall_FCst_Plot.py,cpython,hec.heclib.dss,hec,java,*,13
@@ -424,7 +427,7 @@ NWDJyLib/DSS/cDSS.py,ressim,hec.heclib.util,hec,java,HecTime,18
 NWDJyLib/DSS/cDSS.py,ressim,hec.heclib.util,hec,java,Heclib,26
 NWDJyLib/DSS/cEnsemble.py,other-jython,hec.heclib.util,hec,java,HecTime,12
 NWDJyLib/DSS/cTsUtils.py,ressim,hec.heclib.util,hec,java,HecTime,14
-NWDJyLib/ResSim/cResSim.py,ressim,hec.heclib.util,hec,java,HecTime,13
+NWDJyLib/ResSim/cResSim.py,ressim,hec.heclib.util,hec,java,HecTime,18
 NWDJyLib/cRouting.py,ressim,hec.heclib.util,hec,java,HecTime,17
 NWDJyLib/cTimes.py,ressim,hec.heclib.util,hec,java,HecTime,7
 Plots_Jython/MainstemRFC_CP_FCst_Plot.py,cpython,hec.heclib.util,hec,java,*,9
@@ -491,7 +494,7 @@ NWDJyLib/DSS/cDSS.py,ressim,hec.hecmath,hec,java,TextMath,17
 NWDJyLib/DSS/cEnsemble.py,other-jython,hec.hecmath,hec,java,TimeSeriesMath,13
 NWDJyLib/DSS/cTsUtils.py,ressim,hec.hecmath,hec,java,TimeSeriesMath,13
 NWDJyLib/ResSim/ResSimTasks.py,other-jython,hec.hecmath,hec,java,"DSS, DSSFileException, HecMathException, TimeSeriesMath",13
-NWDJyLib/ResSim/cResSim.py,ressim,hec.hecmath,hec,java,"DSS, DSSFileException, HecMathException, TimeSeriesMath",14
+NWDJyLib/ResSim/cResSim.py,ressim,hec.hecmath,hec,java,"DSS, DSSFileException, HecMathException, TimeSeriesMath",19
 Plots_Jython/MainstemRFC_CP_FCst_Plot.py,cpython,hec.hecmath,hec,java,*,11
 Plots_Jython/NonExceedancePlots.py,cpython,hec.hecmath,hec,java,TimeSeriesMath,15
 Plots_Jython/RFCFlowsCorvall_FCst_Plot.py,cpython,hec.hecmath,hec,java,*,11
@@ -541,7 +544,7 @@ Utilities/save_to_sql.py,cpython,hec.hecmath,hec,java,HecMath,24
 Willamette/StateVars/Cumloc_Harrisburg_Init.py,ressim,hec.hecmath,hec,java,TimeSeriesMath,11
 Willamette/StateVars/Cumloc_Jefferson_Init.py,ressim,hec.hecmath,hec,java,TimeSeriesMath,12
 externalSVs/Alternative_Setup.py,other-jython,hec.hecmath,hec,java,DSS,16
-externalSVs/baseExternalSV.py,ressim,hec.hecmath,hec,java,"TextMath, TimeSeriesMath, HecMath",31
+externalSVs/baseExternalSV.py,ressim,hec.hecmath,hec,java,"TextMath, TimeSeriesMath, HecMath",39
 NWDJyLib/CanadianOps/cNatLakeARDB.py,ressim,hec.io,hec,java,"PairedDataContainer, TimeSeriesContainer",17
 NWDJyLib/DSS/cCollections.py,other-jython,hec.io,hec,java,TimeSeriesContainer,11
 NWDJyLib/DSS/cCollections.py,other-jython,hec.io,hec,java,TimeSeriesCollectionContainer,12
@@ -549,7 +552,7 @@ NWDJyLib/DSS/cDSS.py,ressim,hec.io,hec,java,TimeSeriesContainer,20
 NWDJyLib/DSS/cDSS.py,ressim,hec.io,hec,java,PairedDataContainer,21
 NWDJyLib/DSS/cDSS.py,ressim,hec.io,hec,java,TextContainer,22
 NWDJyLib/DSS/cTsUtils.py,ressim,hec.io,hec,java,TimeSeriesContainer,16
-NWDJyLib/ResSim/cResSim.py,ressim,hec.io,hec,java,TimeSeriesContainer,24
+NWDJyLib/ResSim/cResSim.py,ressim,hec.io,hec,java,TimeSeriesContainer,29
 NWDJyLib/cRouting.py,ressim,hec.io,hec,java,TimeSeriesContainer,16
 Plots_Jython/MainstemRFC_CP_FCst_Plot.py,cpython,hec.io,hec,java,TimeSeriesContainer,8
 Plots_Jython/NonExceedancePlots.py,cpython,hec.io,hec,java,TimeSeriesContainer,16
@@ -578,13 +581,14 @@ externalSVs/baseExternalSV.py,ressim,hec.io,hec,java,"PairedDataContainer, TimeS
 NWDJyLib/DSS/cDSS.py,ressim,hec.lang,hec,java,DSSPathString,19
 NWDJyLib/DSS/cTsUtils.py,ressim,hec.lang,hec,java,DSSPathString,15
 NWDJyLib/ResSim/ResSimTasks.py,other-jython,hec.lang,hec,java,DSSPathString,14
-NWDJyLib/ResSim/cResSim.py,ressim,hec.lang,hec,java,DSSPathString,15
-externalSVs/baseExternalSV.py,ressim,hec.lang,hec,java,DSSPathString,34
-NWDJyLib/CanadianOps/cNatLakeARDB.py,ressim,hec.model,hec,java,"PairedValuesExt, RunTimeStep, RunTimeWindow, TSRecord, TSDataSet, LocalTSRecordImpl",18
+NWDJyLib/ResSim/cResSim.py,ressim,hec.lang,hec,java,DSSPathString,20
+externalSVs/baseExternalSV.py,ressim,hec.lang,hec,java,DSSPathString,42
+NWDJyLib/CanadianOps/cNatLakeARDB.py,ressim,hec.model,hec,java,"PairedValuesExt, RunTimeStep, RunTimeWindow, TSRecord",18
+NWDJyLib/CanadianOps/cNatLakeARDB.py,ressim,hec.model,hec,java,LocalTSRecordImpl,26
 NWDJyLib/DSS/cDSS.py,ressim,hec.model,hec,java,PairedValuesExt,23
-NWDJyLib/ResSim/ResSimController.py,ressim,hec.model,hec,java,"RunTimeStep, RunTimeWindow",16
-NWDJyLib/ResSim/cResSim.py,ressim,hec.model,hec,java,PairedValuesExt,16
-NWDJyLib/ResSim/cResSim.py,ressim,hec.model,hec,java,"RunTimeStep, RunTimeWindow, SeasonalValue",23
+NWDJyLib/ResSim/ResSimController.py,ressim,hec.model,hec,java,"RunTimeStep, RunTimeWindow",21
+NWDJyLib/ResSim/cResSim.py,ressim,hec.model,hec,java,PairedValuesExt,21
+NWDJyLib/ResSim/cResSim.py,ressim,hec.model,hec,java,"RunTimeStep, RunTimeWindow, SeasonalValue",28
 NWDJyLib/cRouting.py,ressim,hec.model,hec,java,PairedValuesExt,15
 NWDJyLib/cTimes.py,ressim,hec.model,hec,java,RunTimeStep,8
 NWDJyLib/cTimes.py,ressim,hec.model,hec,java,RunTimeWindow,9
@@ -595,18 +599,20 @@ externalRules/HCR_LOP_Balance.py,ressim,hec.model,hec,java,RunTimeStep,14
 externalRules/IRRM.py,ressim,hec.model,hec,java,PairedValuesExt,18
 externalSVs/MainstemFlowAugSV.py,ressim,hec.model,hec,java,PairedValuesExt,33
 externalSVs/MainstemFlowAugSV.py,ressim,hec.model,hec,java,RunTimeStep,34
-externalSVs/baseExternalSV.py,ressim,hec.model,hec,java,"PairedValuesExt, RunTimeStep, RunTimeWindow, TSRecord, TSDataSet, LocalTSRecordImpl",30
-externalSVs/baseExternalSV.py,ressim,hec.model,hec,java,RunTimeStep,32
-NWDJyLib/CanadianOps/cNatLakeARDB.py,ressim,hec.rss.model,hec,java,"OpRule, OpValue, ReservoirElement, RssSystem, ScriptOpRule",19
+externalSVs/baseExternalSV.py,ressim,hec.model,hec,java,"PairedValuesExt, RunTimeStep, RunTimeWindow, TSRecord",30
+externalSVs/baseExternalSV.py,ressim,hec.model,hec,java,LocalTSRecordImpl,38
+externalSVs/baseExternalSV.py,ressim,hec.model,hec,java,RunTimeStep,40
+NWDJyLib/CanadianOps/cNatLakeARDB.py,ressim,hec.rss.model,hec,java,LocalTSRecordImpl,24
+NWDJyLib/CanadianOps/cNatLakeARDB.py,ressim,hec.rss.model,hec,java,"OpRule, OpValue, ReservoirElement, RssSystem, ScriptOpRule",27
 NWDJyLib/ResSim/ResSimTasks.py,other-jython,hec.rss.model,hec,java,"ReservoirElement, JunctionElement, ReachElement, DiversionElement",16
 NWDJyLib/ResSim/ResSimTasks.py,other-jython,hec.rss.model,hec,java,RssModelVariableConstants,17
 NWDJyLib/ResSim/ResSimTasks.py,other-jython,hec.rss.model,hec,java,ReservoirDamElement,18
-NWDJyLib/ResSim/cResSim.py,ressim,hec.rss.model,hec,java,"ReservoirElement, JunctionElement, ReachElement, DiversionElement",17
-NWDJyLib/ResSim/cResSim.py,ressim,hec.rss.model,hec,java,"SsarrRouting, NullRouting, PulsChannelRoutingWithLosses",18
-NWDJyLib/ResSim/cResSim.py,ressim,hec.rss.model,hec,java,RssModelVariableConstants,19
-NWDJyLib/ResSim/cResSim.py,ressim,hec.rss.model,hec,java,"SpecifiedRelease, DiversionRule, TimeSeries, ConstantRelease, MonthlyRelease",20
-NWDJyLib/ResSim/cResSim.py,ressim,hec.rss.model,hec,java,"ReservoirDamElement, DivertedOutletElement, ReservoirOutletElement",21
-NWDJyLib/ResSim/cResSim.py,ressim,hec.rss.model,hec,java,"Dam, ControlStructure",22
+NWDJyLib/ResSim/cResSim.py,ressim,hec.rss.model,hec,java,"ReservoirElement, JunctionElement, ReachElement, DiversionElement",22
+NWDJyLib/ResSim/cResSim.py,ressim,hec.rss.model,hec,java,"SsarrRouting, NullRouting, PulsChannelRoutingWithLosses",23
+NWDJyLib/ResSim/cResSim.py,ressim,hec.rss.model,hec,java,RssModelVariableConstants,24
+NWDJyLib/ResSim/cResSim.py,ressim,hec.rss.model,hec,java,"SpecifiedRelease, DiversionRule, TimeSeries, ConstantRelease, MonthlyRelease",25
+NWDJyLib/ResSim/cResSim.py,ressim,hec.rss.model,hec,java,"ReservoirDamElement, DivertedOutletElement, ReservoirOutletElement",26
+NWDJyLib/ResSim/cResSim.py,ressim,hec.rss.model,hec,java,"Dam, ControlStructure",27
 NWDJyLib/cRouting.py,ressim,hec.rss.model,hec,java,"SsarrRouting, NullRouting",18
 NWDJyLib/cRouting.py,ressim,hec.rss.model,hec,java,"MuskingumRouting, PulsChannelRoutingWithLosses",19
 Utilities/DeleteUnusedIfBlocks.py,cpython,hec.rss.model,hec,java,"RssSystem, ScriptOpRule",15
@@ -639,9 +645,10 @@ externalSVs/Alternative_Setup.py,other-jython,hec.rss.model,hec,java,ScriptOpRul
 externalSVs/MainstemFlowAugSV.py,ressim,hec.rss.model,hec,java,RssModelVariableConstants,31
 externalSVs/MainstemFlowAugSV.py,ressim,hec.rss.model,hec,java,OpValue,35
 externalSVs/MainstemFlowAugSV.py,ressim,hec.rss.model,hec,java,OpRule,36
-externalSVs/baseExternalSV.py,ressim,hec.rss.model,hec,java,RssModelVariableConstants,39
+externalSVs/baseExternalSV.py,ressim,hec.rss.model,hec,java,LocalTSRecordImpl,36
+externalSVs/baseExternalSV.py,ressim,hec.rss.model,hec,java,RssModelVariableConstants,47
 DP_Menu.py,other-jython,hec.script,hec,java,"Constants, MessageBox, ClientAppWrapper",9
-NWDJyLib/CanadianOps/cNatLakeARDB.py,ressim,hec.script,hec,java,Constants,20
+NWDJyLib/CanadianOps/cNatLakeARDB.py,ressim,hec.script,hec,java,Constants,28
 NWDJyLib/DSS/DSSTasks.py,other-jython,hec.script,hec,java,Constants,15
 NWDJyLib/DSS/cTsUtils.py,ressim,hec.script,hec,java,MessageBox,11
 NWDJyLib/DSS/cTsUtils.py,ressim,hec.script,hec,java,Constants,12
@@ -772,7 +779,7 @@ externalRules/SecondaryFloodDraftLimit.py,ressim,hec.script,hec,java,Constants,1
 externalRules/SpringSpill.py,ressim,hec.script,hec,java,Constants,12
 externalSVs/ControllerExternalSV.py,ressim,hec.script,hec,java,Constants,20
 externalSVs/MainstemFlowAugSV.py,ressim,hec.script,hec,java,Constants,37
-externalSVs/baseExternalSV.py,ressim,hec.script,hec,java,Constants,33
+externalSVs/baseExternalSV.py,ressim,hec.script,hec,java,Constants,41
 Plots_Jython/MainstemRFC_CP_FCst_Plot.py,cpython,hec.script.Constants,hec,java,*,10
 Plots_Jython/NonExceedancePlots.py,cpython,hec.script.Constants,hec,java,"TRUE, FALSE",43
 Plots_Jython/RFCFlowsCorvall_FCst_Plot.py,cpython,hec.script.Constants,hec,java,*,10
@@ -907,10 +914,10 @@ SalemAlbanyAugScript/RunningResSimHeadless/BatchCompute_updateFromMike2023/2023.
 SalemAlbanyAugScript/RunningResSimHeadless/BatchCompute_updateFromMike2023/2023.06.28_BatchRunControl_ResSim3.5update.py,other-jython,java.io,java,java,FileOutputStream,8
 SalemAlbanyAugScript/RunningResSimHeadless/BatchCompute_updateFromMike2023/2023.06.28_BatchRunControl_ResSim3.5update.py,other-jython,java.io,java,java,PrintStream,9
 Utilities/29_to_88.py,cpython,java.io,java,java,"FileOutputStream, IOException",16
-NWDJyLib/CanadianOps/cNatLakeARDB.py,ressim,java.lang,java,java,Math,21
+NWDJyLib/CanadianOps/cNatLakeARDB.py,ressim,java.lang,java,java,Math,29
 NWDJyLib/DSS/DSSTasks.py,other-jython,java.lang,java,java,Math,16
 NWDJyLib/DSS/cDSS.py,ressim,java.lang,java,java,UnsupportedOperationException,28
-NWDJyLib/ResSim/ResSimController.py,ressim,java.lang,java,java,System,17
+NWDJyLib/ResSim/ResSimController.py,ressim,java.lang,java,java,System,22
 Plots_Jython/NonExceedancePlots.py,cpython,java.lang,java,java,System,28
 Plots_Jython/NonExceedancePlots.py,cpython,java.lang,java,java,,40
 Plots_Jython/Willamett_Conservation System Storage.py,cpython,java.lang,java,java,System,17
@@ -947,7 +954,8 @@ SalemAlbanyAugScript/RunningResSimHeadless/RunningResSimHEADLESS/Example4 - webs
 SalemAlbanyAugScript/RunningResSimHeadless/RunningResSimHEADLESS/SimpleSim/script.py,other-jython,java.lang,java,java,String,12
 Utilities/29_to_88.py,cpython,java.lang,java,java,System,17
 Utilities/29_to_88.py,cpython,java.lang,java,java,,31
-externalSVs/baseExternalSV.py,ressim,java.lang,java,java,,47
+externalSVs/baseExternalSV.py,ressim,java.lang,java,java,,55
+_migration/smoketest_imports.py,other-jython,java.lang.System,java,java,,65
 Plots_Jython/NonExceedancePlots.py,cpython,java.text,java,java,SimpleDateFormat,29
 Plots_Jython/Willamett_Conservation System Storage.py,cpython,java.text,java,java,SimpleDateFormat,18
 Plots_Jython/Willamett_Conservation plots_ McKenzieAndBelowAndFlows.py,cpython,java.text,java,java,SimpleDateFormat,18
@@ -1066,7 +1074,7 @@ Plots_Jython/Willamett_PP_FCst_Plot.py,cpython,javax.swing.event,javax,java,"Lis
 SalemAlbanyAugScript/RunningResSimHeadless/BatchCompute_updateFromMike2023/2023.06.28_BatchRunControl_ResSim3.5update.py,other-jython,javax.swing.tree,javax,java,DefaultMutableTreeNode,23
 SalemAlbanyAugScript/RunningResSimHeadless/BatchCompute_updateFromMike2023/2023.06.28_BatchRunControl_ResSim3.5update.py,other-jython,javax.swing.tree,javax,java,TreePath,24
 SalemAlbanyAugScript/RunningResSimHeadless/RunningResSimHEADLESS/Example2 - RunBatch Application/Running ResSim BATCH/BatchRunControl.py,other-jython,javax.swing.tree,javax,java,*,12
-DP_Menu.py,other-jython,jxl,jxl,java,Workbook,16
+DP_Menu.py,other-jython,jxl,jxl,java,Workbook,21
 externalSVs/Alternative_Setup.py,other-jython,org.hjson,org,java,JsonValue,29
 NWDJyLib/cLoadModules.py,ressim,org.python.core.PyTuple,org,java,,21
 SalemAlbanyAugScript/RunningResSimHeadless/RunningResSimHEADLESS/Example2 - RunBatch Application/Running ResSim BATCH/BatchRunControl.py,other-jython,rma,rma,java,,14
@@ -1104,7 +1112,7 @@ SalemAlbanyAugScript/RunningResSimHeadless/RunningResSimHEADLESS/Example3 - NWS/
 SalemAlbanyAugScript/RunningResSimHeadless/RunningResSimHEADLESS/Example3 - NWS/fews/script_HeadlessCommands_withHotstart.py,other-jython,jarray,jarray,jython,,13
 SalemAlbanyAugScript/RunningResSimHeadless/RunningResSimHEADLESS/Example4 - website-based forcasting system/RunFCOResSim.py,other-jython,jarray,jarray,jython,,16
 SalemAlbanyAugScript/RunningResSimHeadless/RunningResSimHEADLESS/SimpleSim/script.py,other-jython,jarray,jarray,jython,,13
-DP_Menu.py,other-jython,NWDJyLib,NWDJyLib,local,"cRouting, cFile",34
+DP_Menu.py,other-jython,NWDJyLib,NWDJyLib,local,"cRouting, cFile",39
 NWDJyLib/DSS/DSSTasks.py,other-jython,NWDJyLib,NWDJyLib,local,cFile,22
 NWDJyLib/DSS/cCollections.py,other-jython,NWDJyLib,NWDJyLib,local,cFile,15
 NWDJyLib/DSS/cDSS.py,ressim,NWDJyLib,NWDJyLib,local,cFile,32
@@ -1112,12 +1120,12 @@ NWDJyLib/DSS/cDSS.py,ressim,NWDJyLib,NWDJyLib,local,cTimes,33
 NWDJyLib/DSS/cEnsemble.py,other-jython,NWDJyLib,NWDJyLib,local,cFile,20
 NWDJyLib/DSS/cEnsemble.py,other-jython,NWDJyLib,NWDJyLib,local,cTimes,21
 NWDJyLib/FixedData/NameAlias.py,ressim,NWDJyLib,NWDJyLib,local,cFile,35
-NWDJyLib/ResSim/ResSimController.py,ressim,NWDJyLib,NWDJyLib,local,cTimes,21
+NWDJyLib/ResSim/ResSimController.py,ressim,NWDJyLib,NWDJyLib,local,cTimes,26
 NWDJyLib/ResSim/ResSimTasks.py,other-jython,NWDJyLib,NWDJyLib,local,cRouting,22
 NWDJyLib/ResSim/ResSimTasks.py,other-jython,NWDJyLib,NWDJyLib,local,cFile,23
-NWDJyLib/ResSim/cResSim.py,ressim,NWDJyLib,NWDJyLib,local,cRouting,28
-NWDJyLib/ResSim/cResSim.py,ressim,NWDJyLib,NWDJyLib,local,cFile,29
-NWDJyLib/ResSim/cResSim.py,ressim,NWDJyLib,NWDJyLib,local,cTimes,30
+NWDJyLib/ResSim/cResSim.py,ressim,NWDJyLib,NWDJyLib,local,cRouting,33
+NWDJyLib/ResSim/cResSim.py,ressim,NWDJyLib,NWDJyLib,local,cFile,34
+NWDJyLib/ResSim/cResSim.py,ressim,NWDJyLib,NWDJyLib,local,cTimes,35
 NWDJyLib/cLoadModules.py,ressim,NWDJyLib,NWDJyLib,local,cLoadModules,12
 Willamette/ScriptedRules/Hills Creek/[DUMMY] IMPORT MODULES.py,ressim,NWDJyLib,NWDJyLib,local,cTimes,20
 Willamette/ScriptedRules/Hills Creek/[DUMMY] IMPORT MODULES.py,ressim,NWDJyLib,NWDJyLib,local,rLogging,23
@@ -1128,9 +1136,9 @@ externalRules/_offline_tests/test_MinFlowPlusWithdrawal.py,other-jython,NWDJyLib
 externalSVs/Alternative_Setup.py,other-jython,NWDJyLib,NWDJyLib,local,cLoadModules,23
 externalSVs/ControllerExternalSV.py,ressim,NWDJyLib,NWDJyLib,local,cFile,29
 externalSVs/ControllerExternalSV.py,ressim,NWDJyLib,NWDJyLib,local,cLoadModules,30
-externalSVs/baseExternalSV.py,ressim,NWDJyLib,NWDJyLib,local,rLogging,44
-DP_Menu.py,other-jython,NWDJyLib.AFDR,NWDJyLib,local,"DPMenuGUI, cDamPrev, cExcel, cLocFlows",35
-DP_Menu.py,other-jython,NWDJyLib.DSS,NWDJyLib,local,cTsUtils,37
+externalSVs/baseExternalSV.py,ressim,NWDJyLib,NWDJyLib,local,rLogging,52
+DP_Menu.py,other-jython,NWDJyLib.AFDR,NWDJyLib,local,"DPMenuGUI, cDamPrev, cExcel, cLocFlows",40
+DP_Menu.py,other-jython,NWDJyLib.DSS,NWDJyLib,local,cTsUtils,42
 NWDJyLib/DSS/DSSTasks.py,other-jython,NWDJyLib.DSS,NWDJyLib,local,cDSS,24
 NWDJyLib/DSS/DSSTasks.py,other-jython,NWDJyLib.DSS,NWDJyLib,local,cTsUtils,25
 NWDJyLib/DSS/DSSTasks.py,other-jython,NWDJyLib.DSS,NWDJyLib,local,cCollections,26
@@ -1141,20 +1149,20 @@ NWDJyLib/DSS/cEnsemble.py,other-jython,NWDJyLib.DSS,NWDJyLib,local,cCollections,
 NWDJyLib/ResSim/ResSimTasks.py,other-jython,NWDJyLib.DSS,NWDJyLib,local,cTsUtils,26
 NWDJyLib/ResSim/ResSimTasks.py,other-jython,NWDJyLib.DSS,NWDJyLib,local,cDSS,27
 NWDJyLib/ResSim/ResSimTasks.py,other-jython,NWDJyLib.DSS,NWDJyLib,local,cCollections,28
-NWDJyLib/ResSim/cResSim.py,ressim,NWDJyLib.DSS,NWDJyLib,local,cTsUtils,33
-NWDJyLib/ResSim/cResSim.py,ressim,NWDJyLib.DSS,NWDJyLib,local,cDSS,34
+NWDJyLib/ResSim/cResSim.py,ressim,NWDJyLib.DSS,NWDJyLib,local,cTsUtils,38
+NWDJyLib/ResSim/cResSim.py,ressim,NWDJyLib.DSS,NWDJyLib,local,cDSS,39
 externalSVs/MainstemFlowAugSV.py,ressim,NWDJyLib.DSS,NWDJyLib,local,cDSS,42
-externalSVs/baseExternalSV.py,ressim,NWDJyLib.DSS,NWDJyLib,local,cDSS,43
+externalSVs/baseExternalSV.py,ressim,NWDJyLib.DSS,NWDJyLib,local,cDSS,51
 externalSVs/Alternative_Setup.py,other-jython,NWDJyLib.DSS.cDSS,NWDJyLib,local,writeTextToDss,24
 NWDJyLib/DSS/cEnsemble.py,other-jython,NWDJyLib.FixedData,NWDJyLib,local,NameAlias,25
 NWDJyLib/FixedData/NameAlias.py,ressim,NWDJyLib.FixedData,NWDJyLib,local,NameAlias,9
 NWDJyLib/ResSim/ResSimTasks.py,other-jython,NWDJyLib.FixedData,NWDJyLib,local,NameAlias,29
-externalSVs/baseExternalSV.py,ressim,NWDJyLib.FixedData.NameAlias,NWDJyLib,local,,45
-DP_Menu.py,other-jython,NWDJyLib.ResSim,NWDJyLib,local,cResSim,36
+externalSVs/baseExternalSV.py,ressim,NWDJyLib.FixedData.NameAlias,NWDJyLib,local,,53
+DP_Menu.py,other-jython,NWDJyLib.ResSim,NWDJyLib,local,cResSim,41
 NWDJyLib/DSS/DSSTasks.py,other-jython,NWDJyLib.ResSim,NWDJyLib,local,cResSim,23
 NWDJyLib/ResSim/ResSimTasks.py,other-jython,NWDJyLib.ResSim,NWDJyLib,local,cResSim,24
 NWDJyLib/ResSim/ResSimTasks.py,other-jython,NWDJyLib.ResSim,NWDJyLib,local,ResSimController,25
-NWDJyLib/ResSim/cResSim.py,ressim,NWDJyLib.ResSim,NWDJyLib,local,ResSimController,32
+NWDJyLib/ResSim/cResSim.py,ressim,NWDJyLib.ResSim,NWDJyLib,local,ResSimController,37
 NWDJyLib/ResSim/cVariableTracking.py,other-jython,NWDJyLib.ResSim,NWDJyLib,local,cVariableTracking,10
 externalRules/DeepDrawdown.py,ressim,NWDJyLib.ResSim,NWDJyLib,local,cResSim,14
 externalRules/FillLOPfirst.py,ressim,NWDJyLib.ResSim,NWDJyLib,local,cResSim,17
@@ -1164,7 +1172,7 @@ externalRules/FIRO_SPACE.py,ressim,NWDJyLib.ResSim.cResSim,NWDJyLib,local,getEle
 externalRules/HCR_LOP_Balance.py,ressim,NWDJyLib.ResSim.cResSim,NWDJyLib,local,"getElevationStorageTable, getRule",17
 externalRules/SecondaryFloodDraftLimit.py,ressim,NWDJyLib.ResSim.cResSim,NWDJyLib,local,getElevationStorageTable,19
 externalSVs/MainstemFlowAugSV.py,ressim,NWDJyLib.ResSim.cResSim,NWDJyLib,local,getElevationStorageTable,45
-externalSVs/baseExternalSV.py,ressim,NWDJyLib.ResSim.cResSim,NWDJyLib,local,,46
+externalSVs/baseExternalSV.py,ressim,NWDJyLib.ResSim.cResSim,NWDJyLib,local,,54
 externalRules/ElevInterpDummyRule_Template.py,ressim,NWDJyLib.Utils.SimplePy,NWDJyLib,local,Interpolate,13
 externalRules/NoDraft.py,ressim,NWDJyLib.Utils.SimplePy,NWDJyLib,local,Interpolate,20
 externalRules/DeepDrawdown.py,ressim,NWDJyLib.cFile,NWDJyLib,local,(,17
@@ -1182,7 +1190,7 @@ externalRules/MinFlowPlusWithdrawal.py,ressim,NWDJyLib.cTimes,NWDJyLib,local,get
 externalRules/NoDraft.py,ressim,NWDJyLib.cTimes,NWDJyLib,local,getHecTimeFromRuntimestep,19
 externalRules/SecondaryFloodDraftLimit.py,ressim,NWDJyLib.cTimes,NWDJyLib,local,getHecTimeFromRuntimestep,18
 externalSVs/MainstemFlowAugSV.py,ressim,NWDJyLib.cTimes,NWDJyLib,local,getHecTimeFromRuntimestep,44
-externalSVs/baseExternalSV.py,ressim,NWDJyLib.cTimes,NWDJyLib,local,getHecTimeFromRuntimestep,42
+externalSVs/baseExternalSV.py,ressim,NWDJyLib.cTimes,NWDJyLib,local,getHecTimeFromRuntimestep,50
 NWDJyLib/__init__.py,ressim,NWDJyLib.myPackage,NWDJyLib,local,foo,18
 Willamette/ScriptedRules/Hills Creek/[DUMMY] Initialize ControllerExternalSV.py,ressim,externalSVs,externalSVs,local,ControllerExternalSV as ControllerSV,29
 externalSVs/Alternative_Setup.py,other-jython,externalSVs.baseExternalSV,externalSVs,local,ExternalSV,25
@@ -1194,7 +1202,7 @@ NWDJyLib/CanadianOps/cNatLakeARDB.py,ressim,array,array,stdlib,array,14
 NWDJyLib/DSS/cTsUtils.py,ressim,bisect,bisect,stdlib,,18
 NWDJyLib/Utils/SimplePy.py,ressim,bisect,bisect,stdlib,bisect_left,14
 NWDJyLib/cTimes.py,ressim,bisect,bisect,stdlib,,15
-externalSVs/baseExternalSV.py,ressim,bisect,bisect,stdlib,,35
+externalSVs/baseExternalSV.py,ressim,bisect,bisect,stdlib,,43
 Plots_Jython/NonExceedancePlots.py,cpython,calendar,calendar,stdlib,,38
 Plots_Jython/Willamett_Conservation System Storage.py,cpython,calendar,calendar,stdlib,,29
 Plots_Jython/Willamett_Conservation plots_ McKenzieAndBelowAndFlows.py,cpython,calendar,calendar,stdlib,,29
@@ -1208,7 +1216,7 @@ RealtimeData/EstimateMissingValues.py,cpython,calendar,calendar,stdlib,,29
 RealtimeData/Replace_Zero_Outflows.py,cpython,calendar,calendar,stdlib,,29
 Utilities/29_to_88.py,cpython,calendar,calendar,stdlib,,29
 externalSVs/ControllerExternalSV.py,ressim,calendar,calendar,stdlib,,24
-externalSVs/baseExternalSV.py,ressim,calendar,calendar,stdlib,,36
+externalSVs/baseExternalSV.py,ressim,calendar,calendar,stdlib,,44
 NWDJyLib/cRouting.py,ressim,copy,copy,stdlib,,22
 SalemAlbanyAugScript/RunningResSimHeadless/BatchCompute_updateFromMike2023/2023.06.28_BatchRunControl_ResSim3.5update.py,other-jython,copy,copy,stdlib,,25
 SalemAlbanyAugScript/RunningResSimHeadless/RunningResSimHEADLESS/Example2 - RunBatch Application/Running ResSim BATCH/BatchRunControl.py,other-jython,copy,copy,stdlib,,14
@@ -1282,9 +1290,9 @@ NWDJyLib/DSS/DSSTasks.py,other-jython,logging,logging,stdlib,,19
 NWDJyLib/DSS/cCollections.py,other-jython,logging,logging,stdlib,,13
 NWDJyLib/DSS/cDSS.py,ressim,logging,logging,stdlib,,30
 NWDJyLib/DSS/cEnsemble.py,other-jython,logging,logging,stdlib,,15
-NWDJyLib/ResSim/ResSimController.py,ressim,logging,logging,stdlib,,18
+NWDJyLib/ResSim/ResSimController.py,ressim,logging,logging,stdlib,,23
 NWDJyLib/ResSim/ResSimTasks.py,other-jython,logging,logging,stdlib,,19
-NWDJyLib/ResSim/cResSim.py,ressim,logging,logging,stdlib,,25
+NWDJyLib/ResSim/cResSim.py,ressim,logging,logging,stdlib,,30
 NWDJyLib/Utils/SimplePy.py,ressim,logging,logging,stdlib,,11
 NWDJyLib/cRouting.py,ressim,logging,logging,stdlib,,21
 NWDJyLib/rLogging.py,ressim,logging,logging,stdlib,,12
@@ -1328,7 +1336,7 @@ Plots_Jython/Willamett_BS_FCst_Plot.py,cpython,operator,operator,stdlib,,16
 Plots_Jython/Willamett_CP_FCst_Plot.py,cpython,operator,operator,stdlib,,16
 Plots_Jython/Willamett_EUG_FCst_Plot.py,cpython,operator,operator,stdlib,,16
 Plots_Jython/Willamett_PP_FCst_Plot.py,cpython,operator,operator,stdlib,,16
-DP_Menu.py,other-jython,os,os,stdlib,,11
+DP_Menu.py,other-jython,os,os,stdlib,,16
 ExternalPython/ALT_COMPARISON_PLOTS.py,cpython,os,os,stdlib,,1
 ExternalPython/ALT_COMPARISON_PLOTS_ARCHIVE.py,cpython,os,os,stdlib,,1
 ExternalPython/APE_Plotter.py,cpython,os,os,stdlib,,1
@@ -1347,9 +1355,9 @@ ExternalPython/RFC_Downloader_Module.py,cpython,os,os,stdlib,,1
 NWDJyLib/DSS/DSSTasks.py,other-jython,os,os,stdlib,,20
 NWDJyLib/DSS/cEnsemble.py,other-jython,os,os,stdlib,,17
 NWDJyLib/FixedData/NameAlias.py,ressim,os,os,stdlib,,33
-NWDJyLib/ResSim/ResSimController.py,ressim,os,os,stdlib,,18
+NWDJyLib/ResSim/ResSimController.py,ressim,os,os,stdlib,,23
 NWDJyLib/ResSim/ResSimTasks.py,other-jython,os,os,stdlib,,19
-NWDJyLib/ResSim/cResSim.py,ressim,os,os,stdlib,,25
+NWDJyLib/ResSim/cResSim.py,ressim,os,os,stdlib,,30
 NWDJyLib/ResSim/cVariableTracking.py,other-jython,os,os,stdlib,,22
 NWDJyLib/Utils/SimplePy.py,ressim,os,os,stdlib,,13
 NWDJyLib/cFile.py,ressim,os,os,stdlib,,7
@@ -1418,6 +1426,7 @@ Utilities/Save_Scripts.py,cpython,os,os,stdlib,,15
 Willamette/ScriptedRules/Hills Creek/[DUMMY] IMPORT MODULES.py,ressim,os,os,stdlib,,14
 _migration/catalog_imports.py,ressim,os,os,stdlib,,19
 _migration/check_against_install.py,other-jython,os,os,stdlib,,20
+_migration/smoketest_imports.py,other-jython,os,os,stdlib,,16
 esp_download/Download_ESP.py,cpython,os,os,stdlib,,7
 externalRules/FIRO_SPACE.py,ressim,os,os,stdlib,,77
 externalRules/MinFlowPlusWithdrawal.py,ressim,os,os,stdlib,,24
@@ -1488,14 +1497,14 @@ RealtimeData/Replace_Zero_Outflows.py,cpython,string,string,stdlib,,34
 SalemAlbanyAugScript/RunningResSimHeadless/RunningResSimHEADLESS/Example4 - website-based forcasting system/RunFCOResSim.py,other-jython,string,string,stdlib,"split,replace",194
 Utilities/29_to_88.py,cpython,string,string,stdlib,,34
 Utilities/88_to_29.py,cpython,string,string,stdlib,,4
-externalSVs/baseExternalSV.py,ressim,string,string,stdlib,,37
+externalSVs/baseExternalSV.py,ressim,string,string,stdlib,,45
 Utilities/FinalizeAndZip.py,other-jython,subprocess,subprocess,stdlib,,19
 esp_download/Download_ESP.py,cpython,subprocess,subprocess,stdlib,,7
-DP_Menu.py,other-jython,sys,sys,stdlib,,11
-NWDJyLib/CanadianOps/cNatLakeARDB.py,ressim,sys,sys,stdlib,,22
-NWDJyLib/ResSim/ResSimController.py,ressim,sys,sys,stdlib,,18
+DP_Menu.py,other-jython,sys,sys,stdlib,,16
+NWDJyLib/CanadianOps/cNatLakeARDB.py,ressim,sys,sys,stdlib,,30
+NWDJyLib/ResSim/ResSimController.py,ressim,sys,sys,stdlib,,23
 NWDJyLib/ResSim/ResSimTasks.py,other-jython,sys,sys,stdlib,,19
-NWDJyLib/ResSim/cResSim.py,ressim,sys,sys,stdlib,,25
+NWDJyLib/ResSim/cResSim.py,ressim,sys,sys,stdlib,,30
 NWDJyLib/cFile.py,ressim,sys,sys,stdlib,,8
 Plots_Jython/NonExceedancePlots.py,cpython,sys,sys,stdlib,,38
 Plots_Jython/Willamett_Conservation System Storage.py,cpython,sys,sys,stdlib,,29
@@ -1531,6 +1540,7 @@ Willamette/ScriptedRules/Hills Creek/[DUMMY] IMPORT MODULES.py,ressim,sys,sys,st
 Willamette/StateVars/PctFull_LOP_Init.py,ressim,sys,sys,stdlib,,1
 _migration/catalog_imports.py,ressim,sys,sys,stdlib,,22
 _migration/check_against_install.py,other-jython,sys,sys,stdlib,,21
+_migration/smoketest_imports.py,other-jython,sys,sys,stdlib,,15
 externalRules/_offline_tests/test_FIRO_SPACE.py,other-jython,sys,sys,stdlib,,14
 externalRules/_offline_tests/test_MinFlowPlusWithdrawal.py,other-jython,sys,sys,stdlib,,14
 externalSVs/Alternative_Setup.py,other-jython,sys,sys,stdlib,,32

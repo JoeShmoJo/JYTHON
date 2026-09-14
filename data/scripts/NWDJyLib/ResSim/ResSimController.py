@@ -12,7 +12,12 @@ as the ClientApp and  ResSim classes won't be defined properly.
 """
 from hec.script import Constants, ClientAppWrapper
 from hec.script import ResSim #ResSim simply extends ClientAppWrapper
-from hec.client import ClientApp
+#ClientApp moved from hec.client to hec.clientapp.client in ResSim 4.1. Import it
+#both ways so this file runs under 4.1 and 3.5 alike.
+try:
+    from hec.clientapp.client import ClientApp       #ResSim 4.1
+except ImportError:
+    from hec.client import ClientApp                 #ResSim 3.5
 from hec.model import RunTimeStep, RunTimeWindow
 from java.lang import System
 import os, sys, logging
