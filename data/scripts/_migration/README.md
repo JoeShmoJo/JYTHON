@@ -46,6 +46,32 @@ the question everything else depends on: if both versions ship Jython 2.7, this
 is a Java API problem only. If the interpreter changed, the language itself is
 in scope and the job is much larger.
 
+## Step 3 - import smoke test, still with no watershed
+
+Static jar checking proves a class exists. It does not prove a module imports.
+`smoketest_imports.py` runs under ResSim's own Jython with ResSim's jars on the
+classpath, imports every Java class and every ResSim-side module, and reports
+what fails.
+
+```powershell
+.\run_smoketest.ps1 -Install "C:\Program Files\HEC\HEC-ResSim\4.1"
+```
+
+It opens no watershed and computes nothing, so no other script gets a chance to
+fail first and mask the result. Run it once per install to compare versions.
+It prints the Jython and Java versions it actually ran on, and writes
+`smoketest_results.txt`.
+
+The classpath is built by finding every `.jar` under the install directory and
+handing Java wildcard entries, so it does not depend on the jar layout staying
+the same between versions.
+
+## Only then, a watershed
+
+By the time these three steps are clean, what is left is runtime behavior rather
+than imports. That is the point at which a stripped-down watershed with one
+reservoir and one rule is worth building.
+
 ## Re-run after changing code
 
 Both steps are safe to re-run; step 1 regenerates the catalog from the tree.
