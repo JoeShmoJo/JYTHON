@@ -81,6 +81,17 @@ ENTRY_POINT_DEFS = [
     "def runStateVariable", "def cleanupStateVariable",
 ]
 
+# A script run by hand from ResSim's Scripts pane has no entry point to detect --
+# it is a module that runs top to bottom. What it does carry is the header ResSim
+# reads to build its menu, so that is the signature. Without this the Utilities
+# scripts fall outside the audit, which is how seven un-migrated imports of
+# hec.client.ManagerChooser survived the first pass.
+ENTRY_POINT_HEADERS = [
+    "# displayinmenu=", "#displayinmenu=",
+    "# displaytouser=", "#displaytouser=",
+    "# displayinselector=", "#displayinselector=",
+]
+
 
 def moduleToFile():
     """{dotted module name: path relative to scripts/} for local modules."""
@@ -117,7 +128,7 @@ def findEntryPoints():
                 text = handle.read()
             finally:
                 handle.close()
-            for marker in ENTRY_POINT_DEFS:
+            for marker in ENTRY_POINT_DEFS + ENTRY_POINT_HEADERS:
                 if marker in text:
                     entries.add(os.path.relpath(full, SCRIPTS).replace("\\", "/"))
                     break
