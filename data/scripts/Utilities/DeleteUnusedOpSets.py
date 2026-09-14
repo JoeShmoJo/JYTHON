@@ -15,7 +15,12 @@ try:
     from hec.rss.script import ClientAppWrapper        #ResSim 4.1
 except ImportError:
     from hec.script import ClientAppWrapper            #ResSim 3.5
-from hec.client import ManagerChooser
+#ManagerChooser moved from hec.client to hec.clientapp.client in ResSim 4.1.
+#Import it both ways so this file runs under 4.1 and 3.5 alike.
+try:
+    from hec.clientapp.client import ManagerChooser   #ResSim 4.1
+except ImportError:
+    from hec.client import ManagerChooser             #ResSim 3.5
 from hec.script import MessageBox
 from hec.rss.model import RssSystem, ScriptOpRule
 import os, sys, csv
