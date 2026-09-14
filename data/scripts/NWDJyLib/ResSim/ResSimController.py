@@ -10,8 +10,21 @@ script from within ResSim, or pass the script as an argument to the ResSim.exe
 file. Running straight up Jython or this script from within DSS-VUE won't work,
 as the ClientApp and  ResSim classes won't be defined properly.
 """
-from hec.script import Constants, ClientAppWrapper
-from hec.script import ResSim #ResSim simply extends ClientAppWrapper
+from hec.script import Constants
+#ClientAppWrapper moved to hec.rss.script in ResSim 4.1. 4.1 still accepts the old
+#path but warns that support will be removed. Import both ways so this
+#file runs under 4.1 and 3.5 alike.
+try:
+    from hec.rss.script import ClientAppWrapper        #ResSim 4.1
+except ImportError:
+    from hec.script import ClientAppWrapper            #ResSim 3.5
+#ResSim moved to hec.rss.script in ResSim 4.1. 4.1 still accepts the old
+#path but warns that support will be removed. Import both ways so this
+#file runs under 4.1 and 3.5 alike.
+try:
+    from hec.rss.script import ResSim        #ResSim 4.1
+except ImportError:
+    from hec.script import ResSim            #ResSim 3.5
 #ClientApp moved from hec.client to hec.clientapp.client in ResSim 4.1. Import it
 #both ways so this file runs under 4.1 and 3.5 alike.
 try:

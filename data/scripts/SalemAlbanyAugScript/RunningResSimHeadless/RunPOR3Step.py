@@ -1,7 +1,13 @@
 # coding: ascii
 # Minimal, short-line Jython script to run ResSim headless.
 
-from hec.script import ResSim
+#ResSim moved to hec.rss.script in ResSim 4.1. 4.1 still accepts the old
+#path but warns that support will be removed. Import both ways so this
+#file runs under 4.1 and 3.5 alike.
+try:
+    from hec.rss.script import ResSim        #ResSim 4.1
+except ImportError:
+    from hec.script import ResSim            #ResSim 3.5
 from hec.script import Constants
 import os
 import sys

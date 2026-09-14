@@ -22,14 +22,19 @@ if SCRIPTS not in sys.path:
 
 
 def readList(fileName):
+    """[(first column, second column or "")] from a tab separated list file."""
     handle = open(os.path.join(HERE, fileName), "r")
     try:
-        names = []
+        rows = []
         for line in handle.readlines():
-            line = line.strip()
-            if line:
-                names.append(line)
-        return names
+            line = line.rstrip("\r\n")
+            if not line.strip():
+                continue
+            parts = line.split("\t")
+            if len(parts) == 1:
+                parts.append("")
+            rows.append((parts[0].strip(), parts[1].strip()))
+        return rows
     finally:
         handle.close()
 
@@ -44,18 +49,68 @@ def tryImport(name):
         return "%s: %s" %(info[0].__name__, info[1])
 
 
-def phase(title, names):
+def tryLoadFile(path):
+    """
+    Import a file directly, for scripts that are not importable as modules --
+    a folder with a space in its name, or one with no __init__.py. ResSim runs
+    those perfectly well, so they still need testing.
+    """
+    import imp
+    full = os.path.join(SCRIPTS, path.replace("/", os.sep))
+    name = "smoketest_" + str(abs(hash(path)))
+    try:
+        handle = open(full, "r")
+        try:
+            imp.load_source(name, full, handle)
+        finally:
+            handle.close()
+        return None
+    except:
+        info = sys.exc_info()
+        return "%s: %s" %(info[0].__name__, info[1])
+
+
+def phaseJava(rows):
+    """
+    Java classes. A name marked optional is one arm of a try/except, so the
+    other arm covering it is the expected result, not a failure.
+    """
     print("")
-    print("=== %s (%d) ===" %(title, len(names)))
+    print("=== Java classes (%d) ===" %len(rows))
     failures = []
-    for name in names:
+    skipped = 0
+    for name, flag in rows:
         problem = tryImport(name)
+        if problem is None:
+            continue
+        if flag == "optional":
+            skipped = skipped + 1      # the alternative import is the live one
+            continue
+        failures.append((name, problem))
+        print("  FAIL %s" %name)
+        print("       %s" %problem)
+    if len(failures) == 0:
+        print("  all %d required classes imported cleanly" %(len(rows)-skipped))
+    if skipped > 0:
+        print("  (%d optional alternatives absent, which is expected)" %skipped)
+    return failures
+
+
+def phaseModules(rows):
+    """ResSim-side modules, by name where possible and by file where not."""
+    print("")
+    print("=== ResSim-side modules (%d) ===" %len(rows))
+    failures = []
+    for name, path in rows:
+        problem = tryImport(name)
+        if problem is not None and path:
+            problem = tryLoadFile(path)     # not importable as a module
         if problem is not None:
             failures.append((name, problem))
             print("  FAIL %s" %name)
             print("       %s" %problem)
     if len(failures) == 0:
-        print("  all %d imported cleanly" %len(names))
+        print("  all %d imported cleanly" %len(rows))
     return failures
 
 
@@ -67,8 +122,8 @@ def main():
     except:
         print("Java    could not be determined")
 
-    javaFailures = phase("Java classes", readList("java_classes.txt"))
-    moduleFailures = phase("ResSim-side modules", readList("ressim_modules.txt"))
+    javaFailures = phaseJava(readList("java_classes.txt"))
+    moduleFailures = phaseModules(readList("ressim_modules.txt"))
 
     handle = open(os.path.join(HERE, "smoketest_results.txt"), "w")
     try:

@@ -9,7 +9,13 @@
 #This script doesn't work very consistently, not sure what the issue is. 
 
 from __future__ import with_statement
-from hec.script import ClientAppWrapper
+#ClientAppWrapper moved to hec.rss.script in ResSim 4.1. 4.1 still accepts the old
+#path but warns that support will be removed. Import both ways so this
+#file runs under 4.1 and 3.5 alike.
+try:
+    from hec.rss.script import ClientAppWrapper        #ResSim 4.1
+except ImportError:
+    from hec.script import ClientAppWrapper            #ResSim 3.5
 from hec.client import ManagerChooser
 from hec.script import MessageBox
 from hec.rss.model import RssSystem, ScriptOpRule

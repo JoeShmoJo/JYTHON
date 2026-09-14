@@ -46,9 +46,19 @@ if ($java) {
     Write-Host "No bundled java.exe found, falling back to java on PATH"
 }
 
-$dll = Get-ChildItem -Path $Install -Recurse -Filter *.dll -ErrorAction SilentlyContinue |
+# It has to be the directory holding javaHeclib.dll specifically. Taking the
+# first .dll found anywhere lands on the JRE's own dlls in java\bin, and then
+# every DSS class fails to initialise for a reason that has nothing to do with
+# the migration.
+$heclib = Get-ChildItem -Path $Install -Recurse -Filter javaHeclib.dll -ErrorAction SilentlyContinue |
     Select-Object -First 1
-$libPath = if ($dll) { $dll.DirectoryName } else { $Install }
+if ($heclib) {
+    $libPath = $heclib.DirectoryName
+    Write-Host "Native library path: $libPath"
+} else {
+    $libPath = $Install
+    Write-Warning "javaHeclib.dll not found under $Install. Every DSS class will fail to initialise."
+}
 
 $scriptPath = Join-Path $PSScriptRoot $Script
 if (-not (Test-Path $scriptPath)) {
