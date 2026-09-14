@@ -1,7 +1,11 @@
 # ResSim 3.5 -> 4.1 import audit
 
-Tooling to find which imports break in the upgrade. Both scripts run on a
-desktop Python 3 and only read files.
+Tooling to find which imports break in the upgrade. All three scripts read files only; none of them opens a watershed or computes
+anything.
+
+**If you do not have Python installed**, you do not need it. Everything here
+also runs under the Jython that ships with ResSim, via `run_with_jython.ps1`.
+Each step below gives both forms.
 
 ## Scope
 
@@ -21,6 +25,13 @@ modules, 10 are reachable.
 python data/scripts/_migration/catalog_imports.py
 ```
 
+or, with no Python installed:
+
+```powershell
+cd data\scripts\_migration
+.\run_with_jython.ps1 -Install "C:\Program Files\HEC\HEC-ResSim\4.1" -Script catalog_imports.py
+```
+
 Writes `import_catalog.csv` (one row per import, with a `runsUnder` column of
 `ressim` / `other-jython` / `cpython`) and `import_summary.csv` (one row per
 module, ResSim scope only).
@@ -29,6 +40,12 @@ module, ResSim scope only).
 
 ```powershell
 python data/scripts/_migration/check_against_install.py "C:\Program Files\HEC\HEC-ResSim\4.1"
+```
+
+or:
+
+```powershell
+.\run_with_jython.ps1 -Install "C:\Program Files\HEC\HEC-ResSim\4.1" -Script check_against_install.py -ScriptArgs "C:\Program Files\HEC\HEC-ResSim\4.1"
 ```
 
 Add a baseline to get a true diff of what went away between versions:
@@ -54,7 +71,7 @@ classpath, imports every Java class and every ResSim-side module, and reports
 what fails.
 
 ```powershell
-.\run_smoketest.ps1 -Install "C:\Program Files\HEC\HEC-ResSim\4.1"
+.\run_with_jython.ps1 -Install "C:\Program Files\HEC\HEC-ResSim\4.1"
 ```
 
 It opens no watershed and computes nothing, so no other script gets a chance to
