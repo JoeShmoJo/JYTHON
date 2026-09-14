@@ -9,6 +9,7 @@ java,hec.io,6,NWDJyLib/CanadianOps/cNatLakeARDB.py
 java,hec.lang,4,NWDJyLib/DSS/cDSS.py
 java,hec.model,13,NWDJyLib/CanadianOps/cNatLakeARDB.py
 java,hec.rss.model,16,NWDJyLib/CanadianOps/cNatLakeARDB.py
+java,hec.rss.script,1,NWDJyLib/ResSim/ResSimController.py
 java,hec.script,19,NWDJyLib/CanadianOps/cNatLakeARDB.py
 java,java.lang,4,NWDJyLib/CanadianOps/cNatLakeARDB.py
 java,java.util,1,NWDJyLib/cTimes.py
@@ -29,7 +30,7 @@ stdlib,array,1,NWDJyLib/CanadianOps/cNatLakeARDB.py
 stdlib,bisect,4,NWDJyLib/DSS/cTsUtils.py
 stdlib,calendar,2,externalSVs/ControllerExternalSV.py
 stdlib,copy,1,NWDJyLib/cRouting.py
-stdlib,csv,2,NWDJyLib/cFile.py
+stdlib,csv,1,NWDJyLib/cFile.py
 stdlib,datetime,2,NWDJyLib/Utils/SimplePy.py
 stdlib,fnmatch,2,NWDJyLib/cLoadModules.py
 stdlib,glob,2,NWDJyLib/cLoadModules.py
@@ -39,11 +40,11 @@ stdlib,json,2,NWDJyLib/rLogging.py
 stdlib,logging,6,NWDJyLib/DSS/cDSS.py
 stdlib,logging.config,1,NWDJyLib/rLogging.py
 stdlib,math,3,NWDJyLib/DSS/cTsUtils.py
-stdlib,os,12,NWDJyLib/FixedData/NameAlias.py
-stdlib,re,2,_migration/catalog_imports.py
+stdlib,os,11,NWDJyLib/FixedData/NameAlias.py
+stdlib,re,1,externalSVs/ControllerExternalSV.py
 stdlib,shutil,1,NWDJyLib/cFile.py
 stdlib,string,1,externalSVs/baseExternalSV.py
-stdlib,sys,7,NWDJyLib/CanadianOps/cNatLakeARDB.py
+stdlib,sys,6,NWDJyLib/CanadianOps/cNatLakeARDB.py
 stdlib,time,1,externalSVs/ControllerExternalSV.py
 stdlib,types,1,Willamette/ScriptedRules/Hills Creek/[DUMMY] IMPORT MODULES.py
 unknown,ExternalSV.myPackage,1,externalSVs/__init__.py

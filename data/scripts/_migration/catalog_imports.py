@@ -24,6 +24,10 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 SCRIPTS = os.path.dirname(HERE)
 
+# _migration is excluded because this file lists the ResSim entry point names it
+# searches for, which makes it match itself.
+SKIP_DIRS = ("__pycache__", ".git", "_migration")
+
 # Imports that only ever exist in CPython. Any file using one of these is not a
 # ResSim script, whatever directory it sits in.
 CPYTHON_ONLY = set([
@@ -82,7 +86,7 @@ def moduleToFile():
     """{dotted module name: path relative to scripts/} for local modules."""
     mapping = {}
     for dirPath, dirNames, fileNames in os.walk(SCRIPTS):
-        dirNames[:] = [d for d in dirNames if d not in ("__pycache__", ".git")]
+        dirNames[:] = [d for d in dirNames if d not in SKIP_DIRS]
         for fileName in fileNames:
             if not fileName.endswith(".py"):
                 continue
@@ -99,7 +103,7 @@ def findEntryPoints():
     """Files that ResSim itself calls into."""
     entries = set()
     for dirPath, dirNames, fileNames in os.walk(SCRIPTS):
-        dirNames[:] = [d for d in dirNames if d not in ("__pycache__", ".git")]
+        dirNames[:] = [d for d in dirNames if d not in SKIP_DIRS]
         for fileName in fileNames:
             # The PasteIntoResSim .txt files ARE rules; they just live as text.
             if not (fileName.endswith(".py") or fileName.endswith(".txt")):
@@ -132,7 +136,7 @@ def reachableFromEntryPoints(importsByFile):
         if rel in reached:
             continue
         reached.add(rel)
-        for module, names, _lineNum in importsByFile.get(rel, []):
+        for module, names, _lineNum, _optional in importsByFile.get(rel, []):
             candidates = [module]
             for name in names.replace("(", "").replace(")", "").split(","):
                 name = name.strip().split(" as ")[0].strip()
@@ -174,14 +178,17 @@ def readImports(path):
             if not match:
                 continue
             fromMod, names, plainMods = match.group(1), match.group(2), match.group(3)
+            # An indented import at module level is inside a try/except, which
+            # means it is one of several alternatives. Only one has to resolve.
+            optional = line[:1] in (" ", "\t")
             if fromMod:
                 names = names.split("#")[0].strip().rstrip("\\").strip()
-                found.append((fromMod, names, lineNum))
+                found.append((fromMod, names, lineNum, optional))
             else:
                 for mod in plainMods.split(","):
                     mod = mod.split("#")[0].strip()
                     if mod:
-                        found.append((mod, "", lineNum))
+                        found.append((mod, "", lineNum, optional))
     finally:
         handle.close()
     return found
@@ -190,7 +197,7 @@ def readImports(path):
 def main():
     importsByFile = {}
     for dirPath, dirNames, fileNames in os.walk(SCRIPTS):
-        dirNames[:] = [d for d in dirNames if d not in ("__pycache__", ".git")]
+        dirNames[:] = [d for d in dirNames if d not in SKIP_DIRS]
         for fileName in sorted(fileNames):
             if fileName.endswith(".py"):
                 full = os.path.join(dirPath, fileName)
@@ -203,7 +210,7 @@ def main():
     fileKinds = {}
     for rel in sorted(importsByFile):
             imports = importsByFile[rel]
-            roots = set(m.split(".")[0] for m, _, _ in imports)
+            roots = set(m.split(".")[0] for m, _, _, _ in imports)
             if roots & CPYTHON_ONLY:
                 kind = "cpython"          # cannot be a ResSim script
             elif rel in inRessim:
@@ -211,7 +218,7 @@ def main():
             else:
                 kind = "other-jython"     # Jython, but ResSim never loads it
             fileKinds[rel] = kind
-            for module, names, lineNum in imports:
+            for module, names, lineNum, optional in imports:
                 rows.append({
                     "file": rel,
                     "runsUnder": kind,
@@ -220,12 +227,14 @@ def main():
                     "category": classify(module.split(".")[0]),
                     "imports": names,
                     "line": lineNum,
+                    "optional": optional and "yes" or "no",
                 })
 
     catalogPath = os.path.join(HERE, "import_catalog.csv")
     handle = open(catalogPath, "w")
     writer = csv.DictWriter(handle, fieldnames=[
-        "file", "runsUnder", "module", "root", "category", "imports", "line"],
+        "file", "runsUnder", "module", "root", "category", "imports", "line",
+        "optional"],
         lineterminator="\n")
     writer.writeheader()
     for row in sorted(rows, key=lambda r: (r["category"], r["module"], r["file"])):
@@ -258,26 +267,36 @@ def main():
         dotted = rel[:-3].replace("/", ".")
         if dotted.endswith(".__init__"):
             dotted = dotted[:-9]
-        handle.write(dotted + "\n")
+        # Path as well as name: a folder with a space in it, or one with no
+        # __init__.py, is a perfectly good ResSim script but not an importable
+        # module, so the smoke test loads those by file instead.
+        handle.write(dotted + "\t" + rel + "\n")
     handle.close()
 
     javaPath = os.path.join(HERE, "java_classes.txt")
     javaNames = set()
+    requiredNames = set()
     for row in rows:
         if row["runsUnder"] != "ressim" or row["category"] != "java":
             continue
+        targets = []
         if row["imports"]:
             for name in row["imports"].replace("(", "").replace(")", "").split(","):
                 name = name.strip().split(" as ")[0].strip()
                 if name and name != "*":
-                    javaNames.add(row["module"] + "." + name)
+                    targets.append(row["module"] + "." + name)
                 elif name == "*":
-                    javaNames.add(row["module"])
+                    targets.append(row["module"])
         else:
-            javaNames.add(row["module"])
+            targets.append(row["module"])
+        for target in targets:
+            javaNames.add(target)
+            if row["optional"] != "yes":
+                requiredNames.add(target)
     handle = open(javaPath, "w")
     for name in sorted(javaNames):
-        handle.write(name + "\n")
+        flag = name in requiredNames and "required" or "optional"
+        handle.write(name + "\t" + flag + "\n")
     handle.close()
 
     counts0 = {}
