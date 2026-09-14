@@ -1,0 +1,69 @@
+############################
+# Diversion element probe -- a TEMPORARY DIAGNOSTIC, not an operating rule.
+#
+# The ScriptedRule API in ResSim 4.1 lists getOperationsElement(). That should
+# return the element a rule sits on, whatever type it is. This checks that it
+# works at a diversion, and shows which of toString(), getName() and _name
+# gives back the element name as ResSim spells it ("Diversion 1 down").
+#
+# How to use it:
+#   1. Paste this whole file into the scripted rule at ONE diversion.
+#      "Diversion 1 down" is the best one to try, because its name has spaces.
+#   2. Run a SHORT compute -- a few days is plenty.
+#   3. Send back the lines beginning "PROBE".
+#
+# runRuleScript returns None, so this rule has no effect on the compute.
+############################
+import sys
+
+from hec.script import Constants
+
+################################################################################
+# FUNCTION DEFINITIONS
+
+def _show(network, label, func):
+    """Call func() and report what came back, or how it failed. Never raises."""
+    try:
+        network.printMessage("PROBE  %-32s -> %s" % (label, func()))
+    except:
+        network.printMessage("PROBE  %-32s -> FAILED %s" % (label, sys.exc_info()[1]))
+
+
+def initRuleScript(currentRule, network):
+    """Everything happens here, so it runs once per compute rather than per step."""
+    network.printMessage("PROBE  " + "=" * 60)
+
+    _show(network, "getName()", lambda: currentRule.getName())
+    _show(network, "getDescription()", lambda: currentRule.getDescription())
+
+    # The generic accessor, and the reservoir one for comparison
+    _show(network, "getOperationsElement()",
+          lambda: currentRule.getOperationsElement())
+    _show(network, "getReservoirElement()",
+          lambda: currentRule.getReservoirElement())
+    _show(network, "getController()", lambda: currentRule.getController())
+
+    # If the generic accessor worked, find out how to read a name off it
+    elem = None
+    try:
+        elem = currentRule.getOperationsElement()
+    except:
+        network.printMessage("PROBE  getOperationsElement() unusable: %s"
+                             % sys.exc_info()[1])
+
+    if elem is None:
+        network.printMessage("PROBE  no element, so no name to read")
+    else:
+        _show(network, "  element.toString()", lambda: elem.toString())
+        _show(network, "  element.getName()", lambda: elem.getName())
+        _show(network, "  element._name", lambda: elem._name)
+        _show(network, "  element class", lambda: elem.__class__)
+
+    network.printMessage("PROBE  " + "=" * 60)
+    # Always succeed, so a failed probe never halts the compute
+    return Constants.TRUE
+
+
+def runRuleScript(currentRule, network, currentRuntimestep):
+    # Returning None means this rule has no effect on the compute.
+    return None
