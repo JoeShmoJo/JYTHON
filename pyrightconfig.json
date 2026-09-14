@@ -1,0 +1,27 @@
+{
+  "//": "Pylance is a Python 3 checker; most of this tree is Jython 2 running inside HEC-ResSim.",
+  "//1": "Two things it reports here are never real: it cannot see classes inside ResSim's .jar",
+  "//2": "files, and it cannot parse the Python 2 print statement. Silencing both is what makes",
+  "//3": "a genuine problem visible instead of buried in ~150 false ones.",
+
+  "include": ["data/scripts"],
+
+  "//4": "Folders using the Python 2 print statement. Pylance cannot parse these at all, so",
+  "//5": "every report it makes about them is an artifact of the wrong language version.",
+  "ignore": [
+    "data/scripts/DP_Menu.py",
+    "data/scripts/NWDJyLib",
+    "data/scripts/Plots_Jython",
+    "data/scripts/RealtimeData",
+    "data/scripts/SalemAlbanyAugScript",
+    "data/scripts/Utilities"
+  ],
+
+  "//6": "hec.*, jxl and the rest come from jars on ResSim's classpath, never from site-packages.",
+  "reportMissingImports": "none",
+  "reportMissingModuleSource": "none",
+
+  "//7": "The parts genuinely worth checking are the desktop Python tools: _migration and the",
+  "//8": "offline tests. Those are plain Python and keep full analysis.",
+  "typeCheckingMode": "basic"
+}
