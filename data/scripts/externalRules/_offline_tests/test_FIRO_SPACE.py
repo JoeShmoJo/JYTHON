@@ -329,7 +329,7 @@ os.remove(bad)
 
 os.remove(sparse)
 
-print("\n=== 7. An edited CSV is picked up without restarting ResSim ===")
+print("\n=== 7. An edited CSV is picked up at the next compute, not mid-compute ===")
 reloadCsv = os.path.join(_HERE, "_reload_tmp.csv")
 
 class PinnedNetwork(Network):
@@ -354,23 +354,19 @@ F.initRuleScript(ruleR, netR)
 ov1 = F.runRuleScript(ruleR, netR, RTS(datetime.date(2023, 1, 15)))
 check("pool 1450 vs curve 1400 -> MIN (draft down)", ov1.type, "MIN")
 
-# Edit the file mid-session. Pool at 1450 is now BELOW the curve.
+# Edit the file mid-compute. The file is not checked per step, so nothing changes.
 writeCurve("1500.0", 1000000060)
-ov2 = F.runRuleScript(ruleR, netR, RTS(datetime.date(2023, 1, 15)))
-check("after edit -> MAX (fill up), i.e. new values took effect", ov2.type, "MAX")
-check("reload was reported to the compute log",
-      len([m for m in netR.messages if "loaded Detroit" in m]), 2)
+ov2 = F.runRuleScript(ruleR, netR, RTS(datetime.date(2023, 1, 16)))
+check("mid-compute edit is not read (no per-step file check)", ov2.type, "MIN")
+check("no reload reported mid-compute",
+      len([m for m in netR.messages if "loaded Detroit" in m]), 1)
 
-# Same content, untouched file: must NOT reload
-before = len(netR.messages)
-F.runRuleScript(ruleR, netR, RTS(datetime.date(2023, 1, 16)))
-check("unchanged file does not trigger a reload", len(netR.messages), before)
-
-F.RELOAD_CSV_IF_CHANGED = False
-writeCurve("1400.0", 1000000120)
+# The next compute runs init again, on the same rule object ResSim keeps alive.
+F.initRuleScript(ruleR, netR)
 ov3 = F.runRuleScript(ruleR, netR, RTS(datetime.date(2023, 1, 15)))
-check("RELOAD_CSV_IF_CHANGED=False pins the loaded values", ov3.type, "MAX")
-F.RELOAD_CSV_IF_CHANGED = True
+check("next compute -> MAX (fill up), i.e. new values took effect", ov3.type, "MAX")
+check("the new load was reported to the compute log",
+      len([m for m in netR.messages if "loaded Detroit" in m]), 2)
 F.MODE, F.GLIDE_DAYS = "DRAFT_ONLY", 3.0
 os.remove(reloadCsv)
 
