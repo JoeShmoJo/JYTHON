@@ -21,8 +21,6 @@ the same as 0: a 0 binds at zero, two blanks do not bind at all.
 Author: Josh Roach
 """
 
-import os
-
 from hec.rss.model import OpValue
 from hec.rss.model import OpRule
 from hec.heclib.util import HecTime
@@ -52,9 +50,6 @@ TARGET_MET_AT = {"Green Peter": {"reservoir": "Foster",
 #its rule curve. One-sided, so it only ever raises the minimum and cannot fight
 #the rules that push the pool back down from above.
 DOWNSTREAM_REFILL_DAYS = 0
-
-#Re-read the CSVs mid-session whenever either changes on disk
-RELOAD_CSV_IF_CHANGED = True
 
 DEBUG = False
 
@@ -215,19 +210,6 @@ def _fmtFlow(flow):
     return "%.0f" %flow
 
 
-def _fileStamp(fileName):
-    """A string that changes whenever the file changes: "<mtime>|<size>"."""
-    try:
-        return "%f|%d" %(os.path.getmtime(fileName), os.path.getsize(fileName))
-    except:
-        return "missing"
-
-
-def _configStamp(minFlowPath, withdrawalPath):
-    """One stamp covering both config files."""
-    return _fileStamp(minFlowPath) + "+" + _fileStamp(withdrawalPath)
-
-
 def _resolveConfigPath(network, key, default):
     """Full path to a config CSV: the alt_config entry, or the default."""
     configCSV = default
@@ -252,7 +234,25 @@ def _columnTable(configPath, resvName, label):
     return tables[column]
 
 
-def releaseForDownstreamTarget(network, currentRuntimestep, spec, target):
+def _findLocalFlowRecord(network, spec):
+    """
+    The downstream project's local inflow series. Looked up once per compute:
+    the lookup searches the run's records and cost seconds when made every step.
+    A missing series is a hard error. Defaulting it to zero would under-release
+    by exactly the local inflow and still look plausible.
+    """
+    try:
+        return network.getRssRun().getTSRecordByPathParts(
+            spec["localFlowElement"], spec["localFlowParameter"])
+    except:
+        raise AssertionError("MinFlowPlusWithdrawal could not read the local "
+            "inflow series '%s' / '%s' needed to balance releases through %s. "
+            "Check the element name, or remove the entry from TARGET_MET_AT to "
+            "release the target directly." %(spec["localFlowElement"],
+            spec["localFlowParameter"], spec["reservoir"]))
+
+
+def releaseForDownstreamTarget(network, currentRuntimestep, spec, localTS, target):
     """
     Back the release out of a mass balance on the downstream project:
         release = target + rule curve fill rate - local inflow
@@ -270,17 +270,6 @@ def releaseForDownstreamTarget(network, currentRuntimestep, spec, target):
     if rcStorNow is not None and rcStorPrev is not None:
         fillCfs = (rcStorNow-rcStorPrev)/cfsToAcFt
 
-    #A missing local series is a hard error. Defaulting it to zero would
-    #under-release by exactly the local inflow and still look plausible.
-    try:
-        localTS = network.getRssRun().getTSRecordByPathParts(
-            spec["localFlowElement"], spec["localFlowParameter"])
-    except:
-        raise AssertionError("MinFlowPlusWithdrawal could not read the local "
-            "inflow series '%s' / '%s' needed to balance releases through %s. "
-            "Check the element name, or remove the entry from TARGET_MET_AT to "
-            "release the target directly." %(spec["localFlowElement"],
-            spec["localFlowParameter"], downstreamName))
     localCfs = _ok(localTS.getCurrentValue(currentRuntimestep))
     if localCfs is None:
         localCfs = 0.0
@@ -315,15 +304,13 @@ def _initialize(currentRule, network):
 
     currentRule.varPut("minFlowTable", minFlowTable)
     currentRule.varPut("withdrawalTable", withdrawalTable)
-    currentRule.varPut("minFlowPath", minFlowPath)
-    currentRule.varPut("withdrawalPath", withdrawalPath)
-    currentRule.varPut("configStamp", _configStamp(minFlowPath, withdrawalPath))
 
     #Only set when there is one. varPut of a None goes through Java, so ask with
     #varExists instead, which is how cNatLakeARDB.py asks.
     spec = TARGET_MET_AT.get(resvName)
     if spec is not None:
         currentRule.varPut("downstreamSpec", spec)
+        currentRule.varPut("localFlowTS", _findLocalFlowRecord(network, spec))
 
     if minFlowDays == 0 and withdrawalDays == 0:
         #Not an error: one pair of files can serve a whole watershed
@@ -343,21 +330,12 @@ def _initialize(currentRule, network):
         _fmtFlow(_total(minFlowTable, withdrawalTable, 182))))
 
 
-def _reloadIfConfigChanged(currentRule, network):
-    """Re-read both files whenever either changes on disk."""
-    if not currentRule.varExists("minFlowTable"):
-        _initialize(currentRule, network)
-        return
-    if not RELOAD_CSV_IF_CHANGED:
-        return
-    stamp = _configStamp(currentRule.varGet("minFlowPath"),
-                         currentRule.varGet("withdrawalPath"))
-    if stamp != currentRule.varGet("configStamp"):
-        _initialize(currentRule, network)
-
-
 def initRuleScript(currentRule, network):
-    """Runs at the start of the compute."""
+    """
+    Runs at the start of every compute, so an edited CSV is picked up at the
+    next compute. The file is not checked again while the compute runs: a
+    check on every call was a large share of compute time.
+    """
     _initialize(currentRule, network)
     return True
 
@@ -365,7 +343,6 @@ def initRuleScript(currentRule, network):
 def runRuleScript(currentRule, network, currentRuntimestep):
     """Runs every timestep of the compute."""
     opValue = OpValue()
-    _reloadIfConfigChanged(currentRule, network)
     minFlowTable = currentRule.varGet("minFlowTable")
     withdrawalTable = currentRule.varGet("withdrawalTable")
 
@@ -381,7 +358,7 @@ def runRuleScript(currentRule, network, currentRuntimestep):
     if currentRule.varExists("downstreamSpec"):
         spec = currentRule.varGet("downstreamSpec")
         totalFlow = releaseForDownstreamTarget(network, currentRuntimestep,
-                                               spec, totalFlow)
+            spec, currentRule.varGet("localFlowTS"), totalFlow)
 
     #Local inflow larger than the target already satisfies it downstream
     totalFlow = max(totalFlow, 0.0)

@@ -122,6 +122,7 @@ class RssRun(object):
     def __init__(self, network):
         self.network = network
     def getTSRecordByPathParts(self, element, parameter):
+        self.network.lookups += 1
         key = (element, parameter)
         if key not in self.network.records:
             raise RuntimeError("no such record %s" % (key,))
@@ -136,6 +137,7 @@ class Network(object):
         self.ts = ts or {}
         # {(element, parameter): TS}
         self.records = records if records is not None else {}
+        self.lookups = 0
     def getTimeSeries(self, kind, resvName, group, param):
         return self.ts[(resvName, group, param)]
     def getRssRun(self):
@@ -431,14 +433,21 @@ op, _ = runDay("Green Peter", datetime.date(2020, 7, 15), missing)
 check("no rule curve data means no fill term, not a crash",
       op.value, TARGET_15JUL - 100.0)
 
+# The local series is looked up once per compute, not once per timestep.
+net = fosterNetwork(localCfs=200.0)
+rule = Rule("Green Peter")
+M.initRuleScript(rule, net)
+for day in (15, 16, 17):
+    M.runRuleScript(rule, net, RTS(datetime.date(2020, 7, day)))
+check("three timesteps, one lookup of the local series", net.lookups, 1)
+
 # Every other project releases its own total and never touches Foster.
 op, _ = runDay("Detroit", datetime.date(2020, 7, 15), Network(useShipped=True))
 check("Detroit is unaffected by the Green Peter special case",
       op.value > 0, True)
 
 # A missing local inflow series is a hard error, not a quiet under-release.
-# It is read at run time rather than cached in init, so this surfaces on the
-# first timestep.
+# It is looked up once in init, so this surfaces before the first timestep.
 noLocal = fosterNetwork()
 noLocal.records = {}
 try:
