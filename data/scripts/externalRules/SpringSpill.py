@@ -12,6 +12,7 @@ Config CSV (path from alt_config key SpringSpillConfigCSV):
 from hec.rss.model import OpValue, OpRule
 from hec.heclib.util import HecTime
 from NWDJyLib.ResSim import cResSim
+from NWDJyLib.cTimes import getHecTimeFromRuntimestep
 
 from NWDJyLib.cFile import fileOpenReadClose, stripOutCommentLines, \
     getCSVDictReader, convertCSVDictReaderToListDict
@@ -21,6 +22,11 @@ from NWDJyLib.cFile import fileOpenReadClose, stripOutCommentLines, \
 
 CONFIG_KEY = "SpringSpillConfigCSV"
 TARGET_BUFFER = 5.0  # feet above target elevation considered "success"
+
+# Spread a storage correction over this many days rather than demanding the
+# whole thing in one timestep. 1.0 matches a daily model exactly. On an hourly
+# step, without it the same storage error would ask for 24 times the flow.
+GLIDE_DAYS = 1.0
 
 CFSDAY_TO_AF = (60*60*24)/43560.0 #Multiply a daily CFS by this constant to get acre-feet. It's about 2
 
@@ -86,8 +92,12 @@ def runRuleScript(currentRule, network, currentRuntimestep):
     maxEndMonth = cfg["END_MONTH"]
     maxEndDay   = cfg["END_DAY"]
 
-    cfsToAcFt = CFSDAY_TO_AF*currentRuntimestep.getTimeStepMinutes()/1440.
-    currentDate = currentRuntimestep.getHecTime()
+    timeStepMinutes = currentRuntimestep.getTimeStepMinutes()
+    cfsToAcFt = CFSDAY_TO_AF*timeStepMinutes/1440.
+    stepsInGlide = GLIDE_DAYS*1440./timeStepMinutes
+    if stepsInGlide < 1.0:
+        stepsInGlide = 1.0
+    currentDate = getHecTimeFromRuntimestep(currentRuntimestep)
     year = currentDate.year()
 
     # Window bounds, 24:00 stamps
@@ -97,10 +107,17 @@ def runRuleScript(currentRule, network, currentRuntimestep):
     if maxEndDate.lessThan(startDate):
         maxEndDate.setYearMonthDay(year + 1, maxEndMonth, maxEndDay, 1440)
 
+    # The window opens at 00:00 on the start day, the same instant as 24:00 the
+    # day before. A daily step stamped 24:00 on the start day is inside it, and
+    # so is 01:00 on the start day at an hourly step.
+    windowOpen = startDate.clone(); windowOpen.subtractDays(1)
+    firstStepEnd = windowOpen.clone(); firstStepEnd.addMinutes(timeStepMinutes)
+
     # Rolling end date that can define an early end to the spill (x days after achieve the target)
-    # Reset each year, default to maxEndDate
+    # Reset each year on the first step in the window, default to maxEndDate
     endDate = currentRule.varGet("endDate")
-    if endDate is None or (currentDate.month() == startMonth and currentDate.day() == startDay):
+    if endDate is None or (currentDate.greaterThan(windowOpen) and
+                           currentDate.lessThanEqualTo(firstStepEnd)):
         endDate = maxEndDate.clone()
 
     elevPrev = network.getTimeSeries("Reservoir", resvName, "Pool", "Elev").getPreviousValue(currentRuntimestep)
@@ -109,7 +126,7 @@ def runRuleScript(currentRule, network, currentRuntimestep):
 
     # Trigger rolling end-date the first time we're below (target + buffer) within the window
     if (elevPrev is not None and elevPrev < cfg["TARGET_ELEV"] + TARGET_BUFFER and
-        currentDate.greaterThanEqualTo(startDate) and
+        currentDate.greaterThan(windowOpen) and
         currentDate.lessThanEqualTo(maxEndDate) and
         endDate.equalTo(maxEndDate)):
         endDate = currentDate.clone()
@@ -117,12 +134,12 @@ def runRuleScript(currentRule, network, currentRuntimestep):
         if endDate.greaterThan(maxEndDate):
             endDate = maxEndDate.clone()
 
-    if currentDate.lessThan(startDate) or currentDate.greaterThan(endDate):
+    if currentDate.lessThanEqualTo(windowOpen) or currentDate.greaterThan(endDate):
         #Outside the window of operations
         minFlow = 0.
     else:
-        #Snap to the target elevation
-        minFlow = inflow + (storPrev - targetStor) / cfsToAcFt
+        #Pull back to the target elevation over GLIDE_DAYS
+        minFlow = inflow + (storPrev - targetStor) / (cfsToAcFt*stepsInGlide)
     opValue.init(OpRule.RULETYPE_MIN, max(0.0, minFlow))
 
     currentRule.varPut("endDate", endDate)
