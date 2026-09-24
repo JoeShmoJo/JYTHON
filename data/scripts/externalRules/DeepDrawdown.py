@@ -1,58 +1,43 @@
-
 # -*- coding: utf-8 -*-
 """
-Deep Drawdown or Spring Spill script, depending on which config file used
+Deep Drawdown. Minimum release that glides the pool down to TARGET_ELEV by the
+target date, then holds it there until DURATION_DAYS after it first gets within
+TARGET_BUFFER of the target, or END_MONTH/END_DAY, whichever is first.
+SpringSpill.py is the same rule without the glide.
 
-CSV expected format:
-  RESERVOIR,START_MONTH,START_DAY,TARGET_MONTH, TARGET_DAY, END_MONTH,END_DAY,DURATION_DAYS,TARGET_ELEV,ACTIVE
+Config CSV (path from alt_config key DeepDrawdownConfigCSV):
+  RESERVOIR,START_MONTH,START_DAY,TARGET_MONTH,TARGET_DAY,END_MONTH,END_DAY,DURATION_DAYS,TARGET_ELEV,ACTIVE
 """
 
-# ResSim/Jython
 from hec.rss.model import OpValue, OpRule
-from hec.script import Constants
 from hec.heclib.util import HecTime
 from NWDJyLib.ResSim import cResSim
 
-# Your CSV helpers
-from NWDJyLib.cFile import (
-    fileOpenReadClose,
-    stripOutCommentLines,
-    getCSVDictReader,
-    convertCSVDictReaderToListDict,
-)
+from NWDJyLib.cFile import fileOpenReadClose, stripOutCommentLines, \
+    getCSVDictReader, convertCSVDictReaderToListDict
 
-# Constants
-ConfigFile = "DeepDrawdownConfigCSV"
-ACFT_PER_MIN_TO_CFS = (43560.0 / 60.0)
+################################################################################
+# USER INPUT
+
+CONFIG_KEY = "DeepDrawdownConfigCSV"
 TARGET_BUFFER = 5.0  # feet above target elevation considered "success"
 
-# ---------------------------
-# CSV loader
-# ---------------------------
+CFSDAY_TO_AF = (60*60*24)/43560.0 #Multiply a daily CFS by this constant to get acre-feet. It's about 2
+
+################################################################################
+# FUNCTION DEFINITIONS
+
 def loadConfig(configCSV):
     """
-    Reads Config.csv and returns:
-      {
-        "Lookout Point": {
-          "ACTIVE": bool,
-          "START_MONTH": int, "START_DAY": int,
-          "END_MONTH": int,   "END_DAY": int,
-          "DURATION_DAYS": int,
-          "TARGET_ELEV": float
-        }, ...
-      }
+    Reads the config CSV and returns {reservoir name: {column: value}}
     """
     lines = fileOpenReadClose(configCSV)
     lines = stripOutCommentLines(lines)
     csvDict = getCSVDictReader(lines)
     csvListDict = convertCSVDictReaderToListDict(csvDict)
-
     cfg = {}
     for rowDict in csvListDict:
-        # Exact header names required
-        resvName = rowDict["RESERVOIR"]
-
-        cfg[resvName] = {
+        cfg[rowDict["RESERVOIR"]] = {
             "ACTIVE": rowDict["ACTIVE"].upper() == "TRUE",
             "START_MONTH": int(rowDict["START_MONTH"]),
             "START_DAY": int(rowDict["START_DAY"]),
@@ -65,86 +50,60 @@ def loadConfig(configCSV):
         }
     return cfg
 
-# ---------------------------
-# init
-# ---------------------------
 def initRuleScript(currentRule, network):
-    """
-    - Read CSV path from Alternative_Setup
-    - Load config and cache for run()
-    - Pre-compute targetStor for the current reservoir
-    """
     resvName = currentRule.getReservoirElement().toString()
-
     altSetupSV = network.getStateVariable("Alternative_Setup")
-    cfgPathRel = altSetupSV.varGet(ConfigFile)  
-    cfgPathAbs = network.makeAbsolutePathFromWatershed(cfgPathRel)
-
-    Config = loadConfig(cfgPathAbs)
+    cfgPath = network.makeAbsolutePathFromWatershed(altSetupSV.varGet(CONFIG_KEY))
+    Config = loadConfig(cfgPath)
     currentRule.varPut("Config", Config)
-
     if resvName not in Config:
-        currentRule.varPut("targetStor", None)
-        currentRule.varPut("endDate", None)
-        print(Config + " not configured for " + resvName)
-        return Constants.TRUE
+        network.printMessage("%s is not configured in %s" %(resvName, cfgPath))
+        return True
 
-    targetElev = Config[resvName]["TARGET_ELEV"]
     storTable = cResSim.getElevationStorageTable(resvName, network)
     try:
-        targetStor = storTable.interpolate(float(targetElev))
-    except Exception:
+        targetStor = storTable.interpolate(Config[resvName]["TARGET_ELEV"])
+    except:
         targetStor = None
     currentRule.varPut("targetStor", targetStor)
-
     # Reset rolling end date each init
     currentRule.varPut("endDate", None)
-    return Constants.TRUE
+    return True
 
-# ---------------------------
-# run
-# ---------------------------
 def runRuleScript(currentRule, network, currentRuntimestep):
-    resvName   = currentRule.getReservoirElement().toString()
-    Config   = currentRule.varGet("Config") or {}
-    opValue    = OpValue()
-
-    # Not configured
-    if resvName not in Config:
+    resvName = currentRule.getReservoirElement().toString()
+    Config = currentRule.varGet("Config")
+    opValue = OpValue()
+    if resvName not in Config or not Config[resvName]["ACTIVE"]:
         opValue.init(OpRule.RULETYPE_MIN, 0.0)
         return opValue
-
-    cfg = Config[resvName]
-    if not cfg.get("ACTIVE", False):
-        opValue.init(OpRule.RULETYPE_MIN, 0.0)
-        return opValue
-
-    startMonth  = cfg["START_MONTH"]
-    startDay    = cfg["START_DAY"]
-    targetMonth  = cfg["TARGET_MONTH"]
-    targetDay    = cfg["TARGET_DAY"]
-    maxEndMonth = cfg["END_MONTH"]
-    maxEndDay   = cfg["END_DAY"]
-    targetDays  = cfg["DURATION_DAYS"]
-    targetElev  = float(cfg["TARGET_ELEV"])
-    targetStor  = currentRule.varGet("targetStor")
-
+    targetStor = currentRule.varGet("targetStor")
     if targetStor is None:
         opValue.init(OpRule.RULETYPE_MIN, 0.0)
         return opValue
 
+    cfg = Config[resvName]
+    startMonth  = cfg["START_MONTH"]
+    startDay    = cfg["START_DAY"]
+    targetMonth = cfg["TARGET_MONTH"]
+    targetDay   = cfg["TARGET_DAY"]
+    maxEndMonth = cfg["END_MONTH"]
+    maxEndDay   = cfg["END_DAY"]
+
     timeStepMinutes = currentRuntimestep.getTimeStepMinutes()
-    currentDate     = currentRuntimestep.getHecTime()
+    cfsToAcFt = CFSDAY_TO_AF*timeStepMinutes/1440.
+    currentDate = currentRuntimestep.getHecTime()
+    year = currentDate.year()
 
     # Window bounds, 24:00 stamps
-    startDate = HecTime(); startDate.setYearMonthDay(currentDate.year(), startMonth, startDay, 1440)
-    targetDate = HecTime(); targetDate.setYearMonthDay(currentDate.year(), targetMonth, targetDay, 1440)
-    maxEndDate = HecTime(); maxEndDate.setYearMonthDay(currentDate.year(), maxEndMonth, maxEndDay, 1440)
+    startDate = HecTime(); startDate.setYearMonthDay(year, startMonth, startDay, 1440)
+    targetDate = HecTime(); targetDate.setYearMonthDay(year, targetMonth, targetDay, 1440)
+    maxEndDate = HecTime(); maxEndDate.setYearMonthDay(year, maxEndMonth, maxEndDay, 1440)
     #Cover the case if target/end date are in a different calendar year
     if targetDate.lessThan(startDate):
-        targetDate.setYearMonthDay(currentDate.year() + 1, targetMonth, targetDay, 1440)
+        targetDate.setYearMonthDay(year + 1, targetMonth, targetDay, 1440)
     if maxEndDate.lessThan(startDate):
-        maxEndDate.setYearMonthDay(currentDate.year() + 1, maxEndMonth, maxEndDay, 1440)
+        maxEndDate.setYearMonthDay(year + 1, maxEndMonth, maxEndDay, 1440)
 
     # Rolling end date that can define an early end to the deep drawdown (x days after achieve the target)
     # Reset each year, default to maxEndDate
@@ -152,22 +111,17 @@ def runRuleScript(currentRule, network, currentRuntimestep):
     if endDate is None or (currentDate.month() == startMonth and currentDate.day() == startDay):
         endDate = maxEndDate.clone()
 
-    # Series
-    elevTS   = network.getTimeSeries("Reservoir", resvName, "Pool", "Elev")
-    storTS   = network.getTimeSeries("Reservoir", resvName, "Pool", "Stor")
-    inflowTS = network.getTimeSeries("Reservoir", resvName, "Pool", "Flow-IN")
+    elevPrev = network.getTimeSeries("Reservoir", resvName, "Pool", "Elev").getPreviousValue(currentRuntimestep)
+    storPrev = network.getTimeSeries("Reservoir", resvName, "Pool", "Stor").getPreviousValue(currentRuntimestep)
+    inflow   = network.getTimeSeries("Reservoir", resvName, "Pool", "Flow-IN").getCurrentValue(currentRuntimestep)
 
-    elevPrev = elevTS.getPreviousValue(currentRuntimestep)
-    storPrev = storTS.getPreviousValue(currentRuntimestep)
-    inflow   = inflowTS.getCurrentValue(currentRuntimestep)
-
-    # Trigger rolling end-date the first time we’re below (target + buffer) within the window
-    if (elevPrev is not None and float(elevPrev) < (targetElev + TARGET_BUFFER) and
+    # Trigger rolling end-date the first time we're below (target + buffer) within the window
+    if (elevPrev is not None and elevPrev < cfg["TARGET_ELEV"] + TARGET_BUFFER and
         currentDate.greaterThanEqualTo(startDate) and
         currentDate.lessThanEqualTo(maxEndDate) and
         endDate.equalTo(maxEndDate)):
         endDate = currentDate.clone()
-        endDate.addDays(int(targetDays))
+        endDate.addDays(cfg["DURATION_DAYS"])
         if endDate.greaterThan(maxEndDate):
             endDate = maxEndDate.clone()
 
@@ -178,12 +132,11 @@ def runRuleScript(currentRule, network, currentRuntimestep):
         #Trying to draft down to the target
         #Don't just dump storage all at once, try to straight-line it
         timestepsUntilTarget = currentDate.computeNumberIntervals(targetDate, timeStepMinutes)
-        storTargetNextTimestep = storPrev - (storPrev - targetStor)/timestepsUntilTarget
-        minFlow = inflow + (storPrev - storTargetNextTimestep) / float(timeStepMinutes) * ACFT_PER_MIN_TO_CFS
+        minFlow = inflow + (storPrev - targetStor) / timestepsUntilTarget / cfsToAcFt
     else:
         #After the target date but before end
         #Just try to snap back to the target elevation as quickly as possible
-        minFlow = inflow + (storPrev - targetStor) / float(timeStepMinutes) * ACFT_PER_MIN_TO_CFS
+        minFlow = inflow + (storPrev - targetStor) / cfsToAcFt
     opValue.init(OpRule.RULETYPE_MIN, max(0.0, minFlow))
 
     currentRule.varPut("endDate", endDate)

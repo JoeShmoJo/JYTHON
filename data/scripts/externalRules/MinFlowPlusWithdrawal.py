@@ -223,6 +223,11 @@ def _fileStamp(fileName):
         return "missing"
 
 
+def _configStamp(minFlowPath, withdrawalPath):
+    """One stamp covering both config files."""
+    return _fileStamp(minFlowPath) + "+" + _fileStamp(withdrawalPath)
+
+
 def _resolveConfigPath(network, key, default):
     """Full path to a config CSV: the alt_config entry, or the default."""
     configCSV = default
@@ -238,11 +243,10 @@ def _resolveConfigPath(network, key, default):
     return network.makeAbsolutePathFromWatershed(configCSV)
 
 
-def _columnTable(network, resvName, key, default, label):
+def _columnTable(configPath, resvName, label):
     """This reservoir's 365-entry table from one config file, blanks if absent."""
-    tables = loadDailyConfig(_resolveConfigPath(network, key, default), label)
-    columnNames = tables.keys()
-    column = _findColumnForReservoir(resvName, columnNames)
+    tables = loadDailyConfig(configPath, label)
+    column = _findColumnForReservoir(resvName, tables.keys())
     if column is None:
         return [None]*(DAYS_IN_YEAR+1)
     return tables[column]
@@ -304,10 +308,8 @@ def _initialize(currentRule, network):
     minFlowPath = _resolveConfigPath(network, MIN_FLOW_KEY, DEFAULT_MIN_FLOW_CSV)
     withdrawalPath = _resolveConfigPath(network, WITHDRAWAL_KEY, DEFAULT_WITHDRAWAL_CSV)
 
-    minFlowTable = _columnTable(network, resvName, MIN_FLOW_KEY,
-                                DEFAULT_MIN_FLOW_CSV, "minimum flow")
-    withdrawalTable = _columnTable(network, resvName, WITHDRAWAL_KEY,
-                                   DEFAULT_WITHDRAWAL_CSV, "withdrawal")
+    minFlowTable = _columnTable(minFlowPath, resvName, "minimum flow")
+    withdrawalTable = _columnTable(withdrawalPath, resvName, "withdrawal")
     minFlowDays = countDefinedDays(minFlowTable)
     withdrawalDays = countDefinedDays(withdrawalTable)
 
@@ -315,8 +317,7 @@ def _initialize(currentRule, network):
     currentRule.varPut("withdrawalTable", withdrawalTable)
     currentRule.varPut("minFlowPath", minFlowPath)
     currentRule.varPut("withdrawalPath", withdrawalPath)
-    currentRule.varPut("configStamp",
-                       _fileStamp(minFlowPath)+"+"+_fileStamp(withdrawalPath))
+    currentRule.varPut("configStamp", _configStamp(minFlowPath, withdrawalPath))
 
     #Only set when there is one. varPut of a None goes through Java, so ask with
     #varExists instead, which is how cNatLakeARDB.py asks.
@@ -349,8 +350,8 @@ def _reloadIfConfigChanged(currentRule, network):
         return
     if not RELOAD_CSV_IF_CHANGED:
         return
-    stamp = _fileStamp(currentRule.varGet("minFlowPath")) + "+" \
-          + _fileStamp(currentRule.varGet("withdrawalPath"))
+    stamp = _configStamp(currentRule.varGet("minFlowPath"),
+                         currentRule.varGet("withdrawalPath"))
     if stamp != currentRule.varGet("configStamp"):
         _initialize(currentRule, network)
 

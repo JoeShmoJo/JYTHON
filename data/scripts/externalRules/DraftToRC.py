@@ -1,30 +1,34 @@
 # -*- coding: utf-8 -*-
 """
-Debug + Simple Draft-to-RC MAX rule:
-- Prints 7-day inflow volume (AF) and RC storage +7d (AF)
-- If current storage > RC now, sets MAX release to ( (S_cur - RC_+7d + Qin_7d_AF) / 7 days ) in cfs
+Draft-to-rule-curve MAX rule.
+When the pool is above the rule curve, sets the MAX release to the lower of:
+- the release that lands the pool on the rule curve this timestep
+- the release that reaches (rule curve - BUFFER) DAYS_LOOKAHEAD days from now
 """
 
 from hec.rss.model import OpValue, OpRule
 from hec.heclib.util import HecTime
-import math
+
+################################################################################
+# USER INPUT
 
 DAYS_LOOKAHEAD = 3
-BUFFER = 50  # AF buffer below RC to aim for
-CFSDAY_TO_AF = (60*60*24)/43560.0 #Multiply a daily CFS by this constant to get acre-feet. It's about 2
-AF_TO_CFSDAY = 1./CFSDAY_TO_AF
+BUFFER = 50  # AF buffer below RC to aim for, avoids asymptoting forever
 
-# ---- tiny helpers ----
+CFSDAY_TO_AF = (60*60*24)/43560.0 #Multiply a daily CFS by this constant to get acre-feet. It's about 2
+
+################################################################################
+# FUNCTION DEFINITIONS
+
 def _ok(v):
-    """Return float(v) if it is usable; None if NaN/Inf/HEC-missing sentinel."""
+    """Return float(v) if it is usable; None if missing/NaN/a DSS sentinel."""
     try:
         f = float(v)
     except:
         return None
-    if math.isnan(f) or math.isinf(f):
+    if f != f: #NaN is the only value not equal to itself
         return None
-    # treat giant magnitudes as missing (HEC/ DSS sentinels ~1e38)
-    if abs(f) > 1e30:
+    if abs(f) > 1e30: #HEC/DSS missing-value sentinels are around 1e38
         return None
     return f
 
@@ -32,54 +36,48 @@ def initRuleScript(currentRule, network):
     return True
 
 def runRuleScript(currentRule, network, currentRuntimestep):
-    res_name = currentRule.getReservoirElement().toString()
-
-    inflowTS  = network.getTimeSeries("Reservoir", res_name, "Pool", "Flow-IN")
-    storTS    = network.getTimeSeries("Reservoir", res_name, "Pool", "Stor")
-    rcStorTS  = network.getTimeSeries("Reservoir", res_name, "Rule Curve", "Stor-ZONE")
-
-    # previous values (per your request)
-    stor_prev   = _ok(storTS.getPreviousValue(currentRuntimestep))   if storTS   else None
-
-    # If we can’t read the required series, do nothing
+    resvName = currentRule.getReservoirElement().toString()
+    inflowTS = network.getTimeSeries("Reservoir", resvName, "Pool", "Flow-IN")
+    storTS   = network.getTimeSeries("Reservoir", resvName, "Pool", "Stor")
+    rcStorTS = network.getTimeSeries("Reservoir", resvName, "Rule Curve", "Stor-ZONE")
     if storTS is None or rcStorTS is None or inflowTS is None:
         return None
+    storPrev = _ok(storTS.getPreviousValue(currentRuntimestep))
+    if storPrev is None:
+        return None
 
-    # Compute inflow volume (AF) from CURRENT time forward through lookahead
-    dt_min = currentRuntimestep.getTimeStepMinutes()
-
-    steps = int((DAYS_LOOKAHEAD * 1440) // dt_min)
+    timeStepMinutes = currentRuntimestep.getTimeStepMinutes()
+    steps = int((DAYS_LOOKAHEAD * 1440) // timeStepMinutes)
     if steps <= 0:
         return None
+    cfsToAcFt = CFSDAY_TO_AF*timeStepMinutes/1440.
 
-    curHT  = currentRuntimestep.getHecTime()
-    probe  = HecTime(); probe.set(curHT)
-
-    inflow_sum_af = 0.0
-    for _ in range(steps):
+    # Inflow volume (AF) from the current time forward through the lookahead
+    curHT = currentRuntimestep.getHecTime()
+    probe = HecTime()
+    probe.set(curHT)
+    inflowSumAF = 0.0
+    for i in range(steps):
         v = _ok(inflowTS.getValue(probe))
         if v is not None:
-            inflow_sum_af += v * (dt_min * 60.0) / 43560.0  # cfs·sec → AF
-        probe.addMinutes(dt_min)
+            inflowSumAF += v * cfsToAcFt
+        probe.addMinutes(timeStepMinutes)
 
     # Rule-curve storage at the end of the lookahead
-    futureHT = HecTime(); futureHT.set(curHT); futureHT.addDays(DAYS_LOOKAHEAD)
-    rc_lookahead = _ok(rcStorTS.getValue(futureHT) - BUFFER)  # slight buffer is needed to avoid asymptoting forever
-
-    # If any critical value missing, do nothing
-    if rc_lookahead is None:
+    futureHT = HecTime()
+    futureHT.set(curHT)
+    futureHT.addDays(DAYS_LOOKAHEAD)
+    rcLookahead = _ok(rcStorTS.getValue(futureHT) - BUFFER)
+    if rcLookahead is None:
         return None
 
-    # Get the max flow to hit target on lookahead days
-    qmax = inflow_sum_af + (stor_prev - rc_lookahead) / float(DAYS_LOOKAHEAD) * AF_TO_CFSDAY
-    #Make sure we aren't overshooting, get the release required to hit rule curve exactly on this timestep
-    cfsToAcFt = CFSDAY_TO_AF*dt_min/1440.
+    # Max flow to hit the target on the lookahead day
+    qLookahead = inflowSumAF + (storPrev - rcLookahead) / float(DAYS_LOOKAHEAD) / CFSDAY_TO_AF
+    # Don't overshoot: release that lands exactly on the rule curve this timestep
     inflow = inflowTS.getCurrentValue(currentRuntimestep)
     ruleCurveStor = rcStorTS.getCurrentValue(currentRuntimestep)
-    qRuleCurve = inflow + (stor_prev - ruleCurveStor) / cfsToAcFt
-    #Take the lower of the release to get to rule curve right now and the one looking forward.
-    qmax = max(0, min(qRuleCurve, qmax))
+    qRuleCurve = inflow + (storPrev - ruleCurveStor) / cfsToAcFt
+    # Take the lower of the two
     opValue = OpValue()
-    opValue.init(OpRule.RULETYPE_MAX, qmax)
+    opValue.init(OpRule.RULETYPE_MAX, max(0, min(qRuleCurve, qLookahead)))
     return opValue
-

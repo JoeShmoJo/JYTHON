@@ -215,7 +215,7 @@ def _readCell(cell):
     text = str(cell).strip()
     if text == "":
         return None
-    return float(text)   # ValueError here is caught by the caller
+    return float(text)   # an error here is caught by the caller
 
 
 def _buildDayTable(dayElevDict):
@@ -277,7 +277,10 @@ def loadFiroConfig(configCSV):
     csvListDict = convertCSVDictReaderToListDict(csvDict)
 
     # .fieldnames is only populated after iterating, which the line above did
-    fieldNames = [f for f in list(csvDict.fieldnames) if f is not None]
+    fieldNames = []
+    for f in list(csvDict.fieldnames):
+        if f is not None:
+            fieldNames.append(f)
     resvNames = []
     for f in fieldNames:
         if f.strip().upper() not in NON_RESERVOIR_COLUMNS:
@@ -295,7 +298,7 @@ def loadFiroConfig(configCSV):
         try:
             month = int(rowDict["Month"])
             day = int(rowDict["Day"])
-        except (ValueError, TypeError, KeyError):
+        except:
             raise AssertionError(
                 "Bad or missing Month/Day on data row %d of %s"
                 % (rowNum + 1, configCSV))
@@ -305,7 +308,7 @@ def loadFiroConfig(configCSV):
         for resvName in resvNames:
             try:
                 elev = _readCell(rowDict.get(resvName))
-            except ValueError:
+            except:
                 raise AssertionError(
                     "Could not read '%s' as an elevation for %s on row %d of %s. "
                     "Use a number, or leave the cell blank to mean no target "
@@ -359,6 +362,13 @@ def _resolveConfigPath(network):
     except:
         pass
     return network.makeAbsolutePathFromWatershed(configCSV)
+
+
+def _fmtElev(elev):
+    """Format an elevation for the log, showing days with no target plainly."""
+    if elev is None:
+        return "no target"
+    return "%.2f" % elev
 
 
 def _initialize(currentRule, network):
@@ -418,13 +428,6 @@ def _initialize(currentRule, network):
                DAYS_IN_YEAR - numTargetDays,
                _fmtElev(janOne), _fmtElev(julOne), mode, csvFileName))
     return dayTable
-
-
-def _fmtElev(elev):
-    """Format an elevation for the log, showing days with no target plainly."""
-    if elev is None:
-        return "no target"
-    return "%.2f" % elev
 
 
 def _reloadIfConfigChanged(currentRule, network):
@@ -497,18 +500,17 @@ def runRuleScript(currentRule, network, currentRuntimestep):
     # qTarget is continuous through the crossing: it equals inflow exactly when
     # the pool is on the curve, is above inflow when high, below inflow when low.
     # Keep it that way -- see the note in the module docstring.
-    if mode == "FILL_ONLY":
-        ruleType, ruleValue = OpRule.RULETYPE_MAX, qTarget
-    elif mode == "BOTH" and elevPrev < targetElev - DEADBAND_FT:
-        ruleType, ruleValue = OpRule.RULETYPE_MAX, qTarget   # force the refill
+    if mode == "FILL_ONLY" or (mode == "BOTH" and elevPrev < targetElev - DEADBAND_FT):
+        ruleType = "MAX"   # force the refill
+        opValue.init(OpRule.RULETYPE_MAX, qTarget)
     else:
-        ruleType, ruleValue = OpRule.RULETYPE_MIN, qTarget   # hold at or below the curve
+        ruleType = "MIN"   # hold at or below the curve
+        opValue.init(OpRule.RULETYPE_MIN, qTarget)
 
     if DEBUG:
         network.printMessage(
             "FIRO_SPACE %s %s: targetElev=%.2f elevPrev=%.2f inflow=%.0f %s=%.0f"
             % (resvName, hTime.dateAndTime(), targetElev, elevPrev, inflow,
-               "MIN" if ruleType == OpRule.RULETYPE_MIN else "MAX", ruleValue))
+               ruleType, qTarget))
 
-    opValue.init(ruleType, ruleValue)
     return opValue
