@@ -50,6 +50,11 @@ MIN_FLOW_LOW_LIMIT = 800. #cfs
 #This balancing rule needs it to know if deep drawdown has kicked in.
 LOP_DRAWDOWN_RULE_NAME = "Deep Drawdown"
 
+# Spread a storage correction over this many days rather than demanding the
+# whole thing in one timestep. 1.0 matches a daily model exactly. On an hourly
+# step, without it the same storage error would ask for 24 times the flow.
+GLIDE_DAYS = 1.0
+
 CFSDAY_TO_AF = (60*60*24)/43560.0 #Multiply a daily CFS by this constant to get acre-feet. It's about 2
 
 ################################################################################
@@ -97,19 +102,23 @@ def runRuleScript(currentRule, network, currentRuntimestep):
     resvName = currentRule.getReservoirElement()._name
     minConStorDict = currentRule.varGet("minConStorDict")
     conStorDict = currentRule.varGet("conStorDict")
-    cfsToAcFt = CFSDAY_TO_AF*currentRuntimestep.getTimeStepMinutes()/1440.
+    timeStepMinutes = currentRuntimestep.getTimeStepMinutes()
+    cfsToAcFt = CFSDAY_TO_AF*timeStepMinutes/1440.
+    stepsInGlide = GLIDE_DAYS*1440./timeStepMinutes
+    if stepsInGlide < 1.0:
+        stepsInGlide = 1.0
     #Get previous storage, relative to min con
     storPrevLOP = network.getTimeSeries("Reservoir", "Lookout Point", "Pool", "Stor").getPreviousValue(currentRuntimestep)
     storPrevHCR = network.getTimeSeries("Reservoir", "Hills Creek", "Pool", "Stor").getPreviousValue(currentRuntimestep)
     minConStorLOP_HCR = minConStorDict["Lookout Point"] + minConStorDict["Hills Creek"]
     conStorLOP_HCR = conStorDict["Lookout Point"] + conStorDict["Hills Creek"]
-    #Target pct full is yesterday's value to avoid looking at today.
-    #HCR and LOP probably aren't perfectly balanced, so being behind by a day isn't a big deal
+    #Target pct full is the previous timestep's value to avoid looking at this one.
+    #HCR and LOP probably aren't perfectly balanced, so being behind a step isn't a big deal
     #Using the combined LOP+HCR is more stable than just looking at LOP
     pctFullTarget = (storPrevLOP + storPrevHCR - minConStorLOP_HCR)/conStorLOP_HCR
     storTargetHCR = minConStorDict["Hills Creek"] + pctFullTarget*conStorDict["Hills Creek"]
     inflow = network.getTimeSeries("Reservoir", resvName, "Pool", "Flow-IN").getCurrentValue(currentRuntimestep)
-    release = inflow + (storPrevHCR-storTargetHCR)/cfsToAcFt
+    release = inflow + (storPrevHCR-storTargetHCR)/(cfsToAcFt*stepsInGlide)
     #Apply limits
     ruleValue = max(0, min(HIGHEST_MIN_FLOW, max(MIN_FLOW_LOW_LIMIT, inflow+RELEASE_ABOVE_INFLOW), release))
     opValue.init(OpRule.RULETYPE_MIN, ruleValue)
