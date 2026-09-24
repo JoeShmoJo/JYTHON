@@ -8,6 +8,7 @@ When the pool is above the rule curve, sets the MAX release to the lower of:
 
 from hec.rss.model import OpValue, OpRule
 from hec.heclib.util import HecTime
+from NWDJyLib.cTimes import getHecTimeFromRuntimestep
 
 ################################################################################
 # USER INPUT
@@ -53,7 +54,7 @@ def runRuleScript(currentRule, network, currentRuntimestep):
     cfsToAcFt = CFSDAY_TO_AF*timeStepMinutes/1440.
 
     # Inflow volume (AF) from the current time forward through the lookahead
-    curHT = currentRuntimestep.getHecTime()
+    curHT = getHecTimeFromRuntimestep(currentRuntimestep)
     probe = HecTime()
     probe.set(curHT)
     inflowSumAF = 0.0
@@ -71,8 +72,9 @@ def runRuleScript(currentRule, network, currentRuntimestep):
     if rcLookahead is None:
         return None
 
-    # Max flow to hit the target on the lookahead day
-    qLookahead = inflowSumAF + (storPrev - rcLookahead) / float(DAYS_LOOKAHEAD) / CFSDAY_TO_AF
+    # Max flow to hit the target on the lookahead day: the average release, in
+    # cfs, that moves the lookahead's inflow volume plus the excess storage
+    qLookahead = (inflowSumAF + storPrev - rcLookahead) / (float(DAYS_LOOKAHEAD) * CFSDAY_TO_AF)
     # Don't overshoot: release that lands exactly on the rule curve this timestep
     inflow = inflowTS.getCurrentValue(currentRuntimestep)
     ruleCurveStor = rcStorTS.getCurrentValue(currentRuntimestep)
