@@ -302,20 +302,16 @@ check("Return 1 down is the big one (1B)",
       shipped["Return 1 down"][182] < shipped["Return 1 up"][182], True)
 
 # =============================================================================
-section("11. reload when the file changes")
+section("11. an edited file is picked up at the next compute, not mid-compute")
 rule = Rule(Element("Diversion 2"))
 network = Network()
 D.initRuleScript(rule, network)
 check("first read", D.runRuleScript(rule, network, RunTimeStep(3, 3)).value, 25.0)
 
-stampBefore = rule.varGet("configStamp")
 writeFixture(twoValue=26)
-# Rewriting in the same second can leave mtime unchanged, so push it forward
-_later = os.path.getmtime(FIXTURE) + 10
-os.utime(FIXTURE, (_later, _later))
-
-check("picks up the edit", D.runRuleScript(rule, network, RunTimeStep(3, 3)).value, 26.0)
-check("the stamp changed", rule.varGet("configStamp") != stampBefore, True)
+check("not re-read mid-compute", D.runRuleScript(rule, network, RunTimeStep(3, 3)).value, 25.0)
+D.initRuleScript(rule, network)   # the next compute
+check("picks up the edit at init", D.runRuleScript(rule, network, RunTimeStep(3, 3)).value, 26.0)
 writeFixture()   # put it back
 
 # =============================================================================

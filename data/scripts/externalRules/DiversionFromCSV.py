@@ -26,8 +26,6 @@ stopping for rather than a silent shutoff of that diversion.
 Author: Josh Roach
 """
 
-import os
-
 from hec.rss.model import OpValue
 from hec.rss.model import OpRule
 from hec.heclib.util import HecTime
@@ -43,9 +41,6 @@ from NWDJyLib.cTimes import getHecTimeFromRuntimestep
 #a different alternative at a different file to swap BASE for ALT.
 DIVERSION_KEY = "diversionConfigCSV"
 DEFAULT_DIVERSION_CSV = "scripts/externalRules/DiversionConfig_ALT.csv"
-
-#Re-read the CSV mid-session whenever it changes on disk
-RELOAD_CSV_IF_CHANGED = True
 
 DEBUG = False
 
@@ -177,14 +172,6 @@ def getDiversionFlow(dayTable, hTime):
     return flow
 
 
-def _fileStamp(fileName):
-    """A string that changes whenever the file changes: "<mtime>|<size>"."""
-    try:
-        return "%f|%d" %(os.path.getmtime(fileName), os.path.getsize(fileName))
-    except:
-        return "missing"
-
-
 def _resolveConfigPath(network, key, default):
     """Full path to the config CSV: the alt_config entry, or the default."""
     configCSV = default
@@ -226,8 +213,6 @@ def _initialize(currentRule, network):
     dayTable = tables[column]
     currentRule.varPut("dayTable", dayTable)
     currentRule.varPut("elementName", elementName)
-    currentRule.varPut("configPath", configPath)
-    currentRule.varPut("configStamp", _fileStamp(configPath))
 
     #One line per load, so the log always shows which numbers are in play
     network.printMessage("DiversionFromCSV: loaded %s from column '%s'. Values "
@@ -236,19 +221,12 @@ def _initialize(currentRule, network):
         getDiversionFlow(dayTable, _dayOneOf(1)), getDiversionFlow(dayTable, _dayOneOf(7))))
 
 
-def _reloadIfConfigChanged(currentRule, network):
-    """Re-read the file whenever it changes on disk."""
-    if not currentRule.varExists("dayTable"):
-        _initialize(currentRule, network)
-        return
-    if not RELOAD_CSV_IF_CHANGED:
-        return
-    if _fileStamp(currentRule.varGet("configPath")) != currentRule.varGet("configStamp"):
-        _initialize(currentRule, network)
-
-
 def initRuleScript(currentRule, network):
-    """Runs at the start of the compute."""
+    """
+    Runs at the start of every compute, so an edited CSV is picked up at the
+    next compute. The file is not checked again while the compute runs: with
+    ~30 diversions, a check on every call was a large share of compute time.
+    """
     _initialize(currentRule, network)
     return True
 
@@ -256,7 +234,6 @@ def initRuleScript(currentRule, network):
 def runRuleScript(currentRule, network, currentRuntimestep):
     """Runs every timestep of the compute."""
     opValue = OpValue()
-    _reloadIfConfigChanged(currentRule, network)
     dayTable = currentRule.varGet("dayTable")
 
     hTime = getHecTimeFromRuntimestep(currentRuntimestep)

@@ -244,19 +244,19 @@ Two traps:
 `varPut(name, None)` goes through Java and does not behave like a Python `None`.
 Do not store one. Ask `varExists(name)` instead.
 
-ResSim caches rule variables across computes in the same session. A CSV read
-once at init is not re-read when you edit the file. Stamp the file and compare:
+ResSim caches rule variables across computes in the same session, so a rule
+that reads its CSV only when `varExists` says it has not yet will never see an
+edit. Read the CSV unconditionally in `initRuleScript`, which runs at the start
+of every compute. Then an edit is picked up at the next compute.
 
-```python
-def _fileStamp(fileName):
-    try:
-        return "%f|%d" %(os.path.getmtime(fileName), os.path.getsize(fileName))
-    except:
-        return "missing"
-```
+**Do not check the file from `runRuleScript`.** A modified-time stamp compared
+on every call costs two file-system calls per element per timestep. At the ~30
+diversions that share `DiversionFromCSV.py` that adds up to millions of calls
+in a long run, and far worse on a network or synced drive. Nobody edits a
+config in the middle of a compute.
 
 There are **two** independent caches. `reload()` in the wrapper handles stale
-module code. The file stamp handles stale data. You need both.
+module code. Reading in init handles stale data. You need both.
 
 ---
 
