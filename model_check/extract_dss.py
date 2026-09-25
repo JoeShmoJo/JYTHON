@@ -85,10 +85,11 @@ SELECTIONS = OrderedDict([
     ]),
     # The value every reservoir rule returned each step. A scripted rule is
     # saved as Flow-SPEC whatever type it returned; built-in rules as
-    # Flow-MIN or Flow-MAX. Zone rules and the [DUMMY] setup rules are left out.
+    # Flow-MIN or Flow-MAX. "<zone>-ZBOp Rule" is the release the zone's guide
+    # curve asks for; the inactive zone's and the [DUMMY] setup rules are left out.
     ("rules", [
         {"b": r".+", "c": ["Flow-SPEC", "Flow-MIN", "Flow-MAX"],
-         "rule_of_reservoir": True, "exclude": r"ZBOp Rule|\[DUMMY\]"},
+         "rule_of_reservoir": True, "exclude": r"Inactive-ZBOp Rule|\[DUMMY\]"},
     ]),
 ])
 
