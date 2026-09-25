@@ -97,3 +97,17 @@ reservoir and one rule is worth building.
 ## Re-run after changing code
 
 Both steps are safe to re-run; step 1 regenerates the catalog from the tree.
+
+## Also here: cataloging a simulation's DSS output
+
+`catalog_dss.py` is not part of the import audit. It lists every time series in
+a ResSim `simulation.dss`, one row per series, to help choose records for a CSV
+extract. It needs the `hydro39` environment (for `pydsstools`). Paste the path
+into `DSS_PATH` at the top of the file, then:
+
+```powershell
+conda activate hydro39
+python data\scripts\_migration\catalog_dss.py
+```
+
+It writes `simulation_catalog.csv` next to the DSS file, not into the repo.
