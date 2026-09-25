@@ -37,7 +37,7 @@ to extract.
 | `report.html` | every summary table, with links to the plots |
 | `<check>_summary.csv` | one row per reservoir, diversion or rule |
 | `release_decisions/<reservoir>.csv` | per day: elevation, inflow, outflow, min and max limit, and the value every rule asked for |
-| `plots/Reservoirs.html` | per reservoir, three panels: elevation (with rule curve and FIRO target); flow (outflow, inflow, limits, min flow config, every rule's value); release decisions (each rule's status every day). The release decision table sits underneath, one column per rule, cells shaded by status |
+| `plots/Reservoir - <name>.html` | one page per reservoir, three panels: elevation (with rule curve and FIRO target); flow (outflow, inflow, limits, min flow config, every rule's value); release decisions (each rule's status every day). The release decision table sits underneath, one column per rule, cells shaded by status |
 | `plots/ControlPoints.html` | total, local and cumulative local flow at control points with a real (not all-zero) local flow |
 
 In the plots, pick an element from the dropdown and click legend entries to
@@ -47,6 +47,19 @@ outflow to see which rules were **in control** that day (their value equalled
 the outflow). The decision table under the plot has every rule's value every
 day whatever is shown, each cell shaded by the rule's status. Click a day on
 the plot to jump to it in the table; click a row to mark that day on the plot.
+
+**Open table in its own window** puts the table in a window of its own, to
+fill a second screen. Clicks still link both ways, the window follows the plot
+when you pick another reservoir, and closing it puts the table back under the
+plot. The two windows talk through the browser's local storage, which works in
+Chrome and Edge for pages opened from disk; Firefox keeps each local file
+separate, so there the windows will not link.
+
+**Sub-daily runs** work: dates carry the time of day, and counts and volumes
+use the run's time step (counts are still reported in days). Each reservoir
+page holds the whole run, so it grows with it: about 5 MB a year of 3-hour
+results at a reservoir with around 15 rules. Set `START_DATE` and `END_DATE` at the
+top of `check_model.py` to look at part of a long run.
 
 ## How a release decision is read
 
