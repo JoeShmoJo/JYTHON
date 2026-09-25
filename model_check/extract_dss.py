@@ -211,7 +211,9 @@ def readSeries(fid, blockPaths):
         pieces.append(pd.Series(values, index=pd.to_datetime(times)))
         units = units or getattr(ts, "units", "") or ""
     if not pieces:
-        return pd.Series(dtype=float), units
+        # A date index even when empty, or concat can turn the whole table's
+        # index into a plain Index on some pandas versions
+        return pd.Series(dtype=float, index=pd.DatetimeIndex([])), units
     data = pd.concat(pieces)
     data = data[~data.index.duplicated(keep="last")].sort_index()
     return data, units
@@ -219,6 +221,7 @@ def readSeries(fid, blockPaths):
 
 def _asDates(index):
     """Relabel 24:00 daily stamps (reported as next-day 00:00) as the day itself."""
+    index = pd.DatetimeIndex(pd.to_datetime(index))
     if len(index) and (index.hour == 0).all() and (index.minute == 0).all():
         return (index - pd.Timedelta(days=1)).date
     return index
@@ -274,6 +277,8 @@ def main():
                 name = "%s %s" % (b, c)
                 data, units = readSeries(fid, series[(b, c)])
                 columns[name] = data
+                if data.empty:
+                    print("    no values: %s" % name)
                 info.append({"column": name, "B": b, "C": c, "units": units,
                              "n_values": int(data.notna().sum()),
                              "example_path": series[(b, c)][0]})
