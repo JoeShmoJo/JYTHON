@@ -420,8 +420,15 @@ def reservoirRules(groups, name, dates):
             continue
         for c in table.columns:
             if c.startswith(name + "-") and c.endswith(" " + suffix):
+                # A value at or above NO_LIMIT_CFS is a rule saying "no limit"
+                # (NoDraft returns 1,000,000 above its zone), not a request
                 values = table[c].reindex(dates)
+                values = values.where(values < NO_LIMIT_CFS)
                 if not values.notna().any():
+                    continue
+                # A scripted rule that returns 0 every day is switched off
+                # (MainstemFlowAug with no flow augmentation, for one)
+                if kind == "script" and (values.fillna(0) == 0).all():
                     continue
                 label = c[len(name) + 1:-len(suffix) - 1]
                 zone = re.match(r"%s-(.+)-ZBOp Rule$" % re.escape(name), label)
