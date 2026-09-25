@@ -111,3 +111,9 @@ python data\scripts\_migration\catalog_dss.py
 ```
 
 It writes `simulation_catalog.csv` next to the DSS file, not into the repo.
+
+`extract_dss.py` then writes the chosen series to CSV, one file per group
+(`reservoirs.csv`, `limits.csv`, `junctions.csv`, `diversions.csv`), next to
+the DSS file. Each comes with a `<group>_series.csv` giving every column's full
+pathname and units. What goes in each group is set by `SELECTIONS` at the top
+of the script, as patterns rather than a list of names.
