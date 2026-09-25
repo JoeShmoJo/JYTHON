@@ -70,13 +70,16 @@ def writeCatalog(series, outPath):
 
 def main():
     dssPath = DSS_PATH
-    if len(sys.argv) > 1:
-        dssPath = sys.argv[1]
+    # Jupyter and VS Code's interactive window pass their own "--f=kernel.json"
+    # argument, so only a bare argument counts as a path
+    args = [a for a in sys.argv[1:] if not a.startswith("-")]
+    if args:
+        dssPath = args[0]
     dssPath = dssPath.strip().strip('"')
     if not dssPath:
         sys.exit("No DSS file given. Paste the path to simulation.dss into "
-                 "DSS_PATH at the top of %s, or pass it on the command line."
-                 % os.path.basename(__file__))
+                 "DSS_PATH at the top of catalog_dss.py, or pass it on the "
+                 "command line.")
     if not os.path.isfile(dssPath):
         sys.exit("DSS file not found: %s\nCheck the path. It should end in "
                  "simulation.dss, inside the rss\\<simulation> folder."
