@@ -15,7 +15,8 @@ and writes into that folder:
     release_decisions/<reservoir>.csv
                               per day: elevation, inflow, outflow, min and max
                               limit, and the value every rule asked for
-    plots/Reservoirs.html     per reservoir, three panels: elevation, rule curve
+    plots/Reservoir - <name>.html
+                              one page per reservoir, three panels: elevation, rule curve
                               and FIRO target; outflow, limits and every rule's
                               value; and each rule's status every day (in control,
                               capped, held up, or set by another rule). The release
@@ -23,6 +24,8 @@ and writes into that folder:
                               status: click a day to find its row, click a row to
                               mark the day. Only outflow and the limits start
                               shown on the flow panel; the legend turns on the rest.
+                              "Open table in its own window" moves the table to a
+                              window of its own, e.g. on a second screen.
     plots/ControlPoints.html  total, local and cumulative local flow where a real
                               (not all-zero) local flow is defined
     Pick an element from the dropdown; click legend entries to hide or show them.
@@ -72,6 +75,9 @@ CONFIG_ROOT = r""
 # First date to check. Blank means the first day with diversion results, which
 # skips ResSim's lookback days at the start of the file.
 START_DATE = ""
+# Last date to check. Blank means the end of the run. With START_DATE, looks at
+# part of a long run, which keeps the plot pages small.
+END_DATE = ""
 
 # Tolerances for calling two numbers the same
 ELEV_TOL_FT = 1.0          # pool vs FIRO_SPACE target
@@ -96,6 +102,10 @@ MINFLOW_OTHER_RULE_PATTERN = "MinTrib"
 NO_LIMIT_CFS = 1.0e5
 
 CFS_DAY_TO_AF = 86400.0 / 43560.0
+
+# Length of the run's time step in days, set from the data in main(). Counts
+# of steps become days with it, and flows become volumes.
+STEP_DAYS = 1.0
 
 ################################################################################
 # LOADING
@@ -202,6 +212,12 @@ def flowTol(values):
     return np.maximum(FLOW_TOL_CFS, FLOW_TOL_FRAC * np.abs(values))
 
 
+def _days(steps):
+    """A count of time steps (a boolean Series, or a number) in days."""
+    n = float(steps.sum() if hasattr(steps, "sum") else steps) * STEP_DAYS
+    return int(round(n)) if STEP_DAYS == 1.0 else round(n, 2)
+
+
 def _pct(part, whole):
     return round(100.0 * part / whole, 1) if whole else np.nan
 
@@ -232,17 +248,17 @@ def checkFiro(groups, configFile, dates):
         atMin = out <= minLim + flowTol(minLim)
         row = {
             "reservoir": name,
-            "days_with_target": int(ok.sum()),
+            "days_with_target": _days(ok),
             "within_%.1fft_pct" % ELEV_TOL_FT: _pct((ok & ~above & ~below).sum(), ok.sum()),
             "mean_dev_ft": round(dev[ok].mean(), 2),
             "max_above_ft": round(dev[ok].max(), 2),
             "max_below_ft": round(dev[ok].min(), 2),
-            "days_above": int(above.sum()),
-            "above_at_max_limit": int((above & atMax).sum()),
-            "above_unexplained": int((above & ~atMax).sum()),
-            "days_below": int(below.sum()),
-            "below_at_min_limit": int((below & atMin).sum()),
-            "below_unexplained": int((below & ~atMin).sum()),
+            "days_above": _days(above),
+            "above_at_max_limit": _days((above & atMax)),
+            "above_unexplained": _days((above & ~atMax)),
+            "days_below": _days(below),
+            "below_at_min_limit": _days((below & atMin)),
+            "below_unexplained": _days((below & ~atMin)),
         }
 
         if "rules" not in groups:
@@ -262,7 +278,7 @@ def checkFiro(groups, configFile, dates):
                                 out >= ruleVal - flowTol(ruleVal))
             followed = pd.Series(followed, index=dates) & active
             row["rule_followed_pct"] = _pct(followed.sum(), active.sum())
-            row["rule_overridden_days"] = int((active & ~followed).sum())
+            row["rule_overridden_days"] = _days((active & ~followed))
         rows.append(row)
 
         plots[name] = [
@@ -300,12 +316,12 @@ def checkMinFlow(groups, minFlowFile, withdrawalFile, dates):
         row = {
             "reservoir": name,
             "released_at": releasedAt,
-            "days_with_requirement": int(req.sum()),
+            "days_with_requirement": _days(req),
             "mean_required_cfs": round(required[req].mean(), 1),
-            "days_short": int(short.sum()),
-            "short_max_limit_below": int((short & maxBelow).sum()),
-            "short_unexplained": int((short & ~maxBelow).sum()),
-            "shortfall_af": round(((required - out).clip(lower=0)[short]).sum() * CFS_DAY_TO_AF, 0),
+            "days_short": _days(short),
+            "short_max_limit_below": _days((short & maxBelow)),
+            "short_unexplained": _days((short & ~maxBelow)),
+            "shortfall_af": round(((required - out).clip(lower=0)[short]).sum() * CFS_DAY_TO_AF * STEP_DAYS, 0),
         }
         # The min limit only reflects this requirement where it is released
         if releasedAt == name:
@@ -363,9 +379,9 @@ def checkDiversions(groups, configFile, dates):
         ok = spec.notna()
         diff = (spec - expected).abs()[ok]
         rows.append({"element": name, "rule_in_results": "yes",
-                     "days": int(ok.sum()),
+                     "days": _days(ok),
                      "matches_config_pct": _pct((diff <= RULE_TOL_CFS).sum(), ok.sum()),
-                     "days_different": int((diff > RULE_TOL_CFS).sum()),
+                     "days_different": _days((diff > RULE_TOL_CFS)),
                      "max_difference_cfs": round(diff.max(), 1) if len(diff) else np.nan})
     order = {n: i for i, n in enumerate(sorted(
         [r["element"] for r in rows],
@@ -564,8 +580,8 @@ def reservoirPlots(groups, dates, extras):
             traces.append(("%s (%s)" % (label, kind), values.where(values < NO_LIMIT_CFS), "y2",
                            {"color": color, "width": 1.2, "group": kind, "hidden": True}))
             rows.append({"reservoir": name, "rule": label, "saved_as": kind,
-                         "days_with_value": int(active.sum()),
-                         "days_in_control": int(hit.sum()),
+                         "days_with_value": _days(active),
+                         "days_in_control": _days(hit),
                          "in_control_pct": _pct(hit.sum(), active.sum())})
             for key, verb, by in (("capped", "capped by", reasons["Max set by"]),
                                   ("held up", "held up by", reasons["Min set by"])):
@@ -577,13 +593,13 @@ def reservoirPlots(groups, dates, extras):
                     sel = m & (by == who)
                     conflictRows.append({"reservoir": name, "rule": label, "saved_as": kind,
                                          "outcome": key, "by": who or "(not found)",
-                                         "days": int(days),
-                                         "volume_af": round(gap[sel[m]].sum() * CFS_DAY_TO_AF, 0)})
+                                         "days": _days(days),
+                                         "volume_af": round(gap[sel[m]].sum() * CFS_DAY_TO_AF * STEP_DAYS, 0)})
         if rules:
             free = out.notna() & (reasons["In control"] == "")
             rows.append({"reservoir": name, "rule": "(no rule equals the outflow)", "saved_as": "",
-                         "days_with_value": int(out.notna().sum()),
-                         "days_in_control": int(free.sum()),
+                         "days_with_value": _days(out.notna()),
+                         "days_in_control": _days(free),
                          "in_control_pct": _pct(free.sum(), out.notna().sum())})
 
         # Decisions panel: one row per rule, a mark each day coloured by its
@@ -640,6 +656,12 @@ def controlPointPlots(groups, dates):
     return dict(sorted(plots.items()))
 
 
+def _stamps(index):
+    """Date strings for plots and tables: the time too, only for sub-daily data."""
+    daily = bool(((index.hour == 0) & (index.minute == 0)).all())
+    return index.strftime("%Y-%m-%d" if daily else "%Y-%m-%d %H:%M")
+
+
 def _traces(plot):
     return plot["traces"] if isinstance(plot, dict) else plot
 
@@ -676,7 +698,7 @@ def stackedFigure(plots, panels, rowHeights=None):
             if text is not None:
                 extra["hovertext"] = list(text.values)
                 extra["hovertemplate"] = template or "%{y:,.0f}  %{hovertext}"
-            x = series.index.strftime("%Y-%m-%d") if isinstance(series.index, pd.DatetimeIndex) else series.index
+            x = _stamps(series.index) if isinstance(series.index, pd.DatetimeIndex) else series.index
             if mode == "markers":
                 marker = {"color": color, "size": style.pop("size", 6)}
                 if "symbol" in style:
@@ -735,14 +757,26 @@ tr:hover td{background:#eef4ff;cursor:pointer}
 <span style="background:#fbdcdc;padding:0 4px">wanted more, capped</span>
 <span style="background:#dce8f7;padding:0 4px">wanted less, held up</span>
 <span style="background:#eeeeee;padding:0 4px">set by another rule</span></span>
-<span style="color:#666">Click a day on the plot to find it in the table; click a row to mark it on the plot.</span></div>
+<button id="pop" class="plotonly">Open table in its own window</button>
+<span class="plotonly" style="color:#666">Click a day on the plot to find it in the table; click a row to mark it on the plot.</span></div>
 %(plot)s
 <div id="tablebox"><table id="tbl"></table></div>
 <script>
-var OWNER = %(owner)s, CATS = %(cats)s, TABLES = %(tables)s;
+var OWNER = %(owner)s, CATS = %(cats)s, TABLES = %(tables)s, ALL = %(all)s, FILES = %(files)s;
+// The same page shows the plot with the table under it, or, opened with
+// "#table", the table alone to fill another window. The two windows talk
+// through localStorage, which every local file shares in Chrome and Edge:
+// pages opened from disk count as separate sites and cannot reach each other.
+var TABLE_ONLY = location.hash.indexOf("#table") === 0;
 var gd = document.getElementById("plot"), sel = document.getElementById("res"),
-    tbl = document.getElementById("tbl"), current = null;
-Object.keys(TABLES).forEach(function (n) { var o = document.createElement("option"); o.text = n; sel.add(o); });
+    box = document.getElementById("tablebox"), tbl = document.getElementById("tbl"),
+    current = Object.keys(TABLES)[0], me = String(Math.random());
+function send(msg) {
+  msg.from = me; msg.t = Date.now();
+  try { localStorage.setItem("releaseDecisionsEvent", JSON.stringify(msg)); } catch (e) {}
+}
+ALL.forEach(function (n) { var o = document.createElement("option"); o.text = n; sel.add(o); });
+sel.value = current;
 function fmt(v) { return (typeof v === "number") ? v.toLocaleString(undefined, {maximumFractionDigits: 2}) : (v === null ? "" : v); }
 function drawTable() {
   var t = TABLES[current], cols = t.columns, html = "<tr>" + cols.map(function (c) { return "<th>" + c + "</th>"; }).join("") + "</tr>";
@@ -753,38 +787,80 @@ function drawTable() {
   });
   tbl.innerHTML = html;
 }
-function mark(date) {
+function markPlot(date) {
+  if (TABLE_ONLY) return;
   Plotly.relayout(gd, {shapes: date ? [{type: "line", xref: "x", yref: "paper", x0: date, x1: date, y0: 0, y1: 1,
                                        line: {color: "#ff9900", width: 2}}] : []});
+}
+function markRow(date) {
   Array.prototype.forEach.call(tbl.querySelectorAll("tr.picked"), function (r) { r.classList.remove("picked"); });
+  var row = tbl.querySelector("tr[data-date='" + date + "']");
+  if (row) { row.classList.add("picked"); row.scrollIntoView({block: "center"}); }
 }
-function show(name) {
-  current = name;
-  var vis = OWNER.map(function (o) { return o[0] === name ? o[1] : false; });
-  Plotly.restyle(gd, {visible: vis});
-  var cats = CATS[name] || [];
-  Plotly.relayout(gd, {"yaxis3.tickmode": "array", "yaxis3.tickvals": cats.map(function (c, i) { return i; }),
-                       "yaxis3.ticktext": cats, "yaxis3.range": [-0.5, Math.max(cats.length, 1) - 0.5],
-                       "shapes": []});
-  drawTable();
-}
-sel.onchange = function () { show(sel.value); };
+function stamp(x) { return String(x).replace("T", " ").slice(0, 16); }
+sel.onchange = function () { location.href = FILES[sel.value] + (TABLE_ONLY ? "#table" : ""); };
 tbl.onclick = function (e) {
   var row = e.target.closest("tr[data-date]"); if (!row) return;
-  mark(row.dataset.date); row.classList.add("picked");
+  var d = row.dataset.date; markRow(d); markPlot(d);
+  send({type: "mark", reservoir: current, date: d});
 };
-gd.on("plotly_click", function (ev) {
-  var d = String(ev.points[0].x).slice(0, 10); mark(d);
-  var row = tbl.querySelector("tr[data-date='" + d + "']");
-  if (row) { row.classList.add("picked"); row.scrollIntoView({block: "center"}); }
+window.addEventListener("storage", function (e) {
+  if (e.key !== "releaseDecisionsEvent" || !e.newValue) return;
+  var msg = JSON.parse(e.newValue);
+  if (msg.from === me) return;
+  if (msg.type === "alive") { if (!TABLE_ONLY) { box.style.display = "none"; lastAlive = Date.now(); } return; }
+  if (TABLE_ONLY && msg.reservoir !== current) {
+    // The plot moved to another reservoir: follow it
+    try { localStorage.setItem("releaseDecisionsPending", msg.date || ""); } catch (err) {}
+    location.href = FILES[msg.reservoir] + "#table";
+    return;
+  }
+  if (msg.type === "mark" && msg.reservoir === current) { markRow(msg.date); markPlot(msg.date); }
 });
-show(sel.options[0].value);
+var lastAlive = 0;
+if (TABLE_ONLY) {
+  document.title = "Release decisions: " + current;
+  gd.parentNode.style.display = "none";    // Plotly's wrapper around the plot
+  Array.prototype.forEach.call(document.querySelectorAll(".plotonly"), function (el) { el.style.display = "none"; });
+  box.style.height = "calc(100vh - 60px)";
+  drawTable();
+  var pending = ""; try { pending = localStorage.getItem("releaseDecisionsPending") || ""; localStorage.removeItem("releaseDecisionsPending"); } catch (e) {}
+  if (pending) markRow(pending);
+  // Tell plot pages this window is open, so they can drop their own table
+  setInterval(function () { send({type: "alive", reservoir: current}); }, 1000);
+  send({type: "alive", reservoir: current});
+} else {
+  Plotly.restyle(gd, {visible: OWNER.map(function (o) { return o[1]; })});
+  var cats = CATS[current] || [];
+  Plotly.relayout(gd, {"yaxis3.tickmode": "array", "yaxis3.tickvals": cats.map(function (c, i) { return i; }),
+                       "yaxis3.ticktext": cats, "yaxis3.range": [-0.5, Math.max(cats.length, 1) - 0.5]});
+  drawTable();
+  gd.on("plotly_click", function (ev) {
+    var d = stamp(ev.points[0].x); markPlot(d); markRow(d);
+    send({type: "mark", reservoir: current, date: d});
+  });
+  document.getElementById("pop").onclick = function () {
+    window.open(FILES[current] + "#table", "releaseDecisions", "width=1400,height=900");
+  };
+  // A table window already open follows this page to its reservoir
+  send({type: "show", reservoir: current});
+  // Show this page's own table again once the table window closes
+  setInterval(function () { if (Date.now() - lastAlive > 2500) box.style.display = ""; }, 1000);
+}
 </script></body></html>
 """
 
 
-def writeReservoirPage(path, title, plots, tables):
-    """The reservoir plot and its release decision table on one linked page."""
+def reservoirFile(name):
+    return "Reservoir - %s.html" % name
+
+
+def writeReservoirPage(path, title, plots, tables, allNames=None):
+    """
+    The reservoir plot and its release decision table on one linked page.
+    allNames lists every reservoir for the page's list; those not on this page
+    are reached by switching to their own page.
+    """
     panels = ["Elevation (ft)", "Flow (cfs)", "Release decisions"]
     fig, owner = stackedFigure(plots, panels, rowHeights=[0.3, 0.42, 0.28])
     fig.update_layout(height=1000, margin={"t": 20})
@@ -798,7 +874,7 @@ def writeReservoirPage(path, title, plots, tables):
     data = {}
     for name, (table, statuses) in tables.items():
         t = table.reset_index()
-        t["Date"] = t["Date"].dt.strftime("%Y-%m-%d")
+        t["Date"] = _stamps(pd.DatetimeIndex(t["Date"]))
         # Each rule's status that day shades its cell, as in the decisions panel
         status = pd.DataFrame(0, index=table.index, columns=t.columns)
         for label, kind, v, st, text in statuses:
@@ -811,7 +887,9 @@ def writeReservoirPage(path, title, plots, tables):
             "title": title, "plot": plotHtml,
             "owner": json.dumps([[o, s] for o, s in owner]),
             "cats": json.dumps({n: p["categories"] for n, p in plots.items()}),
-            "tables": json.dumps(data, default=float)})
+            "tables": json.dumps(data, default=float),
+            "all": json.dumps(list(allNames or plots.keys())),
+            "files": json.dumps({n: reservoirFile(n) for n in (allNames or plots.keys())})})
 
 
 def writeReport(runDir, runInfo, configRoot, configFiles, results, plotFiles):
@@ -855,6 +933,12 @@ def main():
         start = groups["diversions"].dropna(how="all").index.min()
     if start:
         dates = dates[dates >= pd.Timestamp(start)]
+    if END_DATE:
+        dates = dates[dates < pd.Timestamp(END_DATE) + pd.Timedelta(days=1)]
+    global STEP_DAYS
+    if len(dates) > 1:
+        STEP_DAYS = float(pd.Series(dates).diff().median() / pd.Timedelta(days=1))
+    print("Time step: %g hours" % (STEP_DAYS * 24))
     print("Checking %s, %s to %s, configs from %s"
           % (runDir, dates.min().date(), dates.max().date(), configRoot))
 
@@ -872,7 +956,7 @@ def main():
     if not os.path.isdir(plotDir):
         os.makedirs(plotDir)
     # Per-check plots from earlier versions of this script
-    for old in ("FIRO_SPACE.html", "MinFlow.html", "Diversions.html"):
+    for old in ("FIRO_SPACE.html", "MinFlow.html", "Diversions.html", "Reservoirs.html"):
         if os.path.isfile(os.path.join(plotDir, old)):
             os.remove(os.path.join(plotDir, old))
 
@@ -906,9 +990,13 @@ def main():
             print(table.to_string(index=False) if len(table) else "nothing to check")
 
     resPlots, control, conflicts, decisions = reservoirPlots(groups, dates, extras)
-    writeReservoirPage(os.path.join(plotDir, "Reservoirs.html"),
-                       "%s / %s" % (runInfo.get("simulation", ""), runInfo.get("alternative", "")),
-                       resPlots, decisions)
+    # One page per reservoir keeps each file a size a browser opens quickly,
+    # even for years of sub-daily results
+    names = list(resPlots.keys())
+    for name in names:
+        writeReservoirPage(os.path.join(plotDir, reservoirFile(name)),
+                           "%s / %s" % (runInfo.get("simulation", ""), runInfo.get("alternative", "")),
+                           {name: resPlots[name]}, {name: decisions[name]}, names)
     decisionDir = os.path.join(runDir, "release_decisions")
     if not os.path.isdir(decisionDir):
         os.makedirs(decisionDir)
@@ -931,7 +1019,7 @@ def main():
             "was in control. Several rules can share a day. Rules never in control are left out "
             "here; RuleControl_summary.csv has them all." % (FLOW_TOL_CFS, 100 * FLOW_TOL_FRAC))
     cpPlots = controlPointPlots(groups, dates)
-    plotFiles = [("Reservoirs", "Reservoirs.html")]
+    plotFiles = [("Reservoir: %s" % n, reservoirFile(n)) for n in names]
     if cpPlots:
         dropdownFigure("Control point", cpPlots, ["Flow (cfs)"]).write_html(
             os.path.join(plotDir, "ControlPoints.html"), include_plotlyjs="directory")
