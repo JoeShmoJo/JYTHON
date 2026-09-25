@@ -1,0 +1,40 @@
+column,B,C,units,n_values,example_path
+Big Cliff-Pool Flow-IN,Big Cliff-Pool,Flow-IN,cfs,1463,//Big Cliff-Pool/Flow-IN/01Jan2012/1Day/Temp1Day--0/
+Big Cliff-Pool Flow-OUT,Big Cliff-Pool,Flow-OUT,cfs,1463,//Big Cliff-Pool/Flow-OUT/01Jan2012/1Day/Temp1Day--0/
+Big Cliff-Pool Elev,Big Cliff-Pool,Elev,ft,1463,//Big Cliff-Pool/Elev/01Jan2012/1Day/Temp1Day--0/
+Blue River-Pool Flow-IN,Blue River-Pool,Flow-IN,cfs,1463,//Blue River-Pool/Flow-IN/01Jan2012/1Day/Temp1Day--0/
+Blue River-Pool Flow-OUT,Blue River-Pool,Flow-OUT,cfs,1463,//Blue River-Pool/Flow-OUT/01Jan2012/1Day/Temp1Day--0/
+Blue River-Pool Elev,Blue River-Pool,Elev,ft,1463,//Blue River-Pool/Elev/01Jan2012/1Day/Temp1Day--0/
+Cottage Grove-Pool Flow-IN,Cottage Grove-Pool,Flow-IN,cfs,1463,//Cottage Grove-Pool/Flow-IN/01Jan2012/1Day/Temp1Day--0/
+Cottage Grove-Pool Flow-OUT,Cottage Grove-Pool,Flow-OUT,cfs,1463,//Cottage Grove-Pool/Flow-OUT/01Jan2012/1Day/Temp1Day--0/
+Cottage Grove-Pool Elev,Cottage Grove-Pool,Elev,ft,1463,//Cottage Grove-Pool/Elev/01Jan2012/1Day/Temp1Day--0/
+Cougar-Pool Flow-IN,Cougar-Pool,Flow-IN,cfs,1463,//Cougar-Pool/Flow-IN/01Jan2012/1Day/Temp1Day--0/
+Cougar-Pool Flow-OUT,Cougar-Pool,Flow-OUT,cfs,1463,//Cougar-Pool/Flow-OUT/01Jan2012/1Day/Temp1Day--0/
+Cougar-Pool Elev,Cougar-Pool,Elev,ft,1463,//Cougar-Pool/Elev/01Jan2012/1Day/Temp1Day--0/
+Detroit-Pool Flow-IN,Detroit-Pool,Flow-IN,cfs,1463,//Detroit-Pool/Flow-IN/01Jan2012/1Day/Temp1Day--0/
+Detroit-Pool Flow-OUT,Detroit-Pool,Flow-OUT,cfs,1463,//Detroit-Pool/Flow-OUT/01Jan2012/1Day/Temp1Day--0/
+Detroit-Pool Elev,Detroit-Pool,Elev,ft,1463,//Detroit-Pool/Elev/01Jan2012/1Day/Temp1Day--0/
+Dexter-Pool Flow-IN,Dexter-Pool,Flow-IN,cfs,1463,//Dexter-Pool/Flow-IN/01Jan2012/1Day/Temp1Day--0/
+Dexter-Pool Flow-OUT,Dexter-Pool,Flow-OUT,cfs,1463,//Dexter-Pool/Flow-OUT/01Jan2012/1Day/Temp1Day--0/
+Dexter-Pool Elev,Dexter-Pool,Elev,ft,1463,//Dexter-Pool/Elev/01Jan2012/1Day/Temp1Day--0/
+Dorena-Pool Flow-IN,Dorena-Pool,Flow-IN,cfs,1463,//Dorena-Pool/Flow-IN/01Jan2012/1Day/Temp1Day--0/
+Dorena-Pool Flow-OUT,Dorena-Pool,Flow-OUT,cfs,1463,//Dorena-Pool/Flow-OUT/01Jan2012/1Day/Temp1Day--0/
+Dorena-Pool Elev,Dorena-Pool,Elev,ft,1463,//Dorena-Pool/Elev/01Jan2012/1Day/Temp1Day--0/
+Fall Creek-Pool Flow-IN,Fall Creek-Pool,Flow-IN,cfs,1463,//Fall Creek-Pool/Flow-IN/01Jan2012/1Day/Temp1Day--0/
+Fall Creek-Pool Flow-OUT,Fall Creek-Pool,Flow-OUT,cfs,1463,//Fall Creek-Pool/Flow-OUT/01Jan2012/1Day/Temp1Day--0/
+Fall Creek-Pool Elev,Fall Creek-Pool,Elev,ft,1463,//Fall Creek-Pool/Elev/01Jan2012/1Day/Temp1Day--0/
+Fern Ridge-Pool Flow-IN,Fern Ridge-Pool,Flow-IN,cfs,1463,//Fern Ridge-Pool/Flow-IN/01Jan2012/1Day/Temp1Day--0/
+Fern Ridge-Pool Flow-OUT,Fern Ridge-Pool,Flow-OUT,cfs,1463,//Fern Ridge-Pool/Flow-OUT/01Jan2012/1Day/Temp1Day--0/
+Fern Ridge-Pool Elev,Fern Ridge-Pool,Elev,ft,1463,//Fern Ridge-Pool/Elev/01Jan2012/1Day/Temp1Day--0/
+Foster-Pool Flow-IN,Foster-Pool,Flow-IN,cfs,1463,//Foster-Pool/Flow-IN/01Jan2012/1Day/Temp1Day--0/
+Foster-Pool Flow-OUT,Foster-Pool,Flow-OUT,cfs,1463,//Foster-Pool/Flow-OUT/01Jan2012/1Day/Temp1Day--0/
+Foster-Pool Elev,Foster-Pool,Elev,ft,1463,//Foster-Pool/Elev/01Jan2012/1Day/Temp1Day--0/
+Green Peter-Pool Flow-IN,Green Peter-Pool,Flow-IN,cfs,1463,//Green Peter-Pool/Flow-IN/01Jan2012/1Day/Temp1Day--0/
+Green Peter-Pool Flow-OUT,Green Peter-Pool,Flow-OUT,cfs,1463,//Green Peter-Pool/Flow-OUT/01Jan2012/1Day/Temp1Day--0/
+Green Peter-Pool Elev,Green Peter-Pool,Elev,ft,1463,//Green Peter-Pool/Elev/01Jan2012/1Day/Temp1Day--0/
+Hills Creek-Pool Flow-IN,Hills Creek-Pool,Flow-IN,cfs,1463,//Hills Creek-Pool/Flow-IN/01Jan2012/1Day/Temp1Day--0/
+Hills Creek-Pool Flow-OUT,Hills Creek-Pool,Flow-OUT,cfs,1463,//Hills Creek-Pool/Flow-OUT/01Jan2012/1Day/Temp1Day--0/
+Hills Creek-Pool Elev,Hills Creek-Pool,Elev,ft,1463,//Hills Creek-Pool/Elev/01Jan2012/1Day/Temp1Day--0/
+Lookout Point-Pool Flow-IN,Lookout Point-Pool,Flow-IN,cfs,1463,//Lookout Point-Pool/Flow-IN/01Jan2012/1Day/Temp1Day--0/
+Lookout Point-Pool Flow-OUT,Lookout Point-Pool,Flow-OUT,cfs,1463,//Lookout Point-Pool/Flow-OUT/01Jan2012/1Day/Temp1Day--0/
+Lookout Point-Pool Elev,Lookout Point-Pool,Elev,ft,1463,//Lookout Point-Pool/Elev/01Jan2012/1Day/Temp1Day--0/
