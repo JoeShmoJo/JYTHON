@@ -36,16 +36,17 @@ to extract.
 |---|---|
 | `report.html` | every summary table, with links to the plots |
 | `<check>_summary.csv` | one row per reservoir, diversion or rule |
-| `ReleaseDecisions.csv` | per reservoir and day: the min and max limits and the rules that set them, the rules in control, and the conflicts |
-| `plots/Reservoirs.html` | per reservoir, three panels: elevation (with rule curve and FIRO target); flow (outflow, inflow, limits, min flow config, every rule's value); release decisions (each rule's status every day). The release decision table sits underneath |
+| `release_decisions/<reservoir>.csv` | per day: elevation, inflow, outflow, min and max limit, and the value every rule asked for |
+| `plots/Reservoirs.html` | per reservoir, three panels: elevation (with rule curve and FIRO target); flow (outflow, inflow, limits, min flow config, every rule's value); release decisions (each rule's status every day). The release decision table sits underneath, one column per rule, cells shaded by status |
 | `plots/ControlPoints.html` | total, local and cumulative local flow at control points with a real (not all-zero) local flow |
 
 In the plots, pick an element from the dropdown and click legend entries to
-hide or show them. On the reservoir plot, hover the outflow to see which rules
-were **in control** that day (their value equalled the outflow) and any
-conflicts. Rules that never controlled the outflow or conflicted start hidden,
-so the hover stays readable. Click a day on the plot to jump to it in the
-decision table; click a row in the table to mark that day on the plot.
+hide or show them. On the reservoir plot's flow panel only the outflow and the
+min and max limits start shown; turn on rules from the legend. Hover the
+outflow to see which rules were **in control** that day (their value equalled
+the outflow). The decision table under the plot has every rule's value every
+day whatever is shown, each cell shaded by the rule's status. Click a day on
+the plot to jump to it in the table; click a row to mark that day on the plot.
 
 ## How a release decision is read
 

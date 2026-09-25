@@ -12,14 +12,17 @@ It checks the newest folder in model_check/output unless RUN_DIR says otherwise,
 and writes into that folder:
     report.html               summary tables for every check, with links to plots
     <check>_summary.csv       one row per reservoir, diversion or rule
-    ReleaseDecisions.csv      per reservoir and day: limits and the rules that set
-                              them, the rules in control, and the conflicts
+    release_decisions/<reservoir>.csv
+                              per day: elevation, inflow, outflow, min and max
+                              limit, and the value every rule asked for
     plots/Reservoirs.html     per reservoir, three panels: elevation, rule curve
                               and FIRO target; outflow, limits and every rule's
                               value; and each rule's status every day (in control,
-                              capped, held up, or set by another rule). The day's
-                              release decision table sits under the plot: click
-                              a day to find its row, click a row to mark the day.
+                              capped, held up, or set by another rule). The release
+                              decision table sits under the plot, cells shaded by
+                              status: click a day to find its row, click a row to
+                              mark the day. Only outflow and the limits start
+                              shown on the flow panel; the legend turns on the rest.
     plots/ControlPoints.html  total, local and cumulative local flow where a real
                               (not all-zero) local flow is defined
     Pick an element from the dropdown; click legend entries to hide or show them.
@@ -262,11 +265,8 @@ def checkFiro(groups, configFile, dates):
             row["rule_overridden_days"] = int((active & ~followed).sum())
         rows.append(row)
 
-        unexplained = (above & ~atMax) | (below & ~atMin)
         plots[name] = [
             ("FIRO_SPACE target", target, "y1", {"color": "#d62728", "group": "elev"}),
-            ("FIRO off target, unexplained", elev.where(unexplained), "y1",
-             {"mode": "markers", "color": "#ff7f0e", "group": "elev"}),
         ]
     return pd.DataFrame(rows), plots
 
@@ -449,11 +449,13 @@ def _names(rules, test):
     return names.str.replace(r"(; )+", "; ", regex=True).str.strip("; ")
 
 
-def decideReleases(dates, elev, out, minLim, maxLim, rules):
+def decideReleases(dates, elev, inflow, out, minLim, maxLim, rules):
     """
     The release decision for each day: the limits and the rules that set them,
     the rules in control, and every rule that wanted a different release and
-    what stopped it. Also, per rule, its status each day for the decisions panel.
+    what stopped it. Returns the day-by-day table (the values: pool, limits,
+    and what every rule asked for), each rule's status each day, and the
+    rules that set the limits and the rules in control.
 
     A rule's value is compared with the outflow:
       equal                              in control
@@ -476,7 +478,7 @@ def decideReleases(dates, elev, out, minLim, maxLim, rules):
     minBy = minBy.where(~noMin, "")
     inControl = _names(rules, lambda k, v: _near(v, out)) if rules else empty
 
-    statuses, conflicts = [], []
+    statuses = []
     for label, kind, v in rules:
         ok = v.notna() & out.notna()
         above = ok & (v > out + flowTol(v))
@@ -501,21 +503,16 @@ def decideReleases(dates, elev, out, minLim, maxLim, rules):
         if m.any():
             text[m] = label + " in control at " + v[m].map("{:,.0f}".format) + " cfs"
         statuses.append((label, kind, v, status, text))
-        conflicts.append(text.where(status.isin(["capped", "held up"]), ""))
 
-    conflict = empty
-    for c in conflicts:
-        conflict = conflict.str.cat(c, sep=" | ")
-    conflict = conflict.str.replace(r"( \| )+", " | ", regex=True).str.strip(" |")
-    table = pd.DataFrame({
-        "Elevation": elev.round(2), "Outflow": out.round(0),
-        "Min limit": minLim.where(~noMin).round(0), "Min set by": minBy,
-        "Max limit": maxLim.where(~noMax).round(0), "Max set by": maxBy,
-        "In control": inControl.where(inControl != "", "(no rule equals the outflow)") if rules else empty,
-        "Conflicts": conflict,
-    }, index=dates)
+    columns = {"Elevation": elev.round(2), "Inflow": inflow.round(0), "Outflow": out.round(0),
+               "Min limit": minLim.round(0), "Max limit": maxLim.where(~noMax).round(0)}
+    for label, kind, v, status, text in statuses:
+        columns[label] = v.round(0)
+    table = pd.DataFrame(columns, index=dates)
     table.index.name = "Date"
-    return table, statuses
+    reasons = pd.DataFrame({"Min set by": minBy, "Max set by": maxBy, "In control": inControl},
+                           index=dates)
+    return table, statuses, reasons
 
 
 def reservoirPlots(groups, dates, extras):
@@ -535,27 +532,27 @@ def reservoirPlots(groups, dates, extras):
         minLim = minLim.reindex(dates) if minLim is not None else pd.Series(np.nan, index=dates)
         maxLim = maxLim.reindex(dates) if maxLim is not None else pd.Series(np.nan, index=dates)
         rules = reservoirRules(groups, name, dates)
-        table, statuses = decideReleases(dates, elev, out, minLim, maxLim, rules)
-        decisions[name] = table
+        inflow = inflow.reindex(dates) if inflow is not None else pd.Series(np.nan, index=dates)
+        table, statuses, reasons = decideReleases(dates, elev, inflow, out, minLim, maxLim, rules)
+        decisions[name] = (table, statuses)
 
         traces = [("Pool elevation", elev, "y1", {"color": "#1f77b4", "group": "elev"})]
         if ruleCurve is not None:
             traces.append(("Rule curve", ruleCurve.reindex(dates), "y1",
                            {"color": "#444444", "group": "elev"}))
         traces += [t for t in extras.get(name, []) if t[2] == "y1"]
-        hover = ("in control: " + table["In control"]).where(table["In control"] != "", "")
-        hover = hover.where(table["Conflicts"] == "",
-                            hover + "<br>conflicts: " + table["Conflicts"].str.replace(" | ", "<br>", regex=False))
+        hover = ("in control: " + reasons["In control"]).where(reasons["In control"] != "", "")
+        # Outflow and the limits are shown to start with; everything else on
+        # the flow panel starts hidden, a click away in the legend
         traces.append(("Outflow", out, "y2", {"color": "#000000", "width": 2.5, "group": "flow",
                                               "hovertext": hover}))
-        if inflow is not None:
-            traces.append(("Inflow", inflow.reindex(dates), "y2",
-                           {"color": "#999999", "width": 1, "group": "flow"}))
+        traces.append(("Inflow", inflow, "y2",
+                       {"color": "#999999", "width": 1, "group": "flow", "hidden": True}))
         traces.append(("Min limit (all rules)", minLim, "y2",
                        {"color": "#1f77b4", "dash": "dash", "group": "flow"}))
         traces.append(("Max limit (all rules)", maxLim.where(maxLim < NO_LIMIT_CFS), "y2",
                        {"color": "#d62728", "dash": "dash", "group": "flow"}))
-        traces += [t for t in extras.get(name, []) if t[2] == "y2"]
+        traces += [(l, v, a, dict(st, hidden=True)) for l, v, a, st in extras.get(name, []) if a == "y2"]
 
         used = {}
         for label, kind, values, status, text in statuses:
@@ -564,17 +561,14 @@ def reservoirPlots(groups, dates, extras):
             used[kind] = used.get(kind, 0) + 1
             active = out.notna() & values.notna()
             hit = status == "in control"
-            # A rule that never set the outflow and never conflicted starts
-            # hidden, to keep the hover readable; click it in the legend to show it
             traces.append(("%s (%s)" % (label, kind), values.where(values < NO_LIMIT_CFS), "y2",
-                           {"color": color, "width": 1.2, "group": kind,
-                            "hidden": not status.isin(["in control", "capped", "held up"]).any()}))
+                           {"color": color, "width": 1.2, "group": kind, "hidden": True}))
             rows.append({"reservoir": name, "rule": label, "saved_as": kind,
                          "days_with_value": int(active.sum()),
                          "days_in_control": int(hit.sum()),
                          "in_control_pct": _pct(hit.sum(), active.sum())})
-            for key, verb, by in (("capped", "capped by", table["Max set by"]),
-                                  ("held up", "held up by", table["Min set by"])):
+            for key, verb, by in (("capped", "capped by", reasons["Max set by"]),
+                                  ("held up", "held up by", reasons["Min set by"])):
                 m = status == key
                 if not m.any():
                     continue
@@ -586,7 +580,7 @@ def reservoirPlots(groups, dates, extras):
                                          "days": int(days),
                                          "volume_af": round(gap[sel[m]].sum() * CFS_DAY_TO_AF, 0)})
         if rules:
-            free = out.notna() & (table["In control"] == "(no rule equals the outflow)")
+            free = out.notna() & (reasons["In control"] == "")
             rows.append({"reservoir": name, "rule": "(no rule equals the outflow)", "saved_as": "",
                          "days_with_value": int(out.notna().sum()),
                          "days_in_control": int(free.sum()),
@@ -727,31 +721,35 @@ body{font-family:sans-serif;margin:0 16px;background:#fff;color:#222}
 #tablebox{height:32vh;overflow:auto;border:1px solid #ccc}
 table{border-collapse:collapse;font-size:12px;width:100%%}
 th{position:sticky;top:0;background:#f0f0f0;z-index:1}
-td,th{border:1px solid #ddd;padding:2px 6px;text-align:left;vertical-align:top}
-td.n{text-align:right;white-space:nowrap}
-tr.conflict td{background:#fff3f0}
+td,th{border:1px solid #ddd;padding:2px 6px;vertical-align:bottom}
+th{font-weight:600;text-align:right;min-width:52px;max-width:110px}
+td{text-align:right;white-space:nowrap}
+td:first-child,th:first-child{text-align:left;min-width:80px}
+td.s1{background:#dff2df} td.s2{background:#fbdcdc} td.s3{background:#dce8f7} td.s4{background:#eeeeee}
 tr.picked td{background:#ffe08a}
 tr:hover td{background:#eef4ff;cursor:pointer}
 </style></head><body>
 <div id="bar"><b>%(title)s</b>
 <label>Reservoir <select id="res"></select></label>
-<label><input type="checkbox" id="only"> conflict days only</label>
+<span><span style="background:#dff2df;padding:0 4px">in control</span>
+<span style="background:#fbdcdc;padding:0 4px">wanted more, capped</span>
+<span style="background:#dce8f7;padding:0 4px">wanted less, held up</span>
+<span style="background:#eeeeee;padding:0 4px">set by another rule</span></span>
 <span style="color:#666">Click a day on the plot to find it in the table; click a row to mark it on the plot.</span></div>
 %(plot)s
 <div id="tablebox"><table id="tbl"></table></div>
 <script>
 var OWNER = %(owner)s, CATS = %(cats)s, TABLES = %(tables)s;
 var gd = document.getElementById("plot"), sel = document.getElementById("res"),
-    only = document.getElementById("only"), tbl = document.getElementById("tbl"), current = null;
+    tbl = document.getElementById("tbl"), current = null;
 Object.keys(TABLES).forEach(function (n) { var o = document.createElement("option"); o.text = n; sel.add(o); });
-function fmt(v) { return (typeof v === "number") ? v.toLocaleString() : (v === null ? "" : v); }
+function fmt(v) { return (typeof v === "number") ? v.toLocaleString(undefined, {maximumFractionDigits: 2}) : (v === null ? "" : v); }
 function drawTable() {
   var t = TABLES[current], cols = t.columns, html = "<tr>" + cols.map(function (c) { return "<th>" + c + "</th>"; }).join("") + "</tr>";
-  var ci = cols.indexOf("Conflicts");
-  t.data.forEach(function (r) {
-    if (only.checked && !r[ci]) return;
-    html += "<tr data-date='" + r[0] + "'" + (r[ci] ? " class='conflict'" : "") + ">" +
-      r.map(function (v) { return "<td" + (typeof v === "number" ? " class='n'" : "") + ">" + fmt(v) + "</td>"; }).join("") + "</tr>";
+  t.data.forEach(function (r, i) {
+    var st = t.status[i];
+    html += "<tr data-date='" + r[0] + "'>" +
+      r.map(function (v, j) { return "<td" + (st[j] ? " class='s" + st[j] + "'" : "") + ">" + fmt(v) + "</td>"; }).join("") + "</tr>";
   });
   tbl.innerHTML = html;
 }
@@ -771,7 +769,6 @@ function show(name) {
   drawTable();
 }
 sel.onchange = function () { show(sel.value); };
-only.onchange = drawTable;
 tbl.onclick = function (e) {
   var row = e.target.closest("tr[data-date]"); if (!row) return;
   mark(row.dataset.date); row.classList.add("picked");
@@ -797,12 +794,18 @@ def writeReservoirPage(path, title, plots, tables):
         fig.update_yaxes(tickmode="array", tickvals=list(range(len(cats))), ticktext=cats,
                          range=[-0.5, max(len(cats), 1) - 0.5], showgrid=False, row=3, col=1)
     plotHtml = fig.to_html(full_html=False, include_plotlyjs="directory", div_id="plot")
+    codes = {key: i + 1 for i, (key, _, _) in enumerate(STATUS_STYLE)}
     data = {}
-    for name, table in tables.items():
+    for name, (table, statuses) in tables.items():
         t = table.reset_index()
         t["Date"] = t["Date"].dt.strftime("%Y-%m-%d")
+        # Each rule's status that day shades its cell, as in the decisions panel
+        status = pd.DataFrame(0, index=table.index, columns=t.columns)
+        for label, kind, v, st, text in statuses:
+            status[label] = st.map(codes).fillna(0).astype(int).values
         t = t.astype(object).where(t.notna(), None)
-        data[name] = {"columns": list(t.columns), "data": t.values.tolist()}
+        data[name] = {"columns": list(t.columns), "data": t.values.tolist(),
+                      "status": status.values.tolist()}
     with open(path, "w", encoding="utf-8") as fh:
         fh.write(RESERVOIR_PAGE % {
             "title": title, "plot": plotHtml,
@@ -906,7 +909,11 @@ def main():
     writeReservoirPage(os.path.join(plotDir, "Reservoirs.html"),
                        "%s / %s" % (runInfo.get("simulation", ""), runInfo.get("alternative", "")),
                        resPlots, decisions)
-    pd.concat(decisions, names=["Reservoir"]).to_csv(os.path.join(runDir, "ReleaseDecisions.csv"))
+    decisionDir = os.path.join(runDir, "release_decisions")
+    if not os.path.isdir(decisionDir):
+        os.makedirs(decisionDir)
+    for name, (table, _) in decisions.items():
+        table.to_csv(os.path.join(decisionDir, "%s.csv" % name))
     control.to_csv(os.path.join(runDir, "RuleControl_summary.csv"), index=False)
     conflicts.to_csv(os.path.join(runDir, "Conflicts_summary.csv"), index=False)
     if "rules" in groups:
@@ -916,7 +923,7 @@ def main():
             "wanted more, and the outflow sat on the max limit set by <i>by</i> (outlet capacity when "
             "no rule's value equals the max limit). <b>held up</b>: the rule wanted less, and the "
             "outflow sat on the min limit set by <i>by</i>. volume_af is the total difference "
-            "between what the rule wanted and the release. Day by day in ReleaseDecisions.csv and "
+            "between what the rule wanted and the release. Day by day in release_decisions/ and "
             "the table under the reservoir plot.")
         results["RuleControl"] = (
             control[control["days_in_control"] > 0],
