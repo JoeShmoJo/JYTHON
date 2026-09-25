@@ -98,22 +98,8 @@ reservoir and one rule is worth building.
 
 Both steps are safe to re-run; step 1 regenerates the catalog from the tree.
 
-## Also here: cataloging a simulation's DSS output
 
-`catalog_dss.py` is not part of the import audit. It lists every time series in
-a ResSim `simulation.dss`, one row per series, to help choose records for a CSV
-extract. It needs the `hydro39` environment (for `pydsstools`). Paste the path
-into `DSS_PATH` at the top of the file, then:
+## Model output checks moved
 
-```powershell
-conda activate hydro39
-python data\scripts\_migration\catalog_dss.py
-```
-
-It writes `simulation_catalog.csv` next to the DSS file, not into the repo.
-
-`extract_dss.py` then writes the chosen series to CSV, one file per group
-(`reservoirs.csv`, `limits.csv`, `junctions.csv`, `diversions.csv`), next to
-the DSS file. Each comes with a `<group>_series.csv` giving every column's full
-pathname and units. What goes in each group is set by `SELECTIONS` at the top
-of the script, as patterns rather than a list of names.
+`catalog_dss.py` and `extract_dss.py` now live in `model_check/` at the root of
+the repository, with the diagnostics that use their output.

@@ -1,25 +1,29 @@
 # -*- coding: utf-8 -*-
 """
 Extract selected ResSim results from a simulation.dss into CSV files, one CSV
-per group (reservoirs, limits, junctions, diversions).
+per group (reservoirs, limits, junctions, diversions, rules).
 
 Runs on a DESKTOP Python 3 with pydsstools and pandas (the hydro39 conda
 environment), not inside ResSim. Paste the path to simulation.dss into DSS_PATH
 below, then:
     conda activate hydro39
-    python data/scripts/_migration/extract_dss.py
+    python model_check/extract_dss.py
 
 A path given on the command line overrides DSS_PATH.
 
-For each group it writes, next to the DSS file:
+Output goes to model_check/output/<simulation>_<alternative>_<date>/, e.g.
+output/Script_Cleanup_Test_Temp1Day_2026-09-25/. For each group it writes:
     <group>.csv          Date, then one column per series, named "<B> <C>"
     <group>_series.csv   one row per column: its full pathname and units
+and run_info.json, which check_model.py reads to find the alternative's configs.
 
 Records are chosen by the rules in SELECTIONS, matched against every pathname
 in the file, so a new reservoir or junction is picked up without editing this
 script. Run catalog_dss.py to see what a file holds.
 """
 
+import datetime
+import json
 import os
 import re
 import sys
@@ -46,11 +50,17 @@ F_PART = ""
 # Check the first row against ResSim after changing this.
 DAILY_AS_DATE = True
 
+# Where the output folders go. Blank means model_check/output next to this
+# script (or the current folder, when run somewhere that cannot tell).
+OUTPUT_ROOT = r""
+
 # Each group becomes one CSV. Each rule selects series by:
 #   b             regular expression the whole B part must match
 #   c             list of C parts to take
 #   only_if_has   (optional) take a B only if it also has this C part
 #   pool_exists   (optional) take a B only if "<B>-Pool" exists, i.e. B is a reservoir
+#   rule_of_reservoir (optional) take a B only if it is "<reservoir>-<rule>"
+#   exclude       (optional) regular expression; a B that contains a match is skipped
 SELECTIONS = OrderedDict([
     ("reservoirs", [
         {"b": r".+-Pool", "c": ["Flow-IN", "Flow-OUT", "Elev"]},
@@ -71,6 +81,13 @@ SELECTIONS = OrderedDict([
     ("diversions", [
         {"b": r"(?:Diversion|Return) \d+(?: up| down)?", "c": ["Flow-DECISION"]},
         {"b": r"((?:Diversion|Return) \d+(?: up| down)?)-\1", "c": ["Flow-SPEC"]},
+    ]),
+    # The value every reservoir rule returned each step. A scripted rule is
+    # saved as Flow-SPEC whatever type it returned; built-in rules as
+    # Flow-MIN or Flow-MAX. Zone rules and the [DUMMY] setup rules are left out.
+    ("rules", [
+        {"b": r".+", "c": ["Flow-SPEC", "Flow-MIN", "Flow-MAX"],
+         "rule_of_reservoir": True, "exclude": r"ZBOp Rule|\[DUMMY\]"},
     ]),
 ])
 
@@ -120,6 +137,27 @@ def _naturalKey(text):
     return [int(t) if t.isdigit() else t.lower() for t in re.split(r"(\d+)", text)]
 
 
+def _isReservoirRule(b, cByB):
+    """True for "<reservoir>-<rule>", where "<reservoir>-Pool" exists."""
+    if "-" not in b or b.endswith("-Pool"):
+        return False
+    return (b.split("-", 1)[0] + "-Pool") in cByB
+
+
+def _outputRoot():
+    if OUTPUT_ROOT:
+        return OUTPUT_ROOT
+    here = globals().get("__file__")
+    if here:
+        return os.path.join(os.path.dirname(os.path.abspath(here)), "output")
+    return os.path.join(os.getcwd(), "output")
+
+
+def alternativeName(fPart):
+    """ResSim's F part is the alternative plus a run suffix: "Temp1Day--0" -> "Temp1Day"."""
+    return re.sub(r"-+\d*$", "", fPart) or fPart
+
+
 def selectSeries(seriesKeys, rules):
     """The (B, C) keys the rules pick, in a stable order: by B, then rule C order."""
     cByB = {}
@@ -134,6 +172,10 @@ def selectSeries(seriesKeys, rules):
             if "only_if_has" in rule and rule["only_if_has"] not in cByB[b]:
                 continue
             if rule.get("pool_exists") and (b + "-Pool") not in cByB:
+                continue
+            if rule.get("rule_of_reservoir") and not _isReservoirRule(b, cByB):
+                continue
+            if "exclude" in rule and re.search(rule["exclude"], b):
                 continue
             for c in rule["c"]:
                 if c in cByB[b] and (b, c) not in chosen:
@@ -196,7 +238,9 @@ def main():
                  "command line.")
     if not os.path.isfile(dssPath):
         sys.exit("DSS file not found: %s" % dssPath)
-    outDir = os.path.dirname(os.path.abspath(dssPath))
+    dssPath = os.path.abspath(dssPath)
+    simDir = os.path.dirname(dssPath)
+    simulation = os.path.basename(simDir)
 
     fid = HecDss.Open(dssPath)
     try:
@@ -204,6 +248,20 @@ def main():
         fPart = F_PART or mostCommonF(pathnames)
         series = groupByseries(pathnames, fPart)
         print("F part %s: %d series in %s" % (fPart, len(series), dssPath))
+
+        alternative = alternativeName(fPart)
+        today = datetime.date.today().isoformat()
+        outDir = os.path.join(_outputRoot(), "%s_%s_%s" % (simulation, alternative, today))
+        if not os.path.isdir(outDir):
+            os.makedirs(outDir)
+        # The watershed is two folders above rss/<simulation>/simulation.dss
+        runInfo = {"dss_path": dssPath, "simulation": simulation,
+                   "alternative": alternative, "f_part": fPart,
+                   "watershed_dir": os.path.dirname(os.path.dirname(simDir)),
+                   "extracted": today}
+        with open(os.path.join(outDir, "run_info.json"), "w") as fh:
+            json.dump(runInfo, fh, indent=2)
+        print("Writing to %s" % outDir)
 
         for group, rules in SELECTIONS.items():
             chosen = selectSeries(series.keys(), rules)

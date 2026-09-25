@@ -8,12 +8,12 @@ row, so a 30-year run gives one row per series instead of thirty.
 Runs on a DESKTOP Python 3 with pydsstools (the hydro39 conda environment),
 not inside ResSim. Paste the path to simulation.dss into DSS_PATH below, then:
     conda activate hydro39
-    python data/scripts/_migration/catalog_dss.py
+    python model_check/catalog_dss.py
 
 A path given on the command line overrides DSS_PATH:
-    python data/scripts/_migration/catalog_dss.py "C:/path/to/simulation.dss"
+    python model_check/catalog_dss.py "C:/path/to/simulation.dss"
 
-Writes <name>_catalog.csv next to the DSS file, with columns:
+Writes model_check/output/<simulation>_catalog.csv, with columns:
     A, B, C, E, F        the pathname parts, D left out
     n_blocks             how many date blocks the series has
     first_D, last_D      first and last D part, sorted as text, not by date
@@ -92,7 +92,12 @@ def main():
         fid.close()
 
     series = catalogSeries(pathnames)
-    outPath = os.path.splitext(dssPath)[0] + "_catalog.csv"
+    here = globals().get("__file__")
+    outRoot = os.path.join(os.path.dirname(os.path.abspath(here)) if here else os.getcwd(), "output")
+    if not os.path.isdir(outRoot):
+        os.makedirs(outRoot)
+    simulation = os.path.basename(os.path.dirname(os.path.abspath(dssPath)))
+    outPath = os.path.join(outRoot, "%s_catalog.csv" % simulation)
     writeCatalog(series, outPath)
     print("%d pathnames -> %d series -> %s" % (len(pathnames), len(series), outPath))
 
