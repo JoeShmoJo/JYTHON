@@ -64,6 +64,7 @@ OUTPUT_ROOT = r""
 SELECTIONS = OrderedDict([
     ("reservoirs", [
         {"b": r".+-Pool", "c": ["Flow-IN", "Flow-OUT", "Elev"]},
+        {"b": r".+-Rule Curve", "c": ["Elev-ZONE"]},
     ]),
     # The combined min and max limit ResSim applied at each reservoir, each
     # step, plus the mainstem minimum flow targets
