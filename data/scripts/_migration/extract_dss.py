@@ -142,17 +142,31 @@ def selectSeries(seriesKeys, rules):
 
 
 def readSeries(fid, blockPaths):
-    """Read every date block of one series into a pandas Series, and its units."""
+    """
+    Read every date block of one series into a pandas Series, and its units.
+    A block with no values at all is skipped: with trim_missing, pydsstools
+    trims it to nothing and returns None for its times. A block that fails to
+    read is reported and skipped rather than stopping the whole extract.
+    """
     pieces = []
     units = ""
     for path in sorted(blockPaths):
-        ts = fid.read_ts(path, trim_missing=True)
+        try:
+            ts = fid.read_ts(path, trim_missing=True)
+        except Exception as e:
+            print("    could not read %s: %s" % (path, e))
+            continue
+        if ts is None or ts.pytimes is None or ts.values is None:
+            continue
+        times = list(ts.pytimes)
+        if not times:
+            continue
         values = np.array(ts.values, dtype=float)
         values[values < MISSING_BELOW] = np.nan
         nodata = getattr(ts, "nodata", None)
         if nodata is not None and len(nodata) == len(values):
             values[np.array(nodata, dtype=bool)] = np.nan
-        pieces.append(pd.Series(values, index=pd.to_datetime(list(ts.pytimes))))
+        pieces.append(pd.Series(values, index=pd.to_datetime(times)))
         units = units or getattr(ts, "units", "") or ""
     if not pieces:
         return pd.Series(dtype=float), units
