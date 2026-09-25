@@ -254,14 +254,14 @@ def checkFiro(groups, configFile, dates):
         unexplained = (above & ~atMax) | (below & ~atMin)
         plots[name] = [
             ("Pool elevation", elev, "y1", {"color": "#1f77b4"}),
-            ("FIRO_SPACE target", target, "y1", {"color": "#d62728", "dash": "dash"}),
+            ("FIRO_SPACE target", target, "y1", {"color": "#d62728"}),
             ("Off target, unexplained", elev.where(unexplained), "y1",
              {"mode": "markers", "color": "#ff7f0e"}),
             ("Inflow", inflow, "y2", {"color": "#7f7f7f", "width": 1}),
             ("Outflow", out, "y2", {"color": "#2ca02c"}),
-            ("Min limit", minLim, "y2", {"color": "#9467bd", "dash": "dot"}),
+            ("Min limit", minLim, "y2", {"color": "#9467bd", "width": 1}),
             ("Max limit", maxLim.where(maxLim < NO_LIMIT_CFS), "y2",
-             {"color": "#8c564b", "dash": "dot"}),
+             {"color": "#8c564b", "width": 1}),
         ]
         if ruleVal is not None:
             plots[name].append(("FIRO rule value", ruleVal.reindex(dates), "y2",
@@ -399,8 +399,15 @@ def checkDiversions(groups, configFile, dates):
 
 
 def dropdownFigure(title, plots, y1Title, y2Title=None):
-    """One figure, one element shown at a time, chosen from a dropdown."""
-    fig = make_subplots(specs=[[{"secondary_y": y2Title is not None}]])
+    """
+    One figure, one element shown at a time, chosen from a dropdown. With a
+    y2Title, "y2" series go in a second panel under the first, sharing dates.
+    """
+    twoPanels = y2Title is not None
+    if twoPanels:
+        fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.05)
+    else:
+        fig = make_subplots(rows=1, cols=1)
     names = list(plots.keys())
     owner = []
     for i, name in enumerate(names):
@@ -410,24 +417,28 @@ def dropdownFigure(title, plots, y1Title, y2Title=None):
             style = dict(style)
             mode = style.pop("mode", "lines")
             color = style.pop("color", None)
+            row = 2 if (twoPanels and axis == "y2") else 1
+            group = {"legendgroup": str(row),
+                     "legendgrouptitle_text": (y2Title if row == 2 else y1Title) if twoPanels else None}
             if mode == "markers":
                 trace = go.Scatter(x=series.index, y=series.values, name=label, mode=mode,
-                                   marker={"color": color, "size": 6}, visible=(i == 0))
+                                   marker={"color": color, "size": 6}, visible=(i == 0), **group)
             else:
                 trace = go.Scatter(x=series.index, y=series.values, name=label, mode=mode,
-                                   line=dict(color=color, **style), visible=(i == 0))
-            fig.add_trace(trace, secondary_y=(axis == "y2"))
+                                   line=dict(color=color, **style), visible=(i == 0), **group)
+            fig.add_trace(trace, row=row, col=1)
             owner.append(name)
     buttons = [{"label": name, "method": "update",
                 "args": [{"visible": [o == name for o in owner]},
                          {"title": "%s: %s" % (title, name)}]} for name in names]
     fig.update_layout(
         title="%s: %s" % (title, names[0]) if names else title,
-        updatemenus=[{"buttons": buttons, "x": 1, "xanchor": "right", "y": 1.12, "yanchor": "bottom"}],
-        hovermode="x unified", legend={"orientation": "h", "y": -0.15}, height=650)
-    fig.update_yaxes(title_text=y1Title, secondary_y=False)
-    if y2Title:
-        fig.update_yaxes(title_text=y2Title, secondary_y=True)
+        updatemenus=[{"buttons": buttons, "x": 1, "xanchor": "right", "y": 1.08, "yanchor": "bottom"}],
+        hovermode="x unified", legend={"groupclick": "toggleitem"},
+        height=850 if twoPanels else 600)
+    fig.update_yaxes(title_text=y1Title, row=1, col=1)
+    if twoPanels:
+        fig.update_yaxes(title_text=y2Title, row=2, col=1)
     return fig
 
 
