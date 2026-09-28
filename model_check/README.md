@@ -46,7 +46,7 @@ Each script also still runs on its own (`DSS_PATH` / `RUN_DIR` at the top).
 | `report.html` | every summary table, with links to the plots |
 | `<check>_summary.csv` | one row per reservoir, diversion or rule |
 | `release_decisions/<reservoir>.csv` | per day: elevation, inflow, outflow, min and max limit, and the value every rule asked for |
-| `plots/Reservoir - <name>.html` | one page per reservoir, three panels: elevation (with rule curve and FIRO target); flow (outflow, inflow, limits, min flow config, every rule's value); release decisions (each rule's status every day). The release decision table sits underneath, one column per rule, cells shaded by status |
+| `plots/Reservoir - <name>.html` | one page per reservoir, three panels: elevation (with rule curve and FIRO target); flow (outflow, inflow, limits, min flow config, every rule's value); release decisions (a bar per rule, coloured by its status, breaking only where the status changes). The release decision table sits underneath, one column per rule, cells shaded by status |
 | `plots/ControlPoints.html` | total, local and cumulative local flow at control points with a real (not all-zero) local flow |
 
 In the plots, pick an element from the dropdown and click legend entries to
