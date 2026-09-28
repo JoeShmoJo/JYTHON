@@ -35,7 +35,7 @@ Each script also still runs on its own (`DSS_PATH` / `RUN_DIR` at the top).
 | `junctions.csv` | local, cumulative local and total flow where a local flow is defined |
 | `diversions.csv` | what each diversion moved, and what DiversionFromCSV asked for |
 | `rules.csv` | the value every reservoir rule returned each day |
-| `priority.csv` | every rule's priority each day, i.e. its place in the rule stack |
+| `modelReport.json` | the active operation set: each zone's rules in stack order (copied from the simulation folder) |
 | `*_series.csv` | the DSS pathname and units behind every column |
 | `run_info.json` | simulation, alternative and watershed, used by `check_model.py` |
 
@@ -111,13 +111,16 @@ MinFlowPlusWithdrawal runs at that reservoir in this alternative, and
 
 **Diversions.** Whether DiversionFromCSV wrote the config value to its rule.
 
-**Rule stack.** Each reservoir's rules in stack order, top first, from the
-priority ResSim saves for every rule every step (`<reservoir>-<rule>-P`,
-Penalty-PRIORITY), so no Jython export is needed. A range means the priority
-changed, usually with the zone. The reservoir page lists rules in the same
-order and shows each one's priority in the table header. It assumes a lower
-number is higher in the stack (`PRIORITY_LOW_IS_TOP` in `check_model.py`):
-check the first run against the operation set.
+**Rule stack.** Each reservoir's rules in each zone, top of the stack first,
+from `modelReport_<alternative>.json`, which `Alternative_Setup` writes next to
+`simulation.dss` on every compute (the active operation set, zone by zone). The
+extract copies it in as `modelReport.json`, and pulls each zone's top
+elevation (`<reservoir>-<zone> Elev-ZONE`) so the check knows which zone, and
+so which stack, applied each day. The reservoir page orders rules by the stack
+of the zone the pool spent longest in, puts a `Zone` column in the table, shows
+each rule's place in each zone under its name (`RC 3 · TOD 5`), and greys out a
+rule on days its zone's stack does not include it. `in_results` flags a rule
+in the operation set that saved no values.
 
 **Conflicts.** For every rule, how many days it was capped or held up, by
 what, and the total volume between what it wanted and what was released.
