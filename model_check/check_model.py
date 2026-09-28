@@ -1232,17 +1232,22 @@ function drawTable() {
   tbl.innerHTML = html;
   freezeColumns(t.freeze || 0);
 }
-// Keep the first n columns in place while the rest scroll sideways
+// Keep the first n columns in place while the rest scroll sideways. They get
+// fixed widths, so where each sits is known rather than measured: a measured
+// position goes stale when the browser lays the table out differently, and
+// the scrolled columns then show through the gaps.
 function freezeColumns(n) {
   var doc = tbl.ownerDocument, style = doc.getElementById("freeze");
   if (!style) { style = doc.createElement("style"); style.id = "freeze"; doc.head.appendChild(style); }
-  var css = "", heads = tbl.rows.length ? tbl.rows[0].cells : [];
-  for (var j = 0; j < n && j < heads.length; j++) {
-    // Where the column sits now, so the frozen columns line up exactly
-    var left = heads[j].offsetLeft - heads[0].offsetLeft;
-    var sel = "#tbl td:nth-child(" + (j + 1) + "), #tbl th:nth-child(" + (j + 1) + ")";
-    css += sel + "{position:sticky;left:" + left + "px}";
-    css += "#tbl td:nth-child(" + (j + 1) + "){z-index:1}#tbl th:nth-child(" + (j + 1) + "){z-index:3}";
+  var css = "", left = 0;
+  for (var j = 0; j < n; j++) {
+    var w = j === 0 ? 96 : 84;
+    var cells = "#tbl td:nth-child(" + (j + 1) + "), #tbl th:nth-child(" + (j + 1) + ")";
+    css += cells + "{position:sticky;left:" + left + "px;box-sizing:border-box;" +
+           "width:" + w + "px;min-width:" + w + "px;max-width:" + w + "px;white-space:normal}";
+    css += "#tbl td:nth-child(" + (j + 1) + "){z-index:1;white-space:nowrap;overflow:hidden}" +
+           "#tbl th:nth-child(" + (j + 1) + "){z-index:3}";
+    left += w;
   }
   if (n > 0) css += "#tbl td:nth-child(" + n + "),#tbl th:nth-child(" + n + "){box-shadow:2px 0 0 #999}";
   style.textContent = css;
