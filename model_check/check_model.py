@@ -665,7 +665,8 @@ def reservoirPlots(groups, dates, extras):
         zone = activeZone(groups, name, dates)
         inZone = {}
         if zone is not None:
-            table.insert(1, "Zone", zone)
+            # After Date, Elevation, Inflow and Outflow, which stay in place
+            table.insert(3, "Zone", zone)
             zones = groups["stack"][name]
             for label, kind, v, st, text in statuses:
                 if kind != "guide":
@@ -1230,18 +1231,18 @@ function drawTable() {
       r.map(function (v, j) { return "<td" + (st[j] ? " class='s" + st[j] + "'" : "") + ">" + fmt(v) + "</td>"; }).join("") + "</tr>";
   });
   tbl.innerHTML = html;
-  freezeColumns(t.freeze || 0);
+  freezeColumns(t.freeze || 0, t.data.length && String(t.data[0][0]).length > 10 ? 124 : 96);
 }
 // Keep the first n columns in place while the rest scroll sideways. They get
 // fixed widths, so where each sits is known rather than measured: a measured
 // position goes stale when the browser lays the table out differently, and
 // the scrolled columns then show through the gaps.
-function freezeColumns(n) {
+function freezeColumns(n, dateWidth) {
   var doc = tbl.ownerDocument, style = doc.getElementById("freeze");
   if (!style) { style = doc.createElement("style"); style.id = "freeze"; doc.head.appendChild(style); }
   var css = "", left = 0;
   for (var j = 0; j < n; j++) {
-    var w = j === 0 ? 96 : 84;
+    var w = j === 0 ? dateWidth : 84;
     var cells = "#tbl td:nth-child(" + (j + 1) + "), #tbl th:nth-child(" + (j + 1) + ")";
     css += cells + "{position:sticky;left:" + left + "px;box-sizing:border-box;" +
            "width:" + w + "px;min-width:" + w + "px;max-width:" + w + "px;white-space:normal}";
@@ -1377,7 +1378,8 @@ def writeReservoirPage(path, title, plots, tables, allNames=None, groups=None):
                  if stackPosition(zones, z, c)]
             places.append(" · ".join(p) or None)
         data[name] = {"columns": list(t.columns), "data": t.values.tolist(),
-                      "status": status.values.tolist(), "priority": places}
+                      "status": status.values.tolist(), "priority": places,
+                      "freeze": 4}    # Date, Elevation, Inflow, Outflow stay put while the rules scroll
     with open(path, "w", encoding="utf-8") as fh:
         fh.write(RESERVOIR_PAGE % {
             "title": title, "plot": plotHtml,

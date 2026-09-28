@@ -107,7 +107,9 @@ hide or show them. On the reservoir plot's flow panel only the outflow and the
 min and max limits start shown; turn on rules from the legend. Hover the
 outflow to see which rules were **in control** that day (their value equalled
 the outflow). The decision table under the plot has every rule's value every
-day whatever is shown, each cell shaded by the rule's status. Click a day on
+day whatever is shown, each cell shaded by the rule's status. Date, Elevation,
+Inflow and Outflow stay in place while the zone, limits and rules scroll
+sideways. Click a day on
 the plot to jump to it in the table; click a row to mark that day on the plot.
 
 **Open table in its own window** puts the table in a window of its own, to
