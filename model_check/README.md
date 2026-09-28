@@ -33,6 +33,15 @@ its junction in the model. ResSim does not save control point limits in the
 results, so the control point checks read them from here. Update it when the
 rating tables or regulation goals change.
 
+The control point plots (`plots/ControlPoints.html`) draw these as lines: the
+regulation goal and action stage shown, flood and major flood stage a click
+away in the legend. At Salem and Albany they also draw the BiOp minimum flow
+targets from the tables the alternative points to (`minFlowTargetCSV_Salem`
+and `_Albany` in alt_config): one line per distinct row of the table, since
+the water year type that chooses between them is not in the results. Types
+between two rows interpolate between their lines. When flow augmentation is
+on, the model's own target (`Min_Flow_Target_<place>`) is drawn as well.
+
 ## What you get
 
 `extract_dss.py` writes `output/<simulation>_<alternative>_<date>/`:

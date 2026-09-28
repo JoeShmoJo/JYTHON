@@ -98,6 +98,9 @@ MINFLOW_TARGET_MET_AT = {"Green Peter": "Foster"}
 # Other min-flow rules worth comparing to the same config, by name fragment
 MINFLOW_OTHER_RULE_PATTERN = "MinTrib"
 
+# Flood flows at the control points (Table 2), next to this script
+CONTROL_POINT_LIMITS = "control_point_limits.csv"
+
 # A max limit at or above this is "no limit" (ResSim reports outlet capacity)
 NO_LIMIT_CFS = 1.0e5
 
@@ -731,13 +734,78 @@ def reservoirPlots(groups, dates, extras):
     return plots, pd.DataFrame(rows), pd.DataFrame(conflictRows), decisions
 
 
-def controlPointPlots(groups, dates):
-    """Total, local and cumulative local flow where a real local flow is defined."""
+def loadControlPointLimits():
+    """control_point_limits.csv (Table 2 flood flows) by junction, or {} if missing."""
+    path = os.path.join(_here(), CONTROL_POINT_LIMITS)
+    if not os.path.isfile(path):
+        print("No %s: control point plots will have no flood limits" % path)
+        return {}
+    table = pd.read_csv(path, comment="#", skipinitialspace=True)
+    return {str(r["junction"]).strip(): r for _, r in table.iterrows()}
+
+
+def mainstemMinTargets(files, dates):
+    """
+    {"Salem": [(label, Series)], "Albany": [...]} from the BiOp minimum flow
+    tables MainstemFlowAugSV reads (minFlowTargetCSV_Salem/_Albany): one line
+    per distinct row, since the water year type that picks between them is an
+    input the results do not carry. Each date's value holds until the next date.
+    """
+    out = {}
+    for place in ("Salem", "Albany"):
+        path = files.get("%s min flow" % place)
+        if not path or not os.path.isfile(path):
+            continue
+        table = pd.read_csv(path, comment="#", skipinitialspace=True, encoding="utf-8-sig")
+        table.columns = [str(c).strip() for c in table.columns]
+        steps = []
+        for c in table.columns[1:]:
+            day = pd.to_datetime("2001" + c, format="%Y%d%b", errors="coerce")
+            if pd.notna(day):
+                steps.append(((day.month, day.day), c))
+        steps.sort()
+        keys = [(d.month, d.day) for d in dates]
+        # The table's row for each date: the last step on or before it
+        which = []
+        for k in keys:
+            col_ = steps[0][1]
+            for when, c in steps:
+                if when <= k:
+                    col_ = c
+            which.append(col_)
+        lines, seen = [], []
+        for _, row in table.iterrows():
+            values = tuple(float(row[c]) for _, c in steps)
+            if values in seen:
+                # Same targets as an earlier row: widen its label instead
+                i = seen.index(values)
+                lines[i][0][1] = row.iloc[0]
+                continue
+            seen.append(values)
+            series = pd.Series([float(row[c]) for c in which], index=dates)
+            lines.append(([row.iloc[0], row.iloc[0]], series))
+        labelled = []
+        for (lo, hi), series in lines:
+            wy = ("%g" % lo) if lo == hi else "%g to %g" % (lo, hi)
+            labelled.append(("%s BiOp minimum, WY type %s" % (place, wy), series))
+        out[place] = labelled
+    return out
+
+
+def controlPointPlots(groups, dates, limits=None, minTargets=None):
+    """
+    Total, local and cumulative local flow where a real local flow is defined
+    or flood limits are given, with the flood flows from control_point_limits.csv
+    and, at Salem and Albany, the BiOp minimum flow targets.
+    """
     table = groups.get("junctions")
     if table is None:
         return {}
+    limits = limits or {}
+    minTargets = minTargets or {}
     targets = {c[len("Min_Flow_Target_"):-len(" Flow-Min")]: c
                for c in groups["limits"].columns if c.startswith("Min_Flow_Target_")}
+    minColors = ["#1f77b4", "#17becf", "#08519c"]
     plots = {}
     for c in table.columns:
         if not c.endswith(" Flow-Local"):
@@ -745,19 +813,35 @@ def controlPointPlots(groups, dates):
         name = c[:-len(" Flow-Local")]
         local = table[c].reindex(dates)
         # Reservoir inflow nodes are on the reservoir plots, and an all-zero
-        # local is a dummy record
-        if name.endswith("_IN") or not (local.abs() > 0).any():
+        # local is a dummy record, unless the point has flood limits
+        if name.endswith("_IN") or not ((local.abs() > 0).any() or name in limits):
             continue
         traces = [("Total flow", table.get(name + " Flow"), "y1", {"color": "#000000", "width": 2}),
                   ("Local flow", local, "y1", {"color": "#2ca02c", "width": 1.2}),
                   ("Cumulative local flow", table.get(name + " Flow-CUMLOC"), "y1",
-                   {"color": "#9467bd", "width": 1.2})]
+                   {"color": "#9467bd", "width": 1.2, "hidden": True})]
+        if name in limits:
+            r = limits[name]
+            for key, label, color, dash, hidden in (
+                    ("regulation_goal_cfs", "Regulation goal", "#d62728", "dash", False),
+                    ("action_cfs", "Action stage (bankfull)", "#ff7f0e", "dot", False),
+                    ("flood_cfs", "Flood stage", "#8c564b", "dot", True),
+                    ("major_flood_cfs", "Major flood stage", "#7f7f7f", "dot", True)):
+                if pd.notna(r.get(key)):
+                    traces.append(("%s (%s cfs)" % (label, "{:,.0f}".format(r[key])),
+                                   pd.Series(float(r[key]), index=dates), "y1",
+                                   {"color": color, "dash": dash, "width": 1.5, "hidden": hidden}))
+        for place, lines in minTargets.items():
+            if re.search(r"\b%s\b" % re.escape(place), name, re.I):
+                for i, (label, series) in enumerate(lines):
+                    traces.append((label, series, "y1",
+                                   {"color": minColors[i % len(minColors)], "dash": "dash", "width": 1.5}))
         for place, target in targets.items():
             if not (groups["limits"][target].reindex(dates) > 0).any():
                 continue
             if re.search(r"\b%s\b" % re.escape(place), name, re.I):
-                traces.append(("Minimum flow target (%s)" % place, groups["limits"][target],
-                               "y1", {"color": "#d62728", "dash": "dash"}))
+                traces.append(("Minimum flow target in the model (%s)" % place, groups["limits"][target],
+                               "y1", {"color": "#e377c2", "width": 1.5}))
         plots[name] = [(l, v.reindex(dates) if v is not None else None, a, st)
                        for l, v, a, st in traces]
     return dict(sorted(plots.items()))
@@ -1082,6 +1166,10 @@ def main(runDir=None, startDate=None, endDate=None):
                                  "scripts/externalRules/WithdrawalConfig.csv"),
         "Diversions": configPath(configRoot, altConfig, "diversionConfigCSV",
                                  "scripts/externalRules/DiversionConfig_ALT.csv"),
+        "Salem min flow": configPath(configRoot, altConfig, "minFlowTargetCSV_Salem",
+                                     "scripts/externalSVs/MinFlowSalem_2008BiOp.csv"),
+        "Albany min flow": configPath(configRoot, altConfig, "minFlowTargetCSV_Albany",
+                                      "scripts/externalSVs/MinFlowAlbany_2008BiOp.csv"),
     }
     plotDir = os.path.join(runDir, "plots")
     if not os.path.isdir(plotDir):
@@ -1162,7 +1250,7 @@ def main(runDir=None, startDate=None, endDate=None):
             "Days each rule's value equalled the outflow (within %.0f cfs or %.0f%%), i.e. the rule "
             "was in control. Several rules can share a day. Rules never in control are left out "
             "here; RuleControl_summary.csv has them all." % (FLOW_TOL_CFS, 100 * FLOW_TOL_FRAC))
-    cpPlots = controlPointPlots(groups, dates)
+    cpPlots = controlPointPlots(groups, dates, loadControlPointLimits(), mainstemMinTargets(files, dates))
     plotFiles = [("Reservoir: %s" % n, reservoirFile(n)) for n in names]
     if cpPlots:
         dropdownFigure("Control point", cpPlots, ["Flow (cfs)"]).write_html(
