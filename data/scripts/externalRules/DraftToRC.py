@@ -4,6 +4,11 @@ Draft-to-rule-curve MAX rule.
 When the pool is above the rule curve, sets the MAX release to the lower of:
 - the release that lands the pool on the rule curve this timestep
 - the release that reaches (rule curve - BUFFER) DAYS_LOOKAHEAD days from now
+
+Switched on or off per reservoir by draftToRCActive in alt_config, e.g.
+    draftToRCActive: {"Detroit":true, "Cougar":false}
+A reservoir missing from it, or no draftToRCActive at all, keeps the rule on.
+Off, the rule returns None and has no effect.
 """
 
 from hec.rss.model import OpValue, OpRule
@@ -34,9 +39,21 @@ def _ok(v):
     return f
 
 def initRuleScript(currentRule, network):
+    resvName = currentRule.getReservoirElement().toString()
+    active = True
+    altSetupSV = network.getStateVariable("Alternative_Setup")
+    if altSetupSV.varExists("draftToRCActive"):
+        activeDict = altSetupSV.varGet("draftToRCActive")
+        if resvName in activeDict:
+            active = activeDict[resvName]
+    currentRule.varPut("active", active)
+    if not active:
+        network.printMessage("Draft to RC is off at %s (draftToRCActive in alt_config)" % resvName)
     return True
 
 def runRuleScript(currentRule, network, currentRuntimestep):
+    if currentRule.varExists("active") and not currentRule.varGet("active"):
+        return None
     resvName = currentRule.getReservoirElement().toString()
     inflowTS = network.getTimeSeries("Reservoir", resvName, "Pool", "Flow-IN")
     storTS   = network.getTimeSeries("Reservoir", resvName, "Pool", "Stor")
