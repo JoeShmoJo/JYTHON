@@ -42,6 +42,20 @@ the water year type that chooses between them is not in the results. Types
 between two rows interpolate between their lines. When flow augmentation is
 on, the model's own target (`Min_Flow_Target_<place>`) is drawn as well.
 
+**Control points page** (`plots/Control points.html`): every control point in
+`control_point_limits.csv` on one plot with its maximum (dashed) and, at Salem
+and Albany, its BiOp minimums (dotted). Salem is shown to start with; a legend
+click turns a point, with its limits, on or off. Underneath, a status bar per
+control point, grouped by basin upstream first: green in range, red above the
+maximum (the regulation goal, or the action flow where none is given), blue
+below the minimum (the lowest BiOp target that day). The table under it, for
+the point picked in the list, gives each day's flow and limits and each
+upstream reservoir's release with the rules in control there, highlighted when
+a rule is releasing for that point (its name contains the place, or
+MainstemFlowAug at Salem and Albany). It links to the plot and opens in its
+own window like the reservoir table. The `basin` and `reservoirs` columns of
+the CSV set the grouping and the upstream reservoirs; edit them there.
+
 ## What you get
 
 `extract_dss.py` writes `output/<simulation>_<alternative>_<date>/`:

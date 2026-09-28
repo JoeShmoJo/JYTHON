@@ -26,6 +26,10 @@ and writes into that folder:
                               shown on the flow panel; the legend turns on the rest.
                               "Open table in its own window" moves the table to a
                               window of its own, e.g. on a second screen.
+    plots/Control points.html every control point's flow against its limits, a
+                              status bar each (in range, above max, below min),
+                              and a daily table of upstream releases and the
+                              rules in control, linked like the reservoir pages
     plots/ControlPoints.html  total, local and cumulative local flow where a real
                               (not all-zero) local flow is defined
     Pick an element from the dropdown; click legend entries to hide or show them.
@@ -639,7 +643,7 @@ def reservoirPlots(groups, dates, extras):
     plots, a table of how many days each rule was in control, a table of the
     conflicts, and each reservoir's daily release decision table.
     """
-    plots, rows, conflictRows, decisions = {}, [], [], {}
+    plots, rows, conflictRows, decisions, inControl = {}, [], [], {}, {}
     for name in reservoirNames(groups):
         elev = col(groups, "reservoirs", "%s-Pool Elev" % name).reindex(dates)
         out = col(groups, "reservoirs", "%s-Pool Flow-OUT" % name).reindex(dates)
@@ -661,6 +665,7 @@ def reservoirPlots(groups, dates, extras):
                 if kind != "guide":
                     inZone[label] = zone.map(lambda z: stackPosition(zones, z, label) is not None)
         decisions[name] = (table, statuses, inZone)
+        inControl[name] = reasons["In control"]
 
         traces = [("Pool elevation", elev, "y1", {"color": "#1f77b4", "group": "elev"})]
         if ruleCurve is not None:
@@ -731,7 +736,7 @@ def reservoirPlots(groups, dates, extras):
                 traces.append((legend, pd.Series(ys, index=pd.DatetimeIndex(xs)), "y3",
                                {"color": color, "width": 9, "group": "decision", "hoverinfo": "skip"}))
         plots[name] = {"traces": traces, "categories": strip}
-    return plots, pd.DataFrame(rows), pd.DataFrame(conflictRows), decisions
+    return plots, pd.DataFrame(rows), pd.DataFrame(conflictRows), decisions, inControl
 
 
 def loadControlPointLimits():
@@ -847,6 +852,152 @@ def controlPointPlots(groups, dates, limits=None, minTargets=None):
     return dict(sorted(plots.items()))
 
 
+CP_STATUS = [("ok", "In range", "#2ca02c", 1), ("over", "Above maximum", "#d62728", 2),
+             ("under", "Below minimum", "#1f77b4", 3)]
+CP_COLORS = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2",
+             "#7f7f7f", "#bcbd22", "#17becf", "#393b79", "#637939"]
+CP_KEY = """<span style="background:#dff2df;padding:0 4px">in range</span>
+<span style="background:#fbdcdc;padding:0 4px">above maximum</span>
+<span style="background:#dce8f7;padding:0 4px">below minimum</span>
+<span style="background:#fff1b8;font-weight:600;padding:0 4px">reservoir releasing for this point</span>"""
+
+
+def placeName(stationName):
+    """"Willamette River at Salem" -> "Salem"."""
+    m = re.search(r"\b(?:at|near|nr)\s+(.+)$", str(stationName))
+    return m.group(1).strip() if m else str(stationName)
+
+
+def controlPointStatus(groups, dates, limits, minTargets, inControl):
+    """
+    For every control point in control_point_limits.csv, in its order (basin
+    by basin, upstream first): its flow against its limits, a status each day
+    (above the regulation goal, below the minimum, or in range), the plot's
+    traces, its daily table and a summary row.
+
+    The maximum is the regulation goal, or the action flow where no goal is
+    given. The minimum, at Salem and Albany only, is the lowest BiOp target for
+    the day across water year types: below it is below every target.
+    """
+    table = groups.get("junctions")
+    flowTraces, labels, statuses, tables, rows = [], [], [], {}, []
+    if table is None:
+        return None
+    for i, (junction, r) in enumerate(limits.items()):
+        flow = table.get(junction + " Flow")
+        if flow is None:
+            continue
+        flow = flow.reindex(dates)
+        place = placeName(r["station_name"])
+        color = CP_COLORS[i % len(CP_COLORS)]
+        goal = r.get("regulation_goal_cfs")
+        maxFlow = float(goal) if pd.notna(goal) else float(r["action_cfs"])
+        maxLine = pd.Series(maxFlow, index=dates)
+        lines = minTargets.get(place, [])
+        minLine = pd.concat([l[1] for l in lines], axis=1).min(axis=1) if lines else None
+
+        status = pd.Series("ok", index=dates, dtype=object)
+        status[flow.isna()] = np.nan
+        if minLine is not None:
+            status[(minLine > 0) & (flow < minLine - flowTol(minLine))] = "under"
+        status[flow > maxLine + flowTol(maxLine)] = "over"
+        labels.append("%s: %s" % (r["basin"], place))
+        statuses.append(status)
+
+        shown = place == "Salem"
+        style = {"group": place, "hidden": not shown}
+        flowTraces.append(("%s flow" % place, flow, "y1", dict(style, color=color, width=2)))
+        flowTraces.append(("%s maximum (%s cfs)" % (place, "{:,.0f}".format(maxFlow)), maxLine, "y1",
+                           dict(style, color=color, dash="dash", width=1.5)))
+        for label, line in lines:
+            flowTraces.append((label, line, "y1", dict(style, color=color, dash="dot", width=1.5)))
+
+        # The daily table: the point's flow and limits, then each upstream
+        # reservoir's release and the rules in control there
+        keys = [place.lower()] + (["mainstemflowaug"] if place in ("Salem", "Albany") else [])
+        cols = {"Flow": flow.round(0), "Minimum": minLine.round(0) if minLine is not None else np.nan,
+                "Maximum": maxLine}
+        codes = {"Flow": status.map({k: c for k, _, _, c in CP_STATUS}).fillna(0).astype(int)}
+        for res in [x.strip() for x in str(r.get("reservoirs", "")).split(";") if x.strip()]:
+            out = col(groups, "reservoirs", "%s-Pool Flow-OUT" % res)
+            if out is None:
+                continue
+            out = out.reindex(dates)
+            ruleText = inControl.get(res, pd.Series("", index=dates)).reindex(dates).fillna("")
+            cols[res] = out.map(lambda v: "" if pd.isna(v) else "{:,.0f}".format(v)) + \
+                ruleText.map(lambda t: (" · " + t) if t else "")
+            forHere = ruleText.str.lower().map(lambda t: any(k in t for k in keys))
+            codes[res] = forHere.map({True: 6, False: 0})
+        t = pd.DataFrame(cols, index=dates)
+        t.index.name = "Date"
+        tables[place] = (t, pd.DataFrame(codes, index=dates).reindex(columns=t.columns).fillna(0).astype(int))
+
+        over = status == "over"
+        under = status == "under"
+        rows.append({"basin": r["basin"], "control_point": place, "junction": junction,
+                     "maximum_cfs": maxFlow, "days_above_max": _days(over),
+                     "largest_excess_cfs": round((flow - maxLine)[over].max(), 0) if over.any() else 0,
+                     "days_below_min": _days(under) if minLine is not None else "n/a",
+                     "largest_shortfall_cfs": (round((minLine - flow)[under].max(), 0) if under.any() else 0)
+                     if minLine is not None else "n/a"})
+
+    # Status panel: a bar per control point, breaking only where its status changes
+    cats = labels[::-1]
+    stepEnd = pd.Series(dates[1:].append(pd.DatetimeIndex([dates[-1] + (dates[-1] - dates[-2])]))
+                        if len(dates) > 1 else dates, index=dates)
+    strip = []
+    for key, legend, color, _ in CP_STATUS:
+        xs, ys = [], []
+        for label, status in zip(labels, statuses):
+            run = (status != status.shift()).cumsum()
+            for _, part in status[status == key].groupby(run[status == key]):
+                row = float(cats.index(label))
+                xs += [part.index[0], stepEnd[part.index[-1]], stepEnd[part.index[-1]]]
+                ys += [row, row, np.nan]
+        if xs:
+            strip.append((legend, pd.Series(ys, index=pd.DatetimeIndex(xs)), "y2",
+                          {"color": color, "width": 9, "group": "status", "hoverinfo": "skip"}))
+    plot = {"All": {"traces": flowTraces + strip, "categories": cats}}
+    return plot, tables, pd.DataFrame(rows)
+
+
+def controlPointFile():
+    return "Control points.html"
+
+
+def writeControlPointPage(path, title, plot, tables):
+    """All control points and their limits over a status bar each, with the
+    chosen point's daily table underneath, linked by clicking."""
+    fig, owner = stackedFigure(plot, ["Flow (cfs)", "Control point status"], rowHeights=[0.7, 0.3])
+    cats = plot["All"]["categories"]
+    fig.update_yaxes(tickmode="array", tickvals=list(range(len(cats))), ticktext=cats,
+                     range=[-0.5, max(len(cats), 1) - 0.5], showgrid=False, row=2, col=1)
+    # A legend click turns a whole control point (flow and limits) on or off
+    fig.update_layout(height=950, margin={"t": 20}, legend={"groupclick": "togglegroup"})
+    plotHtml = fig.to_html(full_html=False, include_plotlyjs="directory", div_id="plot")
+    data = {}
+    for name, (t, codes) in tables.items():
+        t = t.reset_index()
+        t["Date"] = _stamps(pd.DatetimeIndex(t["Date"]))
+        codes = codes.reset_index(drop=True)
+        codes.insert(0, "Date", 0)
+        t = t.astype(object).where(t.notna(), None)
+        data[name] = {"columns": list(t.columns), "data": t.values.tolist(),
+                      "status": codes.values.tolist(), "priority": [None] * len(t.columns)}
+    names = list(tables.keys())
+    with open(path, "w", encoding="utf-8") as fh:
+        fh.write(RESERVOIR_PAGE % {
+            "title": title, "plot": plotHtml,
+            "pagelabel": "Control points", "sellabel": "Table for", "key": CP_KEY,
+            "strip": json.dumps("yaxis2"), "channel": json.dumps("controlPointTable"),
+            "tablelabel": json.dumps("Control point"),
+            "owner": json.dumps([[o, s_] for o, s_ in owner]),
+            "cats": json.dumps({"All": cats}),
+            "tables": json.dumps(data, default=float),
+            "all": json.dumps(names),
+            "files": json.dumps({n: controlPointFile() for n in names})})
+
+
 def _stamps(index):
     """Date strings for plots and tables: the time too, only for sub-daily data."""
     daily = bool(((index.hour == 0) & (index.minute == 0)).all())
@@ -927,8 +1078,14 @@ def dropdownFigure(title, plots, panels, rowHeights=None):
     return fig
 
 
+RESERVOIR_KEY = """<span style="background:#dff2df;padding:0 4px">in control</span>
+<span style="background:#fbdcdc;padding:0 4px">wanted more, capped</span>
+<span style="background:#dce8f7;padding:0 4px">wanted less, held up</span>
+<span style="background:#eeeeee;padding:0 4px">set by another rule</span>
+<span style="color:#aaa;padding:0 4px">not in this zone's stack</span>"""
+
 RESERVOIR_PAGE = """<!DOCTYPE html>
-<html><head><meta charset="utf-8"><title>Reservoirs: %(title)s</title>
+<html><head><meta charset="utf-8"><title>%(pagelabel)s: %(title)s</title>
 <style>
 body{font-family:sans-serif;margin:0 16px;background:#fff;color:#222}
 #bar{position:sticky;top:0;background:#fff;z-index:5;padding:8px 0;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
@@ -942,22 +1099,20 @@ td{text-align:right;white-space:nowrap}
 td:first-child,th:first-child{text-align:left;min-width:80px}
 td.s1{background:#dff2df} td.s2{background:#fbdcdc} td.s3{background:#dce8f7} td.s4{background:#eeeeee}
 td.s5{color:#c4c4c4}
+td.s6{background:#fff1b8;font-weight:600}
 tr.picked td{background:#ffe08a}
 tr:hover td{background:#eef4ff;cursor:pointer}
 </style></head><body>
 <div id="bar"><b>%(title)s</b>
-<label>Reservoir <select id="res"></select></label>
-<span><span style="background:#dff2df;padding:0 4px">in control</span>
-<span style="background:#fbdcdc;padding:0 4px">wanted more, capped</span>
-<span style="background:#dce8f7;padding:0 4px">wanted less, held up</span>
-<span style="background:#eeeeee;padding:0 4px">set by another rule</span>
-<span style="color:#aaa;padding:0 4px">not in this zone's stack</span></span>
+<label>%(sellabel)s <select id="res"></select></label>
+<span>%(key)s</span>
 <button id="pop" class="plotonly">Open table in its own window</button>
 <span class="plotonly" style="color:#666">Click a day on the plot to find it in the table; click a row to mark it on the plot.</span></div>
 %(plot)s
 <div id="tablebox"><table id="tbl"></table></div>
 <script>
-var OWNER = %(owner)s, CATS = %(cats)s, TABLES = %(tables)s, ALL = %(all)s, FILES = %(files)s;
+var OWNER = %(owner)s, CATS = %(cats)s, TABLES = %(tables)s, ALL = %(all)s, FILES = %(files)s,
+    STRIP = %(strip)s, CHANNEL = %(channel)s, TABLE_LABEL = %(tablelabel)s;
 // The same page shows the plot with the table under it, or, opened with
 // "#table", the table alone to fill another window. The two windows talk
 // through localStorage, which every local file shares in Chrome and Edge:
@@ -966,9 +1121,13 @@ var TABLE_ONLY = location.hash.indexOf("#table") === 0;
 var gd = document.getElementById("plot"), sel = document.getElementById("res"),
     box = document.getElementById("tablebox"), tbl = document.getElementById("tbl"),
     current = Object.keys(TABLES)[0], me = String(Math.random());
+// "#table=<name>" picks which table, when a page holds several
+var wanted = decodeURIComponent(location.hash.split("=").slice(1).join("="));
+if (TABLES[wanted]) current = wanted;
+function tableUrl(name) { return FILES[name] + "#table=" + encodeURIComponent(name); }
 function send(msg) {
   msg.from = me; msg.t = Date.now();
-  try { localStorage.setItem("releaseDecisionsEvent", JSON.stringify(msg)); } catch (e) {}
+  try { localStorage.setItem(CHANNEL, JSON.stringify(msg)); } catch (e) {}
 }
 ALL.forEach(function (n) { var o = document.createElement("option"); o.text = n; sel.add(o); });
 sel.value = current;
@@ -996,49 +1155,68 @@ function markRow(date) {
   if (row) { row.classList.add("picked"); row.scrollIntoView({block: "center"}); }
 }
 function stamp(x) { return String(x).replace("T", " ").slice(0, 16); }
-sel.onchange = function () { location.href = FILES[sel.value] + (TABLE_ONLY ? "#table" : ""); };
+function switchTo(name) {
+  if (TABLES[name]) {
+    current = name; sel.value = name;
+    if (TABLE_ONLY) { document.title = TABLE_LABEL + ": " + current; } else { showPlot(); }
+    drawTable();
+    if (!TABLE_ONLY) send({type: "show", reservoir: current});
+  } else {
+    location.href = TABLE_ONLY ? tableUrl(name) : FILES[name];
+  }
+}
+sel.onchange = function () { switchTo(sel.value); };
 tbl.onclick = function (e) {
   var row = e.target.closest("tr[data-date]"); if (!row) return;
   var d = row.dataset.date; markRow(d); markPlot(d);
   send({type: "mark", reservoir: current, date: d});
 };
 window.addEventListener("storage", function (e) {
-  if (e.key !== "releaseDecisionsEvent" || !e.newValue) return;
+  if (e.key !== CHANNEL || !e.newValue) return;
   var msg = JSON.parse(e.newValue);
   if (msg.from === me) return;
   if (msg.type === "alive") { if (!TABLE_ONLY) { box.style.display = "none"; lastAlive = Date.now(); } return; }
   if (TABLE_ONLY && msg.reservoir !== current) {
-    // The plot moved to another reservoir: follow it
-    try { localStorage.setItem("releaseDecisionsPending", msg.date || ""); } catch (err) {}
-    location.href = FILES[msg.reservoir] + "#table";
+    // The plot moved to another element: follow it
+    if (TABLES[msg.reservoir]) { switchTo(msg.reservoir); if (msg.date) markRow(msg.date); return; }
+    try { localStorage.setItem(CHANNEL + "Pending", msg.date || ""); } catch (err) {}
+    location.href = tableUrl(msg.reservoir);
     return;
   }
   if (msg.type === "mark" && msg.reservoir === current) { markRow(msg.date); markPlot(msg.date); }
 });
+// The plot's traces and status rows for the current element. A page whose
+// plot holds all its elements at once (the control points) keeps its own.
+function showPlot() {
+  var key = OWNER.some(function (o) { return o[0] === current; }) ? current : null;
+  if (key) Plotly.restyle(gd, {visible: OWNER.map(function (o) { return o[0] === key ? o[1] : false; })});
+  var cats = CATS[key || (OWNER.length ? OWNER[0][0] : "")] || [];
+  var lay = {};
+  lay[STRIP + ".tickmode"] = "array"; lay[STRIP + ".tickvals"] = cats.map(function (c, i) { return i; });
+  lay[STRIP + ".ticktext"] = cats; lay[STRIP + ".range"] = [-0.5, Math.max(cats.length, 1) - 0.5];
+  Plotly.relayout(gd, lay);
+}
 var lastAlive = 0;
 if (TABLE_ONLY) {
-  document.title = "Release decisions: " + current;
+  document.title = TABLE_LABEL + ": " + current;
   gd.parentNode.style.display = "none";    // Plotly's wrapper around the plot
   Array.prototype.forEach.call(document.querySelectorAll(".plotonly"), function (el) { el.style.display = "none"; });
   box.style.height = "calc(100vh - 60px)";
   drawTable();
-  var pending = ""; try { pending = localStorage.getItem("releaseDecisionsPending") || ""; localStorage.removeItem("releaseDecisionsPending"); } catch (e) {}
+  var pending = ""; try { pending = localStorage.getItem(CHANNEL + "Pending") || ""; localStorage.removeItem(CHANNEL + "Pending"); } catch (e) {}
   if (pending) markRow(pending);
   // Tell plot pages this window is open, so they can drop their own table
   setInterval(function () { send({type: "alive", reservoir: current}); }, 1000);
   send({type: "alive", reservoir: current});
 } else {
-  Plotly.restyle(gd, {visible: OWNER.map(function (o) { return o[1]; })});
-  var cats = CATS[current] || [];
-  Plotly.relayout(gd, {"yaxis3.tickmode": "array", "yaxis3.tickvals": cats.map(function (c, i) { return i; }),
-                       "yaxis3.ticktext": cats, "yaxis3.range": [-0.5, Math.max(cats.length, 1) - 0.5]});
+  showPlot();
   drawTable();
   gd.on("plotly_click", function (ev) {
     var d = stamp(ev.points[0].x); markPlot(d); markRow(d);
     send({type: "mark", reservoir: current, date: d});
   });
   document.getElementById("pop").onclick = function () {
-    window.open(FILES[current] + "#table", "releaseDecisions", "width=1400,height=900");
+    window.open(tableUrl(current), CHANNEL, "width=1400,height=900");
   };
   // A table window already open follows this page to its reservoir
   send({type: "show", reservoir: current});
@@ -1098,6 +1276,9 @@ def writeReservoirPage(path, title, plots, tables, allNames=None, groups=None):
             "owner": json.dumps([[o, s] for o, s in owner]),
             "cats": json.dumps({n: p["categories"] for n, p in plots.items()}),
             "tables": json.dumps(data, default=float),
+            "pagelabel": "Reservoirs", "sellabel": "Reservoir", "key": RESERVOIR_KEY,
+            "strip": json.dumps("yaxis3"), "channel": json.dumps("releaseDecisions"),
+            "tablelabel": json.dumps("Release decisions"),
             "all": json.dumps(list(allNames or plots.keys())),
             "files": json.dumps({n: reservoirFile(n) for n in (allNames or plots.keys())})})
 
@@ -1221,7 +1402,7 @@ def main(runDir=None, startDate=None, endDate=None):
         with pd.option_context("display.width", 200, "display.max_columns", 30):
             print(table.to_string(index=False) if len(table) else "nothing to check")
 
-    resPlots, control, conflicts, decisions = reservoirPlots(groups, dates, extras)
+    resPlots, control, conflicts, decisions, inControl = reservoirPlots(groups, dates, extras)
     # One page per reservoir keeps each file a size a browser opens quickly,
     # even for years of sub-daily results
     names = list(resPlots.keys())
@@ -1250,12 +1431,28 @@ def main(runDir=None, startDate=None, endDate=None):
             "Days each rule's value equalled the outflow (within %.0f cfs or %.0f%%), i.e. the rule "
             "was in control. Several rules can share a day. Rules never in control are left out "
             "here; RuleControl_summary.csv has them all." % (FLOW_TOL_CFS, 100 * FLOW_TOL_FRAC))
-    cpPlots = controlPointPlots(groups, dates, loadControlPointLimits(), mainstemMinTargets(files, dates))
+    cpLimits = loadControlPointLimits()
+    cpMins = mainstemMinTargets(files, dates)
+    cpPlots = controlPointPlots(groups, dates, cpLimits, cpMins)
     plotFiles = [("Reservoir: %s" % n, reservoirFile(n)) for n in names]
+    status = controlPointStatus(groups, dates, cpLimits, cpMins, inControl) if cpLimits else None
+    if status:
+        cpPlot, cpTables, cpSummary = status
+        if "Salem" in cpTables:
+            cpTables = dict([("Salem", cpTables["Salem"])] + [(k, v) for k, v in cpTables.items() if k != "Salem"])
+        writeControlPointPage(os.path.join(plotDir, controlPointFile()),
+                              "%s / %s" % (runInfo.get("simulation", ""), runInfo.get("alternative", "")),
+                              cpPlot, cpTables)
+        plotFiles.insert(0, ("Control points: status, limits and releases", controlPointFile()))
+        cpSummary.to_csv(os.path.join(runDir, "ControlPoints_summary.csv"), index=False)
+        results["Control points"] = (
+            cpSummary, "Flow at each control point against its maximum (the regulation goal, or the "
+            "action flow where none is given, from control_point_limits.csv) and, at Salem and Albany, "
+            "the lowest BiOp minimum for the day across water year types.")
     if cpPlots:
         dropdownFigure("Control point", cpPlots, ["Flow (cfs)"]).write_html(
             os.path.join(plotDir, "ControlPoints.html"), include_plotlyjs="directory")
-        plotFiles.append(("Control points", "ControlPoints.html"))
+        plotFiles.append(("Control point flows: total, local and cumulative local", "ControlPoints.html"))
 
     writeReport(runDir, runInfo, configRoot, files, results, plotFiles)
     print("\nReport: %s" % os.path.join(runDir, "report.html"))
