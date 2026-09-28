@@ -1,0 +1,383 @@
+date,control_point,reservoir,release_cfs,rules_in_control,limit_cfs,flow_now_cfs,flow_when_release_arrives_cfs,room_cfs,above_rule_curve,cum_local_change_cfs,room_counted
+1963-02-01,Goshen,Cottage Grove,500.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,5455.0,7700.0,4400.0,True,196.0,True
+1963-03-30,Goshen,Cottage Grove,1344.0,Goshen Bankfull Max,12100.0,12190.0,8835.0,3265.0,True,-3995.0,True
+1963-05-06,Goshen,Cottage Grove,765.0,Goshen Bankfull Max; Harrisburg Bankfull Simplified Max,12100.0,9686.0,11249.0,851.0,True,1420.0,True
+1963-05-07,Goshen,Cottage Grove,1534.0,Goshen Bankfull Max,12100.0,11249.0,10789.0,1311.0,True,-3510.0,True
+1963-11-08,Goshen,Cottage Grove,500.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,5887.0,6149.0,5951.0,True,-1564.0,True
+1963-12-28,Goshen,Cottage Grove,500.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,3146.0,3704.0,8396.0,True,115.0,True
+1964-01-02,Goshen,Cottage Grove,500.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,3302.0,2895.0,9205.0,True,-505.0,True
+1964-01-06,Goshen,Cottage Grove,500.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,5037.0,7886.0,4214.0,True,1227.0,True
+1964-01-19,Goshen,Cottage Grove,293.0,Goshen Bankfull Max,12100.0,11508.0,16662.0,-4562.0,True,4850.0,False
+1964-01-20,Goshen,Cottage Grove,1524.0,Goshen Bankfull Max,12100.0,16662.0,10307.0,1793.0,True,-10624.0,True
+1964-01-21,Goshen,Cottage Grove,3000.0,Dam-Max Evacuation Release; Goshen Bankfull Max; Harrisburg Bankfull Simplified Max; Harrisburg Regulation Goal Simplified,12100.0,10307.0,10819.0,1281.0,True,-1384.0,True
+1964-01-22,Goshen,Cottage Grove,2942.0,Dam-Max Evacuation Release; Goshen Bankfull Max; Harrisburg Bankfull Simplified Max; Harrisburg Regulation Goal Simplified,12100.0,10819.0,8016.0,4084.0,True,-1915.0,True
+1964-01-23,Goshen,Cottage Grove,3000.0,Dam-Max Evacuation Release; Goshen Bankfull Max; Harrisburg Bankfull Simplified Max; FIRO_SPACE; Harrisburg Regulation Goal Simplified,12100.0,8016.0,8221.0,3879.0,True,-165.0,True
+1964-11-25,Goshen,Cottage Grove,500.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,3187.0,4090.0,8010.0,True,434.0,True
+1964-11-26,Goshen,Cottage Grove,830.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,4090.0,4731.0,7369.0,True,186.0,True
+1964-11-27,Goshen,Cottage Grove,835.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,4731.0,5179.0,6921.0,True,966.0,True
+1964-11-28,Goshen,Cottage Grove,806.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,5179.0,6780.0,5320.0,True,984.0,True
+1964-11-29,Goshen,Cottage Grove,1743.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,6780.0,8916.0,3184.0,True,-16.0,True
+1964-11-30,Goshen,Cottage Grove,1428.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,8916.0,6928.0,5172.0,True,-1454.0,True
+1964-12-01,Goshen,Cottage Grove,1327.0,Dam-Max Evacuation Release; Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,12100.0,6928.0,9357.0,2743.0,True,2470.0,True
+1964-12-28,Goshen,Cottage Grove,1996.0,Goshen Bankfull Max,12100.0,11656.0,8349.0,3751.0,True,-23.0,True
+1964-12-29,Goshen,Cottage Grove,1991.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,12100.0,8349.0,9684.0,2416.0,True,-467.0,True
+1964-12-30,Goshen,Cottage Grove,2341.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,12100.0,9684.0,9756.0,2344.0,True,-798.0,True
+1965-01-01,Goshen,Cottage Grove,2757.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,12100.0,10186.0,10643.0,1457.0,True,625.0,True
+1965-01-02,Goshen,Cottage Grove,2750.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,12100.0,10643.0,11220.0,880.0,True,788.0,True
+1965-01-03,Goshen,Cottage Grove,3000.0,Dam-Max Evacuation Release; Goshen Bankfull Max; Harrisburg Bankfull Simplified Max; Harrisburg Regulation Goal Simplified,12100.0,11220.0,10692.0,1408.0,True,-646.0,True
+1965-01-04,Goshen,Cottage Grove,3000.0,Dam-Max Evacuation Release; Goshen Bankfull Max; Harrisburg Bankfull Simplified Max; Harrisburg Regulation Goal Simplified,12100.0,10692.0,9318.0,2782.0,True,-123.0,True
+1965-01-27,Goshen,Cottage Grove,608.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,12100.0,5899.0,4397.0,7703.0,True,305.0,True
+1965-01-28,Goshen,Cottage Grove,50.0,Flood Min; Goshen Bankfull Max; Dam-BiOp MinTrib and Withdrawals by WY,12100.0,4397.0,4255.0,7845.0,True,333.0,True
+1965-01-29,Goshen,Cottage Grove,440.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,12100.0,4255.0,5487.0,6613.0,True,-1721.0,True
+1965-01-30,Goshen,Cottage Grove,1737.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,12100.0,5487.0,8804.0,3296.0,True,96.0,True
+1963-02-01,Goshen,Dorena,1500.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,5455.0,7700.0,4400.0,True,196.0,True
+1963-02-02,Goshen,Dorena,3644.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,7700.0,9081.0,3019.0,True,-429.0,True
+1963-02-03,Goshen,Dorena,3861.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,9081.0,8446.0,3654.0,True,-145.0,True
+1963-03-30,Goshen,Dorena,2684.0,Goshen Bankfull Max,12100.0,12190.0,8835.0,3265.0,True,-3995.0,True
+1963-05-06,Goshen,Dorena,1658.0,Goshen Bankfull Max; Harrisburg Bankfull Simplified Max,12100.0,9686.0,11249.0,851.0,True,1420.0,True
+1963-05-07,Goshen,Dorena,3496.0,Goshen Bankfull Max,12100.0,11249.0,10789.0,1311.0,True,-3510.0,True
+1963-05-08,Goshen,Dorena,5580.0,Goshen Bankfull Max; Harrisburg Bankfull Simplified Max; Draft to RC,12100.0,10789.0,9314.0,2786.0,True,-2074.0,True
+1963-11-08,Goshen,Dorena,1500.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,5887.0,6149.0,5951.0,True,-1564.0,True
+1963-11-09,Goshen,Dorena,4126.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,6149.0,7458.0,4642.0,True,-480.0,True
+1963-12-28,Goshen,Dorena,1500.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,3146.0,3704.0,8396.0,True,115.0,True
+1964-01-02,Goshen,Dorena,1500.0,Dam-Max Evacuation Release; Goshen Bankfull Max; Draft to RC,12100.0,3302.0,2895.0,9205.0,True,-505.0,True
+1964-01-06,Goshen,Dorena,1500.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,5037.0,7886.0,4214.0,True,1227.0,True
+1964-01-07,Goshen,Dorena,2810.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,7886.0,7467.0,4633.0,True,-2404.0,True
+1964-01-16,Goshen,Dorena,1500.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,3226.0,6865.0,5235.0,True,3198.0,True
+1964-01-17,Goshen,Dorena,1792.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,6865.0,8937.0,3163.0,True,1392.0,True
+1964-01-18,Goshen,Dorena,1155.0,Goshen Bankfull Max,12100.0,8937.0,11508.0,592.0,True,3470.0,True
+1964-01-19,Goshen,Dorena,559.0,Goshen Bankfull Max,12100.0,11508.0,16662.0,-4562.0,True,4850.0,False
+1964-01-20,Goshen,Dorena,3106.0,Goshen Bankfull Max,12100.0,16662.0,10307.0,1793.0,True,-10624.0,True
+1964-01-21,Goshen,Dorena,4694.0,Goshen Bankfull Max,12100.0,10307.0,10819.0,1281.0,True,-1384.0,True
+1964-01-22,Goshen,Dorena,5000.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,10819.0,8016.0,4084.0,True,-1915.0,True
+1964-01-23,Goshen,Dorena,5000.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,8016.0,8221.0,3879.0,True,-165.0,True
+1964-01-24,Goshen,Dorena,5000.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,8221.0,5970.0,6130.0,True,-1065.0,True
+1964-11-24,Goshen,Dorena,1500.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,1412.0,3187.0,8913.0,True,789.0,True
+1964-11-25,Goshen,Dorena,1597.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,3187.0,4090.0,8010.0,True,434.0,True
+1964-11-26,Goshen,Dorena,2356.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,4090.0,4731.0,7369.0,True,186.0,True
+1964-11-27,Goshen,Dorena,1952.0,Dam-Max Evacuation Release; Goshen Bankfull Max; Draft to RC,12100.0,4731.0,5179.0,6921.0,True,966.0,True
+1964-11-28,Goshen,Dorena,1509.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,5179.0,6780.0,5320.0,True,984.0,True
+1964-11-29,Goshen,Dorena,2808.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,6780.0,8916.0,3184.0,True,-16.0,True
+1964-11-30,Goshen,Dorena,3813.0,Dam-Max Evacuation Release; Goshen Bankfull Max; Harrisburg Bankfull Simplified Max,12100.0,8916.0,6928.0,5172.0,True,-1454.0,True
+1964-12-01,Goshen,Dorena,2875.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,12100.0,6928.0,9357.0,2743.0,True,2470.0,True
+1964-12-02,Goshen,Dorena,4374.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,12100.0,9357.0,8191.0,3909.0,True,-2908.0,True
+1964-12-03,Goshen,Dorena,5000.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,8191.0,8074.0,4026.0,True,172.0,True
+1964-12-04,Goshen,Dorena,5000.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,8074.0,7129.0,4971.0,True,-82.0,True
+1964-12-08,Goshen,Dorena,2561.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,4004.0,4024.0,8076.0,True,493.0,True
+1964-12-28,Goshen,Dorena,4810.0,Goshen Bankfull Max,12100.0,11656.0,8349.0,3751.0,True,-23.0,True
+1964-12-29,Goshen,Dorena,4314.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,12100.0,8349.0,9684.0,2416.0,True,-467.0,True
+1964-12-30,Goshen,Dorena,5073.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,12100.0,9684.0,9756.0,2344.0,True,-798.0,True
+1964-12-31,Goshen,Dorena,6063.0,Goshen Bankfull Max; Harrisburg Bankfull Simplified Max; Harrisburg Regulation Goal Simplified,12100.0,9756.0,10186.0,1914.0,True,-385.0,True
+1965-01-01,Goshen,Dorena,5972.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,12100.0,10186.0,10643.0,1457.0,True,625.0,True
+1965-01-02,Goshen,Dorena,5959.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,12100.0,10643.0,11220.0,880.0,True,788.0,True
+1965-01-03,Goshen,Dorena,5884.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,11220.0,10692.0,1408.0,True,-646.0,True
+1965-01-04,Goshen,Dorena,5000.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,10692.0,9318.0,2782.0,True,-123.0,True
+1965-01-05,Goshen,Dorena,5000.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,9318.0,10766.0,1334.0,True,1584.0,True
+1965-01-06,Goshen,Dorena,5000.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,10766.0,9044.0,3056.0,True,-661.0,True
+1965-01-08,Goshen,Dorena,4199.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,7651.0,6850.0,5250.0,True,-198.0,True
+1965-01-27,Goshen,Dorena,1318.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,12100.0,5899.0,4397.0,7703.0,True,305.0,True
+1965-01-28,Goshen,Dorena,100.0,Flood Min; Goshen Bankfull Max; Dam-BiOp MinTrib and Withdrawals by WY,12100.0,4397.0,4255.0,7845.0,True,333.0,True
+1965-01-29,Goshen,Dorena,954.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,12100.0,4255.0,5487.0,6613.0,True,-1721.0,True
+1965-01-30,Goshen,Dorena,3764.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,12100.0,5487.0,8804.0,3296.0,True,96.0,True
+1965-01-31,Goshen,Dorena,4587.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,12100.0,8804.0,8047.0,4053.0,True,-319.0,True
+1965-02-01,Goshen,Dorena,5000.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,8047.0,7285.0,4815.0,True,-532.0,True
+1965-02-02,Goshen,Dorena,5000.0,Dam-Max Evacuation Release; Goshen Bankfull Max,12100.0,7285.0,6376.0,5724.0,True,-534.0,True
+1963-05-08,Jasper,Lookout Point,11913.0,Jasper Bankfull Max,20000.0,16986.0,17500.0,2500.0,True,-1179.0,True
+1963-05-09,Jasper,Lookout Point,13157.0,Jasper Bankfull Max,20000.0,17500.0,17508.0,2492.0,False,-552.0,False
+1963-05-10,Jasper,Lookout Point,14403.0,Jasper Bankfull Max; IRRM,20000.0,17508.0,11480.0,8520.0,False,-399.0,False
+1963-11-08,Jasper,Lookout Point,11282.0,Jasper Bankfull Max,20000.0,17741.0,18519.0,1481.0,False,-2277.0,False
+1963-11-09,Jasper,Lookout Point,11751.0,Jasper Bankfull Max,20000.0,18519.0,17388.0,2612.0,False,-971.0,False
+1964-11-25,Jasper,Lookout Point,8536.0,Jasper Bankfull Max; Deep Drawdown,20000.0,12163.0,10239.0,9761.0,False,-951.0,False
+1964-11-30,Jasper,Lookout Point,9001.0,Jasper Bankfull Max,20000.0,13866.0,12684.0,7316.0,False,336.0,False
+1964-12-03,Jasper,Lookout Point,12685.0,Jasper Bankfull Max,20000.0,18708.0,17050.0,2950.0,False,-38.0,False
+1964-12-10,Jasper,Lookout Point,8984.0,Jasper Bankfull Max,20000.0,12691.0,14708.0,5292.0,False,1021.0,False
+1964-12-11,Jasper,Lookout Point,9782.0,Jasper Bankfull Max,20000.0,14708.0,13447.0,6553.0,False,-1073.0,False
+1964-12-12,Jasper,Lookout Point,9532.0,Jasper Bankfull Max,20000.0,13447.0,11613.0,8387.0,False,-532.0,False
+1964-12-28,Jasper,Lookout Point,9040.0,Jasper Bankfull Max,20000.0,18038.0,18726.0,1274.0,True,825.0,True
+1964-12-29,Jasper,Lookout Point,8865.0,Jasper Bankfull Max,20000.0,18726.0,18763.0,1237.0,True,-852.0,True
+1964-12-30,Jasper,Lookout Point,10138.0,Jasper Bankfull Max,20000.0,18763.0,18483.0,1517.0,True,-2159.0,True
+1964-12-31,Jasper,Lookout Point,11969.0,Jasper Bankfull Max,20000.0,18483.0,18884.0,1116.0,True,-277.0,True
+1965-01-01,Jasper,Lookout Point,12538.0,Jasper Bankfull Max,20000.0,18884.0,18412.0,1588.0,True,-1715.0,True
+1965-01-02,Jasper,Lookout Point,14172.0,Jasper Bankfull Max,20000.0,18412.0,19248.0,752.0,True,358.0,True
+1965-01-03,Jasper,Lookout Point,14287.0,Jasper Bankfull Max,20000.0,19248.0,17816.0,2184.0,True,-2013.0,True
+1965-01-05,Jasper,Lookout Point,16000.0,Jasper Bankfull Max; Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,20000.0,19169.0,18119.0,1881.0,True,723.0,True
+1965-01-12,Jasper,Lookout Point,15693.0,Jasper Bankfull Max; Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,20000.0,19426.0,18861.0,1139.0,True,-359.0,True
+1965-02-02,Jasper,Lookout Point,14127.0,Jasper Bankfull Max,20000.0,18779.0,18177.0,1823.0,True,-381.0,True
+1965-02-03,Jasper,Lookout Point,15604.0,Jasper Bankfull Max,20000.0,18177.0,17991.0,2009.0,True,-86.0,True
+1963-02-01,Vida,Cougar,3000.0,Max Evacuation Release; Vida Flood Max,14500.0,9120.0,11444.0,3056.0,False,809.0,False
+1963-02-02,Vida,Cougar,3000.0,Max Evacuation Release; Vida Flood Max,14500.0,11444.0,13276.0,1224.0,False,2334.0,False
+1963-02-03,Vida,Cougar,3000.0,Max Evacuation Release; Vida Flood Max,14500.0,13276.0,12822.0,1678.0,False,-1289.0,False
+1963-02-04,Vida,Cougar,3016.0,Max Evacuation Release; Vida Flood Max,14500.0,12822.0,12090.0,2410.0,False,-1005.0,False
+1963-02-05,Vida,Cougar,3093.0,Max Evacuation Release; Vida Flood Max,14500.0,12090.0,10138.0,4362.0,False,-1447.0,False
+1963-02-06,Vida,Cougar,3036.0,Max Evacuation Release; Vida Flood Max,14500.0,10138.0,8782.0,5718.0,False,-770.0,False
+1963-02-07,Vida,Cougar,3000.0,Max Evacuation Release; Vida Flood Max,14500.0,8782.0,7773.0,6727.0,False,-510.0,False
+1963-02-08,Vida,Cougar,3000.0,Max Evacuation Release; Vida Flood Max,14500.0,7773.0,7165.0,7335.0,False,-362.0,False
+1963-02-09,Vida,Cougar,2952.0,Max Evacuation Release; Vida Flood Max; Spring Spill,14500.0,7165.0,5354.0,9146.0,False,-256.0,False
+1963-02-19,Vida,Cougar,3000.0,Max Evacuation Release; Vida Flood Max,14500.0,9974.0,8419.0,6081.0,False,-1266.0,False
+1963-11-08,Vida,Cougar,3000.0,Max Evacuation Release; Vida Flood Max,14500.0,11291.0,9787.0,4713.0,False,-1593.0,False
+1963-11-09,Vida,Cougar,3000.0,Max Evacuation Release; Vida Flood Max,14500.0,9787.0,8334.0,6166.0,False,-1858.0,False
+1963-11-10,Vida,Cougar,3000.0,Max Evacuation Release; Vida Flood Max,14500.0,8334.0,7502.0,6998.0,False,-511.0,False
+1963-11-11,Vida,Cougar,3000.0,Max Evacuation Release; Vida Flood Max,14500.0,7502.0,6880.0,7620.0,False,-210.0,False
+1963-11-14,Vida,Cougar,3000.0,Max Evacuation Release; Vida Flood Max; Deep Drawdown,14500.0,7180.0,6720.0,7780.0,False,313.0,False
+1964-02-01,Vida,Cougar,3000.0,Max Evacuation Release; Vida Flood Max,14500.0,8614.0,8247.0,6253.0,False,-403.0,False
+1964-02-02,Vida,Cougar,3000.0,Max Evacuation Release; Vida Flood Max,14500.0,8247.0,7311.0,7189.0,False,-323.0,False
+1964-11-30,Vida,Cougar,2719.0,Vida Flood Max,14500.0,11575.0,14533.0,-33.0,False,3439.0,False
+1964-12-01,Vida,Cougar,1916.0,Vida Flood Max,14500.0,14533.0,14925.0,-425.0,False,262.0,False
+1964-12-02,Vida,Cougar,1630.0,Vida Flood Max,14500.0,14925.0,12302.0,2198.0,True,-4164.0,True
+1964-12-05,Vida,Cougar,3000.0,Max Evacuation Release; Vida Flood Max,14500.0,9850.0,9058.0,5442.0,False,-667.0,False
+1964-12-06,Vida,Cougar,3000.0,Max Evacuation Release; Vida Flood Max,14500.0,9058.0,8656.0,5844.0,False,-119.0,False
+1964-12-07,Vida,Cougar,3000.0,Max Evacuation Release; Vida Flood Max,14500.0,8656.0,8605.0,5895.0,False,253.0,False
+1964-12-08,Vida,Cougar,3000.0,Max Evacuation Release; Vida Flood Max,14500.0,8605.0,8723.0,5777.0,False,479.0,False
+1964-12-21,Vida,Cougar,1959.0,Vida Flood Max,14500.0,11688.0,30166.0,-15666.0,True,19336.0,False
+1964-12-27,Vida,Cougar,5651.0,Vida Flood Max,14500.0,22457.0,19014.0,-4514.0,True,-3242.0,False
+1964-12-28,Vida,Cougar,6500.0,Max Evacuation Release; Vida Flood Max,14500.0,19014.0,18558.0,-4058.0,True,-1786.0,False
+1964-12-29,Vida,Cougar,6500.0,Max Evacuation Release; Vida Flood Max,14500.0,18558.0,16399.0,-1899.0,True,-1239.0,False
+1964-12-30,Vida,Cougar,6500.0,Max Evacuation Release; Vida Flood Max,14500.0,16399.0,15890.0,-1390.0,True,-890.0,False
+1964-12-31,Vida,Cougar,6150.0,Vida Flood Max,14500.0,15890.0,14412.0,88.0,True,-534.0,False
+1965-01-01,Vida,Cougar,5667.0,Vida Flood Max,14500.0,14412.0,14420.0,80.0,True,-239.0,False
+1965-01-02,Vida,Cougar,6041.0,Vida Flood Max,14500.0,14420.0,14235.0,265.0,True,-246.0,True
+1965-01-03,Vida,Cougar,6142.0,Max Evacuation Release; Vida Flood Max,14500.0,14235.0,13601.0,899.0,True,-327.0,True
+1965-01-04,Vida,Cougar,5908.0,Max Evacuation Release; Vida Flood Max,14500.0,13601.0,13097.0,1403.0,True,-89.0,True
+1965-01-24,Vida,Cougar,3000.0,Max Evacuation Release; Vida Flood Max,14500.0,11981.0,10212.0,4288.0,True,-1477.0,True
+1965-01-27,Vida,Cougar,1262.0,Vida Flood Max,14500.0,13226.0,19908.0,-5408.0,True,8729.0,False
+1965-01-30,Vida,Cougar,300.0,Flood Min; Vida Flood Max; Dam-BiOp MinTrib and Withdrawals by WY,14500.0,15352.0,14251.0,249.0,True,-3219.0,False
+1965-01-31,Vida,Cougar,512.0,Vida Flood Max,14500.0,14251.0,14034.0,466.0,True,-2537.0,True
+1965-02-01,Vida,Cougar,1328.0,Vida Flood Max,14500.0,14034.0,13367.0,1133.0,True,-1729.0,True
+1965-02-02,Vida,Cougar,2710.0,Vida Flood Max,14500.0,13367.0,13522.0,978.0,True,-926.0,True
+1965-02-03,Vida,Cougar,3575.0,Vida Flood Max,14500.0,13522.0,13344.0,1156.0,True,-716.0,True
+1965-02-04,Vida,Cougar,4394.0,Vida Flood Max,14500.0,13344.0,13776.0,724.0,True,-201.0,True
+1965-02-05,Vida,Cougar,5021.0,Vida Flood Max,14500.0,13776.0,13785.0,715.0,True,-398.0,True
+1965-02-06,Vida,Cougar,5579.0,Max Evacuation Release; Vida Flood Max,14500.0,13785.0,13358.0,1142.0,True,-384.0,True
+1963-02-01,Vida,Blue River,1000.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,9120.0,11444.0,3056.0,True,809.0,True
+1963-02-02,Vida,Blue River,1226.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,11444.0,13276.0,1224.0,True,2334.0,True
+1963-02-03,Vida,Blue River,1398.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,13276.0,12822.0,1678.0,True,-1289.0,True
+1963-02-04,Vida,Blue River,1997.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,12822.0,12090.0,2410.0,True,-1005.0,True
+1963-02-05,Vida,Blue River,2160.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,12090.0,10138.0,4362.0,True,-1447.0,True
+1963-11-07,Vida,Blue River,1494.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,5973.0,11291.0,3209.0,True,4459.0,True
+1963-11-08,Vida,Blue River,1468.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,11291.0,9787.0,4713.0,True,-1593.0,True
+1963-11-09,Vida,Blue River,2030.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,9787.0,8334.0,6166.0,True,-1858.0,True
+1963-11-10,Vida,Blue River,2078.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,8334.0,7502.0,6998.0,True,-511.0,True
+1963-11-11,Vida,Blue River,1898.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,7502.0,6880.0,7620.0,True,-210.0,True
+1963-11-12,Vida,Blue River,1659.0,Dam-Max Evacuation Release; Vida Flood Max; FIRO_SPACE,14500.0,6880.0,6298.0,8202.0,True,-136.0,True
+1963-11-13,Vida,Blue River,1470.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,6298.0,7180.0,7320.0,True,657.0,True
+1963-11-14,Vida,Blue River,1383.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,7180.0,6720.0,7780.0,True,313.0,True
+1963-11-15,Vida,Blue River,1348.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,6720.0,5600.0,8900.0,True,7.0,True
+1963-11-16,Vida,Blue River,1323.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,5600.0,5974.0,8526.0,True,110.0,True
+1963-11-17,Vida,Blue River,1284.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,5974.0,6118.0,8382.0,True,293.0,True
+1963-11-18,Vida,Blue River,1266.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,6118.0,5962.0,8538.0,True,-103.0,True
+1963-11-19,Vida,Blue River,1244.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,5962.0,5600.0,8900.0,True,-282.0,True
+1963-11-20,Vida,Blue River,1193.0,Dam-Max Evacuation Release; Vida Flood Max; Draft to RC,14500.0,5600.0,5162.0,9338.0,True,-226.0,True
+1963-11-21,Vida,Blue River,1152.0,Dam-Max Evacuation Release; Vida Flood Max; Draft to RC,14500.0,5162.0,5106.0,9394.0,True,-58.0,True
+1963-11-22,Vida,Blue River,1080.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,5106.0,5290.0,9210.0,True,62.0,True
+1963-11-23,Vida,Blue River,1019.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,5290.0,5874.0,8626.0,True,375.0,True
+1963-11-24,Vida,Blue River,1032.0,Dam-Max Evacuation Release; Vida Flood Max; Draft to RC,14500.0,5874.0,5345.0,9155.0,True,-149.0,True
+1963-12-28,Vida,Blue River,1000.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,5403.0,6399.0,8101.0,True,200.0,True
+1964-01-17,Vida,Blue River,1000.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,6056.0,5598.0,8902.0,True,-144.0,True
+1964-01-25,Vida,Blue River,1000.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,7315.0,8207.0,6293.0,True,498.0,True
+1964-01-26,Vida,Blue River,1086.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,8207.0,7693.0,6807.0,True,-402.0,True
+1964-01-27,Vida,Blue River,1170.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,7693.0,6984.0,7516.0,True,-626.0,True
+1964-01-28,Vida,Blue River,1194.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,6984.0,7065.0,7435.0,True,119.0,True
+1964-01-29,Vida,Blue River,1185.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,7065.0,7159.0,7341.0,True,18.0,True
+1964-01-30,Vida,Blue River,1204.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,7159.0,7163.0,7337.0,True,-146.0,True
+1964-01-31,Vida,Blue River,1212.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,7163.0,8614.0,5886.0,True,712.0,True
+1964-11-24,Vida,Blue River,1000.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,8513.0,10552.0,3948.0,True,144.0,True
+1964-11-25,Vida,Blue River,1320.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,10552.0,6896.0,7604.0,True,-2093.0,True
+1964-11-26,Vida,Blue River,1423.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,6896.0,5493.0,9007.0,True,-638.0,True
+1964-11-27,Vida,Blue River,1390.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,5493.0,5918.0,8582.0,True,379.0,True
+1964-11-28,Vida,Blue River,1321.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,5918.0,7866.0,6634.0,True,1344.0,True
+1964-11-29,Vida,Blue River,1249.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,7866.0,11575.0,2925.0,True,2625.0,True
+1964-11-30,Vida,Blue River,1290.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,11575.0,14533.0,-33.0,True,3439.0,False
+1964-12-01,Vida,Blue River,1472.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,14533.0,14925.0,-425.0,True,262.0,False
+1964-12-02,Vida,Blue River,2290.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,14925.0,12302.0,2198.0,True,-4164.0,True
+1964-12-03,Vida,Blue River,2650.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,12302.0,11544.0,2956.0,True,-1350.0,True
+1964-12-04,Vida,Blue River,2617.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,11544.0,9850.0,4650.0,True,-1165.0,True
+1964-12-05,Vida,Blue River,2396.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,9850.0,9058.0,5442.0,True,-667.0,True
+1964-12-06,Vida,Blue River,2146.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,9058.0,8656.0,5844.0,True,-119.0,True
+1964-12-07,Vida,Blue River,1876.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,8656.0,8605.0,5895.0,True,253.0,True
+1964-12-08,Vida,Blue River,1615.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,8605.0,8723.0,5777.0,True,479.0,True
+1964-12-09,Vida,Blue River,1479.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,8723.0,10299.0,4201.0,True,1895.0,True
+1964-12-10,Vida,Blue River,1437.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,10299.0,9529.0,4971.0,True,-823.0,True
+1964-12-11,Vida,Blue River,1473.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,9529.0,8599.0,5901.0,True,-170.0,True
+1964-12-12,Vida,Blue River,1488.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,8599.0,6952.0,7548.0,True,-977.0,True
+1964-12-13,Vida,Blue River,1449.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,6952.0,7754.0,6746.0,True,604.0,True
+1964-12-14,Vida,Blue River,1395.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,7754.0,8055.0,6445.0,True,875.0,True
+1964-12-15,Vida,Blue River,1389.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,8055.0,6082.0,8418.0,True,-1318.0,True
+1964-12-16,Vida,Blue River,1428.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,6082.0,5453.0,9047.0,True,-850.0,True
+1964-12-17,Vida,Blue River,1407.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,5453.0,5405.0,9095.0,True,20.0,True
+1964-12-18,Vida,Blue River,1359.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,5405.0,4918.0,9582.0,True,-380.0,True
+1964-12-19,Vida,Blue River,1297.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,4918.0,5203.0,9297.0,True,297.0,True
+1964-12-20,Vida,Blue River,1224.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,5203.0,11688.0,2812.0,True,5716.0,True
+1964-12-21,Vida,Blue River,969.0,Vida Flood Max,14500.0,11688.0,30166.0,-15666.0,True,19336.0,False
+1964-12-24,Vida,Blue River,224.0,Vida Flood Max,14500.0,29347.0,25499.0,-10999.0,True,-10793.0,False
+1964-12-27,Vida,Blue River,3683.0,Vida Flood Max,14500.0,22457.0,19014.0,-4514.0,True,-3242.0,False
+1964-12-28,Vida,Blue River,4000.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,19014.0,18558.0,-4058.0,True,-1786.0,False
+1964-12-29,Vida,Blue River,4000.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,18558.0,16399.0,-1899.0,True,-1239.0,False
+1964-12-30,Vida,Blue River,4000.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,16399.0,15890.0,-1390.0,True,-890.0,False
+1964-12-31,Vida,Blue River,4000.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,15890.0,14412.0,88.0,True,-534.0,False
+1965-01-01,Vida,Blue River,3953.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,14412.0,14420.0,80.0,True,-239.0,False
+1965-01-02,Vida,Blue River,3833.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,14420.0,14235.0,265.0,True,-246.0,True
+1965-01-03,Vida,Blue River,3703.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,14235.0,13601.0,899.0,True,-327.0,True
+1965-01-04,Vida,Blue River,3566.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,13601.0,13097.0,1403.0,True,-89.0,True
+1965-01-05,Vida,Blue River,3425.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,13097.0,12895.0,1605.0,True,148.0,True
+1965-01-30,Vida,Blue River,496.0,Vida Flood Max,14500.0,15352.0,14251.0,249.0,True,-3219.0,False
+1965-01-31,Vida,Blue River,2906.0,Vida Flood Max,14500.0,14251.0,14034.0,466.0,True,-2537.0,True
+1965-02-01,Vida,Blue River,3936.0,Dam-Max Evacuation Release; Vida Flood Max,14500.0,14034.0,13367.0,1133.0,True,-1729.0,True
+1963-03-30,Monroe,Fern Ridge,3335.0,Monroe Regulation Goal Max,5660.0,5189.0,6154.0,-494.0,True,-1025.0,False
+1963-05-07,Monroe,Fern Ridge,4193.0,Monroe Regulation Goal Max; FIRO_SPACE,5660.0,6516.0,5553.0,107.0,False,-895.0,False
+1964-01-18,Monroe,Fern Ridge,1211.0,Monroe Regulation Goal Max,5660.0,3867.0,5057.0,603.0,True,1751.0,True
+1964-01-19,Monroe,Fern Ridge,377.0,Monroe Regulation Goal Max,5660.0,5057.0,6615.0,-955.0,True,1086.0,False
+1964-01-20,Monroe,Fern Ridge,2140.0,Monroe Regulation Goal Max,5660.0,6615.0,5550.0,110.0,True,-2793.0,False
+1964-01-21,Monroe,Fern Ridge,3174.0,Monroe Regulation Goal Max,5660.0,5550.0,6586.0,-926.0,True,339.0,False
+1964-01-22,Monroe,Fern Ridge,3785.0,Monroe Regulation Goal Max,5660.0,6586.0,5815.0,-155.0,True,-1065.0,False
+1964-01-23,Monroe,Fern Ridge,4063.0,Monroe Regulation Goal Max,5660.0,5815.0,6062.0,-402.0,True,210.0,False
+1964-01-24,Monroe,Fern Ridge,3686.0,Monroe Regulation Goal Max,5660.0,6062.0,6380.0,-720.0,True,620.0,False
+1964-01-25,Monroe,Fern Ridge,3826.0,Monroe Regulation Goal Max,5660.0,6380.0,6129.0,-469.0,True,-675.0,False
+1964-01-26,Monroe,Fern Ridge,4245.0,Dam-Max Evacuation Release; Monroe Regulation Goal Max,5660.0,6129.0,5914.0,-254.0,True,-425.0,False
+1964-12-22,Monroe,Fern Ridge,228.0,Monroe Regulation Goal Max,5660.0,7849.0,7341.0,-1681.0,True,-1385.0,False
+1964-12-23,Monroe,Fern Ridge,1550.0,Monroe Regulation Goal Max,5660.0,7341.0,6607.0,-947.0,True,-2445.0,False
+1964-12-24,Monroe,Fern Ridge,3092.0,Monroe Regulation Goal Max,5660.0,6607.0,6280.0,-620.0,True,-1256.0,False
+1964-12-25,Monroe,Fern Ridge,3736.0,Monroe Regulation Goal Max,5660.0,6280.0,6247.0,-587.0,True,-238.0,False
+1964-12-26,Monroe,Fern Ridge,3582.0,Monroe Regulation Goal Max,5660.0,6247.0,6759.0,-1099.0,True,565.0,False
+1964-12-27,Monroe,Fern Ridge,3915.0,Monroe Regulation Goal Max,5660.0,6759.0,6499.0,-839.0,True,-952.0,False
+1964-12-28,Monroe,Fern Ridge,4706.0,Monroe Regulation Goal Max,5660.0,6499.0,6219.0,-559.0,True,-895.0,False
+1965-01-03,Monroe,Fern Ridge,4942.0,Dam-Max Evacuation Release; Monroe Regulation Goal Max,5660.0,6287.0,6962.0,-1302.0,True,672.0,False
+1965-01-06,Monroe,Fern Ridge,4812.0,Monroe Regulation Goal Max,5660.0,7136.0,6607.0,-947.0,True,-472.0,False
+1965-01-25,Monroe,Fern Ridge,2810.0,Dam-Max Evacuation Release; Monroe Regulation Goal Max,5660.0,4219.0,4751.0,909.0,True,619.0,True
+1965-01-26,Monroe,Fern Ridge,2356.0,Monroe Regulation Goal Max,5660.0,4751.0,5021.0,639.0,True,672.0,True
+1965-01-27,Monroe,Fern Ridge,2224.0,Monroe Regulation Goal Max,5660.0,5021.0,5180.0,480.0,True,122.0,True
+1965-01-28,Monroe,Fern Ridge,2335.0,Monroe Regulation Goal Max,5660.0,5180.0,5810.0,-150.0,True,-23.0,False
+1965-01-29,Monroe,Fern Ridge,3408.0,Monroe Regulation Goal Max,5660.0,5810.0,5026.0,634.0,True,-1589.0,True
+1963-02-03,Waterloo,Green Peter,8347.0,Waterloo Flood Max,19000.0,17216.0,12416.0,6584.0,True,256.0,True
+1963-11-08,Waterloo,Green Peter,5886.0,Waterloo Flood Max,19000.0,17374.0,19330.0,-330.0,False,-3230.0,False
+1963-11-09,Waterloo,Green Peter,8809.0,Waterloo Flood Max,19000.0,19330.0,12091.0,6909.0,False,-1221.0,False
+1964-11-25,Waterloo,Green Peter,7312.0,Waterloo Flood Max,19000.0,16451.0,8608.0,10392.0,False,-2240.0,False
+1964-11-29,Waterloo,Green Peter,6090.0,Waterloo Flood Max,19000.0,10388.0,12791.0,6209.0,False,-746.0,False
+1964-11-30,Waterloo,Green Peter,6406.0,Waterloo Flood Max,19000.0,12791.0,16655.0,2345.0,False,902.0,False
+1964-12-01,Waterloo,Green Peter,8066.0,Waterloo Flood Max,19000.0,16655.0,18146.0,854.0,False,-20.0,False
+1964-12-02,Waterloo,Green Peter,8553.0,Waterloo Flood Max,19000.0,18146.0,12963.0,6037.0,False,-686.0,False
+1964-12-10,Waterloo,Green Peter,6671.0,Secondary Flood Draft Limit; Waterloo Flood Max,19000.0,10712.0,12873.0,6127.0,False,788.0,False
+1964-12-11,Waterloo,Green Peter,6258.0,Secondary Flood Draft Limit; Waterloo Flood Max,19000.0,12873.0,8017.0,10983.0,False,-1010.0,False
+1964-12-14,Waterloo,Green Peter,5055.0,Waterloo Flood Max,19000.0,7176.0,9694.0,9306.0,False,1660.0,False
+1964-12-15,Waterloo,Green Peter,5008.0,Waterloo Flood Max,19000.0,9694.0,7807.0,11193.0,False,-1006.0,False
+1964-12-24,Waterloo,Green Peter,950.0,Waterloo Flood Max,19000.0,23181.0,18021.0,979.0,True,-2404.0,True
+1964-12-25,Waterloo,Green Peter,4448.0,Waterloo Flood Max,19000.0,18021.0,19975.0,-975.0,True,1706.0,False
+1964-12-26,Waterloo,Green Peter,3558.0,Waterloo Flood Max,19000.0,19975.0,18251.0,749.0,True,-793.0,True
+1964-12-27,Waterloo,Green Peter,6696.0,Waterloo Flood Max,19000.0,18251.0,17613.0,1387.0,True,-392.0,True
+1964-12-28,Waterloo,Green Peter,7988.0,Waterloo Flood Max,19000.0,17613.0,14743.0,4257.0,True,6.0,True
+1964-12-29,Waterloo,Green Peter,10612.0,Waterloo Flood Max,19000.0,14743.0,14353.0,4647.0,True,-224.0,True
+1965-01-29,Waterloo,Green Peter,4956.0,Waterloo Flood Max,19000.0,17019.0,20737.0,-1737.0,True,-1672.0,False
+1965-01-30,Waterloo,Green Peter,3873.0,Waterloo Flood Max,19000.0,20737.0,17704.0,1296.0,True,-909.0,True
+1965-01-31,Waterloo,Green Peter,8070.0,Waterloo Flood Max,19000.0,17704.0,17885.0,1115.0,True,1008.0,True
+1965-02-01,Waterloo,Green Peter,8166.0,Waterloo Flood Max,19000.0,17885.0,13883.0,5117.0,True,808.0,True
+1965-02-02,Waterloo,Green Peter,11422.0,Waterloo Flood Max,19000.0,13883.0,15066.0,3934.0,True,117.0,True
+1964-11-24,Mehama,Detroit,4270.0,Mehama Winter Ops Max,17000.0,17011.0,11033.0,5967.0,False,-7731.0,False
+1964-12-22,Mehama,Detroit,0.0,Regulating Outlet Lower-No Lower RO Flow; Mehama Winter Ops Max; Jefferson Winter Ops Max; Deep Drawdown; IRRM; MainstemFlowAug,17000.0,36257.0,21331.0,-4331.0,True,-14377.0,False
+1964-12-28,Mehama,Detroit,16685.0,Dam-Max Evacuation Release; Mehama Winter Ops Max,17000.0,20721.0,14443.0,2557.0,True,-1023.0,True
+1964-12-29,Mehama,Detroit,14489.0,Mehama Winter Ops Max,17000.0,14443.0,12722.0,4278.0,True,-491.0,True
+1965-01-01,Mehama,Detroit,14677.0,Dam-Max Evacuation Release; Mehama Winter Ops Max,17000.0,13656.0,15607.0,1393.0,True,627.0,True
+1965-01-02,Mehama,Detroit,13927.0,Dam-Max Evacuation Release; Mehama Winter Ops Max,17000.0,15607.0,13604.0,3396.0,True,546.0,True
+1965-01-27,Mehama,Detroit,3163.0,Mehama Winter Ops Max,17000.0,17426.0,25666.0,-8666.0,True,11288.0,False
+1965-02-01,Mehama,Detroit,9700.0,Mehama Winter Ops Max,17000.0,14297.0,14254.0,2746.0,True,-1736.0,True
+1965-02-02,Mehama,Detroit,10860.0,Mehama Winter Ops Max,17000.0,14254.0,14424.0,2576.0,True,-709.0,True
+1965-02-03,Mehama,Detroit,12136.0,Regulating Outlet Upper-Upper RO use 1400 to 1542 ft; Mehama Winter Ops Max,17000.0,14424.0,14695.0,2305.0,True,-327.0,True
+1963-11-08,Jefferson,Detroit,4656.0,Jefferson Winter Ops Max,43000.0,39717.0,43631.0,-631.0,False,-626.0,False
+1964-12-01,Jefferson,Detroit,4730.0,Jefferson Winter Ops Max,43000.0,40487.0,43407.0,-407.0,False,1240.0,False
+1964-12-22,Jefferson,Detroit,0.0,Regulating Outlet Lower-No Lower RO Flow; Mehama Winter Ops Max; Jefferson Winter Ops Max; Deep Drawdown; IRRM; MainstemFlowAug,43000.0,88548.0,104056.0,-61056.0,True,11839.0,False
+1964-12-23,Jefferson,Detroit,0.0,Regulating Outlet Lower-No Lower RO Flow; Jefferson Winter Ops Max; Deep Drawdown; IRRM; MainstemFlowAug,43000.0,104056.0,66400.0,-23400.0,True,-40341.0,False
+1964-12-24,Jefferson,Detroit,0.0,Regulating Outlet Upper-Upper RO use 1400 to 1542 ft; Regulating Outlet Lower-No Lower RO Flow; Jefferson Winter Ops Max; Deep Drawdown; IRRM; MainstemFlowAug,43000.0,66400.0,60306.0,-17306.0,True,-7675.0,False
+1964-12-25,Jefferson,Detroit,5200.0,Jefferson Winter Ops Max,43000.0,60306.0,53848.0,-10848.0,True,-8606.0,False
+1964-12-26,Jefferson,Detroit,6924.0,Jefferson Winter Ops Max,43000.0,53848.0,56686.0,-13686.0,True,-3712.0,False
+1965-01-28,Jefferson,Detroit,0.0,Regulating Outlet Lower-No Lower RO Flow; Jefferson Winter Ops Max; Deep Drawdown; IRRM; MainstemFlowAug,43000.0,88296.0,79782.0,-36782.0,True,-9302.0,False
+1965-01-29,Jefferson,Detroit,0.0,Regulating Outlet Lower-No Lower RO Flow; Jefferson Winter Ops Max; Deep Drawdown; IRRM; MainstemFlowAug,43000.0,79782.0,51360.0,-8360.0,True,-34126.0,False
+1965-01-30,Jefferson,Detroit,1829.0,Jefferson Winter Ops Max,43000.0,51360.0,44835.0,-1835.0,True,-11333.0,False
+1965-01-31,Jefferson,Detroit,5876.0,Jefferson Winter Ops Max,43000.0,44835.0,42243.0,757.0,True,-5520.0,True
+1963-05-06,Harrisburg,Cottage Grove,765.0,Goshen Bankfull Max; Harrisburg Bankfull Simplified Max,52000.0,24512.0,44882.0,7118.0,True,16371.0,True
+1964-01-21,Harrisburg,Cottage Grove,3000.0,Dam-Max Evacuation Release; Goshen Bankfull Max; Harrisburg Bankfull Simplified Max; Harrisburg Regulation Goal Simplified,52000.0,41464.0,31683.0,20317.0,True,-14786.0,True
+1964-01-22,Harrisburg,Cottage Grove,2942.0,Dam-Max Evacuation Release; Goshen Bankfull Max; Harrisburg Bankfull Simplified Max; Harrisburg Regulation Goal Simplified,52000.0,31683.0,34766.0,17234.0,True,4479.0,True
+1964-01-23,Harrisburg,Cottage Grove,3000.0,Dam-Max Evacuation Release; Goshen Bankfull Max; Harrisburg Bankfull Simplified Max; FIRO_SPACE; Harrisburg Regulation Goal Simplified,52000.0,34766.0,32240.0,19760.0,True,-739.0,True
+1964-01-24,Harrisburg,Cottage Grove,2579.0,Harrisburg Bankfull Simplified Max; Draft to RC,52000.0,32240.0,36394.0,15606.0,True,3612.0,True
+1964-12-01,Harrisburg,Cottage Grove,1327.0,Dam-Max Evacuation Release; Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,52000.0,44987.0,54832.0,-2832.0,True,10273.0,False
+1964-12-29,Harrisburg,Cottage Grove,1991.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,52000.0,59924.0,57388.0,-5388.0,True,-1687.0,False
+1964-12-30,Harrisburg,Cottage Grove,2341.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,52000.0,57388.0,57162.0,-5162.0,True,-4317.0,False
+1964-12-31,Harrisburg,Cottage Grove,2780.0,Harrisburg Bankfull Simplified Max,52000.0,57162.0,52240.0,-240.0,True,-6274.0,False
+1965-01-01,Harrisburg,Cottage Grove,2757.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,52000.0,52240.0,53945.0,-1945.0,True,1153.0,False
+1965-01-02,Harrisburg,Cottage Grove,2750.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,52000.0,53945.0,55206.0,-3206.0,True,79.0,False
+1965-01-03,Harrisburg,Cottage Grove,3000.0,Dam-Max Evacuation Release; Goshen Bankfull Max; Harrisburg Bankfull Simplified Max; Harrisburg Regulation Goal Simplified,52000.0,55206.0,50451.0,1549.0,True,-3980.0,True
+1965-01-04,Harrisburg,Cottage Grove,3000.0,Dam-Max Evacuation Release; Goshen Bankfull Max; Harrisburg Bankfull Simplified Max; Harrisburg Regulation Goal Simplified,52000.0,50451.0,49651.0,2349.0,True,-1182.0,True
+1965-01-27,Harrisburg,Cottage Grove,608.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,52000.0,40880.0,53181.0,-1181.0,True,22174.0,False
+1965-01-29,Harrisburg,Cottage Grove,440.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,52000.0,69890.0,57733.0,-5733.0,True,-17923.0,False
+1965-01-30,Harrisburg,Cottage Grove,1737.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,52000.0,57733.0,51342.0,658.0,True,-16000.0,True
+1965-01-31,Harrisburg,Cottage Grove,1660.0,Harrisburg Bankfull Simplified Max; Draft to RC,52000.0,51342.0,52649.0,-649.0,True,-4682.0,False
+1963-05-06,Harrisburg,Dorena,1658.0,Goshen Bankfull Max; Harrisburg Bankfull Simplified Max,52000.0,24512.0,44882.0,7118.0,True,16371.0,True
+1963-05-08,Harrisburg,Dorena,5580.0,Goshen Bankfull Max; Harrisburg Bankfull Simplified Max; Draft to RC,52000.0,49486.0,41717.0,10283.0,True,-12828.0,True
+1964-11-30,Harrisburg,Dorena,3813.0,Dam-Max Evacuation Release; Goshen Bankfull Max; Harrisburg Bankfull Simplified Max,52000.0,35760.0,44987.0,7013.0,True,7181.0,True
+1964-12-01,Harrisburg,Dorena,2875.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,52000.0,44987.0,54832.0,-2832.0,True,10273.0,False
+1964-12-02,Harrisburg,Dorena,4374.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,52000.0,54832.0,49722.0,2278.0,True,-8534.0,True
+1964-12-29,Harrisburg,Dorena,4314.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,52000.0,59924.0,57388.0,-5388.0,True,-1687.0,False
+1964-12-30,Harrisburg,Dorena,5073.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,52000.0,57388.0,57162.0,-5162.0,True,-4317.0,False
+1964-12-31,Harrisburg,Dorena,6063.0,Goshen Bankfull Max; Harrisburg Bankfull Simplified Max; Harrisburg Regulation Goal Simplified,52000.0,57162.0,52240.0,-240.0,True,-6274.0,False
+1965-01-01,Harrisburg,Dorena,5972.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,52000.0,52240.0,53945.0,-1945.0,True,1153.0,False
+1965-01-02,Harrisburg,Dorena,5959.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,52000.0,53945.0,55206.0,-3206.0,True,79.0,False
+1965-01-27,Harrisburg,Dorena,1318.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,52000.0,40880.0,53181.0,-1181.0,True,22174.0,False
+1965-01-29,Harrisburg,Dorena,954.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,52000.0,69890.0,57733.0,-5733.0,True,-17923.0,False
+1965-01-30,Harrisburg,Dorena,3764.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,52000.0,57733.0,51342.0,658.0,True,-16000.0,True
+1965-01-31,Harrisburg,Dorena,4587.0,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,52000.0,51342.0,52649.0,-649.0,True,-4682.0,False
+1963-05-06,Harrisburg,Hills Creek,4022.0,Harrisburg Regulation Goal Simplified,52000.0,24512.0,44882.0,7118.0,False,16371.0,False
+1963-05-07,Harrisburg,Hills Creek,4560.0,Harrisburg Regulation Goal Simplified,52000.0,44882.0,49486.0,2514.0,False,-2488.0,False
+1963-11-08,Harrisburg,Hills Creek,5905.0,Harrisburg Regulation Goal Simplified,52000.0,29678.0,46461.0,5539.0,True,10285.0,True
+1964-12-29,Harrisburg,Hills Creek,5310.0,Harrisburg Regulation Goal Simplified,52000.0,59924.0,57388.0,-5388.0,True,-1687.0,False
+1964-12-30,Harrisburg,Hills Creek,6244.0,Harrisburg Regulation Goal Simplified,52000.0,57388.0,57162.0,-5162.0,True,-4317.0,False
+1964-12-31,Harrisburg,Hills Creek,7600.0,Harrisburg Regulation Goal Simplified,52000.0,57162.0,52240.0,-240.0,True,-6274.0,False
+1965-01-01,Harrisburg,Hills Creek,7351.0,Harrisburg Regulation Goal Simplified,52000.0,52240.0,53945.0,-1945.0,True,1153.0,False
+1965-01-02,Harrisburg,Hills Creek,7334.0,Harrisburg Regulation Goal Simplified,52000.0,53945.0,55206.0,-3206.0,True,79.0,False
+1965-01-10,Harrisburg,Hills Creek,5815.0,Harrisburg Regulation Goal Simplified,52000.0,41361.0,48508.0,3492.0,True,11600.0,True
+1965-01-27,Harrisburg,Hills Creek,1622.0,Harrisburg Regulation Goal Simplified,52000.0,40880.0,53181.0,-1181.0,True,22174.0,False
+1965-01-29,Harrisburg,Hills Creek,1174.0,Harrisburg Regulation Goal Simplified,52000.0,69890.0,57733.0,-5733.0,True,-17923.0,False
+1965-01-30,Harrisburg,Hills Creek,4633.0,Harrisburg Regulation Goal Simplified,52000.0,57733.0,51342.0,658.0,True,-16000.0,True
+1965-01-31,Harrisburg,Hills Creek,5645.0,Harrisburg Regulation Goal Simplified,52000.0,51342.0,52649.0,-649.0,True,-4682.0,False
+1964-01-19,Harrisburg,Lookout Point,5646.0,Harrisburg Regulation Goal Simplified,52000.0,33240.0,50731.0,1269.0,True,18501.0,True
+1964-12-01,Harrisburg,Lookout Point,7077.0,Harrisburg Regulation Goal Simplified,52000.0,44987.0,54832.0,-2832.0,False,10273.0,False
+1964-12-02,Harrisburg,Lookout Point,10768.0,Harrisburg Regulation Goal Simplified,52000.0,54832.0,49722.0,2278.0,False,-8534.0,False
+1964-12-25,Harrisburg,Lookout Point,2802.0,Harrisburg Regulation Goal Simplified,52000.0,82005.0,79684.0,-27684.0,True,-10504.0,False
+1964-12-26,Harrisburg,Lookout Point,2952.0,Harrisburg Regulation Goal Simplified,52000.0,79684.0,77840.0,-25840.0,True,-347.0,False
+1964-12-27,Harrisburg,Lookout Point,6470.0,Harrisburg Regulation Goal Simplified,52000.0,77840.0,68439.0,-16439.0,True,-8135.0,False
+1965-01-04,Harrisburg,Lookout Point,16000.0,Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,52000.0,50451.0,49651.0,2349.0,True,-1182.0,True
+1965-01-05,Harrisburg,Lookout Point,16000.0,Jasper Bankfull Max; Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,52000.0,49651.0,49015.0,2985.0,True,1986.0,True
+1965-01-06,Harrisburg,Lookout Point,15231.0,Harrisburg Regulation Goal Simplified; IRRM,52000.0,49015.0,49850.0,2150.0,True,1874.0,True
+1965-01-07,Harrisburg,Lookout Point,16000.0,Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,52000.0,49850.0,46086.0,5914.0,True,-2809.0,True
+1965-01-08,Harrisburg,Lookout Point,16000.0,Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,52000.0,46086.0,42384.0,9616.0,True,-2390.0,True
+1965-01-09,Harrisburg,Lookout Point,16000.0,Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,52000.0,42384.0,41361.0,10639.0,True,1927.0,True
+1965-01-10,Harrisburg,Lookout Point,11629.0,Harrisburg Regulation Goal Simplified,52000.0,41361.0,48508.0,3492.0,True,11600.0,True
+1965-01-11,Harrisburg,Lookout Point,13718.0,Harrisburg Regulation Goal Simplified,52000.0,48508.0,47232.0,4768.0,True,-4831.0,True
+1965-01-12,Harrisburg,Lookout Point,15693.0,Jasper Bankfull Max; Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,52000.0,47232.0,46288.0,5712.0,True,-4565.0,True
+1965-01-13,Harrisburg,Lookout Point,16000.0,Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,52000.0,46288.0,41599.0,10401.0,True,-2335.0,True
+1965-01-14,Harrisburg,Lookout Point,16000.0,Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,52000.0,41599.0,39370.0,12630.0,True,-222.0,True
+1965-01-15,Harrisburg,Lookout Point,16000.0,Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,52000.0,39370.0,40178.0,11822.0,True,931.0,True
+1965-01-16,Harrisburg,Lookout Point,16000.0,Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,52000.0,40178.0,39621.0,12379.0,True,362.0,True
+1965-01-17,Harrisburg,Lookout Point,16000.0,Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,52000.0,39621.0,36832.0,15168.0,True,-2672.0,True
+1965-01-18,Harrisburg,Lookout Point,16000.0,Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,52000.0,36832.0,35665.0,16335.0,True,-318.0,True
+1965-01-19,Harrisburg,Lookout Point,16000.0,Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,52000.0,35665.0,34510.0,17490.0,True,-163.0,True
+1965-01-20,Harrisburg,Lookout Point,16000.0,Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,52000.0,34510.0,34695.0,17305.0,True,361.0,True
+1965-01-21,Harrisburg,Lookout Point,16000.0,Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,52000.0,34695.0,33274.0,18726.0,True,-1075.0,True
+1965-01-22,Harrisburg,Lookout Point,16000.0,Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,52000.0,33274.0,33944.0,18056.0,True,1130.0,True
+1965-01-23,Harrisburg,Lookout Point,13818.0,Harrisburg Regulation Goal Simplified,52000.0,33944.0,41502.0,10498.0,True,8335.0,True
+1965-01-24,Harrisburg,Lookout Point,14226.0,Harrisburg Regulation Goal Simplified,52000.0,41502.0,42919.0,9081.0,True,-945.0,True
+1965-01-25,Harrisburg,Lookout Point,14510.0,Harrisburg Regulation Goal Simplified,52000.0,42919.0,43422.0,8578.0,True,-656.0,True
+1965-01-26,Harrisburg,Lookout Point,12834.0,Harrisburg Regulation Goal Simplified,52000.0,43422.0,40880.0,11120.0,True,3876.0,True
+1965-01-27,Harrisburg,Lookout Point,3245.0,Harrisburg Regulation Goal Simplified,52000.0,40880.0,53181.0,-1181.0,True,22174.0,False
+1965-01-29,Harrisburg,Lookout Point,2347.0,Harrisburg Regulation Goal Simplified,52000.0,69890.0,57733.0,-5733.0,True,-17923.0,False
+1965-01-30,Harrisburg,Lookout Point,9266.0,Harrisburg Regulation Goal Simplified,52000.0,57733.0,51342.0,658.0,True,-16000.0,True
+1965-01-31,Harrisburg,Lookout Point,11290.0,Harrisburg Regulation Goal Simplified,52000.0,51342.0,52649.0,-649.0,True,-4682.0,False
+1965-02-01,Harrisburg,Lookout Point,13127.0,Harrisburg Regulation Goal Simplified,52000.0,52649.0,50822.0,1178.0,True,-4248.0,True
+1965-02-04,Harrisburg,Lookout Point,16000.0,Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,52000.0,44832.0,41723.0,10277.0,True,-1435.0,True
+1965-02-05,Harrisburg,Lookout Point,16000.0,Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,52000.0,41723.0,39779.0,12221.0,True,-519.0,True
+1965-02-06,Harrisburg,Lookout Point,16000.0,Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,52000.0,39779.0,36657.0,15343.0,True,-2401.0,True
+1965-02-07,Harrisburg,Lookout Point,16000.0,Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,52000.0,36657.0,35685.0,16315.0,True,273.0,True
+1965-02-08,Harrisburg,Lookout Point,16000.0,Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,52000.0,35685.0,35327.0,16673.0,True,279.0,True
+1965-02-09,Harrisburg,Lookout Point,16000.0,Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,52000.0,35327.0,32556.0,19444.0,True,-1973.0,True
+1965-02-10,Harrisburg,Lookout Point,16000.0,Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,52000.0,32556.0,31376.0,20624.0,True,919.0,True
+1964-12-25,Harrisburg,Fall Creek,4430.0,Max Evacuation Release; Harrisburg Bankfull Simplified Max; Harrisburg Regulation Goal Simplified Max,52000.0,82005.0,79684.0,-27684.0,True,-10504.0,False
+1964-12-26,Harrisburg,Fall Creek,4476.0,Max Evacuation Release; Harrisburg Bankfull Simplified Max; Harrisburg Regulation Goal Simplified Max,52000.0,79684.0,77840.0,-25840.0,True,-347.0,False
+1964-12-27,Harrisburg,Fall Creek,4500.0,Max Evacuation Release; Harrisburg Bankfull Simplified Max; Harrisburg Regulation Goal Simplified Max,52000.0,77840.0,68439.0,-16439.0,True,-8135.0,False
+1964-12-28,Harrisburg,Fall Creek,4492.0,Max Evacuation Release; Harrisburg Bankfull Simplified Max; Harrisburg Regulation Goal Simplified Max,52000.0,68439.0,59924.0,-7924.0,True,-7912.0,False
+1964-12-29,Harrisburg,Fall Creek,4450.0,Max Evacuation Release; Harrisburg Bankfull Simplified Max; Harrisburg Regulation Goal Simplified Max,52000.0,59924.0,57388.0,-5388.0,True,-1687.0,False

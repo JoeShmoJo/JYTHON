@@ -1,0 +1,23 @@
+control_point,reservoir,days_held_back,days_held_back_above_rule_curve,days_with_room,mean_room_cfs,largest_room_cfs,mean_cum_local_change_cfs,room_volume_af
+Goshen,Cottage Grove,31.0,31.0,30,4261.0,9205.0,-626.0,
+Goshen,Dorena,52.0,52.0,51,4269.0,9205.0,-390.0,
+Goshen,(all upstream),,,51,4269.0,9205.0,-390.0,431874.0
+Jasper,Lookout Point,22.0,12.0,12,1585.0,2500.0,-593.0,
+Jasper,(all upstream),,,12,1585.0,2500.0,-593.0,37723.0
+Vida,Cougar,44.0,21.0,12,1281.0,4288.0,-1100.0,
+Vida,Blue River,74.0,74.0,63,6042.0,9582.0,-65.0,
+Vida,(all upstream),,,69,5647.0,9582.0,-119.0,772809.0
+Monroe,Fern Ridge,25.0,24.0,5,653.0,909.0,315.0,
+Monroe,(all upstream),,,5,653.0,909.0,315.0,6472.0
+Waterloo,Green Peter,23.0,12.0,10,3006.0,6584.0,-253.0,
+Waterloo,(all upstream),,,10,3006.0,6584.0,-253.0,59633.0
+Mehama,Detroit,10.0,9.0,7,2750.0,4278.0,-445.0,
+Mehama,(all upstream),,,7,2750.0,4278.0,-445.0,38183.0
+Jefferson,Detroit,11.0,9.0,1,757.0,757.0,-5520.0,
+Jefferson,(all upstream),,,1,757.0,757.0,-5520.0,1502.0
+Harrisburg,Cottage Grove,17.0,17.0,8,10574.0,20317.0,-1528.0,
+Harrisburg,Dorena,14.0,14.0,5,5470.0,10283.0,-2762.0,
+Harrisburg,Hills Creek,13.0,11.0,3,3230.0,5539.0,1962.0,
+Harrisburg,Lookout Point,41.0,39.0,33,10643.0,20624.0,49.0,
+Harrisburg,Fall Creek,5.0,5.0,0,0.0,0.0,,
+Harrisburg,(all upstream),,,43,10649.0,20624.0,62.0,908254.0

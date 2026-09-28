@@ -1,0 +1,752 @@
+reservoir,rule,saved_as,outcome,by,days,volume_af
+Blue River,Dam-Max Evacuation Release,max,held up,(not found),2,4267.0
+Blue River,Vida Flood Max,max,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,4,374.0
+Blue River,Vida Flood Max,max,held up,(not found),2,19609.0
+Blue River,MainstemFlowAug,script,held up,FIRO_SPACE,244,195409.0
+Blue River,MainstemFlowAug,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,209,20727.0
+Blue River,MainstemFlowAug,script,held up,(not found),97,389848.0
+Blue River,MainstemFlowAug,script,held up,Dam-BiOp MinTrib and Withdrawals by WY,54,7296.0
+Blue River,MainstemFlowAug,script,held up,FIRO_SPACE; Draft to RC,51,32239.0
+Blue River,MainstemFlowAug,script,held up,Draft to RC,38,50945.0
+Blue River,MainstemFlowAug,script,held up,Dam-BiOp MinTrib and Withdrawals by WY; FIRO_SPACE,4,552.0
+Blue River,MainstemFlowAug,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY; Draft to RC,3,308.0
+Blue River,MainstemFlowAug,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY; FIRO_SPACE,2,198.0
+Blue River,FIRO_SPACE,script,capped,Dam-Max Evacuation Release; Vida Flood Max,61,302803.0
+Blue River,FIRO_SPACE,script,capped,Draft to RC,38,38309.0
+Blue River,FIRO_SPACE,script,capped,Dam-Max Evacuation Release,29,130467.0
+Blue River,FIRO_SPACE,script,capped,outlet capacity,11,207204.0
+Blue River,FIRO_SPACE,script,capped,Vida Flood Max,5,125660.0
+Blue River,FIRO_SPACE,script,capped,Dam-Max Evacuation Release; Vida Flood Max; Draft to RC,2,511.0
+Blue River,FIRO_SPACE,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,94,9110.0
+Blue River,FIRO_SPACE,script,held up,Dam-BiOp MinTrib and Withdrawals by WY,54,5291.0
+Blue River,Draft to RC,script,capped,Dam-Max Evacuation Release; Vida Flood Max,64,281125.0
+Blue River,Draft to RC,script,capped,Dam-Max Evacuation Release,29,134646.0
+Blue River,Draft to RC,script,capped,outlet capacity,8,164377.0
+Blue River,Draft to RC,script,capped,Vida Flood Max,5,113066.0
+Blue River,Draft to RC,script,capped,Dam-Max Evacuation Release; Vida Flood Max; FIRO_SPACE,1,1685.0
+Blue River,Draft to RC,script,held up,FIRO_SPACE,240,57441.0
+Blue River,Draft to RC,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,205,20168.0
+Blue River,Draft to RC,script,held up,Dam-BiOp MinTrib and Withdrawals by WY,52,6260.0
+Blue River,Draft to RC,script,held up,Dam-BiOp MinTrib and Withdrawals by WY; FIRO_SPACE,4,49.0
+Blue River,Draft to RC,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY; FIRO_SPACE,2,198.0
+Blue River,Draft to RC,script,held up,(not found),1,275.0
+Cottage Grove,Spillway-Uncontrolled Spill,min,capped,outlet capacity,4,112857.0
+Cottage Grove,Spillway-Uncontrolled Spill,min,capped,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,2,20574.0
+Cottage Grove,Spillway-Uncontrolled Spill,min,capped,Draft to RC,1,251.0
+Cottage Grove,Spillway-Uncontrolled Spill,min,capped,Goshen Bankfull Max,1,21266.0
+Cottage Grove,Dam-Max Evacuation Release,max,held up,(not found),3,6277.0
+Cottage Grove,Goshen Bankfull Max,max,held up,(not found),4,21324.0
+Cottage Grove,Goshen Bankfull Max,max,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,3,270.0
+Cottage Grove,Harrisburg Bankfull Simplified Max,max,held up,(not found),15,38658.0
+Cottage Grove,Harrisburg Bankfull Simplified Max,max,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,4,397.0
+Cottage Grove,Harrisburg Bankfull Simplified Max,max,held up,Draft to RC,1,98.0
+Cottage Grove,Dam-BiOp MinTrib and Withdrawals by WY,min,capped,Draft to RC,1,16.0
+Cottage Grove,MainstemFlowAug,script,held up,Dam-BiOp MinTrib and Withdrawals by WY,344,47101.0
+Cottage Grove,MainstemFlowAug,script,held up,Draft to RC,115,146569.0
+Cottage Grove,MainstemFlowAug,script,held up,FIRO_SPACE; Draft to RC,94,29027.0
+Cottage Grove,MainstemFlowAug,script,held up,FIRO_SPACE,76,67625.0
+Cottage Grove,MainstemFlowAug,script,held up,(not found),44,129209.0
+Cottage Grove,MainstemFlowAug,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,28,2956.0
+Cottage Grove,MainstemFlowAug,script,held up,Dam-BiOp MinTrib and Withdrawals by WY; Draft to RC,4,590.0
+Cottage Grove,MainstemFlowAug,script,held up,Dam-BiOp MinTrib and Withdrawals by WY; FIRO_SPACE; Draft to RC,3,478.0
+Cottage Grove,MainstemFlowAug,script,held up,Dam-BiOp MinTrib and Withdrawals by WY; FIRO_SPACE,2,298.0
+Cottage Grove,MainstemFlowAug,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY; Draft to RC,1,99.0
+Cottage Grove,MainstemFlowAug,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY; FIRO_SPACE; Draft to RC,1,108.0
+Cottage Grove,FIRO_SPACE,script,capped,Draft to RC,117,40784.0
+Cottage Grove,FIRO_SPACE,script,capped,Dam-Max Evacuation Release; Goshen Bankfull Max,11,12032.0
+Cottage Grove,FIRO_SPACE,script,capped,Dam-Max Evacuation Release,11,10901.0
+Cottage Grove,FIRO_SPACE,script,capped,outlet capacity,7,98465.0
+Cottage Grove,FIRO_SPACE,script,capped,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,7,33256.0
+Cottage Grove,FIRO_SPACE,script,capped,Goshen Bankfull Max,6,40643.0
+Cottage Grove,FIRO_SPACE,script,capped,Dam-Max Evacuation Release; Goshen Bankfull Max; Harrisburg Bankfull Simplified Max; Harrisburg Regulation Goal Simplified,3,6788.0
+Cottage Grove,FIRO_SPACE,script,capped,Goshen Bankfull Max; Harrisburg Bankfull Simplified Max,1,4203.0
+Cottage Grove,FIRO_SPACE,script,capped,Dam-Max Evacuation Release; Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,1,1078.0
+Cottage Grove,FIRO_SPACE,script,capped,Harrisburg Bankfull Simplified Max; Draft to RC,1,638.0
+Cottage Grove,FIRO_SPACE,script,held up,Dam-BiOp MinTrib and Withdrawals by WY,285,35731.0
+Cottage Grove,FIRO_SPACE,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,24,2327.0
+Cottage Grove,FIRO_SPACE,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY; Draft to RC,1,99.0
+Cottage Grove,Harrisburg Regulation Goal Simplified,max,held up,(not found),5,25185.0
+Cottage Grove,Harrisburg Regulation Goal Simplified,max,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,4,397.0
+Cottage Grove,Draft to RC,script,capped,Dam-Max Evacuation Release,13,12927.0
+Cottage Grove,Draft to RC,script,capped,Dam-Max Evacuation Release; Goshen Bankfull Max,10,9275.0
+Cottage Grove,Draft to RC,script,capped,outlet capacity,8,87357.0
+Cottage Grove,Draft to RC,script,capped,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,7,31321.0
+Cottage Grove,Draft to RC,script,capped,Goshen Bankfull Max,5,29115.0
+Cottage Grove,Draft to RC,script,capped,Dam-Max Evacuation Release; Goshen Bankfull Max; Harrisburg Bankfull Simplified Max; Harrisburg Regulation Goal Simplified,4,6191.0
+Cottage Grove,Draft to RC,script,capped,Goshen Bankfull Max; Harrisburg Bankfull Simplified Max,1,2730.0
+Cottage Grove,Draft to RC,script,capped,Dam-Max Evacuation Release; Goshen Bankfull Max; Harrisburg Bankfull Simplified Max; FIRO_SPACE; Harrisburg Regulation Goal Simplified,1,369.0
+Cottage Grove,Draft to RC,script,capped,Dam-Max Evacuation Release; Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,1,861.0
+Cottage Grove,Draft to RC,script,capped,Dam-Max Evacuation Release; FIRO_SPACE,1,147.0
+Cottage Grove,Draft to RC,script,held up,Dam-BiOp MinTrib and Withdrawals by WY,341,45006.0
+Cottage Grove,Draft to RC,script,held up,FIRO_SPACE,74,21642.0
+Cottage Grove,Draft to RC,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,23,2253.0
+Cottage Grove,Draft to RC,script,held up,Dam-BiOp MinTrib and Withdrawals by WY; FIRO_SPACE,2,298.0
+Cottage Grove,Draft to RC,script,held up,(not found),2,265.0
+Cougar,No Draft,script,capped,outlet capacity,325,644411150.0
+Cougar,No Draft,script,capped,Spring Spill,243,481527218.0
+Cougar,No Draft,script,capped,Deep Drawdown,132,261488187.0
+Cougar,No Draft,script,capped,Draft to RC,30,59419670.0
+Cougar,No Draft,script,capped,Max Evacuation Release; Vida Flood Max,26,51377307.0
+Cougar,No Draft,script,capped,IRRM,16,31696767.0
+Cougar,No Draft,script,capped,Vida Flood Max,16,31634708.0
+Cougar,No Draft,script,capped,Max Evacuation Release,16,31597855.0
+Cougar,No Draft,script,capped,Max Evacuation Release; Draft to RC,2,3950519.0
+Cougar,No Draft,script,capped,FIRO_SPACE; Draft to RC,2,3958028.0
+Cougar,No Draft,script,capped,Max Evacuation Release; Vida Flood Max; Spring Spill,1,1977615.0
+Cougar,No Draft,script,capped,Max Evacuation Release; Vida Flood Max; Deep Drawdown,1,1977521.0
+Cougar,No Draft,script,capped,Max Evacuation Release; FIRO_SPACE,1,1976409.0
+Cougar,No Draft,script,capped,Max Evacuation Release; Spring Spill,1,1977521.0
+Cougar,IRRM,script,held up,Spring Spill,245,468059.0
+Cougar,IRRM,script,held up,Dam-BiOp MinTrib and Withdrawals by WY,209,143163.0
+Cougar,IRRM,script,held up,Deep Drawdown,129,335877.0
+Cougar,IRRM,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,119,70810.0
+Cougar,IRRM,script,held up,(not found),56,410611.0
+Cougar,IRRM,script,held up,FIRO_SPACE; Draft to RC,45,76595.0
+Cougar,IRRM,script,held up,FIRO_SPACE,23,57806.0
+Cougar,IRRM,script,held up,Flood Min; Deep Drawdown; Dam-BiOp MinTrib and Withdrawals by WY,5,2975.0
+Cougar,IRRM,script,held up,Draft to RC,5,29168.0
+Cougar,Max Evacuation Release,max,held up,IRRM,1,2380.0
+Cougar,Vida Flood Max,max,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,5,2562.0
+Cougar,Vida Flood Max,max,held up,IRRM,2,15732.0
+Cougar,Deep Drawdown,script,capped,Max Evacuation Release; Vida Flood Max,8,43742.0
+Cougar,Deep Drawdown,script,capped,Vida Flood Max,3,32885.0
+Cougar,Deep Drawdown,script,capped,Max Evacuation Release; Draft to RC,1,18248.0
+Cougar,Deep Drawdown,script,capped,Max Evacuation Release,1,17058.0
+Cougar,Deep Drawdown,script,held up,Spring Spill,245,468059.0
+Cougar,Deep Drawdown,script,held up,Dam-BiOp MinTrib and Withdrawals by WY,209,147925.0
+Cougar,Deep Drawdown,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,119,69620.0
+Cougar,Deep Drawdown,script,held up,FIRO_SPACE; Draft to RC,45,76595.0
+Cougar,Deep Drawdown,script,held up,(not found),44,360991.0
+Cougar,Deep Drawdown,script,held up,FIRO_SPACE,23,57806.0
+Cougar,Deep Drawdown,script,held up,IRRM,16,38770.0
+Cougar,Deep Drawdown,script,held up,Draft to RC,4,23150.0
+Cougar,Spring Spill,script,capped,Max Evacuation Release; Vida Flood Max,12,137855.0
+Cougar,Spring Spill,script,capped,Max Evacuation Release,8,185244.0
+Cougar,Spring Spill,script,capped,Vida Flood Max,5,392639.0
+Cougar,Spring Spill,script,capped,Max Evacuation Release; Draft to RC,1,44887.0
+Cougar,Spring Spill,script,held up,Dam-BiOp MinTrib and Withdrawals by WY,209,147925.0
+Cougar,Spring Spill,script,held up,Deep Drawdown,129,335877.0
+Cougar,Spring Spill,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,119,70810.0
+Cougar,Spring Spill,script,held up,FIRO_SPACE; Draft to RC,45,76595.0
+Cougar,Spring Spill,script,held up,(not found),31,251558.0
+Cougar,Spring Spill,script,held up,FIRO_SPACE,23,57806.0
+Cougar,Spring Spill,script,held up,IRRM,16,38770.0
+Cougar,Spring Spill,script,held up,Flood Min; Deep Drawdown; Dam-BiOp MinTrib and Withdrawals by WY,5,2975.0
+Cougar,Spring Spill,script,held up,Draft to RC,4,18763.0
+Cougar,MainstemFlowAug,script,held up,Spring Spill,245,468059.0
+Cougar,MainstemFlowAug,script,held up,Dam-BiOp MinTrib and Withdrawals by WY,209,147925.0
+Cougar,MainstemFlowAug,script,held up,Deep Drawdown,129,335877.0
+Cougar,MainstemFlowAug,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,119,70810.0
+Cougar,MainstemFlowAug,script,held up,(not found),56,426972.0
+Cougar,MainstemFlowAug,script,held up,FIRO_SPACE; Draft to RC,45,76595.0
+Cougar,MainstemFlowAug,script,held up,FIRO_SPACE,23,57806.0
+Cougar,MainstemFlowAug,script,held up,IRRM,16,38770.0
+Cougar,MainstemFlowAug,script,held up,Flood Min; Deep Drawdown; Dam-BiOp MinTrib and Withdrawals by WY,5,2975.0
+Cougar,MainstemFlowAug,script,held up,Draft to RC,5,29168.0
+Cougar,FIRO_SPACE,script,capped,Vida Flood Max,15,303468.0
+Cougar,FIRO_SPACE,script,capped,Max Evacuation Release; Vida Flood Max,11,146287.0
+Cougar,FIRO_SPACE,script,capped,Max Evacuation Release,9,43882.0
+Cougar,FIRO_SPACE,script,capped,outlet capacity,5,220611.0
+Cougar,FIRO_SPACE,script,capped,Draft to RC,3,810.0
+Cougar,FIRO_SPACE,script,capped,Max Evacuation Release; Draft to RC,2,3136.0
+Cougar,FIRO_SPACE,script,capped,IRRM,2,91712.0
+Cougar,FIRO_SPACE,script,held up,Spring Spill,245,468059.0
+Cougar,FIRO_SPACE,script,held up,Dam-BiOp MinTrib and Withdrawals by WY,209,147593.0
+Cougar,FIRO_SPACE,script,held up,Deep Drawdown,129,334494.0
+Cougar,FIRO_SPACE,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,111,65314.0
+Cougar,FIRO_SPACE,script,held up,(not found),23,110470.0
+Cougar,FIRO_SPACE,script,held up,IRRM,14,12018.0
+Cougar,FIRO_SPACE,script,held up,Flood Min; Deep Drawdown; Dam-BiOp MinTrib and Withdrawals by WY,5,2975.0
+Cougar,Draft to RC,script,capped,Vida Flood Max,14,263210.0
+Cougar,Draft to RC,script,capped,Max Evacuation Release,8,42393.0
+Cougar,Draft to RC,script,capped,outlet capacity,6,186160.0
+Cougar,Draft to RC,script,capped,Max Evacuation Release; Vida Flood Max,6,136843.0
+Cougar,Draft to RC,script,capped,IRRM,2,83679.0
+Cougar,Draft to RC,script,capped,Max Evacuation Release; FIRO_SPACE,1,199.0
+Cougar,Draft to RC,script,held up,Spring Spill,245,468059.0
+Cougar,Draft to RC,script,held up,Dam-BiOp MinTrib and Withdrawals by WY,208,146991.0
+Cougar,Draft to RC,script,held up,Deep Drawdown,129,332377.0
+Cougar,Draft to RC,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,110,65326.0
+Cougar,Draft to RC,script,held up,(not found),30,145730.0
+Cougar,Draft to RC,script,held up,FIRO_SPACE,22,8051.0
+Cougar,Draft to RC,script,held up,IRRM,14,12018.0
+Cougar,Draft to RC,script,held up,Flood Min; Deep Drawdown; Dam-BiOp MinTrib and Withdrawals by WY,5,2975.0
+Detroit,No Draft,script,capped,Combined Min Trib,489,966524366.0
+Detroit,No Draft,script,capped,Deep Drawdown,111,219513180.0
+Detroit,No Draft,script,capped,outlet capacity,105,208012257.0
+Detroit,No Draft,script,capped,IRRM,61,120617142.0
+Detroit,No Draft,script,capped,Dam-Max Evacuation Release,60,118273371.0
+Detroit,No Draft,script,capped,FIRO_SPACE,14,27672496.0
+Detroit,No Draft,script,capped,Draft to RC,10,19767204.0
+Detroit,No Draft,script,capped,Jefferson Winter Ops Max,6,11842877.0
+Detroit,No Draft,script,capped,Mehama Winter Ops Max,5,7873423.0
+Detroit,No Draft,script,capped,Secondary Flood Draft Limit,4,7887471.0
+Detroit,No Draft,script,capped,Regulating Outlet Lower-No Lower RO Flow; Jefferson Winter Ops Max; Deep Drawdown; IRRM; MainstemFlowAug,3,5950413.0
+Detroit,No Draft,script,capped,Dam-Max Evacuation Release; Mehama Winter Ops Max,3,5860583.0
+Detroit,No Draft,script,capped,FIRO_SPACE; Draft to RC,2,3950879.0
+Detroit,No Draft,script,capped,Regulating Outlet Upper-Upper RO use 1400 to 1542 ft; Dam-Max Evacuation Release,2,3918154.0
+Detroit,No Draft,script,capped,IRRM; Combined Min Trib,1,1980173.0
+Detroit,No Draft,script,capped,Deep Drawdown; Combined Min Trib,1,1981091.0
+Detroit,No Draft,script,capped,Regulating Outlet Lower-No Lower RO Flow; Mehama Winter Ops Max; Jefferson Winter Ops Max; Deep Drawdown; IRRM; MainstemFlowAug,1,1983471.0
+Detroit,No Draft,script,capped,Regulating Outlet Upper-Upper RO use 1400 to 1542 ft; Regulating Outlet Lower-No Lower RO Flow; Jefferson Winter Ops Max; Deep Drawdown; IRRM; MainstemFlowAug,1,1983471.0
+Detroit,No Draft,script,capped,Regulating Outlet Upper-Upper RO use 1400 to 1542 ft; Mehama Winter Ops Max,1,1959399.0
+Detroit,Regulating Outlet Upper-Upper RO use 1400 to 1542 ft,max,held up,Combined Min Trib,209,603394.0
+Detroit,Regulating Outlet Upper-Upper RO use 1400 to 1542 ft,max,held up,IRRM,61,374593.0
+Detroit,Regulating Outlet Upper-Upper RO use 1400 to 1542 ft,max,held up,Deep Drawdown,31,134687.0
+Detroit,Regulating Outlet Upper-Upper RO use 1400 to 1542 ft,max,held up,(not found),14,207530.0
+Detroit,Regulating Outlet Upper-Upper RO use 1400 to 1542 ft,max,held up,IRRM; Combined Min Trib,1,3299.0
+Detroit,Regulating Outlet Upper-Upper RO use 1400 to 1542 ft,max,held up,Deep Drawdown; Combined Min Trib,1,2380.0
+Detroit,Regulating Outlet Upper-Upper RO use 1400 to 1542 ft,max,held up,No Draft,1,1785.0
+Detroit,Regulating Outlet Lower-No Lower RO Flow,max,held up,Combined Min Trib,489,1412493.0
+Detroit,Regulating Outlet Lower-No Lower RO Flow,max,held up,Deep Drawdown,111,652110.0
+Detroit,Regulating Outlet Lower-No Lower RO Flow,max,held up,Min for BCL,103,214512.0
+Detroit,Regulating Outlet Lower-No Lower RO Flow,max,held up,(not found),71,997195.0
+Detroit,Regulating Outlet Lower-No Lower RO Flow,max,held up,IRRM,61,374593.0
+Detroit,Regulating Outlet Lower-No Lower RO Flow,max,held up,Secondary Flood Draft Limit,4,46413.0
+Detroit,Regulating Outlet Lower-No Lower RO Flow,max,held up,Draft to RC,2,22566.0
+Detroit,Regulating Outlet Lower-No Lower RO Flow,max,held up,IRRM; Combined Min Trib,1,3299.0
+Detroit,Regulating Outlet Lower-No Lower RO Flow,max,held up,Deep Drawdown; Combined Min Trib,1,2380.0
+Detroit,Regulating Outlet Lower-No Lower RO Flow,max,held up,No Draft,1,1785.0
+Detroit,Regulating Outlet Lower-No Lower RO Flow,max,held up,FIRO_SPACE; Draft to RC,1,13290.0
+Detroit,Regulating Outlet Lower-No Lower RO Flow,max,held up,Min for BCL; FIRO_SPACE,1,2106.0
+Detroit,Secondary Flood Draft Limit,script,capped,Deep Drawdown,80,470523.0
+Detroit,Secondary Flood Draft Limit,script,capped,Combined Min Trib,76,705826.0
+Detroit,Secondary Flood Draft Limit,script,capped,Dam-Max Evacuation Release,49,221687.0
+Detroit,Secondary Flood Draft Limit,script,capped,outlet capacity,29,276099.0
+Detroit,Secondary Flood Draft Limit,script,capped,FIRO_SPACE,12,69417.0
+Detroit,Secondary Flood Draft Limit,script,capped,Draft to RC,8,49027.0
+Detroit,Secondary Flood Draft Limit,script,capped,Jefferson Winter Ops Max,2,44131.0
+Detroit,Secondary Flood Draft Limit,script,capped,Mehama Winter Ops Max,2,42055.0
+Detroit,Secondary Flood Draft Limit,script,capped,FIRO_SPACE; Draft to RC,1,8830.0
+Detroit,Secondary Flood Draft Limit,script,capped,Deep Drawdown; Combined Min Trib,1,9223.0
+Detroit,Secondary Flood Draft Limit,script,capped,No Draft,1,9818.0
+Detroit,Secondary Flood Draft Limit,script,capped,Regulating Outlet Lower-No Lower RO Flow; Mehama Winter Ops Max; Jefferson Winter Ops Max; Deep Drawdown; IRRM; MainstemFlowAug,1,115176.0
+Detroit,Secondary Flood Draft Limit,script,capped,Regulating Outlet Lower-No Lower RO Flow; Jefferson Winter Ops Max; Deep Drawdown; IRRM; MainstemFlowAug,1,56465.0
+Detroit,Deep Drawdown,script,capped,Dam-Max Evacuation Release,36,713486.0
+Detroit,Deep Drawdown,script,capped,Jefferson Winter Ops Max,2,46999.0
+Detroit,Deep Drawdown,script,capped,Mehama Winter Ops Max,1,9779.0
+Detroit,Deep Drawdown,script,held up,Combined Min Trib,489,1410113.0
+Detroit,Deep Drawdown,script,held up,Min for BCL,103,214512.0
+Detroit,Deep Drawdown,script,held up,IRRM,61,374593.0
+Detroit,Deep Drawdown,script,held up,(not found),32,613082.0
+Detroit,Deep Drawdown,script,held up,Secondary Flood Draft Limit,4,46413.0
+Detroit,Deep Drawdown,script,held up,Draft to RC,2,22566.0
+Detroit,Deep Drawdown,script,held up,IRRM; Combined Min Trib,1,3299.0
+Detroit,Deep Drawdown,script,held up,No Draft,1,1785.0
+Detroit,Deep Drawdown,script,held up,FIRO_SPACE; Draft to RC,1,13290.0
+Detroit,Deep Drawdown,script,held up,Min for BCL; FIRO_SPACE,1,2106.0
+Detroit,Min for BCL,min,capped,Regulating Outlet Lower-No Lower RO Flow; Jefferson Winter Ops Max; Deep Drawdown; IRRM; MainstemFlowAug,3,6248.0
+Detroit,Min for BCL,min,capped,No Draft,1,298.0
+Detroit,Min for BCL,min,capped,Regulating Outlet Lower-No Lower RO Flow; Mehama Winter Ops Max; Jefferson Winter Ops Max; Deep Drawdown; IRRM; MainstemFlowAug,1,2083.0
+Detroit,Min for BCL,min,capped,Regulating Outlet Upper-Upper RO use 1400 to 1542 ft; Regulating Outlet Lower-No Lower RO Flow; Jefferson Winter Ops Max; Deep Drawdown; IRRM; MainstemFlowAug,1,2083.0
+Detroit,IRRM,script,capped,Jefferson Winter Ops Max,1,18005.0
+Detroit,IRRM,script,capped,Dam-Max Evacuation Release,1,5707.0
+Detroit,IRRM,script,held up,Combined Min Trib,489,1350365.0
+Detroit,IRRM,script,held up,Deep Drawdown,111,652110.0
+Detroit,IRRM,script,held up,Min for BCL,103,214512.0
+Detroit,IRRM,script,held up,(not found),69,923403.0
+Detroit,IRRM,script,held up,Secondary Flood Draft Limit,4,46413.0
+Detroit,IRRM,script,held up,Draft to RC,2,22566.0
+Detroit,IRRM,script,held up,Deep Drawdown; Combined Min Trib,1,2380.0
+Detroit,IRRM,script,held up,No Draft,1,1785.0
+Detroit,IRRM,script,held up,FIRO_SPACE; Draft to RC,1,13290.0
+Detroit,IRRM,script,held up,Min for BCL; FIRO_SPACE,1,2106.0
+Detroit,Combined Min Trib,script,capped,Regulating Outlet Lower-No Lower RO Flow; Jefferson Winter Ops Max; Deep Drawdown; IRRM; MainstemFlowAug,3,7140.0
+Detroit,Combined Min Trib,script,capped,No Draft,1,595.0
+Detroit,Combined Min Trib,script,capped,Regulating Outlet Lower-No Lower RO Flow; Mehama Winter Ops Max; Jefferson Winter Ops Max; Deep Drawdown; IRRM; MainstemFlowAug,1,2380.0
+Detroit,Combined Min Trib,script,capped,Regulating Outlet Upper-Upper RO use 1400 to 1542 ft; Regulating Outlet Lower-No Lower RO Flow; Jefferson Winter Ops Max; Deep Drawdown; IRRM; MainstemFlowAug,1,2380.0
+Detroit,Combined Min Trib,script,held up,Deep Drawdown,111,351019.0
+Detroit,Combined Min Trib,script,held up,Min for BCL,103,10215.0
+Detroit,Combined Min Trib,script,held up,(not found),71,832170.0
+Detroit,Combined Min Trib,script,held up,IRRM,61,189404.0
+Detroit,Combined Min Trib,script,held up,Secondary Flood Draft Limit,4,36893.0
+Detroit,Combined Min Trib,script,held up,Draft to RC,2,18599.0
+Detroit,Combined Min Trib,script,held up,FIRO_SPACE; Draft to RC,1,11306.0
+Detroit,Combined Min Trib,script,held up,Min for BCL; FIRO_SPACE,1,122.0
+Detroit,MainstemFlowAug,script,held up,Combined Min Trib,489,1412493.0
+Detroit,MainstemFlowAug,script,held up,Deep Drawdown,111,652110.0
+Detroit,MainstemFlowAug,script,held up,Min for BCL,103,214512.0
+Detroit,MainstemFlowAug,script,held up,(not found),71,997195.0
+Detroit,MainstemFlowAug,script,held up,IRRM,61,374593.0
+Detroit,MainstemFlowAug,script,held up,Secondary Flood Draft Limit,4,46413.0
+Detroit,MainstemFlowAug,script,held up,Draft to RC,2,22566.0
+Detroit,MainstemFlowAug,script,held up,IRRM; Combined Min Trib,1,3299.0
+Detroit,MainstemFlowAug,script,held up,Deep Drawdown; Combined Min Trib,1,2380.0
+Detroit,MainstemFlowAug,script,held up,No Draft,1,1785.0
+Detroit,MainstemFlowAug,script,held up,FIRO_SPACE; Draft to RC,1,13290.0
+Detroit,MainstemFlowAug,script,held up,Min for BCL; FIRO_SPACE,1,2106.0
+Detroit,FIRO_SPACE,script,capped,Dam-Max Evacuation Release,20,269826.0
+Detroit,FIRO_SPACE,script,capped,Draft to RC,8,8548.0
+Detroit,FIRO_SPACE,script,capped,Jefferson Winter Ops Max,4,331453.0
+Detroit,FIRO_SPACE,script,capped,Mehama Winter Ops Max,4,173009.0
+Detroit,FIRO_SPACE,script,capped,Secondary Flood Draft Limit,4,17247.0
+Detroit,FIRO_SPACE,script,capped,outlet capacity,3,120472.0
+Detroit,FIRO_SPACE,script,capped,Regulating Outlet Lower-No Lower RO Flow; Jefferson Winter Ops Max; Deep Drawdown; IRRM; MainstemFlowAug,3,235099.0
+Detroit,FIRO_SPACE,script,capped,Dam-Max Evacuation Release; Mehama Winter Ops Max,3,147894.0
+Detroit,FIRO_SPACE,script,capped,Regulating Outlet Upper-Upper RO use 1400 to 1542 ft; Dam-Max Evacuation Release,2,50461.0
+Detroit,FIRO_SPACE,script,capped,Regulating Outlet Lower-No Lower RO Flow; Mehama Winter Ops Max; Jefferson Winter Ops Max; Deep Drawdown; IRRM; MainstemFlowAug,1,92532.0
+Detroit,FIRO_SPACE,script,capped,Regulating Outlet Upper-Upper RO use 1400 to 1542 ft; Regulating Outlet Lower-No Lower RO Flow; Jefferson Winter Ops Max; Deep Drawdown; IRRM; MainstemFlowAug,1,116664.0
+Detroit,FIRO_SPACE,script,capped,Regulating Outlet Upper-Upper RO use 1400 to 1542 ft; Mehama Winter Ops Max,1,31569.0
+Detroit,FIRO_SPACE,script,held up,Combined Min Trib,489,1412459.0
+Detroit,FIRO_SPACE,script,held up,Deep Drawdown,111,652110.0
+Detroit,FIRO_SPACE,script,held up,Min for BCL,102,207656.0
+Detroit,FIRO_SPACE,script,held up,IRRM,61,374593.0
+Detroit,FIRO_SPACE,script,held up,(not found),39,384112.0
+Detroit,FIRO_SPACE,script,held up,IRRM; Combined Min Trib,1,3299.0
+Detroit,FIRO_SPACE,script,held up,Deep Drawdown; Combined Min Trib,1,2380.0
+Detroit,FIRO_SPACE,script,held up,No Draft,1,1785.0
+Detroit,Draft to RC,script,capped,Combined Min Trib,30,78448.0
+Detroit,Draft to RC,script,capped,Dam-Max Evacuation Release,24,352086.0
+Detroit,Draft to RC,script,capped,FIRO_SPACE,14,67438.0
+Detroit,Draft to RC,script,capped,Jefferson Winter Ops Max,4,314367.0
+Detroit,Draft to RC,script,capped,Mehama Winter Ops Max,4,190945.0
+Detroit,Draft to RC,script,capped,Secondary Flood Draft Limit,4,40320.0
+Detroit,Draft to RC,script,capped,Regulating Outlet Lower-No Lower RO Flow; Jefferson Winter Ops Max; Deep Drawdown; IRRM; MainstemFlowAug,3,208414.0
+Detroit,Draft to RC,script,capped,Dam-Max Evacuation Release; Mehama Winter Ops Max,3,161909.0
+Detroit,Draft to RC,script,capped,outlet capacity,3,130719.0
+Detroit,Draft to RC,script,capped,Regulating Outlet Upper-Upper RO use 1400 to 1542 ft; Dam-Max Evacuation Release,2,54951.0
+Detroit,Draft to RC,script,capped,Regulating Outlet Lower-No Lower RO Flow; Mehama Winter Ops Max; Jefferson Winter Ops Max; Deep Drawdown; IRRM; MainstemFlowAug,1,73643.0
+Detroit,Draft to RC,script,capped,Regulating Outlet Upper-Upper RO use 1400 to 1542 ft; Regulating Outlet Lower-No Lower RO Flow; Jefferson Winter Ops Max; Deep Drawdown; IRRM; MainstemFlowAug,1,102184.0
+Detroit,Draft to RC,script,capped,Regulating Outlet Upper-Upper RO use 1400 to 1542 ft; Mehama Winter Ops Max,1,30300.0
+Detroit,Draft to RC,script,held up,Combined Min Trib,456,1327037.0
+Detroit,Draft to RC,script,held up,Deep Drawdown,111,652110.0
+Detroit,Draft to RC,script,held up,Min for BCL,102,205081.0
+Detroit,Draft to RC,script,held up,IRRM,61,374593.0
+Detroit,Draft to RC,script,held up,(not found),39,384112.0
+Detroit,Draft to RC,script,held up,IRRM; Combined Min Trib,1,3299.0
+Detroit,Draft to RC,script,held up,Deep Drawdown; Combined Min Trib,1,2380.0
+Detroit,Draft to RC,script,held up,No Draft,1,1785.0
+Dorena,Spillway-Uncontrolled Spill,min,capped,outlet capacity,4,188424.0
+Dorena,Spillway-Uncontrolled Spill,min,capped,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,2,32868.0
+Dorena,Spillway-Uncontrolled Spill,min,capped,Goshen Bankfull Max,1,32860.0
+Dorena,Dam-Max Evacuation Release,max,held up,(not found),4,32907.0
+Dorena,Dam-Max Evacuation Release,max,held up,Spillway-Uncontrolled Spill,1,1846.0
+Dorena,Goshen Bankfull Max,max,held up,(not found),4,68555.0
+Dorena,Goshen Bankfull Max,max,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,2,333.0
+Dorena,Goshen Bankfull Max,max,held up,Spillway-Uncontrolled Spill,1,14738.0
+Dorena,Harrisburg Bankfull Simplified Max,max,held up,(not found),19,110461.0
+Dorena,Harrisburg Bankfull Simplified Max,max,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,3,595.0
+Dorena,Harrisburg Bankfull Simplified Max,max,held up,Spillway-Uncontrolled Spill,1,14738.0
+Dorena,Dam-BiOp MinTrib and Withdrawals by WY,min,capped,outlet capacity,2,42.0
+Dorena,Dam-BiOp MinTrib and Withdrawals by WY,min,capped,Draft to RC,1,75.0
+Dorena,MainstemFlowAug,script,held up,Dam-BiOp MinTrib and Withdrawals by WY,242,76308.0
+Dorena,MainstemFlowAug,script,held up,FIRO_SPACE,159,269337.0
+Dorena,MainstemFlowAug,script,held up,FIRO_SPACE; Draft to RC,90,63664.0
+Dorena,MainstemFlowAug,script,held up,Draft to RC,81,247394.0
+Dorena,MainstemFlowAug,script,held up,(not found),74,545038.0
+Dorena,MainstemFlowAug,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,5,992.0
+Dorena,MainstemFlowAug,script,held up,Dam-BiOp MinTrib and Withdrawals by WY; FIRO_SPACE,4,1352.0
+Dorena,MainstemFlowAug,script,held up,Dam-BiOp MinTrib and Withdrawals by WY; FIRO_SPACE; Draft to RC,3,671.0
+Dorena,MainstemFlowAug,script,held up,Flood Min,2,397.0
+Dorena,MainstemFlowAug,script,held up,Dam-BiOp MinTrib and Withdrawals by WY; Draft to RC,1,384.0
+Dorena,MainstemFlowAug,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY; Draft to RC,1,198.0
+Dorena,MainstemFlowAug,script,held up,Spillway-Uncontrolled Spill,1,14738.0
+Dorena,FIRO_SPACE,script,capped,Draft to RC,80,61648.0
+Dorena,FIRO_SPACE,script,capped,Dam-Max Evacuation Release,26,63786.0
+Dorena,FIRO_SPACE,script,capped,Dam-Max Evacuation Release; Goshen Bankfull Max,24,101743.0
+Dorena,FIRO_SPACE,script,capped,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,11,150815.0
+Dorena,FIRO_SPACE,script,capped,Goshen Bankfull Max,8,103670.0
+Dorena,FIRO_SPACE,script,capped,outlet capacity,7,253529.0
+Dorena,FIRO_SPACE,script,capped,Goshen Bankfull Max; Harrisburg Bankfull Simplified Max,1,13395.0
+Dorena,FIRO_SPACE,script,capped,Goshen Bankfull Max; Harrisburg Bankfull Simplified Max; Draft to RC,1,3164.0
+Dorena,FIRO_SPACE,script,capped,Dam-Max Evacuation Release; Goshen Bankfull Max; Draft to RC,1,849.0
+Dorena,FIRO_SPACE,script,capped,Dam-Max Evacuation Release; Goshen Bankfull Max; Harrisburg Bankfull Simplified Max,1,7043.0
+Dorena,FIRO_SPACE,script,held up,Dam-BiOp MinTrib and Withdrawals by WY,189,49052.0
+Dorena,FIRO_SPACE,script,held up,Flood Min,2,397.0
+Dorena,FIRO_SPACE,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,2,95.0
+Dorena,FIRO_SPACE,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY; Draft to RC,1,24.0
+Dorena,Harrisburg Regulation Goal Simplified,max,held up,(not found),5,76199.0
+Dorena,Harrisburg Regulation Goal Simplified,max,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,3,595.0
+Dorena,Harrisburg Regulation Goal Simplified,max,held up,Spillway-Uncontrolled Spill,1,14738.0
+Dorena,Draft to RC,script,capped,Dam-Max Evacuation Release,30,52774.0
+Dorena,Draft to RC,script,capped,Dam-Max Evacuation Release; Goshen Bankfull Max,28,82159.0
+Dorena,Draft to RC,script,capped,Goshen Bankfull Max; Harrisburg Regulation Goal Simplified,11,137208.0
+Dorena,Draft to RC,script,capped,outlet capacity,9,210435.0
+Dorena,Draft to RC,script,capped,Goshen Bankfull Max,7,85390.0
+Dorena,Draft to RC,script,capped,Goshen Bankfull Max; Harrisburg Bankfull Simplified Max,1,8791.0
+Dorena,Draft to RC,script,capped,Dam-Max Evacuation Release; Goshen Bankfull Max; Harrisburg Bankfull Simplified Max,1,7343.0
+Dorena,Draft to RC,script,held up,Dam-BiOp MinTrib and Withdrawals by WY,239,69148.0
+Dorena,Draft to RC,script,held up,FIRO_SPACE,159,81050.0
+Dorena,Draft to RC,script,held up,Dam-BiOp MinTrib and Withdrawals by WY; FIRO_SPACE,4,1159.0
+Dorena,Draft to RC,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,2,72.0
+Fall Creek,MainstemFlowAug,script,held up,Medium Fish Horn Min,199,47365.0
+Fall Creek,MainstemFlowAug,script,held up,Deep Drawdown,125,216925.0
+Fall Creek,MainstemFlowAug,script,held up,Dam-BiOp MinTrib and Withdrawals by WY,94,11324.0
+Fall Creek,MainstemFlowAug,script,held up,(not found),30,123107.0
+Fall Creek,MainstemFlowAug,script,held up,Medium Fish Horn Min; Draft to RC,8,1936.0
+Fall Creek,Deep Drawdown,script,capped,Max Evacuation Release,28,175346.0
+Fall Creek,Deep Drawdown,script,capped,outlet capacity,2,5136.0
+Fall Creek,Deep Drawdown,script,capped,Deep Drawdown,1,58.0
+Fall Creek,Deep Drawdown,script,held up,Medium Fish Horn Min,199,47365.0
+Fall Creek,Deep Drawdown,script,held up,Dam-BiOp MinTrib and Withdrawals by WY,94,11324.0
+Fall Creek,Deep Drawdown,script,held up,Medium Fish Horn Min; Draft to RC,8,1936.0
+Fall Creek,Draft to RC,script,capped,Max Evacuation Release,35,157798.0
+Fall Creek,Draft to RC,script,capped,Max Evacuation Release; Harrisburg Bankfull Simplified Max; Harrisburg Regulation Goal Simplified Max,5,76870.0
+Fall Creek,Draft to RC,script,held up,Medium Fish Horn Min,196,44497.0
+Fall Creek,Draft to RC,script,held up,Deep Drawdown,125,198818.0
+Fall Creek,Draft to RC,script,held up,Dam-BiOp MinTrib and Withdrawals by WY,94,11271.0
+Fall Creek,Draft to RC,script,held up,(not found),27,81455.0
+Fall Creek,FIRO_SPACE,script,held up,Medium Fish Horn Min,199,47365.0
+Fall Creek,FIRO_SPACE,script,held up,Deep Drawdown,125,216925.0
+Fall Creek,FIRO_SPACE,script,held up,Dam-BiOp MinTrib and Withdrawals by WY,94,11324.0
+Fall Creek,FIRO_SPACE,script,held up,(not found),30,123107.0
+Fall Creek,FIRO_SPACE,script,held up,Medium Fish Horn Min; Draft to RC,8,1936.0
+Fern Ridge,Monroe Regulation Goal Max,max,held up,Flood Min,1,99.0
+Fern Ridge,MainstemFlowAug,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,378,37488.0
+Fern Ridge,MainstemFlowAug,script,held up,(not found),94,522980.0
+Fern Ridge,MainstemFlowAug,script,held up,FIRO_SPACE,81,133213.0
+Fern Ridge,MainstemFlowAug,script,held up,Flood Min,72,7140.0
+Fern Ridge,MainstemFlowAug,script,held up,Draft to RC,62,122004.0
+Fern Ridge,MainstemFlowAug,script,held up,Dam-BiOp MinTrib and Withdrawals by WY,50,6253.0
+Fern Ridge,MainstemFlowAug,script,held up,FIRO_SPACE; Draft to RC,40,24593.0
+Fern Ridge,FIRO_SPACE,script,capped,Dam-Max Evacuation Release,71,600841.0
+Fern Ridge,FIRO_SPACE,script,capped,Draft to RC,61,70997.0
+Fern Ridge,FIRO_SPACE,script,capped,Monroe Regulation Goal Max,21,554104.0
+Fern Ridge,FIRO_SPACE,script,capped,outlet capacity,9,32469.0
+Fern Ridge,FIRO_SPACE,script,capped,Dam-Max Evacuation Release; Monroe Regulation Goal Max,3,53026.0
+Fern Ridge,FIRO_SPACE,script,capped,Dam-Max Evacuation Release; Draft to RC,1,1985.0
+Fern Ridge,FIRO_SPACE,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,333,32940.0
+Fern Ridge,FIRO_SPACE,script,held up,Flood Min,71,7041.0
+Fern Ridge,FIRO_SPACE,script,held up,Dam-BiOp MinTrib and Withdrawals by WY,50,6210.0
+Fern Ridge,Draft to RC,script,capped,Dam-Max Evacuation Release,69,570017.0
+Fern Ridge,Draft to RC,script,capped,Monroe Regulation Goal Max,21,508508.0
+Fern Ridge,Draft to RC,script,capped,Dam-Max Evacuation Release; Monroe Regulation Goal Max,3,51073.0
+Fern Ridge,Draft to RC,script,capped,outlet capacity,2,25143.0
+Fern Ridge,Draft to RC,script,capped,Dam-Max Evacuation Release; FIRO_SPACE,1,311.0
+Fern Ridge,Draft to RC,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,375,36981.0
+Fern Ridge,Draft to RC,script,held up,FIRO_SPACE,80,42099.0
+Fern Ridge,Draft to RC,script,held up,Flood Min,70,6942.0
+Fern Ridge,Draft to RC,script,held up,Dam-BiOp MinTrib and Withdrawals by WY,50,6253.0
+Fern Ridge,Draft to RC,script,held up,(not found),4,513.0
+Green Peter,No Draft,script,capped,Combined Min Trib,356,705450550.0
+Green Peter,No Draft,script,capped,Secondary Flood Draft Limit,75,148035498.0
+Green Peter,No Draft,script,capped,Con Max,60,118818971.0
+Green Peter,No Draft,script,capped,outlet capacity,48,95201851.0
+Green Peter,No Draft,script,capped,Draft to RC,44,87064275.0
+Green Peter,No Draft,script,capped,Deep Drawdown,26,49504142.0
+Green Peter,No Draft,script,capped,Max Evacuation Release,26,51273406.0
+Green Peter,No Draft,script,capped,Waterloo Flood Max,21,41374667.0
+Green Peter,No Draft,script,capped,Deep Drawdown; Max Evacuation Release,2,3957845.0
+Green Peter,No Draft,script,capped,Secondary Flood Draft Limit; Waterloo Flood Max,2,3941298.0
+Green Peter,No Draft,script,capped,Con Max; Draft to RC,1,1975514.0
+Green Peter,No Draft,script,capped,Combined Min Trib; FIRO_SPACE,1,1982023.0
+Green Peter,No Draft,script,capped,Con Max; FIRO_SPACE,1,1975537.0
+Green Peter,No Draft,script,capped,Con Max; Deep Drawdown; BiOp Max Flow Winter GPR FOS,1,1977450.0
+Green Peter,Con Max,max,held up,(not found),8,18561.0
+Green Peter,Con Max,max,held up,Draft to RC,3,3112.0
+Green Peter,Secondary Flood Draft Limit,script,capped,Con Max,53,344474.0
+Green Peter,Secondary Flood Draft Limit,script,capped,outlet capacity,34,577723.0
+Green Peter,Secondary Flood Draft Limit,script,capped,Combined Min Trib,33,275382.0
+Green Peter,Secondary Flood Draft Limit,script,capped,Deep Drawdown,25,157521.0
+Green Peter,Secondary Flood Draft Limit,script,capped,Max Evacuation Release,18,57384.0
+Green Peter,Secondary Flood Draft Limit,script,capped,Waterloo Flood Max,11,146464.0
+Green Peter,Secondary Flood Draft Limit,script,capped,Draft to RC,11,79923.0
+Green Peter,Secondary Flood Draft Limit,script,capped,Deep Drawdown; Max Evacuation Release,2,9786.0
+Green Peter,Secondary Flood Draft Limit,script,capped,No Draft,2,17091.0
+Green Peter,Waterloo Flood Max,max,held up,Flood Min,2,198.0
+Green Peter,Jefferson Flood Stage Simplified Max,max,held up,Flood Min,4,397.0
+Green Peter,Deep Drawdown,script,capped,Secondary Flood Draft Limit,69,2482547.0
+Green Peter,Deep Drawdown,script,capped,Con Max,60,262713.0
+Green Peter,Deep Drawdown,script,capped,Waterloo Flood Max,9,187555.0
+Green Peter,Deep Drawdown,script,capped,Secondary Flood Draft Limit; Waterloo Flood Max,2,25264.0
+Green Peter,Deep Drawdown,script,held up,Combined Min Trib,407,715219.0
+Green Peter,Deep Drawdown,script,held up,Flood Min,91,9025.0
+Green Peter,Deep Drawdown,script,held up,FIRO_SPACE,63,283138.0
+Green Peter,Deep Drawdown,script,held up,Draft to RC,42,196940.0
+Green Peter,Deep Drawdown,script,held up,(not found),38,453707.0
+Green Peter,Deep Drawdown,script,held up,FIRO_SPACE; Draft to RC,23,98994.0
+Green Peter,Deep Drawdown,script,held up,Secondary Flood Draft Limit,6,56648.0
+Green Peter,Deep Drawdown,script,held up,Flood Min; Combined Min Trib,3,306.0
+Green Peter,Deep Drawdown,script,held up,No Draft,2,1792.0
+Green Peter,Deep Drawdown,script,held up,Combined Min Trib; FIRO_SPACE,1,1448.0
+Green Peter,Combined Min Trib,script,capped,No Draft,2,1520.0
+Green Peter,Combined Min Trib,script,held up,(not found),108,669484.0
+Green Peter,Combined Min Trib,script,held up,Flood Min,91,8647.0
+Green Peter,Combined Min Trib,script,held up,Secondary Flood Draft Limit,77,718819.0
+Green Peter,Combined Min Trib,script,held up,FIRO_SPACE,63,254902.0
+Green Peter,Combined Min Trib,script,held up,Draft to RC,42,186918.0
+Green Peter,Combined Min Trib,script,held up,Deep Drawdown,29,78781.0
+Green Peter,Combined Min Trib,script,held up,FIRO_SPACE; Draft to RC,23,94463.0
+Green Peter,MainstemFlowAug,script,held up,Combined Min Trib,407,715909.0
+Green Peter,MainstemFlowAug,script,held up,(not found),108,775342.0
+Green Peter,MainstemFlowAug,script,held up,Flood Min,91,9025.0
+Green Peter,MainstemFlowAug,script,held up,Secondary Flood Draft Limit,77,750477.0
+Green Peter,MainstemFlowAug,script,held up,FIRO_SPACE,63,283138.0
+Green Peter,MainstemFlowAug,script,held up,Draft to RC,42,196940.0
+Green Peter,MainstemFlowAug,script,held up,Deep Drawdown,29,101082.0
+Green Peter,MainstemFlowAug,script,held up,FIRO_SPACE; Draft to RC,23,98994.0
+Green Peter,MainstemFlowAug,script,held up,Flood Min; Combined Min Trib,3,306.0
+Green Peter,MainstemFlowAug,script,held up,No Draft,2,1792.0
+Green Peter,MainstemFlowAug,script,held up,Combined Min Trib; FIRO_SPACE,1,1448.0
+Green Peter,FIRO_SPACE,script,capped,Draft to RC,42,127971.0
+Green Peter,FIRO_SPACE,script,capped,Max Evacuation Release,26,229134.0
+Green Peter,FIRO_SPACE,script,capped,Waterloo Flood Max,12,612957.0
+Green Peter,FIRO_SPACE,script,capped,outlet capacity,9,261502.0
+Green Peter,FIRO_SPACE,script,capped,Secondary Flood Draft Limit,6,48839.0
+Green Peter,FIRO_SPACE,script,capped,Combined Min Trib,1,4484.0
+Green Peter,FIRO_SPACE,script,capped,Con Max; Draft to RC,1,5996.0
+Green Peter,FIRO_SPACE,script,held up,Combined Min Trib,362,645139.0
+Green Peter,FIRO_SPACE,script,held up,Secondary Flood Draft Limit,71,693829.0
+Green Peter,FIRO_SPACE,script,held up,(not found),70,321634.0
+Green Peter,FIRO_SPACE,script,held up,Flood Min,39,3784.0
+Green Peter,FIRO_SPACE,script,held up,Deep Drawdown,29,101082.0
+Green Peter,FIRO_SPACE,script,held up,Flood Min; Combined Min Trib,2,207.0
+Green Peter,FIRO_SPACE,script,held up,No Draft,2,1792.0
+Green Peter,Max Evacuation Release,max,held up,Secondary Flood Draft Limit,71,367233.0
+Green Peter,Max Evacuation Release,max,held up,(not found),11,97069.0
+Green Peter,Max Evacuation Release,max,held up,FIRO_SPACE,5,29404.0
+Green Peter,Max Evacuation Release,max,held up,Deep Drawdown,3,7488.0
+Green Peter,Max Evacuation Release,max,held up,FIRO_SPACE; Draft to RC,1,4682.0
+Green Peter,BiOp Max Flow Winter GPR FOS,max,held up,Deep Drawdown,1,166.0
+Green Peter,Draft to RC,script,capped,Max Evacuation Release,26,229389.0
+Green Peter,Draft to RC,script,capped,Waterloo Flood Max,11,507803.0
+Green Peter,Draft to RC,script,capped,Secondary Flood Draft Limit,6,48970.0
+Green Peter,Draft to RC,script,capped,outlet capacity,3,148796.0
+Green Peter,Draft to RC,script,held up,Combined Min Trib,404,694212.0
+Green Peter,Draft to RC,script,held up,Flood Min,88,8644.0
+Green Peter,Draft to RC,script,held up,(not found),71,326953.0
+Green Peter,Draft to RC,script,held up,Secondary Flood Draft Limit,71,693829.0
+Green Peter,Draft to RC,script,held up,FIRO_SPACE,63,112463.0
+Green Peter,Draft to RC,script,held up,Deep Drawdown,29,101082.0
+Green Peter,Draft to RC,script,held up,Flood Min; Combined Min Trib,3,306.0
+Green Peter,Draft to RC,script,held up,No Draft,2,1792.0
+Green Peter,Draft to RC,script,held up,Combined Min Trib; FIRO_SPACE,1,55.0
+Hills Creek,No Draft,script,capped,outlet capacity,232,459908606.0
+Hills Creek,No Draft,script,capped,IRRM,163,322912414.0
+Hills Creek,No Draft,script,capped,Draft to RC,144,285156579.0
+Hills Creek,No Draft,script,capped,Max Evacuation Rate,114,225379625.0
+Hills Creek,No Draft,script,capped,Fill_LOP_First_Script,105,208143939.0
+Hills Creek,No Draft,script,capped,HCR_LOP_Balance,58,114966895.0
+Hills Creek,No Draft,script,capped,Harrisburg Regulation Goal Simplified,13,25651809.0
+Hills Creek,No Draft,script,capped,FIRO_SPACE; Draft to RC,2,3964240.0
+Hills Creek,No Draft,script,capped,IRRM; HCR_LOP_Balance,1,1979831.0
+Hills Creek,No Draft,script,capped,Max Evacuation Rate; Draft to RC,1,1981177.0
+Hills Creek,No Draft,script,capped,FIRO_SPACE,1,1982678.0
+Hills Creek,Max Evacuation Rate,max,held up,(not found),2,12620.0
+Hills Creek,Harrisburg Regulation Goal Simplified,max,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,5,3967.0
+Hills Creek,Harrisburg Regulation Goal Simplified,max,held up,(not found),4,47407.0
+Hills Creek,IRRM,script,capped,Harrisburg Regulation Goal Simplified,7,137683.0
+Hills Creek,IRRM,script,capped,outlet capacity,6,228314.0
+Hills Creek,IRRM,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,145,115041.0
+Hills Creek,IRRM,script,held up,(not found),108,714424.0
+Hills Creek,IRRM,script,held up,Fill_LOP_First_Script,100,116511.0
+Hills Creek,IRRM,script,held up,Dam-BiOp MinTrib and Withdrawals by WY,89,66334.0
+Hills Creek,IRRM,script,held up,HCR_LOP_Balance,57,69529.0
+Hills Creek,IRRM,script,held up,FIRO_SPACE; Draft to RC,25,27851.0
+Hills Creek,IRRM,script,held up,Draft to RC,20,68842.0
+Hills Creek,IRRM,script,held up,FIRO_SPACE,11,17622.0
+Hills Creek,IRRM,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY; Fill_LOP_First_Script,5,4013.0
+Hills Creek,IRRM,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY; FIRO_SPACE; Draft to RC,2,1607.0
+Hills Creek,IRRM,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY; FIRO_SPACE,2,1587.0
+Hills Creek,IRRM,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY; HCR_LOP_Balance,1,793.0
+Hills Creek,Fill_LOP_First_Script,script,held up,IRRM,162,392461.0
+Hills Creek,Fill_LOP_First_Script,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,147,116628.0
+Hills Creek,Fill_LOP_First_Script,script,held up,(not found),119,877336.0
+Hills Creek,Fill_LOP_First_Script,script,held up,Dam-BiOp MinTrib and Withdrawals by WY,89,77063.0
+Hills Creek,Fill_LOP_First_Script,script,held up,HCR_LOP_Balance,57,73634.0
+Hills Creek,Fill_LOP_First_Script,script,held up,FIRO_SPACE; Draft to RC,25,27851.0
+Hills Creek,Fill_LOP_First_Script,script,held up,Draft to RC,20,68842.0
+Hills Creek,Fill_LOP_First_Script,script,held up,FIRO_SPACE,11,17622.0
+Hills Creek,Fill_LOP_First_Script,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY; FIRO_SPACE; Draft to RC,2,1607.0
+Hills Creek,Fill_LOP_First_Script,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY; FIRO_SPACE,2,1587.0
+Hills Creek,Fill_LOP_First_Script,script,held up,IRRM; Dam-BiOp MinTrib and Withdrawals by WY,2,1748.0
+Hills Creek,Fill_LOP_First_Script,script,held up,IRRM; HCR_LOP_Balance,1,3640.0
+Hills Creek,Fill_LOP_First_Script,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY; HCR_LOP_Balance,1,793.0
+Hills Creek,HCR_LOP_Balance,script,held up,IRRM,157,365943.0
+Hills Creek,HCR_LOP_Balance,script,held up,Dam-BiOp MinTrib and Withdrawals by WY,89,73504.0
+Hills Creek,HCR_LOP_Balance,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,10,2033.0
+Hills Creek,HCR_LOP_Balance,script,held up,(not found),2,9880.0
+Hills Creek,HCR_LOP_Balance,script,held up,IRRM; Dam-BiOp MinTrib and Withdrawals by WY,2,1748.0
+Hills Creek,FIRO_SPACE,script,capped,Max Evacuation Rate,102,919635.0
+Hills Creek,FIRO_SPACE,script,capped,Draft to RC,19,69874.0
+Hills Creek,FIRO_SPACE,script,capped,outlet capacity,18,658403.0
+Hills Creek,FIRO_SPACE,script,capped,Harrisburg Regulation Goal Simplified,11,424742.0
+Hills Creek,FIRO_SPACE,script,capped,Max Evacuation Rate; Draft to RC,1,142.0
+Hills Creek,FIRO_SPACE,script,held up,IRRM,161,379536.0
+Hills Creek,FIRO_SPACE,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,126,95881.0
+Hills Creek,FIRO_SPACE,script,held up,Fill_LOP_First_Script,100,116511.0
+Hills Creek,FIRO_SPACE,script,held up,Dam-BiOp MinTrib and Withdrawals by WY,89,76689.0
+Hills Creek,FIRO_SPACE,script,held up,HCR_LOP_Balance,57,73015.0
+Hills Creek,FIRO_SPACE,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY; Fill_LOP_First_Script,5,4013.0
+Hills Creek,FIRO_SPACE,script,held up,(not found),2,3122.0
+Hills Creek,FIRO_SPACE,script,held up,IRRM; Dam-BiOp MinTrib and Withdrawals by WY,2,1748.0
+Hills Creek,FIRO_SPACE,script,held up,IRRM; HCR_LOP_Balance,1,2833.0
+Hills Creek,FIRO_SPACE,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY; HCR_LOP_Balance,1,793.0
+Hills Creek,Draft to RC,script,capped,Max Evacuation Rate,114,900849.0
+Hills Creek,Draft to RC,script,capped,outlet capacity,11,569030.0
+Hills Creek,Draft to RC,script,capped,Harrisburg Regulation Goal Simplified,11,410720.0
+Hills Creek,Draft to RC,script,held up,IRRM,159,385934.0
+Hills Creek,Draft to RC,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,142,111176.0
+Hills Creek,Draft to RC,script,held up,Fill_LOP_First_Script,100,116511.0
+Hills Creek,Draft to RC,script,held up,Dam-BiOp MinTrib and Withdrawals by WY,87,75352.0
+Hills Creek,Draft to RC,script,held up,HCR_LOP_Balance,57,73634.0
+Hills Creek,Draft to RC,script,held up,FIRO_SPACE,11,9853.0
+Hills Creek,Draft to RC,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY; Fill_LOP_First_Script,5,4013.0
+Hills Creek,Draft to RC,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY; FIRO_SPACE,2,814.0
+Hills Creek,Draft to RC,script,held up,(not found),2,17020.0
+Hills Creek,Draft to RC,script,held up,IRRM; Dam-BiOp MinTrib and Withdrawals by WY,2,1748.0
+Hills Creek,Draft to RC,script,held up,IRRM; HCR_LOP_Balance,1,3640.0
+Hills Creek,Draft to RC,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY; HCR_LOP_Balance,1,793.0
+Lookout Point,NoDraft,script,capped,outlet capacity,420,831920460.0
+Lookout Point,NoDraft,script,capped,Deep Drawdown,162,319859185.0
+Lookout Point,NoDraft,script,capped,IRRM,119,235265370.0
+Lookout Point,NoDraft,script,capped,Spring Spill,33,65242194.0
+Lookout Point,NoDraft,script,capped,Draft to RC,33,65202404.0
+Lookout Point,NoDraft,script,capped,Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,21,40986446.0
+Lookout Point,NoDraft,script,capped,Jasper Bankfull Max,18,35288276.0
+Lookout Point,NoDraft,script,capped,Draft to RC; FIRO_SPACE,17,33650436.0
+Lookout Point,NoDraft,script,capped,Harrisburg Regulation Goal Simplified,17,33410129.0
+Lookout Point,NoDraft,script,capped,Dam-Max Evacuation Release,16,31542408.0
+Lookout Point,NoDraft,script,capped,Secondary Flood Draft Limit,13,25534330.0
+Lookout Point,NoDraft,script,capped,ROC Up,5,9885223.0
+Lookout Point,NoDraft,script,capped,Jasper Bankfull Max; Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,2,3904081.0
+Lookout Point,NoDraft,script,capped,Draft to RC; Dam-Max Evacuation Release,1,1974744.0
+Lookout Point,NoDraft,script,capped,Jasper Bankfull Max; IRRM,1,1954903.0
+Lookout Point,NoDraft,script,capped,Jasper Bankfull Max; Deep Drawdown,1,1966539.0
+Lookout Point,NoDraft,script,capped,Secondary Flood Draft Limit; Deep Drawdown,1,1966566.0
+Lookout Point,NoDraft,script,capped,Harrisburg Regulation Goal Simplified; IRRM,1,1953262.0
+Lookout Point,ROC Down,min,capped,Harrisburg Regulation Goal Simplified,1,6292.0
+Lookout Point,ROC Down,min,capped,outlet capacity,1,838.0
+Lookout Point,ROC Up,max,held up,(not found),4,13887.0
+Lookout Point,ROC Up,max,held up,Draft to RC; FIRO_SPACE,1,1717.0
+Lookout Point,Regulated Outlet-No RO use above 900 ft,max,held up,Min for DEX,194,519471.0
+Lookout Point,Regulated Outlet-No RO use above 900 ft,max,held up,IRRM,114,795986.0
+Lookout Point,Regulated Outlet-No RO use above 900 ft,max,held up,(not found),35,790621.0
+Lookout Point,Regulated Outlet-No RO use above 900 ft,max,held up,Deep Drawdown,12,100660.0
+Lookout Point,Regulated Outlet-No RO use above 900 ft,max,held up,Min for DEX; IRRM,6,16195.0
+Lookout Point,Regulated Outlet-No RO use above 900 ft,max,held up,ROC Down; IRRM,1,14284.0
+Lookout Point,Regulated Outlet-No RO use above 900 ft,max,held up,ROC Down,1,9448.0
+Lookout Point,Secondary Flood Draft Limit,script,capped,Deep Drawdown,101,699762.0
+Lookout Point,Secondary Flood Draft Limit,script,capped,outlet capacity,57,902844.0
+Lookout Point,Secondary Flood Draft Limit,script,capped,Draft to RC,25,281028.0
+Lookout Point,Secondary Flood Draft Limit,script,capped,Draft to RC; FIRO_SPACE,17,198261.0
+Lookout Point,Secondary Flood Draft Limit,script,capped,Dam-Max Evacuation Release,16,105921.0
+Lookout Point,Secondary Flood Draft Limit,script,capped,Jasper Bankfull Max,7,47803.0
+Lookout Point,Secondary Flood Draft Limit,script,capped,Harrisburg Regulation Goal Simplified,3,41952.0
+Lookout Point,Secondary Flood Draft Limit,script,capped,Draft to RC; Dam-Max Evacuation Release,1,6863.0
+Lookout Point,Secondary Flood Draft Limit,script,capped,Jasper Bankfull Max; Deep Drawdown,1,5175.0
+Lookout Point,Flood Min,min,capped,Draft to RC; FIRO_SPACE,1,659.0
+Lookout Point,Harrisburg Regulation Goal Simplified,max,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,5,11901.0
+Lookout Point,Min for DEX,min,capped,outlet capacity,14,4165.0
+Lookout Point,Min for DEX,min,capped,Draft to RC; FIRO_SPACE,7,2207.0
+Lookout Point,Min for DEX,min,capped,Draft to RC,3,639.0
+Lookout Point,IRRM,script,capped,Jasper Bankfull Max,9,300459.0
+Lookout Point,IRRM,script,capped,ROC Up,2,16969.0
+Lookout Point,IRRM,script,capped,Harrisburg Regulation Goal Simplified,2,38406.0
+Lookout Point,IRRM,script,capped,Draft to RC,1,13466.0
+Lookout Point,IRRM,script,capped,Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,1,18044.0
+Lookout Point,IRRM,script,capped,Jasper Bankfull Max; Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,1,8325.0
+Lookout Point,IRRM,script,held up,Min for DEX,400,1033601.0
+Lookout Point,IRRM,script,held up,Deep Drawdown,163,1480061.0
+Lookout Point,IRRM,script,held up,(not found),64,1338858.0
+Lookout Point,IRRM,script,held up,Spring Spill,32,209673.0
+Lookout Point,IRRM,script,held up,Draft to RC,26,217025.0
+Lookout Point,IRRM,script,held up,Draft to RC; FIRO_SPACE,15,63793.0
+Lookout Point,IRRM,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,14,33322.0
+Lookout Point,IRRM,script,held up,Secondary Flood Draft Limit,13,250794.0
+Lookout Point,IRRM,script,held up,ROC Down,6,23973.0
+Lookout Point,IRRM,script,held up,Min for DEX; Draft to RC,2,5403.0
+Lookout Point,IRRM,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY; Draft to RC; FIRO_SPACE,2,4779.0
+Lookout Point,IRRM,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY; Draft to RC,1,2380.0
+Lookout Point,IRRM,script,held up,Secondary Flood Draft Limit; Deep Drawdown,1,16905.0
+Lookout Point,IRRM,script,held up,Min for DEX; Spring Spill,1,2678.0
+Lookout Point,Deep Drawdown,script,capped,Secondary Flood Draft Limit,13,150571.0
+Lookout Point,Deep Drawdown,script,capped,Jasper Bankfull Max,7,54852.0
+Lookout Point,Deep Drawdown,script,capped,ROC Up,2,6387.0
+Lookout Point,Deep Drawdown,script,capped,Harrisburg Regulation Goal Simplified,2,38067.0
+Lookout Point,Deep Drawdown,script,held up,Min for DEX,400,1071074.0
+Lookout Point,Deep Drawdown,script,held up,IRRM,114,795986.0
+Lookout Point,Deep Drawdown,script,held up,(not found),68,1486717.0
+Lookout Point,Deep Drawdown,script,held up,Spring Spill,32,209673.0
+Lookout Point,Deep Drawdown,script,held up,Draft to RC,26,217025.0
+Lookout Point,Deep Drawdown,script,held up,Draft to RC; FIRO_SPACE,15,63793.0
+Lookout Point,Deep Drawdown,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,14,33322.0
+Lookout Point,Deep Drawdown,script,held up,ROC Down,6,29291.0
+Lookout Point,Deep Drawdown,script,held up,Min for DEX; IRRM,6,16195.0
+Lookout Point,Deep Drawdown,script,held up,Min for DEX; Draft to RC,2,5403.0
+Lookout Point,Deep Drawdown,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY; Draft to RC; FIRO_SPACE,2,4779.0
+Lookout Point,Deep Drawdown,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY; Draft to RC,1,2380.0
+Lookout Point,Deep Drawdown,script,held up,ROC Down; IRRM,1,14284.0
+Lookout Point,Deep Drawdown,script,held up,Min for DEX; Spring Spill,1,2678.0
+Lookout Point,Spring Spill,script,capped,ROC Up,1,2327.0
+Lookout Point,Spring Spill,script,held up,Min for DEX,400,1057200.0
+Lookout Point,Spring Spill,script,held up,Deep Drawdown,163,1480061.0
+Lookout Point,Spring Spill,script,held up,IRRM,114,795986.0
+Lookout Point,Spring Spill,script,held up,(not found),78,1672296.0
+Lookout Point,Spring Spill,script,held up,Draft to RC,26,217025.0
+Lookout Point,Spring Spill,script,held up,Draft to RC; FIRO_SPACE,15,63793.0
+Lookout Point,Spring Spill,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,14,33322.0
+Lookout Point,Spring Spill,script,held up,Secondary Flood Draft Limit,13,250794.0
+Lookout Point,Spring Spill,script,held up,ROC Down,6,32994.0
+Lookout Point,Spring Spill,script,held up,Min for DEX; IRRM,6,16195.0
+Lookout Point,Spring Spill,script,held up,Min for DEX; Draft to RC,2,5403.0
+Lookout Point,Spring Spill,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY; Draft to RC; FIRO_SPACE,2,4779.0
+Lookout Point,Spring Spill,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY; Draft to RC,1,2380.0
+Lookout Point,Spring Spill,script,held up,ROC Down; IRRM,1,14284.0
+Lookout Point,Spring Spill,script,held up,Secondary Flood Draft Limit; Deep Drawdown,1,16905.0
+Lookout Point,Dam-BiOp MinTrib and Withdrawals by WY,min,capped,Draft to RC; FIRO_SPACE,1,659.0
+Lookout Point,MainstemFlowAug,script,held up,Min for DEX,400,1071074.0
+Lookout Point,MainstemFlowAug,script,held up,Deep Drawdown,163,1480061.0
+Lookout Point,MainstemFlowAug,script,held up,IRRM,114,795986.0
+Lookout Point,MainstemFlowAug,script,held up,(not found),79,1677652.0
+Lookout Point,MainstemFlowAug,script,held up,Spring Spill,32,209673.0
+Lookout Point,MainstemFlowAug,script,held up,Draft to RC,26,217025.0
+Lookout Point,MainstemFlowAug,script,held up,Draft to RC; FIRO_SPACE,15,63793.0
+Lookout Point,MainstemFlowAug,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,14,33322.0
+Lookout Point,MainstemFlowAug,script,held up,Secondary Flood Draft Limit,13,250794.0
+Lookout Point,MainstemFlowAug,script,held up,ROC Down,6,32994.0
+Lookout Point,MainstemFlowAug,script,held up,Min for DEX; IRRM,6,16195.0
+Lookout Point,MainstemFlowAug,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY; Draft to RC; FIRO_SPACE,2,4779.0
+Lookout Point,MainstemFlowAug,script,held up,Min for DEX; Draft to RC,2,5403.0
+Lookout Point,MainstemFlowAug,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY; Draft to RC,1,2380.0
+Lookout Point,MainstemFlowAug,script,held up,ROC Down; IRRM,1,14284.0
+Lookout Point,MainstemFlowAug,script,held up,Secondary Flood Draft Limit; Deep Drawdown,1,16905.0
+Lookout Point,MainstemFlowAug,script,held up,Min for DEX; Spring Spill,1,2678.0
+Lookout Point,Draft to RC,script,capped,Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,21,1176189.0
+Lookout Point,Draft to RC,script,capped,Dam-Max Evacuation Release,16,101127.0
+Lookout Point,Draft to RC,script,capped,Harrisburg Regulation Goal Simplified,15,1130641.0
+Lookout Point,Draft to RC,script,capped,Jasper Bankfull Max,9,931076.0
+Lookout Point,Draft to RC,script,capped,outlet capacity,4,308205.0
+Lookout Point,Draft to RC,script,capped,Jasper Bankfull Max; Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,2,175857.0
+Lookout Point,Draft to RC,script,capped,Harrisburg Regulation Goal Simplified; IRRM,1,94464.0
+Lookout Point,Draft to RC,script,held up,Min for DEX,399,1053083.0
+Lookout Point,Draft to RC,script,held up,Deep Drawdown,163,1480061.0
+Lookout Point,Draft to RC,script,held up,IRRM,111,747439.0
+Lookout Point,Draft to RC,script,held up,Spring Spill,32,209673.0
+Lookout Point,Draft to RC,script,held up,(not found),16,226883.0
+Lookout Point,Draft to RC,script,held up,Secondary Flood Draft Limit,13,250794.0
+Lookout Point,Draft to RC,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY,10,12153.0
+Lookout Point,Draft to RC,script,held up,ROC Down,6,32994.0
+Lookout Point,Draft to RC,script,held up,Min for DEX; IRRM,6,16195.0
+Lookout Point,Draft to RC,script,held up,ROC Down; IRRM,1,14284.0
+Lookout Point,Draft to RC,script,held up,Secondary Flood Draft Limit; Deep Drawdown,1,16905.0
+Lookout Point,Draft to RC,script,held up,Min for DEX; Spring Spill,1,2678.0
+Lookout Point,FIRO_SPACE,script,capped,outlet capacity,44,506724.0
+Lookout Point,FIRO_SPACE,script,capped,Draft to RC,30,183662.0
+Lookout Point,FIRO_SPACE,script,capped,Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,21,1233660.0
+Lookout Point,FIRO_SPACE,script,capped,Dam-Max Evacuation Release,16,127413.0
+Lookout Point,FIRO_SPACE,script,capped,Harrisburg Regulation Goal Simplified,15,1185962.0
+Lookout Point,FIRO_SPACE,script,capped,Jasper Bankfull Max,10,953109.0
+Lookout Point,FIRO_SPACE,script,capped,Jasper Bankfull Max; Harrisburg Regulation Goal Simplified; Dam-Max Evacuation Release,2,177624.0
+Lookout Point,FIRO_SPACE,script,capped,IRRM,1,10385.0
+Lookout Point,FIRO_SPACE,script,capped,Draft to RC; Dam-Max Evacuation Release,1,237.0
+Lookout Point,FIRO_SPACE,script,capped,ROC Up,1,1340.0
+Lookout Point,FIRO_SPACE,script,capped,Harrisburg Regulation Goal Simplified; IRRM,1,95983.0
+Lookout Point,FIRO_SPACE,script,held up,Min for DEX,370,951973.0
+Lookout Point,FIRO_SPACE,script,held up,Deep Drawdown,163,1480061.0
+Lookout Point,FIRO_SPACE,script,held up,IRRM,112,597776.0
+Lookout Point,FIRO_SPACE,script,held up,Spring Spill,32,209673.0
+Lookout Point,FIRO_SPACE,script,held up,(not found),14,201777.0
+Lookout Point,FIRO_SPACE,script,held up,Secondary Flood Draft Limit,13,250794.0
+Lookout Point,FIRO_SPACE,script,held up,ROC Down,6,30973.0
+Lookout Point,FIRO_SPACE,script,held up,Min for DEX; IRRM,6,16195.0
+Lookout Point,FIRO_SPACE,script,held up,Flood Min; Dam-BiOp MinTrib and Withdrawals by WY; Draft to RC,1,67.0
+Lookout Point,FIRO_SPACE,script,held up,ROC Down; IRRM,1,7475.0
+Lookout Point,FIRO_SPACE,script,held up,Secondary Flood Draft Limit; Deep Drawdown,1,16905.0
+Lookout Point,FIRO_SPACE,script,held up,Min for DEX; Spring Spill,1,2678.0
+Lookout Point,Dam-Max Evacuation Release,max,held up,Deep Drawdown,54,127413.0
+Lookout Point,Dam-Max Evacuation Release,max,held up,Secondary Flood Draft Limit,13,137340.0
+Lookout Point,Dam-Max Evacuation Release,max,held up,(not found),10,104150.0
+Lookout Point,Dam-Max Evacuation Release,max,held up,Draft to RC,3,13575.0
+Lookout Point,Dam-Max Evacuation Release,max,held up,Draft to RC; FIRO_SPACE,2,5448.0
+Lookout Point,Dam-Max Evacuation Release,max,held up,Secondary Flood Draft Limit; Deep Drawdown,1,8177.0
