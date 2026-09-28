@@ -100,6 +100,14 @@ MINFLOW_TARGET_MET_AT = {"Green Peter": "Foster"}
 # Other min-flow rules worth comparing to the same config, by name fragment
 MINFLOW_OTHER_RULE_PATTERN = "MinTrib"
 
+# Headroom check (optional; run_headroom in model_check_config.txt): on steps a
+# reservoir is held back by a control point's max rule and is above its rule
+# curve, how far the point's flow stayed under its maximum once that release
+# arrived. Writes CSVs only.
+HEADROOM = False
+HEADROOM_LAG_STEPS = 1       # steps for a release to reach the control point
+HEADROOM_MIN_CFS = 250.0     # room below this is not counted
+
 # Flood flows at the control points (Table 2), next to this script
 CONTROL_POINT_LIMITS = "control_point_limits.csv"
 
@@ -853,7 +861,6 @@ def controlPointStatus(groups, dates, limits, minTargets, inControl):
         if flow is None:
             continue
         flow = flow.reindex(dates)
-        local = table.get(junction + " Flow-Local")
         cumLocal = table.get(junction + " Flow-CUMLOC")
         place = placeName(r["station_name"])
         color = CP_COLORS[i % len(CP_COLORS)]
@@ -879,9 +886,6 @@ def controlPointStatus(groups, dates, limits, minTargets, inControl):
         shown = place == "Salem"
         style = {"group": place, "hidden": not shown}
         flowTraces.append(("%s flow" % place, flow, "y1", dict(style, color=color, width=2)))
-        if local is not None:
-            flowTraces.append(("%s local flow" % place, local.reindex(dates), "y1",
-                               dict(style, color=color, width=1, dash="dot")))
         if cumLocal is not None:
             flowTraces.append(("%s cumulative local flow" % place, cumLocal.reindex(dates), "y1",
                                dict(style, color=color, width=1.2)))
@@ -900,7 +904,6 @@ def controlPointStatus(groups, dates, limits, minTargets, inControl):
         # reservoir's release and the rules in control there
         keys = [place.lower()] + (["mainstemflowaug"] if place in ("Salem", "Albany") else [])
         cols = {"Flow": flow.round(0),
-                "Local": local.reindex(dates).round(0) if local is not None else np.nan,
                 "Cumulative local": cumLocal.reindex(dates).round(0) if cumLocal is not None else np.nan,
                 "Minimum": minLine.round(0) if minLine is not None else np.nan}
         for label, value in limitLines:
@@ -956,6 +959,90 @@ def controlPointStatus(groups, dates, limits, minTargets, inControl):
                           {"color": color, "width": 9, "group": "status", "hoverinfo": "skip"}))
     plot = {"All": {"traces": flowTraces + strip, "categories": cats}}
     return plot, tables, pd.DataFrame(rows)
+
+
+def headroomCheck(groups, dates, limits, inControl):
+    """
+    For every upstream reservoir held back by a control point's max rule (a
+    built-in MAX rule in control whose name contains the point's place name;
+    scripted rules are left out, since the results cannot say whether they
+    acted as a maximum), step by step:
+    the release, the point's flow now and HEADROOM_LAG_STEPS later (when the
+    release arrives), the room left under the maximum then, whether the pool
+    was above its rule curve (so had water to move), and how the point's
+    cumulative local flow changed meanwhile. Room that tracks a falling local
+    flow suggests the rule assumes today's local flow persists; room shared by
+    reservoirs held back together suggests they each leave space for the other.
+    Returns the daily rows and a summary.
+    """
+    table = groups.get("junctions")
+    daily, summary = [], []
+    if table is None:
+        return pd.DataFrame(), pd.DataFrame()
+    lag = HEADROOM_LAG_STEPS
+    for junction, r in limits.items():
+        flow = table.get(junction + " Flow")
+        goal, action = r.get("regulation_goal_cfs"), r.get("action_cfs")
+        maxFlow = float(goal) if pd.notna(goal) else (float(action) if pd.notna(action) else None)
+        if flow is None or maxFlow is None:
+            continue
+        place = placeName(r["station_name"])
+        flow = flow.reindex(dates)
+        arrive = flow.shift(-lag)
+        room = maxFlow - arrive
+        cumLocal = table.get(junction + " Flow-CUMLOC")
+        localChange = (cumLocal.reindex(dates).shift(-lag) - cumLocal.reindex(dates)) if cumLocal is not None else None
+        anyMissed = pd.Series(False, index=dates)
+        for res in [x.strip() for x in str(r.get("reservoirs", "")).split(";") if x.strip()]:
+            text = inControl.get(res)
+            out = col(groups, "reservoirs", "%s-Pool Flow-OUT" % res)
+            if text is None or out is None:
+                continue
+            text = text.reindex(dates).fillna("")
+            maxRules = [label for label, kind, _ in reservoirRules(groups, res, dates)
+                        if kind == "max" and place.lower() in label.lower()]
+            if not maxRules:
+                continue
+            held = text.map(lambda t: any(m in t.split("; ") for m in maxRules))
+            if not held.any():
+                continue
+            elev = col(groups, "reservoirs", "%s-Pool Elev" % res)
+            curve = col(groups, "reservoirs", "%s-Rule Curve Elev-ZONE" % res)
+            if elev is not None and curve is not None:
+                above = elev.reindex(dates) > curve.reindex(dates)
+            else:
+                above = pd.Series(True, index=dates)
+            missed = held & above & (room > HEADROOM_MIN_CFS)
+            anyMissed |= missed
+            for d in dates[held]:
+                daily.append({"date": d, "control_point": place, "reservoir": res,
+                              "release_cfs": round(out.reindex(dates)[d], 0),
+                              "rules_in_control": text[d],
+                              "limit_cfs": maxFlow,
+                              "flow_now_cfs": round(flow[d], 0),
+                              "flow_when_release_arrives_cfs": round(arrive[d], 0) if pd.notna(arrive[d]) else np.nan,
+                              "room_cfs": round(room[d], 0) if pd.notna(room[d]) else np.nan,
+                              "above_rule_curve": bool(above[d]),
+                              "cum_local_change_cfs": round(localChange[d], 0) if localChange is not None and pd.notna(localChange[d]) else np.nan,
+                              "room_counted": bool(missed[d])})
+            summary.append({"control_point": place, "reservoir": res,
+                            "days_held_back": _days(held),
+                            "days_held_back_above_rule_curve": _days(held & above),
+                            "days_with_room": _days(missed),
+                            "mean_room_cfs": round(room[missed].mean(), 0) if missed.any() else 0,
+                            "largest_room_cfs": round(room[missed].max(), 0) if missed.any() else 0,
+                            "mean_cum_local_change_cfs": round(localChange[missed].mean(), 0)
+                            if localChange is not None and missed.any() else np.nan})
+        if anyMissed.any():
+            # The room is the point's to share, so its volume is counted once
+            summary.append({"control_point": place, "reservoir": "(all upstream)",
+                            "days_with_room": _days(anyMissed),
+                            "mean_room_cfs": round(room[anyMissed].mean(), 0),
+                            "largest_room_cfs": round(room[anyMissed].max(), 0),
+                            "room_volume_af": round(room[anyMissed].sum() * CFS_DAY_TO_AF * STEP_DAYS, 0),
+                            "mean_cum_local_change_cfs": round(localChange[anyMissed].mean(), 0)
+                            if localChange is not None else np.nan})
+    return pd.DataFrame(daily), pd.DataFrame(summary)
 
 
 def controlPointFile():
@@ -1145,17 +1232,22 @@ function drawTable() {
   tbl.innerHTML = html;
   freezeColumns(t.freeze || 0);
 }
-// Keep the first n columns in place while the rest scroll sideways
+// Keep the first n columns in place while the rest scroll sideways. They get
+// fixed widths, so where each sits is known rather than measured: a measured
+// position goes stale when the browser lays the table out differently, and
+// the scrolled columns then show through the gaps.
 function freezeColumns(n) {
   var doc = tbl.ownerDocument, style = doc.getElementById("freeze");
   if (!style) { style = doc.createElement("style"); style.id = "freeze"; doc.head.appendChild(style); }
-  var css = "", heads = tbl.rows.length ? tbl.rows[0].cells : [];
-  for (var j = 0; j < n && j < heads.length; j++) {
-    // Where the column sits now, so the frozen columns line up exactly
-    var left = heads[j].offsetLeft - heads[0].offsetLeft;
-    var sel = "#tbl td:nth-child(" + (j + 1) + "), #tbl th:nth-child(" + (j + 1) + ")";
-    css += sel + "{position:sticky;left:" + left + "px}";
-    css += "#tbl td:nth-child(" + (j + 1) + "){z-index:1}#tbl th:nth-child(" + (j + 1) + "){z-index:3}";
+  var css = "", left = 0;
+  for (var j = 0; j < n; j++) {
+    var w = j === 0 ? 96 : 84;
+    var cells = "#tbl td:nth-child(" + (j + 1) + "), #tbl th:nth-child(" + (j + 1) + ")";
+    css += cells + "{position:sticky;left:" + left + "px;box-sizing:border-box;" +
+           "width:" + w + "px;min-width:" + w + "px;max-width:" + w + "px;white-space:normal}";
+    css += "#tbl td:nth-child(" + (j + 1) + "){z-index:1;white-space:nowrap;overflow:hidden}" +
+           "#tbl th:nth-child(" + (j + 1) + "){z-index:3}";
+    left += w;
   }
   if (n > 0) css += "#tbl td:nth-child(" + n + "),#tbl th:nth-child(" + n + "){box-shadow:2px 0 0 #999}";
   style.textContent = css;
@@ -1321,7 +1413,7 @@ def writeReport(runDir, runInfo, configRoot, configFiles, results, plotFiles):
         fh.write("\n".join(parts))
 
 
-def main(runDir=None, startDate=None, endDate=None):
+def main(runDir=None, startDate=None, endDate=None, headroom=None):
     """
     Check one output folder. run_model_check.py passes the folder and dates;
     otherwise RUN_DIR (or the newest folder), START_DATE and END_DATE.
@@ -1459,6 +1551,13 @@ def main(runDir=None, startDate=None, endDate=None):
                               "%s / %s" % (runInfo.get("simulation", ""), runInfo.get("alternative", "")),
                               cpPlot, cpTables)
         plotFiles.insert(0, ("Control points: status, limits and releases", controlPointFile()))
+        if HEADROOM if headroom is None else headroom:
+            hDaily, hSummary = headroomCheck(groups, dates, cpLimits, inControl)
+            hDaily.to_csv(os.path.join(runDir, "ControlPointHeadroom_daily.csv"), index=False)
+            hSummary.to_csv(os.path.join(runDir, "ControlPointHeadroom_summary.csv"), index=False)
+            print("\n== Control point headroom (CSV only) ==")
+            with pd.option_context("display.width", 200, "display.max_columns", 30):
+                print(hSummary.to_string(index=False) if len(hSummary) else "no reservoir held back by a control point")
         cpSummary.to_csv(os.path.join(runDir, "ControlPoints_summary.csv"), index=False)
         results["Control points"] = (
             cpSummary, "Flow at each control point against its maximum (the regulation goal, or the "

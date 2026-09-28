@@ -19,6 +19,12 @@ run_catalog: false
 run_extract: true
 run_check: true
 
+# Optional, with run_check: for each control point, the room left under its
+# maximum on days an upstream reservoir was held back by the point's rule while
+# above its rule curve. Writes ControlPointHeadroom_daily.csv and _summary.csv
+# into the run folder; nothing is added to the report or the plots.
+run_headroom: false
+
 # Optional: check only part of the run (YYYY-MM-DD). Blank means all of it,
 # after ResSim's lookback days.
 start_date:
