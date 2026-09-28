@@ -1205,7 +1205,10 @@ var OWNER = %(owner)s, CATS = %(cats)s, TABLES = %(tables)s, ALL = %(all)s, FILE
 // "#table", the table alone to fill another window. The two windows talk
 // through localStorage, which every local file shares in Chrome and Edge:
 // pages opened from disk count as separate sites and cannot reach each other.
-var TABLE_ONLY = location.hash.indexOf("#table") === 0;
+// Only the table window itself (opened under the name CHANNEL) hides the plot:
+// the same address reached any other way, e.g. from history, shows everything
+var TABLE_ONLY = location.hash.indexOf("#table") === 0 && window.name === CHANNEL;
+var HAS_PLOTLY = typeof Plotly !== "undefined";
 var gd = document.getElementById("plot"), sel = document.getElementById("res"),
     box = document.getElementById("tablebox"), tbl = document.getElementById("tbl"),
     current = Object.keys(TABLES)[0], me = String(Math.random());
@@ -1254,7 +1257,7 @@ function freezeColumns(n, dateWidth) {
   style.textContent = css;
 }
 function markPlot(date) {
-  if (TABLE_ONLY) return;
+  if (TABLE_ONLY || !HAS_PLOTLY) return;
   Plotly.relayout(gd, {shapes: date ? [{type: "line", xref: "x", yref: "paper", x0: date, x1: date, y0: 0, y1: 1,
                                        line: {color: "#ff9900", width: 2}}] : []});
 }
@@ -1297,6 +1300,7 @@ window.addEventListener("storage", function (e) {
 // The plot's traces and status rows for the current element. A page whose
 // plot holds all its elements at once (the control points) keeps its own.
 function showPlot() {
+  if (!HAS_PLOTLY) return;
   var key = OWNER.some(function (o) { return o[0] === current; }) ? current : null;
   if (key) Plotly.restyle(gd, {visible: OWNER.map(function (o) { return o[0] === key ? o[1] : false; })});
   var cats = CATS[key || (OWNER.length ? OWNER[0][0] : "")] || [];
@@ -1318,9 +1322,15 @@ if (TABLE_ONLY) {
   setInterval(function () { send({type: "alive", reservoir: current}); }, 1000);
   send({type: "alive", reservoir: current});
 } else {
+  if (!HAS_PLOTLY) {
+    var note = document.createElement("p");
+    note.style.cssText = "color:#b00;font-weight:600";
+    note.textContent = "The plot could not load: plotly.min.js must be in the same folder as this page.";
+    box.parentNode.insertBefore(note, box);
+  }
   showPlot();
   drawTable();
-  gd.on("plotly_click", function (ev) {
+  if (HAS_PLOTLY) gd.on("plotly_click", function (ev) {
     var d = stamp(ev.points[0].x); markPlot(d); markRow(d);
     send({type: "mark", reservoir: current, date: d});
   });
