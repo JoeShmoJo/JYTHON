@@ -57,7 +57,6 @@ import json
 import os
 import re
 import sys
-from html import escape as html_escape
 
 import numpy as np
 import pandas as pd
@@ -827,21 +826,6 @@ def cpLimitLines(r):
     return [(" / ".join(labels), v) for v, labels in sorted(byValue.items())]
 
 
-def ruleCell(text):
-    """
-    " · " and the rules in control. When several rules share the release that
-    step (a min and a max at the same value, say), all are listed, in stack
-    order when the model report gave one: the first, highest in the stack,
-    bold, the rest grey.
-    """
-    if not text:
-        return ""
-    names = [html_escape(n) for n in text.split("; ")]
-    first = "<b>%s</b>" % names[0]
-    rest = ("<span style='color:#999'>; %s</span>" % "; ".join(names[1:])) if len(names) > 1 else ""
-    return " · " + first + rest
-
-
 def controlPointStatus(groups, dates, limits, minTargets, inControl):
     """
     For every control point in control_point_limits.csv, in its order (basin
@@ -927,6 +911,7 @@ def controlPointStatus(groups, dates, limits, minTargets, inControl):
             codes[label[0].upper() + label[1:]] = (flow > value + flowTol(pd.Series(value, index=dates))).map({True: 2, False: 0})
         if minLine is not None:
             codes["Minimum"] = ((minLine > 0) & (flow < minLine - flowTol(minLine))).map({True: 3, False: 0})
+        nFixed = len(cols)
         for res in [x.strip() for x in str(r.get("reservoirs", "")).split(";") if x.strip()]:
             out = col(groups, "reservoirs", "%s-Pool Flow-OUT" % res)
             if out is None:
@@ -934,12 +919,13 @@ def controlPointStatus(groups, dates, limits, minTargets, inControl):
             out = out.reindex(dates)
             ruleText = inControl.get(res, pd.Series("", index=dates)).reindex(dates).fillna("")
             cols[res] = out.map(lambda v: "" if pd.isna(v) else "{:,.0f}".format(v)) + \
-                ruleText.map(ruleCell)
+                ruleText.map(lambda t: (" · " + t) if t else "")
             forHere = ruleText.str.lower().map(lambda t: any(k in t for k in keys))
             codes[res] = forHere.map({True: 6, False: 0})
         t = pd.DataFrame(cols, index=dates)
         t.index.name = "Date"
-        tables[place] = (t, pd.DataFrame(codes, index=dates).reindex(columns=t.columns).fillna(0).astype(int))
+        tables[place] = (t, pd.DataFrame(codes, index=dates).reindex(columns=t.columns).fillna(0).astype(int),
+                         nFixed)
 
         over = status == "over"
         under = status == "under"
@@ -987,14 +973,16 @@ def writeControlPointPage(path, title, plot, tables):
     fig.update_layout(height=950, margin={"t": 20}, legend={"groupclick": "togglegroup"})
     plotHtml = fig.to_html(full_html=False, include_plotlyjs="directory", div_id="plot")
     data = {}
-    for name, (t, codes) in tables.items():
+    for name, (t, codes, freeze) in tables.items():
         t = t.reset_index()
         t["Date"] = _stamps(pd.DatetimeIndex(t["Date"]))
         codes = codes.reset_index(drop=True)
         codes.insert(0, "Date", 0)
         t = t.astype(object).where(t.notna(), None)
         data[name] = {"columns": list(t.columns), "data": t.values.tolist(),
-                      "status": codes.values.tolist(), "priority": [None] * len(t.columns)}
+                      "status": codes.values.tolist(), "priority": [None] * len(t.columns),
+                      # Date, flows and limits stay put while the reservoirs scroll
+                      "freeze": freeze + 1}    # and the date
     names = list(tables.keys())
     with open(path, "w", encoding="utf-8") as fh:
         fh.write(RESERVOIR_PAGE % {
@@ -1102,12 +1090,13 @@ body{font-family:sans-serif;margin:0 16px;background:#fff;color:#222}
 #bar{position:sticky;top:0;background:#fff;z-index:5;padding:8px 0;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
 #bar select{font-size:15px;padding:3px}
 #tablebox{height:32vh;overflow:auto;border:1px solid #ccc}
-table{border-collapse:collapse;font-size:12px;width:100%%}
+table{border-collapse:separate;border-spacing:0;font-size:12px;width:100%%}
 th{position:sticky;top:0;background:#f0f0f0;z-index:1}
-td,th{border:1px solid #ddd;padding:2px 6px;vertical-align:bottom}
+td,th{border-right:1px solid #ddd;border-bottom:1px solid #ddd;padding:2px 6px;vertical-align:bottom}
 th{font-weight:600;text-align:right;min-width:52px;max-width:110px}
 td{text-align:right;white-space:nowrap}
 td:first-child,th:first-child{text-align:left;min-width:80px}
+td{background:#fff}
 td.s1{background:#dff2df} td.s2{background:#fbdcdc} td.s3{background:#dce8f7} td.s4{background:#eeeeee}
 td.s5{color:#c4c4c4}
 td.s6{background:#fff1b8;font-weight:600}
@@ -1154,6 +1143,22 @@ function drawTable() {
       r.map(function (v, j) { return "<td" + (st[j] ? " class='s" + st[j] + "'" : "") + ">" + fmt(v) + "</td>"; }).join("") + "</tr>";
   });
   tbl.innerHTML = html;
+  freezeColumns(t.freeze || 0);
+}
+// Keep the first n columns in place while the rest scroll sideways
+function freezeColumns(n) {
+  var doc = tbl.ownerDocument, style = doc.getElementById("freeze");
+  if (!style) { style = doc.createElement("style"); style.id = "freeze"; doc.head.appendChild(style); }
+  var css = "", heads = tbl.rows.length ? tbl.rows[0].cells : [];
+  for (var j = 0; j < n && j < heads.length; j++) {
+    // Where the column sits now, so the frozen columns line up exactly
+    var left = heads[j].offsetLeft - heads[0].offsetLeft;
+    var sel = "#tbl td:nth-child(" + (j + 1) + "), #tbl th:nth-child(" + (j + 1) + ")";
+    css += sel + "{position:sticky;left:" + left + "px}";
+    css += "#tbl td:nth-child(" + (j + 1) + "){z-index:1}#tbl th:nth-child(" + (j + 1) + "){z-index:3}";
+  }
+  if (n > 0) css += "#tbl td:nth-child(" + n + "),#tbl th:nth-child(" + n + "){box-shadow:2px 0 0 #999}";
+  style.textContent = css;
 }
 function markPlot(date) {
   if (TABLE_ONLY) return;
