@@ -35,8 +35,8 @@ rating tables or regulation goals change.
 
 **Control points page** (`plots/Control points.html`):
 
-- **Plot.** Every control point in `control_point_limits.csv`: its flow, local
-  and cumulative local flow, and every distinct limit (regulation goal,
+- **Plot.** Every control point in `control_point_limits.csv`: its flow,
+  cumulative local flow, and every distinct limit (regulation goal,
   action, flood and major flood stage, each its own dash style; limits with the
   same flow share a line), since the reservoirs regulate to different ones at
   different times. Salem is shown to start with; a legend click turns a point,
@@ -51,8 +51,8 @@ rating tables or regulation goals change.
   green in range, red above the maximum (the regulation goal, or the action
   flow where none is given), blue below the minimum (the lowest BiOp target
   that day).
-- **Table.** For the point picked in the list, each day's flow, local and
-  cumulative local flow, minimum and each limit, then each upstream
+- **Table.** For the point picked in the list, each day's flow, cumulative
+  local flow, minimum and each limit, then each upstream
   reservoir's release with the rules in control there, highlighted when a rule
   is releasing for that point (its name contains the place, or
   MainstemFlowAug at Salem and Albany). It links to the plot and opens in its
@@ -63,6 +63,20 @@ rating tables or regulation goals change.
 
 The `basin` and `reservoirs` columns of the CSV set the grouping and the
 upstream reservoirs; edit them there.
+
+**Headroom** (optional: `run_headroom: true` in `model_check_config.txt`). On
+steps a reservoir is held back by a control point's built-in MAX rule (one in
+control whose name contains the point's place name) while above its rule curve,
+the room left under the point's maximum when that release arrives
+(`HEADROOM_LAG_STEPS` later), counted when over `HEADROOM_MIN_CFS`. Writes
+`ControlPointHeadroom_daily.csv` (every held-back step: release, rules, flow now
+and on arrival, room, above rule curve, change in cumulative local flow) and
+`ControlPointHeadroom_summary.csv` (days held back and with room per reservoir,
+and the room's volume per control point, counted once since the reservoirs
+share it). Nothing is added to the report or the plots. Room that tracks a
+falling cumulative local flow suggests the rule assumes the local flow persists
+over the travel time; room when two reservoirs are held back together suggests
+each leaves space for the other.
 
 ## What you get
 

@@ -79,7 +79,8 @@ def main(configFile=None):
         print("\n### Check")
         import check_model
         check_model.main(runDir or latestRun(simulation, alternative),
-                         config.get("start_date") or None, config.get("end_date") or None)
+                         config.get("start_date") or None, config.get("end_date") or None,
+                         headroom=isTrue(config.get("run_headroom")))
 
 
 if __name__ == "__main__":
