@@ -30,8 +30,6 @@ and writes into that folder:
                               status bar each (in range, above max, below min),
                               and a daily table of upstream releases and the
                               rules in control, linked like the reservoir pages
-    plots/ControlPoints.html  total, local and cumulative local flow where a real
-                              (not all-zero) local flow is defined
     Pick an element from the dropdown; click legend entries to hide or show them.
 
 The checks:
@@ -797,61 +795,6 @@ def mainstemMinTargets(files, dates):
     return out
 
 
-def controlPointPlots(groups, dates, limits=None, minTargets=None):
-    """
-    Total, local and cumulative local flow where a real local flow is defined
-    or flood limits are given, with the flood flows from control_point_limits.csv
-    and, at Salem and Albany, the BiOp minimum flow targets.
-    """
-    table = groups.get("junctions")
-    if table is None:
-        return {}
-    limits = limits or {}
-    minTargets = minTargets or {}
-    targets = {c[len("Min_Flow_Target_"):-len(" Flow-Min")]: c
-               for c in groups["limits"].columns if c.startswith("Min_Flow_Target_")}
-    minColors = ["#1f77b4", "#17becf", "#08519c"]
-    plots = {}
-    for c in table.columns:
-        if not c.endswith(" Flow-Local"):
-            continue
-        name = c[:-len(" Flow-Local")]
-        local = table[c].reindex(dates)
-        # Reservoir inflow nodes are on the reservoir plots, and an all-zero
-        # local is a dummy record, unless the point has flood limits
-        if name.endswith("_IN") or not ((local.abs() > 0).any() or name in limits):
-            continue
-        traces = [("Total flow", table.get(name + " Flow"), "y1", {"color": "#000000", "width": 2}),
-                  ("Local flow", local, "y1", {"color": "#2ca02c", "width": 1.2}),
-                  ("Cumulative local flow", table.get(name + " Flow-CUMLOC"), "y1",
-                   {"color": "#9467bd", "width": 1.2, "hidden": True})]
-        if name in limits:
-            r = limits[name]
-            for key, label, color, dash, hidden in (
-                    ("regulation_goal_cfs", "Regulation goal", "#d62728", "dash", False),
-                    ("action_cfs", "Action stage (bankfull)", "#ff7f0e", "dot", False),
-                    ("flood_cfs", "Flood stage", "#8c564b", "dot", False),
-                    ("major_flood_cfs", "Major flood stage", "#7f7f7f", "dot", False)):
-                if pd.notna(r.get(key)):
-                    traces.append(("%s (%s cfs)" % (label, "{:,.0f}".format(r[key])),
-                                   pd.Series(float(r[key]), index=dates), "y1",
-                                   {"color": color, "dash": dash, "width": 1.5, "hidden": hidden}))
-        for place, lines in minTargets.items():
-            if re.search(r"\b%s\b" % re.escape(place), name, re.I):
-                for i, (label, series) in enumerate(lines):
-                    traces.append((label, series, "y1",
-                                   {"color": minColors[i % len(minColors)], "dash": "dash", "width": 1.5}))
-        for place, target in targets.items():
-            if not (groups["limits"][target].reindex(dates) > 0).any():
-                continue
-            if re.search(r"\b%s\b" % re.escape(place), name, re.I):
-                traces.append(("Minimum flow target in the model (%s)" % place, groups["limits"][target],
-                               "y1", {"color": "#e377c2", "width": 1.5}))
-        plots[name] = [(l, v.reindex(dates) if v is not None else None, a, st)
-                       for l, v, a, st in traces]
-    return dict(sorted(plots.items()))
-
-
 CP_STATUS = [("ok", "In range", "#2ca02c", 1), ("over", "Above maximum", "#d62728", 2),
              ("under", "Below minimum", "#1f77b4", 3)]
 CP_COLORS = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2",
@@ -898,16 +841,26 @@ def controlPointStatus(groups, dates, limits, minTargets, inControl):
     flowTraces, labels, statuses, tables, rows = [], [], [], {}, []
     if table is None:
         return None
-    for i, (junction, r) in enumerate(limits.items()):
+    # Junctions with a real (not all-zero) local flow but no limits in the CSV
+    # come after it: flows and table, but no status to judge
+    points = list(limits.items())
+    for c in table.columns:
+        name = c[:-len(" Flow-Local")] if c.endswith(" Flow-Local") else None
+        if name and name not in limits and not name.endswith("_IN") and (table[c].abs() > 0).any():
+            points.append((name, {"station_name": name, "basin": "No limits", "reservoirs": ""}))
+    for i, (junction, r) in enumerate(points):
         flow = table.get(junction + " Flow")
         if flow is None:
             continue
         flow = flow.reindex(dates)
+        local = table.get(junction + " Flow-Local")
+        cumLocal = table.get(junction + " Flow-CUMLOC")
         place = placeName(r["station_name"])
         color = CP_COLORS[i % len(CP_COLORS)]
         goal = r.get("regulation_goal_cfs")
-        maxFlow = float(goal) if pd.notna(goal) else float(r["action_cfs"])
-        maxLine = pd.Series(maxFlow, index=dates)
+        action = r.get("action_cfs")
+        maxFlow = float(goal) if pd.notna(goal) else (float(action) if pd.notna(action) else None)
+        maxLine = pd.Series(maxFlow, index=dates) if maxFlow is not None else None
         lines = minTargets.get(place, [])
         minLine = pd.concat([l[1] for l in lines], axis=1).min(axis=1) if lines else None
 
@@ -915,17 +868,27 @@ def controlPointStatus(groups, dates, limits, minTargets, inControl):
         status[flow.isna()] = np.nan
         if minLine is not None:
             status[(minLine > 0) & (flow < minLine - flowTol(minLine))] = "under"
-        status[flow > maxLine + flowTol(maxLine)] = "over"
-        labels.append("%s: %s" % (r["basin"], place))
-        statuses.append(status)
+        if maxLine is not None:
+            status[flow > maxLine + flowTol(maxLine)] = "over"
+        if maxLine is not None or minLine is not None:
+            labels.append("%s: %s" % (r["basin"], place))
+            statuses.append(status)
+        else:
+            status[:] = np.nan
 
         shown = place == "Salem"
         style = {"group": place, "hidden": not shown}
         flowTraces.append(("%s flow" % place, flow, "y1", dict(style, color=color, width=2)))
+        if local is not None:
+            flowTraces.append(("%s local flow" % place, local.reindex(dates), "y1",
+                               dict(style, color=color, width=1, dash="dot")))
+        if cumLocal is not None:
+            flowTraces.append(("%s cumulative local flow" % place, cumLocal.reindex(dates), "y1",
+                               dict(style, color=color, width=1.2)))
         # Every distinct limit: the reservoirs regulate to different ones at
         # different times. Limits with the same flow share one line.
         limitLines = cpLimitLines(r)
-        dashes = ["dash", "dashdot", "longdash", "longdashdot"]
+        dashes = ["dash", "dashdot", "longdash", "12px,4px,2px,4px,2px,4px"]
         for j, (label, value) in enumerate(limitLines):
             flowTraces.append(("%s %s (%s cfs)" % (place, label, "{:,.0f}".format(value)),
                                pd.Series(value, index=dates), "y1",
@@ -936,7 +899,10 @@ def controlPointStatus(groups, dates, limits, minTargets, inControl):
         # The daily table: the point's flow and limits, then each upstream
         # reservoir's release and the rules in control there
         keys = [place.lower()] + (["mainstemflowaug"] if place in ("Salem", "Albany") else [])
-        cols = {"Flow": flow.round(0), "Minimum": minLine.round(0) if minLine is not None else np.nan}
+        cols = {"Flow": flow.round(0),
+                "Local": local.reindex(dates).round(0) if local is not None else np.nan,
+                "Cumulative local": cumLocal.reindex(dates).round(0) if cumLocal is not None else np.nan,
+                "Minimum": minLine.round(0) if minLine is not None else np.nan}
         for label, value in limitLines:
             cols[label[0].upper() + label[1:]] = pd.Series(value, index=dates)
         codes = {"Flow": status.map({k: c for k, _, _, c in CP_STATUS}).fillna(0).astype(int)}
@@ -956,6 +922,8 @@ def controlPointStatus(groups, dates, limits, minTargets, inControl):
 
         over = status == "over"
         under = status == "under"
+        if maxLine is None and minLine is None:
+            continue
         rows.append({"basin": r["basin"], "control_point": place, "junction": junction,
                      "maximum_cfs": maxFlow, "days_above_max": _days(over),
                      "largest_excess_cfs": round((flow - maxLine)[over].max(), 0) if over.any() else 0,
@@ -1378,7 +1346,7 @@ def main(runDir=None, startDate=None, endDate=None):
     if not os.path.isdir(plotDir):
         os.makedirs(plotDir)
     # Per-check plots from earlier versions of this script
-    for old in ("FIRO_SPACE.html", "MinFlow.html", "Diversions.html", "Reservoirs.html"):
+    for old in ("FIRO_SPACE.html", "MinFlow.html", "Diversions.html", "Reservoirs.html", "ControlPoints.html"):
         if os.path.isfile(os.path.join(plotDir, old)):
             os.remove(os.path.join(plotDir, old))
 
@@ -1455,7 +1423,6 @@ def main(runDir=None, startDate=None, endDate=None):
             "here; RuleControl_summary.csv has them all." % (FLOW_TOL_CFS, 100 * FLOW_TOL_FRAC))
     cpLimits = loadControlPointLimits()
     cpMins = mainstemMinTargets(files, dates)
-    cpPlots = controlPointPlots(groups, dates, cpLimits, cpMins)
     plotFiles = [("Reservoir: %s" % n, reservoirFile(n)) for n in names]
     status = controlPointStatus(groups, dates, cpLimits, cpMins, inControl) if cpLimits else None
     if status:
@@ -1471,10 +1438,6 @@ def main(runDir=None, startDate=None, endDate=None):
             cpSummary, "Flow at each control point against its maximum (the regulation goal, or the "
             "action flow where none is given, from control_point_limits.csv) and, at Salem and Albany, "
             "the lowest BiOp minimum for the day across water year types.")
-    if cpPlots:
-        dropdownFigure("Control point", cpPlots, ["Flow (cfs)"]).write_html(
-            os.path.join(plotDir, "ControlPoints.html"), include_plotlyjs="directory")
-        plotFiles.append(("Control point flows: total, local and cumulative local", "ControlPoints.html"))
 
     writeReport(runDir, runInfo, configRoot, files, results, plotFiles)
     print("\nReport: %s" % os.path.join(runDir, "report.html"))
