@@ -1,0 +1,25 @@
+# Settings for run_model_check.py. One "key: value" per line; # starts a comment.
+
+# The simulation folder: the one holding simulation.dss, inside the
+# watershed's rss folder.
+simulation_folder: C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_09_24_ScriptCleanup\rss\Script_Cleanup_Test
+
+# The alternative to check, as named in ResSim. Its results are the DSS
+# records whose F part starts with this name (Temp1Day -> Temp1Day--0).
+alternative: Temp1Day
+
+# Which steps to run, true or false.
+#   catalog  list every record in simulation.dss (only needed to find new records)
+#   extract  pull the results into CSVs: needed after every model run
+#   check    compare with the configs, and write the report and plots. With
+#            extract false, it checks the newest extract of this simulation
+#            and alternative, e.g. after changing a config file or a setting
+#            in check_model.py
+run_catalog: false
+run_extract: true
+run_check: true
+
+# Optional: check only part of the run (YYYY-MM-DD). Blank means all of it,
+# after ResSim's lookback days.
+start_date:
+end_date:

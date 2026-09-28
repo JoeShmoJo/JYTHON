@@ -6,15 +6,23 @@ plotly), not inside ResSim.
 
 ## Steps
 
+Set the simulation folder, the alternative and the steps to run in
+`model_check_config.txt`, then:
+
 ```powershell
 conda activate hydro39
-python model_check\extract_dss.py "C:\...\rss\<simulation>\simulation.dss"
-python model_check\check_model.py
+python model_check\run_model_check.py
 ```
 
-Or paste the path into `DSS_PATH` at the top of `extract_dss.py` and run it from
-Jupyter. `catalog_dss.py` lists every series in a DSS file, for choosing what
-to extract.
+Or open `run_model_check.py` in Jupyter or VS Code and run it. The steps:
+
+| Step | Does | Run it when |
+|---|---|---|
+| `run_catalog` | lists every record in `simulation.dss` | looking for records to add to the extract |
+| `run_extract` | pulls the alternative's results into CSVs | after every model run |
+| `run_check` | compares with the configs; writes the report and plots | always. With extract off, it checks the newest extract of that simulation and alternative, e.g. after changing a config file |
+
+Each script also still runs on its own (`DSS_PATH` / `RUN_DIR` at the top).
 
 ## What you get
 
@@ -27,6 +35,7 @@ to extract.
 | `junctions.csv` | local, cumulative local and total flow where a local flow is defined |
 | `diversions.csv` | what each diversion moved, and what DiversionFromCSV asked for |
 | `rules.csv` | the value every reservoir rule returned each day |
+| `priority.csv` | every rule's priority each day, i.e. its place in the rule stack |
 | `*_series.csv` | the DSS pathname and units behind every column |
 | `run_info.json` | simulation, alternative and watershed, used by `check_model.py` |
 
@@ -101,6 +110,14 @@ MinFlowPlusWithdrawal runs at that reservoir in this alternative, and
 `other_rule` compares any other min-flow rule to the same numbers.
 
 **Diversions.** Whether DiversionFromCSV wrote the config value to its rule.
+
+**Rule stack.** Each reservoir's rules in stack order, top first, from the
+priority ResSim saves for every rule every step (`<reservoir>-<rule>-P`,
+Penalty-PRIORITY), so no Jython export is needed. A range means the priority
+changed, usually with the zone. The reservoir page lists rules in the same
+order and shows each one's priority in the table header. It assumes a lower
+number is higher in the stack (`PRIORITY_LOW_IS_TOP` in `check_model.py`):
+check the first run against the operation set.
 
 **Conflicts.** For every rule, how many days it was capped or held up, by
 what, and the total volume between what it wanted and what was released.
