@@ -57,6 +57,7 @@ import json
 import os
 import re
 import sys
+from html import escape as html_escape
 
 import numpy as np
 import pandas as pd
@@ -826,6 +827,21 @@ def cpLimitLines(r):
     return [(" / ".join(labels), v) for v, labels in sorted(byValue.items())]
 
 
+def ruleCell(text):
+    """
+    " · " and the rules in control. When several rules share the release that
+    step (a min and a max at the same value, say), all are listed, in stack
+    order when the model report gave one: the first, highest in the stack,
+    bold, the rest grey.
+    """
+    if not text:
+        return ""
+    names = [html_escape(n) for n in text.split("; ")]
+    first = "<b>%s</b>" % names[0]
+    rest = ("<span style='color:#999'>; %s</span>" % "; ".join(names[1:])) if len(names) > 1 else ""
+    return " · " + first + rest
+
+
 def controlPointStatus(groups, dates, limits, minTargets, inControl):
     """
     For every control point in control_point_limits.csv, in its order (basin
@@ -906,6 +922,11 @@ def controlPointStatus(groups, dates, limits, minTargets, inControl):
         for label, value in limitLines:
             cols[label[0].upper() + label[1:]] = pd.Series(value, index=dates)
         codes = {"Flow": status.map({k: c for k, _, _, c in CP_STATUS}).fillna(0).astype(int)}
+        # The limit the flow is over shades red too, the minimum blue when under it
+        for label, value in limitLines:
+            codes[label[0].upper() + label[1:]] = (flow > value + flowTol(pd.Series(value, index=dates))).map({True: 2, False: 0})
+        if minLine is not None:
+            codes["Minimum"] = ((minLine > 0) & (flow < minLine - flowTol(minLine))).map({True: 3, False: 0})
         for res in [x.strip() for x in str(r.get("reservoirs", "")).split(";") if x.strip()]:
             out = col(groups, "reservoirs", "%s-Pool Flow-OUT" % res)
             if out is None:
@@ -913,7 +934,7 @@ def controlPointStatus(groups, dates, limits, minTargets, inControl):
             out = out.reindex(dates)
             ruleText = inControl.get(res, pd.Series("", index=dates)).reindex(dates).fillna("")
             cols[res] = out.map(lambda v: "" if pd.isna(v) else "{:,.0f}".format(v)) + \
-                ruleText.map(lambda t: (" · " + t) if t else "")
+                ruleText.map(ruleCell)
             forHere = ruleText.str.lower().map(lambda t: any(k in t for k in keys))
             codes[res] = forHere.map({True: 6, False: 0})
         t = pd.DataFrame(cols, index=dates)
