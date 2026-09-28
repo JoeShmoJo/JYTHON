@@ -1475,6 +1475,11 @@ def main(runDir=None, startDate=None, endDate=None, headroom=None):
     plotDir = os.path.join(runDir, "plots")
     if not os.path.isdir(plotDir):
         os.makedirs(plotDir)
+    # The pages load plotly.min.js from beside them. to_html only links to it,
+    # so write it here, fresh each run to match the plotly that made the pages
+    from plotly.offline import get_plotlyjs
+    with open(os.path.join(plotDir, "plotly.min.js"), "w", encoding="utf-8") as fh:
+        fh.write(get_plotlyjs())
     # Per-check plots from earlier versions of this script
     for old in ("FIRO_SPACE.html", "MinFlow.html", "Diversions.html", "Reservoirs.html", "ControlPoints.html"):
         if os.path.isfile(os.path.join(plotDir, old)):
