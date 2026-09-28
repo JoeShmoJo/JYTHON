@@ -56,6 +56,11 @@ DAILY_AS_DATE = True
 # script (or the current folder, when run somewhere that cannot tell).
 OUTPUT_ROOT = r""
 
+# Where to look for modelReport_<alternative>.json (the rule stack), relative
+# to the simulation folder, in order: the watershed's rss folder, then the
+# simulation folder itself
+MODEL_REPORT_DIRS = ["..", "."]
+
 # Each group becomes one CSV. Each rule selects series by:
 #   b             regular expression the whole B part must match
 #   c             list of C parts to take
@@ -249,21 +254,25 @@ def fPartFor(pathnames, alternative):
 
 def copyModelReport(simDir, alternative, outDir):
     """
-    Alternative_Setup writes modelReport_<alternative>.json next to
-    simulation.dss on every compute: the active operation set's rules, zone by
-    zone, in stack order. Copy it along as modelReport.json.
+    Alternative_Setup writes modelReport_<alternative>.json on every compute:
+    the active operation set's rules, zone by zone, in stack order. Look for
+    it in MODEL_REPORT_DIRS (relative to the simulation folder) and copy it
+    along as modelReport.json. A watershed without it just gets no rule stack.
     """
-    reports = glob.glob(os.path.join(simDir, "modelReport_*.json"))
-    exact = os.path.join(simDir, "modelReport_%s.json" % alternative)
-    if os.path.isfile(exact):
-        source = exact
-    elif len(reports) == 1:
-        source = reports[0]
-    else:
-        print("No modelReport_%s.json in %s: the rule stack will not be shown" % (alternative, simDir))
-        return
-    shutil.copyfile(source, os.path.join(outDir, "modelReport.json"))
-    print("Rule stack from %s" % source)
+    for rel in MODEL_REPORT_DIRS:
+        folder = os.path.normpath(os.path.join(simDir, rel))
+        exact = os.path.join(folder, "modelReport_%s.json" % alternative)
+        reports = glob.glob(os.path.join(folder, "modelReport_*.json"))
+        source = exact if os.path.isfile(exact) else (reports[0] if len(reports) == 1 else None)
+        if source:
+            try:
+                shutil.copyfile(source, os.path.join(outDir, "modelReport.json"))
+                print("Rule stack from %s" % source)
+            except (IOError, OSError) as e:
+                print("Could not copy %s (%s): the rule stack will not be shown" % (source, e))
+            return
+    print("No modelReport_%s.json found (looked in %s): the rule stack will not be shown"
+          % (alternative, ", ".join(os.path.normpath(os.path.join(simDir, r)) for r in MODEL_REPORT_DIRS)))
 
 
 def main(dssPath=None, alternative=None):

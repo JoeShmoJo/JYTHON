@@ -112,9 +112,12 @@ MinFlowPlusWithdrawal runs at that reservoir in this alternative, and
 **Diversions.** Whether DiversionFromCSV wrote the config value to its rule.
 
 **Rule stack.** Each reservoir's rules in each zone, top of the stack first,
-from `modelReport_<alternative>.json`, which `Alternative_Setup` writes next to
-`simulation.dss` on every compute (the active operation set, zone by zone). The
-extract copies it in as `modelReport.json`, and pulls each zone's top
+from `modelReport_<alternative>.json`, which `Alternative_Setup` writes on
+every compute (the active operation set, zone by zone). The extract looks for it
+in the watershed's `rss` folder, then the simulation folder
+(`MODEL_REPORT_DIRS` in `extract_dss.py`), and copies it in as
+`modelReport.json`; without it the check runs as before, just with no stack. It
+also pulls each zone's top
 elevation (`<reservoir>-<zone> Elev-ZONE`) so the check knows which zone, and
 so which stack, applied each day. The reservoir page orders rules by the stack
 of the zone the pool spent longest in, puts a `Zone` column in the table, shows
