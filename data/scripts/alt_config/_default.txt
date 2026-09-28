@@ -92,3 +92,10 @@ minFlowTargetCSV_Albany: "scripts/externalSVs/MinFlowAlbany_2008BiOp.csv"
 # IRRM Elevations taken from Teacups 03Sep2025
 irrmTargetElevs: {"Detroit":1558.5, "Hills Creek":1531, "Lookout Point":921, "Cougar":1685}
 irrmActive: {"Detroit":true, "Hills Creek":true, "Lookout Point":true, "Cougar":true}
+
+###########################################
+#Draft to RC
+# true or false: turns the Draft to RC rule on or off wherever it is attached.
+# For some reservoirs only, give one true/false each instead, e.g.
+#   draftToRCActive: {"Detroit":false, "Cougar":true}
+draftToRCActive: true

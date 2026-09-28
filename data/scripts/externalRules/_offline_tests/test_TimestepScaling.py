@@ -153,6 +153,8 @@ class AltSetup(object):
         self.vals = vals
     def varGet(self, k):
         return self.vals[k]
+    def varExists(self, k):
+        return k in self.vals
 
 class Network(object):
     def __init__(self, ts=None, byResv=None, alt=None):
@@ -346,6 +348,21 @@ check("daily: inflow + excess spread over the lookahead", draft(DAILY), want, to
 check("hourly: the same", draft(HOURLY), want, tol=1e-6)
 check("daily: below the land-on-the-curve-now release, so it binds",
       draft(DAILY) < 1000.0 + 3000.0 / CFSDAY_TO_AF, True)
+
+section("DraftToRC can be switched off per reservoir")
+def draftWith(alt):
+    net = Network(ts={("Pool", "Flow-IN"): TS(cur=1000.0, at=lambda t: 1000.0),
+                      ("Pool", "Stor"): TS(prev=403000.0),
+                      ("Rule Curve", "Stor-ZONE"): TS(cur=400000.0, at=lambda t: 400000.0)}, alt=alt)
+    rule = Rule("Detroit")
+    DraftToRC.initRuleScript(rule, net)
+    return DraftToRC.runRuleScript(rule, net, RTS(at(2023, 1, 15), DAILY))
+check("no draftToRCActive: on", draftWith({}) is not None, True)
+check("true: on", draftWith({"draftToRCActive": True}) is not None, True)
+check("false: no effect", draftWith({"draftToRCActive": False}), None)
+check("reservoir not listed: on", draftWith({"draftToRCActive": {"Cougar": False}}) is not None, True)
+check("listed true: on", draftWith({"draftToRCActive": {"Detroit": True}}) is not None, True)
+check("listed false: no effect", draftWith({"draftToRCActive": {"Detroit": False}}), None)
 
 for path in (SPRING_CSV, DRAWDOWN_CSV):
     if os.path.exists(path):
