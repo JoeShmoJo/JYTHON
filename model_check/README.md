@@ -24,6 +24,15 @@ Or open `run_model_check.py` in Jupyter or VS Code and run it. The steps:
 
 Each script also still runs on its own (`DSS_PATH` / `RUN_DIR` at the top).
 
+## Control point limits
+
+`control_point_limits.csv` holds the flood flows at each control point (action
+or bankfull, flood and major flood) and the regulation goal, from Table 2,
+"Flood regulation goals at Willamette projects", with each station matched to
+its junction in the model. ResSim does not save control point limits in the
+results, so the control point checks read them from here. Update it when the
+rating tables or regulation goals change.
+
 ## What you get
 
 `extract_dss.py` writes `output/<simulation>_<alternative>_<date>/`:
