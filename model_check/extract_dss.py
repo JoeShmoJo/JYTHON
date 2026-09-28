@@ -23,6 +23,8 @@ script. Run catalog_dss.py to see what a file holds.
 """
 
 import datetime
+import glob
+import shutil
 import json
 import os
 import re
@@ -64,7 +66,9 @@ OUTPUT_ROOT = r""
 SELECTIONS = OrderedDict([
     ("reservoirs", [
         {"b": r".+-Pool", "c": ["Flow-IN", "Flow-OUT", "Elev"]},
-        {"b": r".+-Rule Curve", "c": ["Elev-ZONE"]},
+        # The top of each zone ("<reservoir>-<zone>"), to tell which zone the
+        # pool was in and so which rule stack applied
+        {"b": r".+", "c": ["Elev-ZONE"], "rule_of_reservoir": True},
     ]),
     # The combined min and max limit ResSim applied at each reservoir, each
     # step, plus the mainstem minimum flow targets
@@ -89,12 +93,6 @@ SELECTIONS = OrderedDict([
     # curve asks for; the inactive zone's and the [DUMMY] setup rules are left out.
     ("rules", [
         {"b": r".+", "c": ["Flow-SPEC", "Flow-MIN", "Flow-MAX"],
-         "rule_of_reservoir": True, "exclude": r"Inactive-ZBOp Rule|\[DUMMY\]"},
-    ]),
-    # Each rule's place in the reservoir's rule stack, every step: ResSim saves
-    # it as "<reservoir>-<rule>-P", C part Penalty-PRIORITY
-    ("priority", [
-        {"b": r".+-P", "c": ["Penalty-PRIORITY"],
          "rule_of_reservoir": True, "exclude": r"Inactive-ZBOp Rule|\[DUMMY\]"},
     ]),
 ])
@@ -249,6 +247,25 @@ def fPartFor(pathnames, alternative):
     return max(counts, key=counts.get)
 
 
+def copyModelReport(simDir, alternative, outDir):
+    """
+    Alternative_Setup writes modelReport_<alternative>.json next to
+    simulation.dss on every compute: the active operation set's rules, zone by
+    zone, in stack order. Copy it along as modelReport.json.
+    """
+    reports = glob.glob(os.path.join(simDir, "modelReport_*.json"))
+    exact = os.path.join(simDir, "modelReport_%s.json" % alternative)
+    if os.path.isfile(exact):
+        source = exact
+    elif len(reports) == 1:
+        source = reports[0]
+    else:
+        print("No modelReport_%s.json in %s: the rule stack will not be shown" % (alternative, simDir))
+        return
+    shutil.copyfile(source, os.path.join(outDir, "modelReport.json"))
+    print("Rule stack from %s" % source)
+
+
 def main(dssPath=None, alternative=None):
     """
     Extract one alternative's results to CSV and return the output folder.
@@ -327,6 +344,7 @@ def main(dssPath=None, alternative=None):
                      os.path.getsize(outPath) / 1e6, outPath))
     finally:
         fid.close()
+    copyModelReport(simDir, alternative, outDir)
     return outDir
 
 

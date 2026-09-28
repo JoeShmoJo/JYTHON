@@ -98,11 +98,6 @@ MINFLOW_TARGET_MET_AT = {"Green Peter": "Foster"}
 # Other min-flow rules worth comparing to the same config, by name fragment
 MINFLOW_OTHER_RULE_PATTERN = "MinTrib"
 
-# ResSim saves each rule's priority ("<reservoir>-<rule>-P", Penalty-PRIORITY).
-# True if a lower number is higher in the stack. Check against the operation
-# set: the Rule stack table in the report lists rules top first.
-PRIORITY_LOW_IS_TOP = True
-
 # A max limit at or above this is "no limit" (ResSim reports outlet capacity)
 NO_LIMIT_CFS = 1.0e5
 
@@ -154,7 +149,7 @@ def findConfigRoot(runInfo):
 def loadGroups(runDir):
     """{group: DataFrame indexed by date} for every CSV extract_dss.py wrote."""
     groups = {}
-    for name in ("reservoirs", "limits", "junctions", "diversions", "rules", "priority"):
+    for name in ("reservoirs", "limits", "junctions", "diversions", "rules"):
         path = os.path.join(runDir, name + ".csv")
         if os.path.isfile(path):
             groups[name] = pd.read_csv(path, index_col=0, parse_dates=True)
@@ -450,54 +445,106 @@ def reservoirRules(groups, name, dates):
                     out.append(("Guide release, %s zone" % zone.group(1), "guide", values))
                 else:
                     out.append((label, kind, values))
-    stack = rulePriorities(groups, name, dates, [r[0] for r in out])
-    if stack:
-        # In stack order, top first, when ResSim saved each rule's priority
-        rank = {label: p.median() for label, p in stack.items()}
-        sign = 1 if PRIORITY_LOW_IS_TOP else -1
-        return sorted(out, key=lambda r: sign * rank.get(r[0], np.inf * sign))
+    zones = groups.get("stack", {}).get(name)
+    if zones:
+        # In stack order, top first: the zone the pool spent longest in, then
+        # rules only in other zones. Guide releases last, as what the
+        # reservoir does when no rule acts.
+        order = zoneOrder(groups, name, dates)
+        def key(rule):
+            if rule[1] == "guide":
+                return (2, 0)
+            for i, zone in enumerate(order):
+                pos = stackPosition(zones, zone, rule[0])
+                if pos:
+                    return (i, pos)
+            return (1, 999)
+        return sorted(out, key=key)
     # Otherwise guide releases first: what the reservoir does when nothing else acts
     return sorted(out, key=lambda r: r[1] != "guide")
 
 
-def rulePriorities(groups, name, dates, labels):
+def loadStack(runDir):
     """
-    {label: Series} of each rule's priority every step, from ResSim's
-    "<reservoir>-<rule>-P  Penalty-PRIORITY" records. Missing where the rule is
-    not in the stack of the zone the pool was in. Empty without priority.csv.
+    {reservoir: [(zone, [rules top first])]} from the modelReport JSON that
+    Alternative_Setup writes next to simulation.dss on every compute, and
+    extract_dss.py copies into the output folder. Zones run bottom up. The
+    "<zone>-ZBOp Rule" guide rules and [DUMMY] setup rules are left out.
     """
-    table = groups.get("priority")
-    if table is None:
+    path = os.path.join(runDir, "modelReport.json")
+    if not os.path.isfile(path):
         return {}
-    out = {}
-    for label in labels:
-        zone = re.match(r"Guide release, (.+) zone$", label)
-        rule = "%s-%s-ZBOp Rule" % (name, zone.group(1)) if zone else label
-        c = "%s-%s-P Penalty-PRIORITY" % (name, rule)
-        if c in table.columns:
-            values = table[c].reindex(dates)
-            if values.notna().any():
-                out[label] = values
-    return out
+    with open(path, encoding="utf-8") as fh:
+        report = json.load(fh)
+    stack = {}
+    for resv in report.get("operations", []):
+        zones = []
+        for zone in resv.get("zones", []):
+            rules = [r for r in zone.get("rules", [])
+                     if not r.endswith("-ZBOp Rule") and not r.startswith("[DUMMY]")]
+            zones.append((zone.get("zone_name", ""), rules))
+        stack[resv.get("reservoir", "")] = zones
+    return stack
+
+
+def stackPosition(zones, zone, label):
+    """1-based place of a rule in a zone's stack, or None. Results name some
+    rules with their outlet ("Dam-Max Evacuation Release"); the stack does not."""
+    for name, rules in zones:
+        if name != zone:
+            continue
+        for i, rule in enumerate(rules):
+            if label == rule or label.endswith("-" + rule):
+                return i + 1
+    return None
+
+
+def activeZone(groups, name, dates):
+    """
+    The zone the pool was in each step, from the previous step's elevation and
+    each zone's top ("<reservoir>-<zone> Elev-ZONE"): the lowest zone whose top
+    is above the pool. None without the stack or the zone elevations.
+    """
+    zones = groups.get("stack", {}).get(name)
+    elev = col(groups, "reservoirs", "%s-Pool Elev" % name)
+    if not zones or elev is None:
+        return None
+    elev = elev.reindex(dates)
+    prev = elev.shift(1).fillna(elev)
+    zone = pd.Series(zones[-1][0], index=dates, dtype=object)
+    for zname, _ in reversed(zones[:-1]):
+        top = col(groups, "reservoirs", "%s-%s Elev-ZONE" % (name, zname))
+        if top is None:
+            return None
+        zone[prev <= top.reindex(dates)] = zname
+    return zone
+
+
+def zoneOrder(groups, name, dates):
+    """Zone names, the one the pool spent longest in first."""
+    zones = groups.get("stack", {}).get(name, [])
+    active = activeZone(groups, name, dates)
+    counts = active.value_counts() if active is not None else pd.Series(dtype=int)
+    return sorted([z for z, _ in zones], key=lambda z: -counts.get(z, 0))
 
 
 def ruleStack(groups, dates):
-    """One row per rule per reservoir, in stack order, from the saved priorities."""
+    """One row per rule per zone per reservoir, top of the stack first."""
     rows = []
     for name in reservoirNames(groups):
-        rules = reservoirRules(groups, name, dates)
-        stack = rulePriorities(groups, name, dates, [r[0] for r in rules])
-        position = 0
-        for label, kind, values in rules:
-            p = stack.get(label)
-            if p is None:
+        zones = groups.get("stack", {}).get(name)
+        if not zones:
+            continue
+        active = activeZone(groups, name, dates)
+        labels = [r[0] for r in reservoirRules(groups, name, dates)]
+        for zone, rules in reversed(zones):
+            if not rules:
                 continue
-            position += 1
-            lo, hi = p.min(), p.max()
-            rows.append({"reservoir": name, "position": position, "rule": label, "saved_as": kind,
-                         "priority": p.median(),
-                         "priority_range": ("%g" % lo) if lo == hi else "%g to %g" % (lo, hi),
-                         "in_stack_pct": _pct(p.notna().sum(), len(p))})
+            share = _pct((active == zone).sum(), len(active)) if active is not None else np.nan
+            for i, rule in enumerate(rules):
+                rows.append({"reservoir": name, "zone": zone, "pool_in_zone_pct": share,
+                             "position": i + 1, "rule": rule,
+                             "in_results": "yes" if any(l == rule or l.endswith("-" + rule) for l in labels) else "no"})
     return pd.DataFrame(rows)
 
 
@@ -602,7 +649,15 @@ def reservoirPlots(groups, dates, extras):
         rules = reservoirRules(groups, name, dates)
         inflow = inflow.reindex(dates) if inflow is not None else pd.Series(np.nan, index=dates)
         table, statuses, reasons = decideReleases(dates, elev, inflow, out, minLim, maxLim, rules)
-        decisions[name] = (table, statuses)
+        zone = activeZone(groups, name, dates)
+        inZone = {}
+        if zone is not None:
+            table.insert(1, "Zone", zone)
+            zones = groups["stack"][name]
+            for label, kind, v, st, text in statuses:
+                if kind != "guide":
+                    inZone[label] = zone.map(lambda z: stackPosition(zones, z, label) is not None)
+        decisions[name] = (table, statuses, inZone)
 
         traces = [("Pool elevation", elev, "y1", {"color": "#1f77b4", "group": "elev"})]
         if ruleCurve is not None:
@@ -800,6 +855,7 @@ th{font-weight:600;text-align:right;min-width:52px;max-width:110px}
 td{text-align:right;white-space:nowrap}
 td:first-child,th:first-child{text-align:left;min-width:80px}
 td.s1{background:#dff2df} td.s2{background:#fbdcdc} td.s3{background:#dce8f7} td.s4{background:#eeeeee}
+td.s5{color:#c4c4c4}
 tr.picked td{background:#ffe08a}
 tr:hover td{background:#eef4ff;cursor:pointer}
 </style></head><body>
@@ -808,7 +864,8 @@ tr:hover td{background:#eef4ff;cursor:pointer}
 <span><span style="background:#dff2df;padding:0 4px">in control</span>
 <span style="background:#fbdcdc;padding:0 4px">wanted more, capped</span>
 <span style="background:#dce8f7;padding:0 4px">wanted less, held up</span>
-<span style="background:#eeeeee;padding:0 4px">set by another rule</span></span>
+<span style="background:#eeeeee;padding:0 4px">set by another rule</span>
+<span style="color:#aaa;padding:0 4px">not in this zone's stack</span></span>
 <button id="pop" class="plotonly">Open table in its own window</button>
 <span class="plotonly" style="color:#666">Click a day on the plot to find it in the table; click a row to mark it on the plot.</span></div>
 %(plot)s
@@ -833,7 +890,7 @@ function fmt(v) { return (typeof v === "number") ? v.toLocaleString(undefined, {
 function drawTable() {
   var t = TABLES[current], cols = t.columns, html = "<tr>" + cols.map(function (c, j) {
     var p = t.priority && t.priority[j];
-    return "<th>" + c + (p ? "<br><span style='color:#888;font-weight:400'>priority " + p + "</span>" : "") + "</th>";
+    return "<th>" + c + (p ? "<br><span style='color:#888;font-weight:400'>" + p + "</span>" : "") + "</th>";
   }).join("") + "</tr>";
   t.data.forEach(function (r, i) {
     var st = t.status[i];
@@ -927,18 +984,28 @@ def writeReservoirPage(path, title, plots, tables, allNames=None, groups=None):
     plotHtml = fig.to_html(full_html=False, include_plotlyjs="directory", div_id="plot")
     codes = {key: i + 1 for i, (key, _, _) in enumerate(STATUS_STYLE)}
     data = {}
-    for name, (table, statuses) in tables.items():
+    zoneAbbr = lambda z: "".join(w[0] for w in z.split()).upper()
+    for name, (table, statuses, inZone) in tables.items():
         t = table.reset_index()
         t["Date"] = _stamps(pd.DatetimeIndex(t["Date"]))
         # Each rule's status that day shades its cell, as in the decisions panel
         status = pd.DataFrame(0, index=table.index, columns=t.columns)
         for label, kind, v, st, text in statuses:
-            status[label] = st.map(codes).fillna(0).astype(int).values
+            code = st.map(codes).fillna(0).astype(int)
+            # A rule not in the stack of the zone the pool was in is greyed out
+            if label in inZone:
+                code = code.where(inZone[label].values | (code > 0), len(codes) + 1)
+            status[label] = code.values
         t = t.astype(object).where(t.notna(), None)
-        stack = rulePriorities(groups, name, table.index, [st[0] for st in statuses]) if groups else {}
+        # Each rule's place in the stack of each zone, under its name
+        zones = (groups or {}).get("stack", {}).get(name, [])
+        places = []
+        for c in t.columns:
+            p = ["%s %d" % (zoneAbbr(z), stackPosition(zones, z, c)) for z, _ in reversed(zones)
+                 if stackPosition(zones, z, c)]
+            places.append(" · ".join(p) or None)
         data[name] = {"columns": list(t.columns), "data": t.values.tolist(),
-                      "status": status.values.tolist(),
-                      "priority": [("%g" % stack[c].median()) if c in stack else None for c in t.columns]}
+                      "status": status.values.tolist(), "priority": places}
     with open(path, "w", encoding="utf-8") as fh:
         fh.write(RESERVOIR_PAGE % {
             "title": title, "plot": plotHtml,
@@ -1037,17 +1104,19 @@ def main(runDir=None, startDate=None, endDate=None):
     ]
     results = {}
     extras = {}
+    groups["stack"] = loadStack(runDir)
     stack = ruleStack(groups, dates)
     if len(stack):
         stack.to_csv(os.path.join(runDir, "RuleStack_summary.csv"), index=False)
         results["Rule stack"] = (
-            stack, "Each reservoir's rules in stack order, top first, from the priority ResSim "
-            "saved for every rule every step (&lt;reservoir&gt;-&lt;rule&gt;-P, Penalty-PRIORITY). "
-            "A range means the priority changed, usually because the pool changed zone; in_stack_pct "
-            "is the share of steps the rule had a priority at all. Assumes a lower number is higher "
-            "in the stack (PRIORITY_LOW_IS_TOP); compare with the operation set.")
-    elif "priority" not in groups:
-        print("No priority.csv in this folder: re-run extract_dss.py to show the rule stack.")
+            stack, "Each reservoir's rules in each zone, top of the stack first, from the active "
+            "operation set in modelReport.json (written by Alternative_Setup on every compute). "
+            "pool_in_zone_pct: share of the run the pool spent in the zone, from the zone-top "
+            "elevations. in_results: whether the rule's values are in the results; a rule marked "
+            "no is in the operation set but saved nothing.")
+    else:
+        print("No modelReport.json in this folder, or no zones in it: re-run extract_dss.py "
+              "to show the rule stack.")
     for name, needs, run, note in checks:
         missing = [files[k] for k in needs if not os.path.isfile(files[k])]
         if missing:
@@ -1073,7 +1142,7 @@ def main(runDir=None, startDate=None, endDate=None):
     decisionDir = os.path.join(runDir, "release_decisions")
     if not os.path.isdir(decisionDir):
         os.makedirs(decisionDir)
-    for name, (table, _) in decisions.items():
+    for name, (table, _, _) in decisions.items():
         table.to_csv(os.path.join(decisionDir, "%s.csv" % name))
     control.to_csv(os.path.join(runDir, "RuleControl_summary.csv"), index=False)
     conflicts.to_csv(os.path.join(runDir, "Conflicts_summary.csv"), index=False)
