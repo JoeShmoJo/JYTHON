@@ -358,6 +358,8 @@ def draftWith(alt):
     DraftToRC.initRuleScript(rule, net)
     return DraftToRC.runRuleScript(rule, net, RTS(at(2023, 1, 15), DAILY))
 check("no draftToRCActive: on", draftWith({}) is not None, True)
+check("true: on", draftWith({"draftToRCActive": True}) is not None, True)
+check("false: no effect", draftWith({"draftToRCActive": False}), None)
 check("reservoir not listed: on", draftWith({"draftToRCActive": {"Cougar": False}}) is not None, True)
 check("listed true: on", draftWith({"draftToRCActive": {"Detroit": True}}) is not None, True)
 check("listed false: no effect", draftWith({"draftToRCActive": {"Detroit": False}}), None)
