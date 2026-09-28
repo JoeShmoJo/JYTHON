@@ -91,6 +91,12 @@ SELECTIONS = OrderedDict([
         {"b": r".+", "c": ["Flow-SPEC", "Flow-MIN", "Flow-MAX"],
          "rule_of_reservoir": True, "exclude": r"Inactive-ZBOp Rule|\[DUMMY\]"},
     ]),
+    # Each rule's place in the reservoir's rule stack, every step: ResSim saves
+    # it as "<reservoir>-<rule>-P", C part Penalty-PRIORITY
+    ("priority", [
+        {"b": r".+-P", "c": ["Penalty-PRIORITY"],
+         "rule_of_reservoir": True, "exclude": r"Inactive-ZBOp Rule|\[DUMMY\]"},
+    ]),
 ])
 
 ################################################################################
@@ -229,13 +235,33 @@ def _asDates(index):
     return index
 
 
-def main():
-    dssPath = DSS_PATH
-    # Jupyter and VS Code's interactive window pass their own "--f=kernel.json"
-    # argument, so only a bare argument counts as a path
-    args = [a for a in sys.argv[1:] if not a.startswith("-")]
-    if args:
-        dssPath = args[0]
+def fPartFor(pathnames, alternative):
+    """The F part of an alternative's results: the most common one that starts with its name."""
+    counts = {}
+    for p in pathnames:
+        parts = _splitPath(p)
+        if parts and parts[5].lower().startswith(alternative.lower()):
+            counts[parts[5]] = counts.get(parts[5], 0) + 1
+    if not counts:
+        found = sorted(set(_splitPath(p)[5] for p in pathnames if _splitPath(p)))
+        sys.exit("No results for alternative %r in this DSS file. F parts found:\n  %s"
+                 % (alternative, "\n  ".join(found[:40])))
+    return max(counts, key=counts.get)
+
+
+def main(dssPath=None, alternative=None):
+    """
+    Extract one alternative's results to CSV and return the output folder.
+    run_model_check.py passes dssPath and alternative; otherwise DSS_PATH or
+    the command line, and F_PART or the most common F part.
+    """
+    if dssPath is None:
+        dssPath = DSS_PATH
+        # Jupyter and VS Code's interactive window pass their own "--f=kernel.json"
+        # argument, so only a bare argument counts as a path
+        args = [a for a in sys.argv[1:] if not a.startswith("-")]
+        if args:
+            dssPath = args[0]
     dssPath = dssPath.strip().strip('"')
     if not dssPath:
         sys.exit("No DSS file given. Paste the path to simulation.dss into "
@@ -250,11 +276,14 @@ def main():
     fid = HecDss.Open(dssPath)
     try:
         pathnames = fid.getPathnameList("/*/*/*/*/*/*/", sort=1)
-        fPart = F_PART or mostCommonF(pathnames)
+        if alternative:
+            fPart = fPartFor(pathnames, alternative)
+        else:
+            fPart = F_PART or mostCommonF(pathnames)
         series = groupByseries(pathnames, fPart)
         print("F part %s: %d series in %s" % (fPart, len(series), dssPath))
 
-        alternative = alternativeName(fPart)
+        alternative = alternative or alternativeName(fPart)
         today = datetime.date.today().isoformat()
         outDir = os.path.join(_outputRoot(), "%s_%s_%s" % (simulation, alternative, today))
         if not os.path.isdir(outDir):
@@ -298,6 +327,7 @@ def main():
                      os.path.getsize(outPath) / 1e6, outPath))
     finally:
         fid.close()
+    return outDir
 
 
 if __name__ == "__main__":

@@ -98,6 +98,11 @@ MINFLOW_TARGET_MET_AT = {"Green Peter": "Foster"}
 # Other min-flow rules worth comparing to the same config, by name fragment
 MINFLOW_OTHER_RULE_PATTERN = "MinTrib"
 
+# ResSim saves each rule's priority ("<reservoir>-<rule>-P", Penalty-PRIORITY).
+# True if a lower number is higher in the stack. Check against the operation
+# set: the Rule stack table in the report lists rules top first.
+PRIORITY_LOW_IS_TOP = True
+
 # A max limit at or above this is "no limit" (ResSim reports outlet capacity)
 NO_LIMIT_CFS = 1.0e5
 
@@ -149,7 +154,7 @@ def findConfigRoot(runInfo):
 def loadGroups(runDir):
     """{group: DataFrame indexed by date} for every CSV extract_dss.py wrote."""
     groups = {}
-    for name in ("reservoirs", "limits", "junctions", "diversions", "rules"):
+    for name in ("reservoirs", "limits", "junctions", "diversions", "rules", "priority"):
         path = os.path.join(runDir, name + ".csv")
         if os.path.isfile(path):
             groups[name] = pd.read_csv(path, index_col=0, parse_dates=True)
@@ -445,8 +450,55 @@ def reservoirRules(groups, name, dates):
                     out.append(("Guide release, %s zone" % zone.group(1), "guide", values))
                 else:
                     out.append((label, kind, values))
-    # Guide releases first: they are what the reservoir does when nothing else acts
+    stack = rulePriorities(groups, name, dates, [r[0] for r in out])
+    if stack:
+        # In stack order, top first, when ResSim saved each rule's priority
+        rank = {label: p.median() for label, p in stack.items()}
+        sign = 1 if PRIORITY_LOW_IS_TOP else -1
+        return sorted(out, key=lambda r: sign * rank.get(r[0], np.inf * sign))
+    # Otherwise guide releases first: what the reservoir does when nothing else acts
     return sorted(out, key=lambda r: r[1] != "guide")
+
+
+def rulePriorities(groups, name, dates, labels):
+    """
+    {label: Series} of each rule's priority every step, from ResSim's
+    "<reservoir>-<rule>-P  Penalty-PRIORITY" records. Missing where the rule is
+    not in the stack of the zone the pool was in. Empty without priority.csv.
+    """
+    table = groups.get("priority")
+    if table is None:
+        return {}
+    out = {}
+    for label in labels:
+        zone = re.match(r"Guide release, (.+) zone$", label)
+        rule = "%s-%s-ZBOp Rule" % (name, zone.group(1)) if zone else label
+        c = "%s-%s-P Penalty-PRIORITY" % (name, rule)
+        if c in table.columns:
+            values = table[c].reindex(dates)
+            if values.notna().any():
+                out[label] = values
+    return out
+
+
+def ruleStack(groups, dates):
+    """One row per rule per reservoir, in stack order, from the saved priorities."""
+    rows = []
+    for name in reservoirNames(groups):
+        rules = reservoirRules(groups, name, dates)
+        stack = rulePriorities(groups, name, dates, [r[0] for r in rules])
+        position = 0
+        for label, kind, values in rules:
+            p = stack.get(label)
+            if p is None:
+                continue
+            position += 1
+            lo, hi = p.min(), p.max()
+            rows.append({"reservoir": name, "position": position, "rule": label, "saved_as": kind,
+                         "priority": p.median(),
+                         "priority_range": ("%g" % lo) if lo == hi else "%g to %g" % (lo, hi),
+                         "in_stack_pct": _pct(p.notna().sum(), len(p))})
+    return pd.DataFrame(rows)
 
 
 def _near(a, b):
@@ -779,7 +831,10 @@ ALL.forEach(function (n) { var o = document.createElement("option"); o.text = n;
 sel.value = current;
 function fmt(v) { return (typeof v === "number") ? v.toLocaleString(undefined, {maximumFractionDigits: 2}) : (v === null ? "" : v); }
 function drawTable() {
-  var t = TABLES[current], cols = t.columns, html = "<tr>" + cols.map(function (c) { return "<th>" + c + "</th>"; }).join("") + "</tr>";
+  var t = TABLES[current], cols = t.columns, html = "<tr>" + cols.map(function (c, j) {
+    var p = t.priority && t.priority[j];
+    return "<th>" + c + (p ? "<br><span style='color:#888;font-weight:400'>priority " + p + "</span>" : "") + "</th>";
+  }).join("") + "</tr>";
   t.data.forEach(function (r, i) {
     var st = t.status[i];
     html += "<tr data-date='" + r[0] + "'>" +
@@ -855,7 +910,7 @@ def reservoirFile(name):
     return "Reservoir - %s.html" % name
 
 
-def writeReservoirPage(path, title, plots, tables, allNames=None):
+def writeReservoirPage(path, title, plots, tables, allNames=None, groups=None):
     """
     The reservoir plot and its release decision table on one linked page.
     allNames lists every reservoir for the page's list; those not on this page
@@ -880,8 +935,10 @@ def writeReservoirPage(path, title, plots, tables, allNames=None):
         for label, kind, v, st, text in statuses:
             status[label] = st.map(codes).fillna(0).astype(int).values
         t = t.astype(object).where(t.notna(), None)
+        stack = rulePriorities(groups, name, table.index, [st[0] for st in statuses]) if groups else {}
         data[name] = {"columns": list(t.columns), "data": t.values.tolist(),
-                      "status": status.values.tolist()}
+                      "status": status.values.tolist(),
+                      "priority": [("%g" % stack[c].median()) if c in stack else None for c in t.columns]}
     with open(path, "w", encoding="utf-8") as fh:
         fh.write(RESERVOIR_PAGE % {
             "title": title, "plot": plotHtml,
@@ -914,8 +971,12 @@ def writeReport(runDir, runInfo, configRoot, configFiles, results, plotFiles):
         fh.write("\n".join(parts))
 
 
-def main():
-    runDir = findRunDir()
+def main(runDir=None, startDate=None, endDate=None):
+    """
+    Check one output folder. run_model_check.py passes the folder and dates;
+    otherwise RUN_DIR (or the newest folder), START_DATE and END_DATE.
+    """
+    runDir = runDir or findRunDir()
     with open(os.path.join(runDir, "run_info.json")) as fh:
         runInfo = json.load(fh)
     configRoot = findConfigRoot(runInfo)
@@ -928,13 +989,14 @@ def main():
               "each rule was followed, not only whether the target was met.")
 
     dates = groups["reservoirs"].index
-    start = START_DATE
+    start = startDate or START_DATE
+    end = endDate or END_DATE
     if not start and "diversions" in groups:
         start = groups["diversions"].dropna(how="all").index.min()
     if start:
         dates = dates[dates >= pd.Timestamp(start)]
-    if END_DATE:
-        dates = dates[dates < pd.Timestamp(END_DATE) + pd.Timedelta(days=1)]
+    if end:
+        dates = dates[dates < pd.Timestamp(end) + pd.Timedelta(days=1)]
     global STEP_DAYS
     if len(dates) > 1:
         STEP_DAYS = float(pd.Series(dates).diff().median() / pd.Timedelta(days=1))
@@ -975,6 +1037,17 @@ def main():
     ]
     results = {}
     extras = {}
+    stack = ruleStack(groups, dates)
+    if len(stack):
+        stack.to_csv(os.path.join(runDir, "RuleStack_summary.csv"), index=False)
+        results["Rule stack"] = (
+            stack, "Each reservoir's rules in stack order, top first, from the priority ResSim "
+            "saved for every rule every step (&lt;reservoir&gt;-&lt;rule&gt;-P, Penalty-PRIORITY). "
+            "A range means the priority changed, usually because the pool changed zone; in_stack_pct "
+            "is the share of steps the rule had a priority at all. Assumes a lower number is higher "
+            "in the stack (PRIORITY_LOW_IS_TOP); compare with the operation set.")
+    elif "priority" not in groups:
+        print("No priority.csv in this folder: re-run extract_dss.py to show the rule stack.")
     for name, needs, run, note in checks:
         missing = [files[k] for k in needs if not os.path.isfile(files[k])]
         if missing:
@@ -996,7 +1069,7 @@ def main():
     for name in names:
         writeReservoirPage(os.path.join(plotDir, reservoirFile(name)),
                            "%s / %s" % (runInfo.get("simulation", ""), runInfo.get("alternative", "")),
-                           {name: resPlots[name]}, {name: decisions[name]}, names)
+                           {name: resPlots[name]}, {name: decisions[name]}, names, groups)
     decisionDir = os.path.join(runDir, "release_decisions")
     if not os.path.isdir(decisionDir):
         os.makedirs(decisionDir)

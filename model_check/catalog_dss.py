@@ -68,13 +68,15 @@ def writeCatalog(series, outPath):
                              blocks[0], blocks[-1], info["example"]])
 
 
-def main():
-    dssPath = DSS_PATH
-    # Jupyter and VS Code's interactive window pass their own "--f=kernel.json"
-    # argument, so only a bare argument counts as a path
-    args = [a for a in sys.argv[1:] if not a.startswith("-")]
-    if args:
-        dssPath = args[0]
+def main(dssPath=None):
+    """Catalog a DSS file. run_model_check.py passes dssPath; otherwise DSS_PATH or the command line."""
+    if dssPath is None:
+        dssPath = DSS_PATH
+        # Jupyter and VS Code's interactive window pass their own "--f=kernel.json"
+        # argument, so only a bare argument counts as a path
+        args = [a for a in sys.argv[1:] if not a.startswith("-")]
+        if args:
+            dssPath = args[0]
     dssPath = dssPath.strip().strip('"')
     if not dssPath:
         sys.exit("No DSS file given. Paste the path to simulation.dss into "
