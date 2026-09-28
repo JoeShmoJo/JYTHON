@@ -34,8 +34,7 @@ results, so the control point checks read them from here. Update it when the
 rating tables or regulation goals change.
 
 The control point plots (`plots/ControlPoints.html`) draw these as lines: the
-regulation goal and action stage shown, flood and major flood stage a click
-away in the legend. At Salem and Albany they also draw the BiOp minimum flow
+regulation goal, action, flood and major flood stage. At Salem and Albany they also draw the BiOp minimum flow
 targets from the tables the alternative points to (`minFlowTargetCSV_Salem`
 and `_Albany` in alt_config): one line per distinct row of the table, since
 the water year type that chooses between them is not in the results. Types
@@ -43,8 +42,11 @@ between two rows interpolate between their lines. When flow augmentation is
 on, the model's own target (`Min_Flow_Target_<place>`) is drawn as well.
 
 **Control points page** (`plots/Control points.html`): every control point in
-`control_point_limits.csv` on one plot with its maximum (dashed) and, at Salem
-and Albany, its BiOp minimums (dotted). Salem is shown to start with; a legend
+`control_point_limits.csv` on one plot with every distinct limit (regulation
+goal, action, flood and major flood stage, each its own dash style; limits with
+the same flow share a line), since the reservoirs regulate to different ones at
+different times, and, at Salem and Albany, its BiOp minimums (dotted). The
+table has a column for each limit. Salem is shown to start with; a legend
 click turns a point, with its limits, on or off. Underneath, a status bar per
 control point, grouped by basin upstream first: green in range, red above the
 maximum (the regulation goal, or the action flow where none is given), blue

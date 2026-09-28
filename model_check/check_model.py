@@ -830,8 +830,8 @@ def controlPointPlots(groups, dates, limits=None, minTargets=None):
             for key, label, color, dash, hidden in (
                     ("regulation_goal_cfs", "Regulation goal", "#d62728", "dash", False),
                     ("action_cfs", "Action stage (bankfull)", "#ff7f0e", "dot", False),
-                    ("flood_cfs", "Flood stage", "#8c564b", "dot", True),
-                    ("major_flood_cfs", "Major flood stage", "#7f7f7f", "dot", True)):
+                    ("flood_cfs", "Flood stage", "#8c564b", "dot", False),
+                    ("major_flood_cfs", "Major flood stage", "#7f7f7f", "dot", False)):
                 if pd.notna(r.get(key)):
                     traces.append(("%s (%s cfs)" % (label, "{:,.0f}".format(r[key])),
                                    pd.Series(float(r[key]), index=dates), "y1",
@@ -866,6 +866,21 @@ def placeName(stationName):
     """"Willamette River at Salem" -> "Salem"."""
     m = re.search(r"\b(?:at|near|nr)\s+(.+)$", str(stationName))
     return m.group(1).strip() if m else str(stationName)
+
+
+CP_LIMITS = [("regulation_goal_cfs", "regulation goal"), ("action_cfs", "action stage"),
+             ("flood_cfs", "flood stage"), ("major_flood_cfs", "major flood stage")]
+
+
+def cpLimitLines(r):
+    """[(label, cfs)] for a control point's limits, lowest first; limits with
+    the same flow share a label ("regulation goal / action stage")."""
+    byValue = {}
+    for key, label in CP_LIMITS:
+        v = r.get(key)
+        if pd.notna(v):
+            byValue.setdefault(float(v), []).append(label)
+    return [(" / ".join(labels), v) for v, labels in sorted(byValue.items())]
 
 
 def controlPointStatus(groups, dates, limits, minTargets, inControl):
@@ -907,16 +922,23 @@ def controlPointStatus(groups, dates, limits, minTargets, inControl):
         shown = place == "Salem"
         style = {"group": place, "hidden": not shown}
         flowTraces.append(("%s flow" % place, flow, "y1", dict(style, color=color, width=2)))
-        flowTraces.append(("%s maximum (%s cfs)" % (place, "{:,.0f}".format(maxFlow)), maxLine, "y1",
-                           dict(style, color=color, dash="dash", width=1.5)))
+        # Every distinct limit: the reservoirs regulate to different ones at
+        # different times. Limits with the same flow share one line.
+        limitLines = cpLimitLines(r)
+        dashes = ["dash", "dashdot", "longdash", "longdashdot"]
+        for j, (label, value) in enumerate(limitLines):
+            flowTraces.append(("%s %s (%s cfs)" % (place, label, "{:,.0f}".format(value)),
+                               pd.Series(value, index=dates), "y1",
+                               dict(style, color=color, dash=dashes[j % len(dashes)], width=1.5)))
         for label, line in lines:
             flowTraces.append((label, line, "y1", dict(style, color=color, dash="dot", width=1.5)))
 
         # The daily table: the point's flow and limits, then each upstream
         # reservoir's release and the rules in control there
         keys = [place.lower()] + (["mainstemflowaug"] if place in ("Salem", "Albany") else [])
-        cols = {"Flow": flow.round(0), "Minimum": minLine.round(0) if minLine is not None else np.nan,
-                "Maximum": maxLine}
+        cols = {"Flow": flow.round(0), "Minimum": minLine.round(0) if minLine is not None else np.nan}
+        for label, value in limitLines:
+            cols[label[0].upper() + label[1:]] = pd.Series(value, index=dates)
         codes = {"Flow": status.map({k: c for k, _, _, c in CP_STATUS}).fillna(0).astype(int)}
         for res in [x.strip() for x in str(r.get("reservoirs", "")).split(";") if x.strip()]:
             out = col(groups, "reservoirs", "%s-Pool Flow-OUT" % res)
