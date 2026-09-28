@@ -709,24 +709,24 @@ def reservoirPlots(groups, dates, extras):
                          "days_in_control": _days(free),
                          "in_control_pct": _pct(free.sum(), out.notna().sum())})
 
-        # Decisions panel: one row per rule, a mark each day coloured by its
-        # status, so the hover lists every rule's status that day. The legend
-        # entries are keys only.
-        colors = {key: color for key, _, color in STATUS_STYLE}
+        # Decisions panel: one row per rule, a bar per run of steps with the
+        # same status, so it only breaks where the status changes. Each run is
+        # two points (start, and the start of the next step), which packs
+        # smaller than a mark a day. One trace per status carries its colour.
         strip = [st[0] for st in statuses if st[3].notna().any()][::-1]
-        for label, kind, values, status, text in statuses:
-            m = status.notna()
-            if m.any():
-                # Rows are numbered, named by the axis ticks: numbers pack far
-                # smaller than a rule name repeated on every mark
-                traces.append((label, pd.Series(float(strip.index(label)), index=dates[m]), "y3",
-                               {"mode": "markers", "color": list(status[m].map(colors)),
-                                "size": 5, "symbol": "square", "showlegend": False,
-                                "hovertemplate": "<extra></extra>", "group": "decision"}))
+        stepEnd = pd.Series(dates[1:].append(pd.DatetimeIndex([dates[-1] + (dates[-1] - dates[-2])]))
+                            if len(dates) > 1 else dates, index=dates)
         for key, legend, color in STATUS_STYLE:
-            traces.append((legend, pd.Series([np.nan], index=dates[:1]), "y3",
-                           {"mode": "markers", "color": color, "size": 8, "symbol": "square",
-                            "group": "decision"}))
+            xs, ys = [], []
+            for label, kind, values, status, text in statuses:
+                run = (status != status.shift()).cumsum()
+                for _, part in status[status == key].groupby(run[status == key]):
+                    row = float(strip.index(label))
+                    xs += [part.index[0], stepEnd[part.index[-1]], stepEnd[part.index[-1]]]
+                    ys += [row, row, np.nan]
+            if xs:
+                traces.append((legend, pd.Series(ys, index=pd.DatetimeIndex(xs)), "y3",
+                               {"color": color, "width": 9, "group": "decision", "hoverinfo": "skip"}))
         plots[name] = {"traces": traces, "categories": strip}
     return plots, pd.DataFrame(rows), pd.DataFrame(conflictRows), decisions
 
@@ -800,6 +800,8 @@ def stackedFigure(plots, panels, rowHeights=None):
                 extra["hovertemplate"] = template
             if "showlegend" in style:
                 extra["showlegend"] = style.pop("showlegend")
+            if "hoverinfo" in style:
+                extra["hoverinfo"] = style.pop("hoverinfo")
             if group:
                 extra.update({"legendgroup": group, "legendgrouptitle_text": LEGEND_GROUPS.get(group, group)})
             if text is not None:
