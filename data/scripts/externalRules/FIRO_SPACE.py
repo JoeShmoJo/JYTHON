@@ -12,7 +12,7 @@ initRuleScript (once per compute):
     reservoir. Also grabs the reservoir's elevation-storage table.
 
 runRuleScript (every timestep):
-    Looks up the FIRO_SPACE elevation for today, converts it to storage, and
+    Looks up the FIRO_SPACE elevation for this step, converts it to storage, and
     computes the release that would land the pool exactly on that storage at the
     end of the current timestep:
 
@@ -70,6 +70,14 @@ Config CSV format (wide, one row per day of a generic year):
     Targets are held in a 365-entry per-day lookup table rather than an
     Interpolate object, because "this day has no target" is not something a
     continuous interpolation can express.
+
+Sub-daily timesteps
+    Each day's value is the target at the end of that day (2400). A daily run
+    uses it as is. A sub-daily run (e.g. 3-hour) interpolates between the
+    previous day's value and today's by time of day, so the target moves
+    smoothly instead of jumping once a day. See getTargetElev. The first step
+    of every compute prints its time and target to the compute log, so you can
+    confirm the rule is seeing the time of day.
 
 Author: Josh Roach
 """
@@ -404,6 +412,7 @@ def _initialize(currentRule, network):
     currentRule.varPut("firoCurve", dayTable)
     currentRule.varPut("elevStorTable", getElevationStorageTable(resvName, network))
     currentRule.varPut("mode", mode)
+    currentRule.varPut("stepsLogged", 0)
 
     if numTargetDays > 0:
         # One line per load, so the compute log always shows which numbers are
@@ -419,6 +428,27 @@ def _initialize(currentRule, network):
                DAYS_IN_YEAR - numTargetDays,
                _fmtElev(janOne), _fmtElev(julOne), mode, csvFileName))
     return dayTable
+
+
+# Steps printed to the compute log at the start of every compute. On a
+# sub-daily run the time of day should advance and the target should change
+# a little every step. If every step prints 2400, the rule is not getting the
+# time of day, and the target will step once a day.
+STEPS_TO_LOG = 3
+
+
+def _logFirstSteps(currentRule, network, currentRuntimestep, resvName, hTime,
+                   targetElev):
+    """Print the first few steps' time and target, once per compute."""
+    logged = currentRule.varGet("stepsLogged")
+    if logged is None or logged >= STEPS_TO_LOG:
+        return
+    currentRule.varPut("stepsLogged", logged + 1)
+    network.printMessage(
+        "FIRO_SPACE %s: step of %d min at %s (hour %d, minute %d), target %s"
+        % (resvName, currentRuntimestep.getTimeStepMinutes(),
+           hTime.dateAndTime(), hTime.hour(), hTime.minute(),
+           _fmtElev(targetElev)))
 
 
 def initRuleScript(currentRule, network):
@@ -443,6 +473,8 @@ def runRuleScript(currentRule, network, currentRuntimestep):
     # the rule stands down and lets the rest of the stack operate the project.
     hTime = getHecTimeFromRuntimestep(currentRuntimestep)
     targetElev = getTargetElev(firoCurve, hTime)
+    _logFirstSteps(currentRule, network, currentRuntimestep, resvName, hTime,
+                   targetElev)
     if targetElev is None:
         if DEBUG:
             network.printMessage(
