@@ -213,6 +213,25 @@ def onDates(configSeries, dates):
     return pd.Series(configSeries.reindex(keys).values, index=dates, dtype=float)
 
 
+def onDatesInterpolated(configSeries, dates):
+    """
+    Like onDates, but a sub-daily step interpolates between the previous day's
+    value and today's by the time of day, as FIRO_SPACE.py does: each day's
+    value holds at the end of the day. Results stamp 2400 as the next day's
+    00:00, which is the previous day's value. Daily steps are unchanged.
+    """
+    if STEP_DAYS >= 1.0:
+        return onDates(configSeries, dates)
+    today = onDates(configSeries, dates)
+    yesterday = onDates(configSeries, dates - pd.Timedelta(days=1))
+    yesterday.index = dates
+    frac = pd.Series((dates.hour * 60 + dates.minute) / 1440.0, index=dates)
+    out = yesterday + (today - yesterday) * frac
+    # 00:00 is the end of the previous day
+    out[frac == 0] = yesterday[frac == 0]
+    return out.where(today.notna() & yesterday.notna(), today)
+
+
 def col(groups, group, name):
     """A column from an extract group, or None."""
     table = groups.get(group)
@@ -243,7 +262,7 @@ def checkFiro(groups, configFile, dates):
     """One summary row per reservoir in the config, and its traces for the reservoir plot."""
     rows, plots = [], {}
     for key, (name, cfg) in sorted(readDailyConfig(configFile).items()):
-        target = onDates(cfg, dates)
+        target = onDatesInterpolated(cfg, dates)
         elev = col(groups, "reservoirs", "%s-Pool Elev" % name)
         if target.notna().sum() == 0 or elev is None:
             continue

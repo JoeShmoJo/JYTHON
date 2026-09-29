@@ -321,10 +321,24 @@ def loadFiroConfig(configCSV):
 
 def getTargetElev(dayTable, hTime):
     """
-    FIRO_SPACE elevation for the given date, or None if there is no target
+    FIRO_SPACE elevation for the given time, or None if there is no target
     that day and the rule should leave the project alone.
+
+    Each day's value is the target at the end of that day (2400). A sub-daily
+    step interpolates between the previous day's value and today's by the
+    time of day, so a 3-hour run follows the curve instead of stepping once a
+    day, which could carry the target across a rule curve it runs close to.
+    A daily step lands at 2400 and gets the day's value, as before.
     """
-    return dayTable[_genericDayOfYear(hTime)]
+    doy = _genericDayOfYear(hTime)
+    today = dayTable[doy]
+    minutes = hTime.hour() * 60 + hTime.minute()
+    if today is None or minutes <= 0 or minutes >= 1440:
+        return today
+    before = dayTable[doy - 1 if doy > 1 else 365]
+    if before is None:
+        return today
+    return before + (today - before) * (minutes / 1440.0)
 
 
 def _resolveConfigPath(network):
