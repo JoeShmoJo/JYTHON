@@ -20,14 +20,25 @@ runRuleScript (every timestep):
 
     Then it sets ONE limit, depending on which side of the curve the pool is on:
 
-        default ("DRAFT_ONLY") -> RULETYPE_MIN = qTarget, always.
+        default ("FILL_ONLY") -> RULETYPE_MAX = qTarget, always.
+            Below the curve qTarget is less than inflow, so the pool fills
+            toward the curve. At the curve it equals inflow, so the pool holds.
+            Above it qTarget exceeds inflow, so the rest of the stack (flood
+            operations) can draft the pool back down, at up to the overshoot
+            spread over GLIDE_DAYS. The result is "fill to FIRO_SPACE".
+
+        "DRAFT_ONLY" -> RULETYPE_MIN = qTarget, always.
             Above the curve this forces a draft. Below the curve qTarget falls
             below inflow, so the limit goes slack on its own and only binds if
             something else would release so little that the pool overshoots the
             curve. The result is "hold the pool at or below FIRO_SPACE".
 
         "BOTH" -> adds a RULETYPE_MAX = qTarget when the pool is below the
-            curve, which actively forces a refill. See the warning below.
+            curve, and a RULETYPE_MIN above it. The switch between the two at
+            DEADBAND_FT hands control to the rest of the stack for a step, and
+            with the pool in flood space that produced a sawtooth: a one-step
+            release spike each time the pool refilled to within DEADBAND_FT.
+            FILL_ONLY is the default for that reason.
 
     The limit is a CONTINUOUS function of the storage error: as the pool
     approaches the curve, qTarget approaches inflow. There is deliberately no
@@ -125,8 +136,11 @@ REQUIRE_RESERVOIR_IN_CONFIG = False
 #                 minimum-flow rules, which is the intended behavior here.
 # "DRAFT_ONLY" -> MIN release only. Holds the pool at or below the curve and lets
 #                 it refill at whatever rate the rest of the stack allows.
-# "FILL_ONLY"  -> MAX release only. Never forces a draft.
-MODE = "BOTH"
+# "FILL_ONLY"  -> MAX release only. Fills to the curve and lets the rest of the
+#                 stack draft the pool back down if it goes over. Never forces a
+#                 draft. The default: "BOTH" gave a release spike and a pool
+#                 sawtooth every few days while the pool sat in flood space.
+MODE = "FILL_ONLY"
 
 # Per-reservoir overrides of MODE, e.g. {"Lookout Point": "DRAFT_ONLY"}
 MODE_BY_RESERVOIR = {}
