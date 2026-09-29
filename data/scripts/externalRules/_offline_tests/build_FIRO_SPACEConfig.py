@@ -16,7 +16,9 @@ model_check extract (reservoirs.csv) of a DAILY run. Leap years are skipped:
 ResSim shifts the curve a day after 29 Feb in them, so they do not match a
 generic-year Month/Day table.
 
-Desktop Python 3 with pandas. Usage:
+Standard library only. ResSim's module loader imports every .py under
+externalRules, this folder included, so a desktop-only import such as pandas
+here fails the compute. Runs on desktop Python 2 or 3:
 
     python build_FIRO_SPACEConfig.py <run folder>
 
@@ -28,8 +30,9 @@ already there.
 
 import os
 import sys
-
-import pandas as pd
+import csv
+import io
+import calendar
 
 ################################################################################
 # USER INPUT
@@ -45,69 +48,97 @@ DECIMALS = 2
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUTPUT = os.path.join(os.path.dirname(HERE), "FIRO_SPACEConfig.csv")
 ZONE_SUFFIX = "-Rule Curve Elev-ZONE"
+DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+
+def _genericDays():
+    """(month, day) for every day of a non-leap year, in order."""
+    days = []
+    for month in range(1, 13):
+        for day in range(1, DAYS_IN_MONTH[month - 1] + 1):
+            days.append((month, day))
+    return days
 
 
 def existingColumns():
     """Reservoir columns of the current config, in order, or [] if none."""
     if not os.path.exists(OUTPUT):
         return []
-    with open(OUTPUT, encoding="utf-8") as f:
-        for line in f:
+    handle = open(OUTPUT)
+    try:
+        for line in handle:
             if line.startswith("#") or not line.strip():
                 continue
             cols = [c.strip() for c in line.strip().split(",")]
             return [c for c in cols[2:] if c]
+    finally:
+        handle.close()
     return []
 
 
 def ruleCurves(runFolder):
-    """{reservoir: Series indexed by (month, day)} for a generic non-leap year."""
-    df = pd.read_csv(os.path.join(runFolder, "reservoirs.csv"),
-                     index_col=0, parse_dates=True)
-    df = df[~df.index.is_leap_year]
-    days = pd.date_range("2001-01-01", "2001-12-31", freq="D")
-    keys = pd.MultiIndex.from_arrays([days.month, days.day])
-    curves = {}
-    for col in df.columns:
-        if not col.endswith(ZONE_SUFFIX):
+    """{reservoir: {(month, day): elevation}} for a generic non-leap year."""
+    handle = open(os.path.join(runFolder, "reservoirs.csv"))
+    try:
+        rows = list(csv.reader(handle))
+    finally:
+        handle.close()
+    header = rows[0]
+    columns = {}
+    for i in range(len(header)):
+        if header[i].endswith(ZONE_SUFFIX):
+            columns[header[i][:-len(ZONE_SUFFIX)]] = i
+    values = {}
+    for resv in columns:
+        values[resv] = {}
+    for row in rows[1:]:
+        # Dates are written as YYYY-MM-DD, possibly with a time after them
+        date = row[0][:10]
+        year, month, day = int(date[0:4]), int(date[5:7]), int(date[8:10])
+        if calendar.isleap(year):
             continue
-        resv = col[:-len(ZONE_SUFFIX)]
-        s = df[col].dropna()
-        byDay = s.groupby([s.index.month, s.index.day])
-        spread = byDay.max() - byDay.min()
-        if (spread > 0.005).any():
-            raise SystemExit(
-                "%s rule curve differs between years on %d days, so it is not "
-                "a generic-year curve." % (resv, int((spread > 0.005).sum())))
-        curve = byDay.first().reindex(keys)
-        if curve.isna().any():
+        for resv in columns:
+            cell = row[columns[resv]].strip()
+            if cell == "":
+                continue
+            elev = float(cell)
+            key = (month, day)
+            if key in values[resv] and abs(values[resv][key] - elev) > 0.005:
+                raise SystemExit(
+                    "%s rule curve differs between years on %d/%d, so it is "
+                    "not a generic-year curve." % (resv, month, day))
+            values[resv][key] = elev
+    for resv in values:
+        missing = [k for k in _genericDays() if k not in values[resv]]
+        if missing:
             raise SystemExit(
                 "The run does not cover every date of a non-leap year for %s "
-                "(first missing: %s). Use a daily run that does."
-                % (resv, curve[curve.isna()].index[0]))
-        curves[resv] = curve
-    return curves
+                "(first missing: %d/%d). Use a daily run that does."
+                % (resv, missing[0][0], missing[0][1]))
+    return values
 
 
 def build(curves, names):
-    table = pd.DataFrame({"Month": curves[names[0]].index.get_level_values(0),
-                          "Day": curves[names[0]].index.get_level_values(1)})
+    """{reservoir: {(month, day): FIRO elevation}}"""
+    firo = {}
     for resv in names:
-        rc = curves[resv].values
-        maxCon = rc.max()
-        table[resv] = (rc + FLOOD_SPACE_FRACTION * (maxCon - rc)).round(DECIMALS)
-    return table
+        rc = curves[resv]
+        maxCon = max(rc.values())
+        firo[resv] = {}
+        for key in _genericDays():
+            firo[resv][key] = round(
+                rc[key] + FLOOD_SPACE_FRACTION * (maxCon - rc[key]), DECIMALS)
+    return firo
 
 
-def check(table, curves, names):
-    """FIRO never below the rule curve, never above max con, 365 days."""
-    assert len(table) == 365, len(table)
+def check(firo, curves, names):
+    """FIRO never below the rule curve and never above max con."""
     tol = 0.5 * 10 ** -DECIMALS + 1e-9
     for resv in names:
-        rc = curves[resv].values
-        firo = table[resv].values
-        assert (firo >= rc - tol).all(), resv
-        assert (firo <= rc.max() + tol).all(), resv
+        maxCon = max(curves[resv].values())
+        for key in _genericDays():
+            assert firo[resv][key] >= curves[resv][key] - tol, (resv, key)
+            assert firo[resv][key] <= maxCon + tol, (resv, key)
 
 
 def main():
@@ -117,16 +148,18 @@ def main():
     curves = ruleCurves(runFolder)
     if not curves:
         raise SystemExit("No '*%s' columns in %s" % (ZONE_SUFFIX, runFolder))
-    names = existingColumns() or sorted(curves)
+    names = existingColumns()
+    if not names:
+        names = sorted(curves.keys())
     missing = [n for n in names if n not in curves]
     if missing:
         raise SystemExit("No rule curve in %s for: %s"
                          % (runFolder, ", ".join(missing)))
-    table = build(curves, names)
-    check(table, curves, names)
+    firo = build(curves, names)
+    check(firo, curves, names)
 
     pct = int(round(FLOOD_SPACE_FRACTION * 100))
-    header = [
+    lines = [
         "# FIRO_SPACE rule curve. One row per day of a generic (non-leap) year.",
         "# Read by scripts/externalRules/FIRO_SPACE.py",
         "#",
@@ -144,13 +177,23 @@ def main():
         "# of the rule stack operates the project. A project with no column here is",
         "# never controlled. Column headers are matched to ResSim reservoir names",
         "# ignoring surrounding spaces and capitalization.",
+        ",".join(["Month", "Day"] + names),
     ]
-    # newline="" keeps Windows from writing blank lines between rows
-    with open(OUTPUT, "w", encoding="utf-8", newline="") as f:
-        f.write("\n".join(header) + "\n")
-        table.to_csv(f, index=False, lineterminator="\n",
-                     float_format="%." + str(DECIMALS) + "f")
-    print("Wrote %d days x %d reservoirs to %s" % (len(table), len(names), OUTPUT))
+    fmt = "%." + str(DECIMALS) + "f"
+    for key in _genericDays():
+        cells = ["%d" % key[0], "%d" % key[1]]
+        for resv in names:
+            cells.append(fmt % firo[resv][key])
+        lines.append(",".join(cells))
+
+    # newline="" writes "\n" as is, so the file is the same on Windows
+    handle = io.open(OUTPUT, "w", encoding="utf-8", newline="")
+    try:
+        handle.write(u"\n".join(lines) + u"\n")
+    finally:
+        handle.close()
+    print("Wrote %d days x %d reservoirs to %s"
+          % (len(_genericDays()), len(names), OUTPUT))
 
 
 if __name__ == "__main__":
