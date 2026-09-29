@@ -179,7 +179,10 @@ so which stack, applied each day. The reservoir page orders rules by the stack
 of the zone the pool spent longest in, puts a `Zone` column in the table, shows
 each rule's place in each zone under its name (`RC 3 · TOD 5`), and greys out a
 rule on days its zone's stack does not include it. `in_results` flags a rule
-in the operation set that saved no values.
+in the operation set that saved no values. With the model report, the rules shown
+on the reservoir pages are the stack's: a rule deleted from the stack is left
+out even if an earlier run left its values in the DSS, and a rule in the stack
+that never returned a value still gets its (empty) row, line and table column.
 
 **Conflicts.** For every rule, how many days it was capped or held up, by
 what, and the total volume between what it wanted and what was released.
