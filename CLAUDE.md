@@ -167,6 +167,7 @@ python data\scripts\_migration\check_against_install.py "C:\path\to\HEC-ResSim-4
 |---|---|
 | `externalRules/MinFlowConfig.csv`, `WithdrawalConfig.csv` | `_offline_tests/build_MinFlowWithdrawal_configs.py` |
 | `externalRules/DiversionConfig_ALT.csv` | `_offline_tests/build_DiversionConfig.py` |
+| `externalRules/FIRO_SPACEConfig_hourly_template.csv` | `_offline_tests/build_FIRO_SPACE_hourly_template.py` (from a daily model_check run folder) |
 | `_reference/ressim_api.txt` | `_reference/build_api_reference.py` |
 | `_migration/import_catalog.csv`, `java_classes.txt`, `ressim_modules.txt` | `_migration/catalog_imports.py` |
 
