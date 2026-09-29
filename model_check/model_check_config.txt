@@ -1,8 +1,9 @@
 # Settings for run_model_check.py. One "key: value" per line; # starts a comment.
 
-# The simulation folder: the one holding simulation.dss, inside the
-# watershed's rss folder.
-simulation_folder: C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_09_24_ScriptCleanup\rss\Script_Cleanup_Test
+# The simulation's DSS file: paste its full path. Usually
+# <watershed>\rss\<simulation>\simulation.dss, but any copy of one works; the
+# simulation is named after the folder it sits in.
+simulation_dss: C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_09_24_ScriptCleanup\rss\Script_Cleanup_Test\simulation.dss
 
 # The alternative to check, as named in ResSim. Its results are the DSS
 # records whose F part starts with this name (Temp1Day -> Temp1Day--0).

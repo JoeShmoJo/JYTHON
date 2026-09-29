@@ -6,7 +6,7 @@ plotly), not inside ResSim.
 
 ## Steps
 
-Set the simulation folder, the alternative and the steps to run in
+Set the path to the simulation's DSS file, the alternative and the steps to run in
 `model_check_config.txt`, then:
 
 ```powershell
