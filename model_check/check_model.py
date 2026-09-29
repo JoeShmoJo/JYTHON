@@ -368,14 +368,9 @@ def checkMinFlow(groups, minFlowFile, withdrawalFile, dates):
             row["other_rule_matches_config_pct"] = _pct(matches.sum(), both.sum())
         rows.append(row)
 
-        label = "Min flow + withdrawal (config)"
-        if releasedAt != name:
-            label = "%s min flow + withdrawal (config, met here)" % name
-        plots.setdefault(releasedAt, []).extend([
-            (label, required, "y2", {"color": "#08519c", "dash": "dash", "group": "config"}),
-            ("%s short, unexplained" % name, out.where(short & ~maxBelow), "y2",
-             {"mode": "markers", "color": "#ff7f0e", "group": "config"}),
-        ])
+    # Nothing for the plots: where the rule is attached its value (Combined Min
+    # Trib) is the config, as rule_matches_config_pct checks, so a config line
+    # would only repeat it
     return pd.DataFrame(rows), plots
 
 
@@ -1058,7 +1053,7 @@ def writeControlPointPage(path, title, plot, tables):
     fig.update_yaxes(tickmode="array", tickvals=list(range(len(cats))), ticktext=cats,
                      range=[-0.5, max(len(cats), 1) - 0.5], showgrid=False, row=2, col=1)
     # A legend click turns a whole control point (flow and limits) on or off
-    fig.update_layout(height=950, margin={"t": 20}, legend={"groupclick": "togglegroup"})
+    fig.update_layout(height=950, margin={"t": 20}, legend={"groupclick": "toggleitem"})
     plotHtml = fig.to_html(full_html=False, include_plotlyjs="directory", div_id="plot")
     data = {}
     for name, (t, codes, freeze) in tables.items():
@@ -1080,6 +1075,8 @@ def writeControlPointPage(path, title, plot, tables):
             "tablelabel": json.dumps("Control point"),
             "owner": json.dumps([[o, s_] for o, s_ in owner]),
             "cats": json.dumps({"All": cats}),
+            # Each trace's control point, so picking one in the list shows it
+            "groups": json.dumps([t.legendgroup for t in fig.data]),
             "tables": json.dumps(data, default=float),
             "all": json.dumps(names),
             "files": json.dumps({n: controlPointFile() for n in names})})
@@ -1177,6 +1174,8 @@ RESERVOIR_PAGE = """<!DOCTYPE html>
 body{font-family:sans-serif;margin:0 16px;background:#fff;color:#222}
 #bar{position:sticky;top:0;background:#fff;z-index:5;padding:8px 0;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
 #bar select{font-size:15px;padding:3px}
+#chips button{margin:2px 4px 2px 0;padding:2px 8px;border:1px solid #bbb;border-radius:10px;background:#f6f6f6;color:#666;cursor:pointer}
+#chips button.on{background:#dfe9f7;border-color:#6b8fc7;color:#111;font-weight:600}
 #tablebox{height:32vh;overflow:auto;border:1px solid #ccc}
 table{border-collapse:separate;border-spacing:0;font-size:12px;width:100%%}
 th{position:sticky;top:0;background:#f0f0f0;z-index:1}
@@ -1196,11 +1195,12 @@ tr:hover td{background:#eef4ff;cursor:pointer}
 <span>%(key)s</span>
 <button id="pop" class="plotonly">Open table in its own window</button>
 <span class="plotonly" style="color:#666">Click a day on the plot to find it in the table; click a row to mark it on the plot.</span></div>
+<div id="chips" class="plotonly" style="display:none;margin:0 0 6px 0"></div>
 %(plot)s
 <div id="tablebox"><table id="tbl"></table></div>
 <script>
 var OWNER = %(owner)s, CATS = %(cats)s, TABLES = %(tables)s, ALL = %(all)s, FILES = %(files)s,
-    STRIP = %(strip)s, CHANNEL = %(channel)s, TABLE_LABEL = %(tablelabel)s;
+    STRIP = %(strip)s, CHANNEL = %(channel)s, TABLE_LABEL = %(tablelabel)s, GROUPS = %(groups)s;
 // The same page shows the plot with the table under it, or, opened with
 // "#table", the table alone to fill another window. The two windows talk
 // through localStorage, which every local file shares in Chrome and Edge:
@@ -1301,6 +1301,12 @@ window.addEventListener("storage", function (e) {
 // plot holds all its elements at once (the control points) keeps its own.
 function showPlot() {
   if (!HAS_PLOTLY) return;
+  if (GROUPS) {
+    // A page with all its elements on one plot (the control points): show the
+    // picked one and the status bars, hide the rest; the legend brings any back
+    Plotly.restyle(gd, {visible: GROUPS.map(function (g) {
+      return (g === current || g === "status") ? true : "legendonly"; })});
+  }
   var key = OWNER.some(function (o) { return o[0] === current; }) ? current : null;
   if (key) Plotly.restyle(gd, {visible: OWNER.map(function (o) { return o[0] === key ? o[1] : false; })});
   var cats = CATS[key || (OWNER.length ? OWNER[0][0] : "")] || [];
@@ -1308,6 +1314,37 @@ function showPlot() {
   lay[STRIP + ".tickmode"] = "array"; lay[STRIP + ".tickvals"] = cats.map(function (c, i) { return i; });
   lay[STRIP + ".ticktext"] = cats; lay[STRIP + ".range"] = [-0.5, Math.max(cats.length, 1) - 0.5];
   Plotly.relayout(gd, lay);
+}
+// On a page with every element on one plot, a button per element turns all
+// its lines on or off together; the legend still turns single lines on or off
+function groupNames() {
+  var seen = [];
+  (GROUPS || []).forEach(function (g) { if (g && g !== "status" && seen.indexOf(g) < 0) seen.push(g); });
+  return seen;
+}
+function paintChips() {
+  if (!GROUPS || !HAS_PLOTLY) return;
+  Array.prototype.forEach.call(document.querySelectorAll("#chips button"), function (btn) {
+    var on = gd.data.some(function (t, i) { return GROUPS[i] === btn.dataset.group && t.visible === true; });
+    btn.classList.toggle("on", on);
+  });
+}
+function buildChips() {
+  if (!GROUPS || !HAS_PLOTLY || TABLE_ONLY) return;
+  var box = document.getElementById("chips");
+  box.style.display = "";
+  box.innerHTML = "<span style='color:#666;margin-right:6px'>Show:</span>";
+  groupNames().forEach(function (g) {
+    var btn = document.createElement("button"); btn.textContent = g; btn.dataset.group = g;
+    btn.onclick = function () {
+      var on = btn.classList.contains("on"), idx = [];
+      GROUPS.forEach(function (x, i) { if (x === g) idx.push(i); });
+      Plotly.restyle(gd, {visible: on ? "legendonly" : true}, idx);
+    };
+    box.appendChild(btn);
+  });
+  gd.on("plotly_restyle", paintChips);
+  paintChips();
 }
 var lastAlive = 0;
 if (TABLE_ONLY) {
@@ -1329,6 +1366,7 @@ if (TABLE_ONLY) {
     box.parentNode.insertBefore(note, box);
   }
   showPlot();
+  buildChips();
   drawTable();
   if (HAS_PLOTLY) gd.on("plotly_click", function (ev) {
     var d = stamp(ev.points[0].x); markPlot(d); markRow(d);
@@ -1398,6 +1436,7 @@ def writeReservoirPage(path, title, plots, tables, allNames=None, groups=None):
             "tables": json.dumps(data, default=float),
             "pagelabel": "Reservoirs", "sellabel": "Reservoir", "key": RESERVOIR_KEY,
             "strip": json.dumps("yaxis3"), "channel": json.dumps("releaseDecisions"),
+            "groups": "null",
             "tablelabel": json.dumps("Release decisions"),
             "all": json.dumps(list(allNames or plots.keys())),
             "files": json.dumps({n: reservoirFile(n) for n in (allNames or plots.keys())})})

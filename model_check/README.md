@@ -39,8 +39,9 @@ rating tables or regulation goals change.
   cumulative local flow, and every distinct limit (regulation goal,
   action, flood and major flood stage, each its own dash style; limits with the
   same flow share a line), since the reservoirs regulate to different ones at
-  different times. Salem is shown to start with; a legend click turns a point,
-  with its lines, on or off.
+  different times. Salem is shown to start with. Picking a point in the list
+  shows it and hides the others; the Show buttons above the plot turn a whole
+  point on or off, and the legend single lines.
 - **Salem and Albany minimums.** The BiOp targets from the tables the
   alternative points to (`minFlowTargetCSV_Salem` and `_Albany` in alt_config),
   one dotted line per distinct row of the table, since the water year type
@@ -100,7 +101,7 @@ each leaves space for the other.
 | `report.html` | every summary table, with links to the plots |
 | `<check>_summary.csv` | one row per reservoir, diversion or rule |
 | `release_decisions/<reservoir>.csv` | per day: elevation, inflow, outflow, min and max limit, and the value every rule asked for |
-| `plots/Reservoir - <name>.html` | one page per reservoir, three panels: elevation (with rule curve and FIRO target); flow (outflow, inflow, limits, min flow config, every rule's value); release decisions (a bar per rule, coloured by its status, breaking only where the status changes). The release decision table sits underneath, one column per rule, cells shaded by status |
+| `plots/Reservoir - <name>.html` | one page per reservoir, three panels: elevation (with rule curve and FIRO target); flow (outflow, inflow, limits, every rule's value); release decisions (a bar per rule, coloured by its status, breaking only where the status changes). The release decision table sits underneath, one column per rule, cells shaded by status |
 
 In the plots, pick an element from the dropdown and click legend entries to
 hide or show them. On the reservoir plot's flow panel only the outflow and the
