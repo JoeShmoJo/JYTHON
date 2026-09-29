@@ -414,10 +414,12 @@ RULE_KINDS = [
     ("Flow-SPEC", "script", "Scripted rules",
      ["#9467bd", "#bcbd22", "#7b4173", "#637939", "#ce6dbd", "#8c6d31", "#a55194", "#b5cf6b"]),
     (None, "guide", "Guide curve release", ["#444444", "#888888"]),
+    (None, "none", "In the stack, no results", ["#bbbbbb"]),
 ]
 LEGEND_GROUPS = {"elev": "Elevation (ft)", "flow": "Flow (cfs)", "config": "Config",
                  "min": "Min rules", "max": "Max rules", "script": "Scripted rules",
-                 "guide": "Guide curve release", "decision": "Release decisions"}
+                 "guide": "Guide curve release", "none": "In the stack, no results",
+                 "decision": "Release decisions"}
 
 # How each rule stood against the release that day, in the decisions panel
 STATUS_STYLE = [
@@ -434,41 +436,47 @@ def reservoirNames(groups):
 
 
 def reservoirRules(groups, name, dates):
-    """[(label, kind, Series)] for every rule at a reservoir that has values."""
+    """
+    [(label, kind, Series)] for every rule at a reservoir. With the model
+    report, the rules are the ones in the operation set's stack, top first
+    (the zone the pool spent longest in, then rules only in other zones), each
+    with its values from the results, empty if it never returned one. A rule
+    left in the DSS from an earlier run but no longer in the stack is left out.
+    Without the report, every rule in the results that has values.
+    """
     table = groups.get("rules")
-    if table is None:
-        return []
-    out = []
-    for suffix, kind, _, _ in RULE_KINDS:
-        if suffix is None:
-            continue
-        for c in table.columns:
-            if c.startswith(name + "-") and c.endswith(" " + suffix):
-                values = table[c].reindex(dates)
-                if not values.notna().any():
-                    continue
-                label = c[len(name) + 1:-len(suffix) - 1]
-                zone = re.match(r"%s-(.+)-ZBOp Rule$" % re.escape(name), label)
-                if zone:
-                    out.append(("Guide release, %s zone" % zone.group(1), "guide", values))
-                else:
-                    out.append((label, kind, values))
+    found = []
+    if table is not None:
+        for suffix, kind, _, _ in RULE_KINDS:
+            if suffix is None:
+                continue
+            for c in table.columns:
+                if c.startswith(name + "-") and c.endswith(" " + suffix):
+                    values = table[c].reindex(dates)
+                    label = c[len(name) + 1:-len(suffix) - 1]
+                    zone = re.match(r"%s-(.+)-ZBOp Rule$" % re.escape(name), label)
+                    if zone:
+                        found.append(("Guide release, %s zone" % zone.group(1), "guide", values))
+                    else:
+                        found.append((label, kind, values))
     zones = groups.get("stack", {}).get(name)
     if zones:
-        # In stack order, top first: the zone the pool spent longest in, then
-        # rules only in other zones. Guide releases last, as what the
-        # reservoir does when no rule acts.
-        order = zoneOrder(groups, name, dates)
-        def key(rule):
-            if rule[1] == "guide":
-                return (2, 0)
-            for i, zone in enumerate(order):
-                pos = stackPosition(zones, zone, rule[0])
-                if pos:
-                    return (i, pos)
-            return (1, 999)
-        return sorted(out, key=key)
-    # Otherwise guide releases first: what the reservoir does when nothing else acts
+        rulesIn = dict(zones)
+        out, seen = [], set()
+        for zone in zoneOrder(groups, name, dates):
+            for rule in rulesIn.get(zone, []):
+                if rule in seen:
+                    continue
+                seen.add(rule)
+                # Results name some rules with their outlet ("Dam-Max
+                # Evacuation Release"); the stack does not
+                match = [f for f in found if f[1] != "guide" and (f[0] == rule or f[0].endswith("-" + rule))]
+                out.append(match[0] if match else (rule, "none", pd.Series(np.nan, index=dates)))
+        # Guide releases last, as what the reservoir does when no rule acts
+        out += [f for f in found if f[1] == "guide" and f[2].notna().any()]
+        return out
+    out = [f for f in found if f[2].notna().any()]
+    # Guide releases first: what the reservoir does when nothing else acts
     return sorted(out, key=lambda r: r[1] != "guide")
 
 
@@ -723,7 +731,10 @@ def reservoirPlots(groups, dates, extras):
         # same status, so it only breaks where the status changes. Each run is
         # two points (start, and the start of the next step), which packs
         # smaller than a mark a day. One trace per status carries its colour.
-        strip = [st[0] for st in statuses if st[3].notna().any()][::-1]
+        # With the model report every rule in the stack gets a row, empty if it
+        # never acted: that it never did is worth seeing
+        hasStack = bool(groups.get("stack", {}).get(name))
+        strip = [st[0] for st in statuses if hasStack or st[3].notna().any()][::-1]
         stepEnd = pd.Series(dates[1:].append(pd.DatetimeIndex([dates[-1] + (dates[-1] - dates[-2])]))
                             if len(dates) > 1 else dates, index=dates)
         for key, legend, color in STATUS_STYLE:
