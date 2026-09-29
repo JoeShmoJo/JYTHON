@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Run the model check steps chosen in model_check_config.txt, for the
-simulation folder and alternative named there.
+simulation DSS file and alternative named there.
 
 Runs on a DESKTOP Python 3 (the hydro39 conda environment):
     conda activate hydro39
@@ -53,15 +53,20 @@ def latestRun(simulation, alternative):
 def main(configFile=None):
     args = [a for a in sys.argv[1:] if not a.startswith("-")]
     config = readConfig(configFile or (args[0] if args else CONFIG_FILE))
-    simFolder = config.get("simulation_folder", "")
+    # simulation_dss is the DSS file itself, wherever it is; simulation_folder
+    # (the folder holding simulation.dss) still works for older config files
+    dssPath = config.get("simulation_dss", "")
+    if not dssPath and config.get("simulation_folder"):
+        dssPath = os.path.join(config["simulation_folder"], "simulation.dss")
     alternative = config.get("alternative", "")
-    dssPath = os.path.join(simFolder, "simulation.dss")
-    simulation = re.split(r"[\\/]", simFolder.rstrip("\\/"))[-1]
+    # The simulation is named after the folder the DSS file sits in
+    parts = re.split(r"[\\/]", dssPath.rstrip("\\/"))
+    simulation = parts[-2] if len(parts) > 1 else os.path.splitext(parts[-1])[0]
     steps = [s for s in ("catalog", "extract", "check") if isTrue(config.get("run_" + s))]
     if not steps:
         sys.exit("Nothing to run: set run_catalog, run_extract or run_check to true.")
     if ("catalog" in steps or "extract" in steps) and not os.path.isfile(dssPath):
-        sys.exit("No simulation.dss in %s. Check simulation_folder." % simFolder)
+        sys.exit("DSS file not found: %s\nCheck simulation_dss in the config file." % dssPath)
     if not alternative and ("extract" in steps or "check" in steps):
         sys.exit("Set alternative in %s." % CONFIG_FILE)
     print("Simulation %s, alternative %s: %s" % (simulation, alternative, ", ".join(steps)))
