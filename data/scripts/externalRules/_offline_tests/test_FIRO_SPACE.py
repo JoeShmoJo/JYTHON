@@ -51,10 +51,17 @@ writeFixture()
 
 # ---- stub hec.heclib.util.HecTime -------------------------------------------
 class HecTime(object):
-    def __init__(self, d=None):
+    # minutes since midnight; a daily step is at 2400
+    def __init__(self, d=None, minutes=1440):
         self._d = d
+        self._minutes = minutes
     def setYearMonthDay(self, y, m, d, minutes):
         self._d = datetime.date(y, m, d)
+        self._minutes = minutes
+    def hour(self):
+        return self._minutes // 60
+    def minute(self):
+        return self._minutes % 60
     def dayOfYear(self):
         return self._d.timetuple().tm_yday
     def month(self):
@@ -166,6 +173,17 @@ rule = Rule("Detroit")
 F.initRuleScript(rule, net)
 curve = rule.varGet("firoCurve")
 check("Detroit 01Jan (winter)", F.getTargetElev(curve, HecTime(datetime.date(2023,1,1))), 1484.5)
+
+# Sub-daily steps interpolate between the previous day's target and today's
+d28, d1 = F.getTargetElev(curve, HecTime(datetime.date(2023,2,28))), F.getTargetElev(curve, HecTime(datetime.date(2023,3,1)))
+check("03:00 is 1/8 of the way from yesterday's target", F.getTargetElev(curve, HecTime(datetime.date(2023,3,1), 180)),
+      d28 + (d1 - d28) * 0.125)
+check("12:00 is halfway", F.getTargetElev(curve, HecTime(datetime.date(2023,3,1), 720)), d28 + (d1 - d28) * 0.5)
+check("2400 is today's target", F.getTargetElev(curve, HecTime(datetime.date(2023,3,1), 1440)), d1)
+check("00:00 is today's value too (no half-step jump)", F.getTargetElev(curve, HecTime(datetime.date(2023,3,1), 0)), d1)
+check("01Jan interpolates from 31Dec", F.getTargetElev(curve, HecTime(datetime.date(2023,1,1), 720)),
+      F.getTargetElev(curve, HecTime(datetime.date(2022,12,31))) + (F.getTargetElev(curve, HecTime(datetime.date(2023,1,1)))
+      - F.getTargetElev(curve, HecTime(datetime.date(2022,12,31)))) * 0.5)
 check("Detroit 01Jun (summer)", F.getTargetElev(curve, HecTime(datetime.date(2023,6,1))), 1558.5)
 # 01Mar is 28 days into the 01Feb->01May refill (32->121 doy), 89-day ramp
 # 01Mar (doy 60) sits 28 days into the 01Feb (32) -> 01May (121) refill ramp
