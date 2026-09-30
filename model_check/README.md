@@ -79,6 +79,27 @@ falling cumulative local flow suggests the rule assumes the local flow persists
 over the travel time; room when two reservoirs are held back together suggests
 each leaves space for the other.
 
+## Files it reads
+
+These are read but never written by these scripts. Everything else comes from
+the extract.
+
+| File | Where | Read by | For |
+|---|---|---|---|
+| `model_check_config.txt` | this folder | `run_model_check.py` | DSS path, alternative, steps, dates |
+| `simulation.dss` | the path in `simulation_dss` | `catalog_dss.py`, `extract_dss.py` | the run's results |
+| `modelReport_<alternative>.json` | the watershed's `rss` folder, then the simulation folder | `extract_dss.py` | the rule stack; optional |
+| `control_point_limits.csv` | this folder | `check_model.py` | control point flood flows and regulation goals |
+| `alt_config/_default.txt`, `alt_config/<alternative>.txt` | `scripts/` | `check_model.py` | which config files the alternative uses |
+| `FIRO_SPACEConfig.csv` | `scripts/externalRules/` (key `firoSpaceConfigCSV`) | `check_model.py` | FIRO_SPACE targets |
+| `MinFlowConfig.csv`, `WithdrawalConfig.csv` | `scripts/externalRules/` (keys `minFlowConfigCSV`, `withdrawalConfigCSV`) | `check_model.py` | minimum flows and withdrawals |
+| `DiversionConfig_ALT.csv` | `scripts/externalRules/` (key `diversionConfigCSV`) | `check_model.py` | diversion amounts |
+| `MinFlowSalem_2008BiOp.csv`, `MinFlowAlbany_2008BiOp.csv` | `scripts/externalSVs/` (keys `minFlowTargetCSV_Salem`, `_Albany`) | `check_model.py` | Salem and Albany BiOp minimums |
+
+The `scripts/` files come from the watershed if it is on this machine,
+otherwise from this repository's `data/` folder, and the alt_config key, when
+set, overrides the default name shown.
+
 ## What you get
 
 `extract_dss.py` writes `output/<simulation>_<alternative>_<date>/`:
@@ -151,11 +172,8 @@ from this repository's `data/` folder. The report lists the files it used.
 
 **FIRO_SPACE.** Two separate questions:
 
-- *Achieving:* is the pool within `ELEV_TOL_FT` of the target? A day off
-  target is **explained** when the outflow sat on the reservoir's max limit
-  (above target, could not release more) or its min limit (below target, could
-  not release less). What is left is **unexplained**, and shows as orange
-  markers on the reservoir plot. That is where to look.
+- *Achieving:* is the pool within `ELEV_TOL_FT` of the target, and how far
+  above or below it does it get?
 - *Targeting:* did the outflow obey the FIRO rule's own value that day?
   `rule_overridden_days` counts days another rule won. Needs `rules.csv`.
 
