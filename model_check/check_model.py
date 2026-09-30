@@ -87,10 +87,6 @@ FLOW_TOL_CFS = 5.0         # flows: this many cfs, or FLOW_TOL_FRAC, whichever i
 FLOW_TOL_FRAC = 0.02
 RULE_TOL_CFS = 0.5         # a rule's own output vs the config it read
 
-# Must match FIRO_SPACE.py: MODE and DEADBAND_FT decide whether the rule's
-# value that day was a MIN or a MAX
-FIRO_MODE = "BOTH"
-FIRO_DEADBAND_FT = 0.10
 FIRO_RULE_NAME = "FIRO_SPACE"
 
 # The rule name MinFlowPlusWithdrawal has in the model, and reservoirs whose
@@ -300,15 +296,10 @@ def checkFiro(groups, configFile, dates):
         else:
             row["rule_attached"] = "yes"
             ruleVal = ruleVal.reindex(dates)
-            # Which type the rule returned: FIRO_SPACE.py decides from the
-            # previous step's pool against today's target
-            prevElev = elev.shift(1)
-            isMax = (FIRO_MODE == "FILL_ONLY") | (
-                (FIRO_MODE == "BOTH") & (prevElev < target - FIRO_DEADBAND_FT))
+            # FIRO_SPACE.py always returns a MAX: followed when the outflow
+            # did not exceed it
             active = ok & ruleVal.notna()
-            followed = np.where(isMax, out <= ruleVal + flowTol(ruleVal),
-                                out >= ruleVal - flowTol(ruleVal))
-            followed = pd.Series(followed, index=dates) & active
+            followed = (out <= ruleVal + flowTol(ruleVal)) & active
             row["rule_followed_pct"] = _pct(followed.sum(), active.sum())
             row["rule_overridden_days"] = _days((active & ~followed))
         rows.append(row)
