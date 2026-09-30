@@ -18,16 +18,19 @@ runRuleScript (every timestep):
 
         qTarget = inflow + (storPrev - targetStor) / cfsToAcFt
 
-    Then it sets ONE limit, depending on which side of the curve the pool is on:
+    Then it sets a MAXIMUM release of qTarget, every step:
 
-        default ("DRAFT_ONLY") -> RULETYPE_MIN = qTarget, always.
-            Above the curve this forces a draft. Below the curve qTarget falls
-            below inflow, so the limit goes slack on its own and only binds if
-            something else would release so little that the pool overshoots the
-            curve. The result is "hold the pool at or below FIRO_SPACE".
+        Below the curve qTarget is less than inflow, so the pool fills toward
+        the curve. At the curve it equals inflow, so the pool holds. Above it
+        qTarget exceeds inflow, so the rest of the stack (flood operations) can
+        draft the pool back down, at up to the overshoot spread over GLIDE_DAYS.
+        The result is "fill to FIRO_SPACE". The rule never forces a draft.
 
-        "BOTH" -> adds a RULETYPE_MAX = qTarget when the pool is below the
-            curve, which actively forces a refill. See the warning below.
+    Earlier versions could also set a MINIMUM release (modes DRAFT_ONLY and
+    BOTH). BOTH switched from the MAX to a MIN as the pool neared the curve,
+    and a MIN holds nothing back, so with the pool in flood space the rest of
+    the stack released freely for a step: a release spike and a pool sawtooth
+    every few days. The MAX is now the only limit, and there is no mode setting.
 
     The limit is a CONTINUOUS function of the storage error: as the pool
     approaches the curve, qTarget approaches inflow. There is deliberately no
@@ -40,11 +43,10 @@ runRuleScript (every timestep):
     This rule only proposes the target. Other rules in the stack are expected to
     constrain the release further (outlet capacity, min flows, ramp rates, etc.).
 
-NOTE ON THE FILL HALF
-    The fill branch issues a MAXIMUM release, which by design competes with
-    minimum-flow rules. Stack placement matters. If the fill behavior causes
-    trouble at a project, set that project to "DRAFT_ONLY" in MODE_BY_RESERVOIR
-    below rather than deleting the rule.
+NOTE ON STACK PLACEMENT
+    The rule issues a MAXIMUM release, which by design competes with
+    minimum-flow rules. Stack placement decides which wins. To stop the rule
+    controlling a project, clear its column in the config CSV.
 
 Config CSV format (wide, one row per day of a generic year):
     Month,Day,Detroit,Hills Creek,Lookout Point,...
@@ -105,10 +107,6 @@ DEFAULT_CONFIG_CSV = "scripts/externalRules/FIRO_SPACEConfig.csv"
 # the stack cannot deliver the requested release. DraftToRC.py uses 3 days.
 GLIDE_DAYS = 3.0
 
-# Only used by MODE "BOTH": how far below the curve the pool must be before the
-# rule switches from the MIN limit to the MAX limit that forces a refill.
-DEADBAND_FT = 0.10
-
 # Bridge a run of undefined days this long or shorter by interpolating between
 # the numbers on either side. 0 means never bridge, so every blank day is an
 # uncontrolled day -- the usual choice for a full 365-row daily file. Set it to
@@ -119,17 +117,6 @@ INTERPOLATE_GAPS_UP_TO_DAYS = 0
 # False: a reservoir with no numbers in the config is simply never controlled,
 # and the compute continues. True: that is a hard error that stops the compute.
 REQUIRE_RESERVOIR_IN_CONFIG = False
-
-# "BOTH"       -> draft toward the curve when above it, and set a MAX release to
-#                 force a refill when below it. The refill limit competes with
-#                 minimum-flow rules, which is the intended behavior here.
-# "DRAFT_ONLY" -> MIN release only. Holds the pool at or below the curve and lets
-#                 it refill at whatever rate the rest of the stack allows.
-# "FILL_ONLY"  -> MAX release only. Never forces a draft.
-MODE = "BOTH"
-
-# Per-reservoir overrides of MODE, e.g. {"Lookout Point": "DRAFT_ONLY"}
-MODE_BY_RESERVOIR = {}
 
 # Set True to print target elevation / release to the ResSim compute log each step
 DEBUG = False
@@ -403,15 +390,8 @@ def _initialize(currentRule, network):
         network.printMessage(message)
         dayTable = [None] * (DAYS_IN_YEAR + 1)
 
-    mode = MODE_BY_RESERVOIR.get(resvName, MODE).upper()
-    if mode not in ("BOTH", "DRAFT_ONLY", "FILL_ONLY"):
-        raise AssertionError(
-            "FIRO_SPACE mode for %s must be BOTH, DRAFT_ONLY or FILL_ONLY, not '%s'"
-            % (resvName, mode))
-
     currentRule.varPut("firoCurve", dayTable)
     currentRule.varPut("elevStorTable", getElevationStorageTable(resvName, network))
-    currentRule.varPut("mode", mode)
     currentRule.varPut("stepsLogged", 0)
 
     if numTargetDays > 0:
@@ -423,10 +403,10 @@ def _initialize(currentRule, network):
         julOne = dayTable[182]
         network.printMessage(
             "FIRO_SPACE: loaded %s from column '%s', %d of %d days have a "
-            "target (%d uncontrolled), 01Jan=%s 01Jul=%s, mode=%s, from %s"
+            "target (%d uncontrolled), 01Jan=%s 01Jul=%s, from %s"
             % (resvName, column, numTargetDays, DAYS_IN_YEAR,
                DAYS_IN_YEAR - numTargetDays,
-               _fmtElev(janOne), _fmtElev(julOne), mode, csvFileName))
+               _fmtElev(janOne), _fmtElev(julOne), csvFileName))
     return dayTable
 
 
@@ -467,7 +447,6 @@ def runRuleScript(currentRule, network, currentRuntimestep):
     resvName = _getResvName(currentRule)
     firoCurve = currentRule.varGet("firoCurve")
     elevStorTable = currentRule.varGet("elevStorTable")
-    mode = currentRule.varGet("mode")
 
     # Today's target, as elevation and as storage. A day with no target means
     # the rule stands down and lets the rest of the stack operate the project.
@@ -510,17 +489,12 @@ def runRuleScript(currentRule, network, currentRuntimestep):
     # qTarget is continuous through the crossing: it equals inflow exactly when
     # the pool is on the curve, is above inflow when high, below inflow when low.
     # Keep it that way -- see the note in the module docstring.
-    if mode == "FILL_ONLY" or (mode == "BOTH" and elevPrev < targetElev - DEADBAND_FT):
-        ruleType = "MAX"   # force the refill
-        opValue.init(OpRule.RULETYPE_MAX, qTarget)
-    else:
-        ruleType = "MIN"   # hold at or below the curve
-        opValue.init(OpRule.RULETYPE_MIN, qTarget)
+    opValue.init(OpRule.RULETYPE_MAX, qTarget)
 
     if DEBUG:
         network.printMessage(
-            "FIRO_SPACE %s %s: targetElev=%.2f elevPrev=%.2f inflow=%.0f %s=%.0f"
+            "FIRO_SPACE %s %s: targetElev=%.2f elevPrev=%.2f inflow=%.0f MAX=%.0f"
             % (resvName, hTime.dateAndTime(), targetElev, elevPrev, inflow,
-               ruleType, qTarget))
+               qTarget))
 
     return opValue
