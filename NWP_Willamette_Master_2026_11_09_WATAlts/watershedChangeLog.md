@@ -509,3 +509,10 @@ script edits whenever reload is effectively OFF. This follows the observed
 parallel PySystemState.unregisterCloser failure in the old explicit-file loader.
 Loader unit checks run under desktop Python and Jython 2.7.3; native HEC mode
 detection and full model/parallel result validation remain outstanding.
+
+## Reload diagnostic follow-up [09 Nov 2026 / Codex]
+
+Write module reload mode messages explicitly through network.printLogMessage
+as well as the UI warning API so native worker logs retain the decision.
+Desktop Python and Jython 2.7.3 loader tests passed; native log persistence
+requires confirmation on the next compute.

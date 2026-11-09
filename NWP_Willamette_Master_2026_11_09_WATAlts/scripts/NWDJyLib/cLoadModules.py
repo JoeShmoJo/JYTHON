@@ -167,6 +167,9 @@ def loadWatershedModules(network=None,currentAlt=None, modulesToLoad=["NWDJyLib"
         warning = ("MODULE RELOAD OFF: cached module code is reused. "
                    "Fully restart ResSim after script edits or those edits may not run. "
                    "This mode avoids forced reloads but does not guarantee parallel safety.")
+    # UI warnings are not necessarily persisted in the native worker log.
+    if network and hasattr(network, 'printLogMessage'):
+        network.printLogMessage(warning)
     if network and hasattr(network, 'printWarningMessage'):
         network.printWarningMessage(warning)
     else:

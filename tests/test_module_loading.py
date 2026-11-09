@@ -132,8 +132,11 @@ class ModuleLoadingTests(unittest.TestCase):
             def __init__(self, test):
                 self.test = test
                 self.warnings = []
+                self.log_messages = []
             def printMessage(self, message):
                 pass
+            def printLogMessage(self, message):
+                self.log_messages.append(message)
             def printWarningMessage(self, message):
                 self.warnings.append(message)
             def makeAbsolutePathFromWatershed(self, path):
@@ -150,6 +153,7 @@ class ModuleLoadingTests(unittest.TestCase):
                 network = Network(self)
                 cLoadModules.loadWatershedModules(network=network, modulesToLoad=[])
                 self.assertEqual(len(network.warnings), 1)
+                self.assertEqual(network.log_messages, network.warnings)
                 self.assertIn(phrase, network.warnings[0])
         finally:
             cLoadModules._readLoadSettings = old_read
