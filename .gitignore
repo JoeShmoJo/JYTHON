@@ -83,3 +83,7 @@ smoketest_results.txt
 **/DamagesPrevented/DPdata/
 **/DamagesPrevented/DP_Download/out/
 **/DamagesPrevented/DP_Download/QAQC/out/
+
+# Transactional dummy-input staging and pre-write DSS backups
+dummy-input-backups/
+dummy-write-*/
