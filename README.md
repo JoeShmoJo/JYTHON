@@ -108,3 +108,24 @@ DSS output directory in `module-load-diagnostics/`. Check requested_reload,
 detected_mode, effective_reload, timestamp_epoch_ms, and loader_file. Receipts
 are diagnostic output and are ignored by Git. Their presence confirms loader
 initialization, not successful compute or result coverage.
+
+## Jython interpreter-cleanup wait
+
+November 9 thread dumps show a worker waiting in `threading.join()` from
+`PythonInterpreter.cleanup()` during scripted-rule compilation, while other
+executor workers are idle. An isolated Java/Jython 2.7.3 reproducer demonstrates
+that Python logging's thread-name capture can register live native workers and
+make interpreter cleanup wait for them.
+
+The module loader and rLogging initialization set `logging.logThreads = False`
+under Jython. Messages and severity remain; Python LogRecord thread/threadName
+metadata is omitted. Native ResSim T-n prefixes are unaffected. No HEC/Jython
+binaries or shutdown handlers are modified. A fresh application restart is
+required to avoid retaining worker registrations from earlier runs.
+
+The isolated reproducer completes with the change; this is a targeted mitigation,
+not confirmation that every native parallel compute is safe. Keep reload OFF
+for the first validation. Use a small serial reference and the same members in
+parallel with more members than workers (17 members for a 16-worker pool), then
+check completion and output coverage before expanding. Read the per-initialization
+reload receipts separately; successful compute is not proof of toggle behavior.

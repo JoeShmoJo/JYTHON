@@ -22,6 +22,14 @@ import importlib
 import json
 import sys
 
+# Jython embeds native HEC worker threads in its threading registry when
+# LogRecord captures thread names. Interpreter cleanup can then join a live
+# executor worker forever. Keep messages, but omit Python thread metadata;
+# native ResSim logs retain their own T-n worker prefixes.
+import logging
+if sys.platform.startswith('java'):
+    logging.logThreads = False
+
 
 
 

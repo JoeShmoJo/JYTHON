@@ -11,6 +11,14 @@ configuring the logger. Then the logging would be organized by module.
 """
 import logging
 import logging.config
+
+# Jython embeds native HEC worker threads in its threading registry when
+# LogRecord captures thread names. Interpreter cleanup can then join a live
+# executor worker forever. Keep messages, but omit Python thread metadata;
+# native ResSim logs retain their own T-n worker prefixes.
+import sys
+if sys.platform.startswith('java'):
+    logging.logThreads = False
 import json
 import os
 

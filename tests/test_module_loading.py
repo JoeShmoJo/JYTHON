@@ -193,6 +193,15 @@ class ModuleLoadingTests(unittest.TestCase):
         self.assertIn('cLoadModules', data['loader_file'])
         self.assertGreater(data['timestamp_epoch_ms'], 0)
 
+    @unittest.skipUnless(sys.platform.startswith('java'), 'Jython-specific logging behavior')
+    def test_logging_keeps_message_without_native_thread_registration(self):
+        import logging
+        self.assertFalse(logging.logThreads)
+        record = logging.LogRecord('probe', logging.WARNING, __file__, 1,
+                                   'member %s', ('1982',), None)
+        self.assertEqual(record.getMessage(), 'member 1982')
+        self.assertIsNone(record.threadName)
+
     def test_missing_module_is_reported(self):
         self.assertFalse(cLoadModules.loadModule(self.name + '.absent', self.absolute))
 
