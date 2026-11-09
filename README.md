@@ -102,3 +102,9 @@ initialization warning. ON is honored only for confirmed serial mode; parallel
 or unrecognized modes override it OFF and log the reason. When effectively OFF,
 restart ResSim after script edits. See the Start Here guide for detection limits.
 The processor cap alone does not establish parallel safety.
+
+Reload decisions are also written as individual JSON receipts beneath the native
+DSS output directory in `module-load-diagnostics/`. Check requested_reload,
+detected_mode, effective_reload, timestamp_epoch_ms, and loader_file. Receipts
+are diagnostic output and are ignored by Git. Their presence confirms loader
+initialization, not successful compute or result coverage.

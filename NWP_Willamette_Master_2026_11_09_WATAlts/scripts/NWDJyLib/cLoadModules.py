@@ -116,6 +116,24 @@ def _effectiveReload(requested, mode):
     return requested and mode == 'serial'
 
 
+def _writeReloadDecision(network, requested, mode, detail, effective):
+    if network is None:
+        return None
+    from java.lang import System
+    from java.util import UUID
+    from NWDJyLib.cFile import parallelSafeWriteText
+    output = str(network.getRssRun().getDSSOutputFile())
+    output = str(network.makeAbsolutePathFromWatershed(output))
+    filename = os.path.join(os.path.dirname(output), 'module-load-diagnostics',
+                            'reload-' + str(UUID.randomUUID()) + '.json')
+    decision = {'timestamp_epoch_ms': long(System.currentTimeMillis()),
+                'loader_file': str(__file__), 'dss_output': output,
+                'requested_reload': requested, 'detected_mode': mode,
+                'mode_detail': detail, 'effective_reload': effective}
+    parallelSafeWriteText(filename, json.dumps(decision, indent=2), 'UTF-8')
+    return filename
+
+
 def loadModule(moduleName, getAbsPath, force_reload=False):
     '''
     Imports a module given the relative path from
@@ -155,6 +173,7 @@ def loadWatershedModules(network=None,currentAlt=None, modulesToLoad=["NWDJyLib"
     requested_reload = _readLoadSettings(getAbsPath)
     mode, mode_detail = _computeReloadMode(network, currentAlt)
     force_reload = _effectiveReload(requested_reload, mode)
+    decision_file = _writeReloadDecision(network, requested_reload, mode, mode_detail, force_reload)
     if requested_reload and not force_reload:
         warning = ("MODULE RELOAD OVERRIDDEN OFF: requested ON, but compute mode is %s (%s). "
                    "Cached code will be used; fully restart ResSim after script edits. "
@@ -167,6 +186,8 @@ def loadWatershedModules(network=None,currentAlt=None, modulesToLoad=["NWDJyLib"
         warning = ("MODULE RELOAD OFF: cached module code is reused. "
                    "Fully restart ResSim after script edits or those edits may not run. "
                    "This mode avoids forced reloads but does not guarantee parallel safety.")
+    if decision_file:
+        warning += ' Decision file: ' + decision_file
     # UI warnings are not necessarily persisted in the native worker log.
     if network and hasattr(network, 'printLogMessage'):
         network.printLogMessage(warning)

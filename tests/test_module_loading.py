@@ -143,6 +143,12 @@ class ModuleLoadingTests(unittest.TestCase):
                 return self.test.absolute(path)
         old_read = cLoadModules._readLoadSettings
         old_mode = cLoadModules._computeReloadMode
+        old_write = cLoadModules._writeReloadDecision
+        decisions = []
+        def record(*args):
+            decisions.append(args[1:])
+            return "test-decision.json"
+        cLoadModules._writeReloadDecision = record
         try:
             for requested, mode, phrase in [(False, 'serial', 'RELOAD OFF'),
                                             (True, 'serial', 'RELOAD ON'),
@@ -155,9 +161,37 @@ class ModuleLoadingTests(unittest.TestCase):
                 self.assertEqual(len(network.warnings), 1)
                 self.assertEqual(network.log_messages, network.warnings)
                 self.assertIn(phrase, network.warnings[0])
+                self.assertEqual(decisions[-1], (requested, mode, "test metadata", requested and mode == "serial"))
+                self.assertIn("test-decision.json", network.warnings[0])
         finally:
             cLoadModules._readLoadSettings = old_read
             cLoadModules._computeReloadMode = old_mode
+            cLoadModules._writeReloadDecision = old_write
+
+    @unittest.skipUnless(sys.platform.startswith('java'), 'requires Java NIO')
+    def test_native_java_receipt_contains_actual_decision(self):
+        import json
+        scripts = os.path.dirname(LIB)
+        sys.path.insert(0, scripts)
+        self.addCleanup(sys.path.remove, scripts)
+        output = os.path.join(self.root, 'simulation.dss')
+        class Network(object):
+            def getRssRun(self):
+                return self
+            def getDSSOutputFile(self):
+                return output
+            def makeAbsolutePathFromWatershed(self, path):
+                return path
+        path = cLoadModules._writeReloadDecision(Network(), True, 'parallel',
+                                                 'EnsembleComputeLauncher', False)
+        with open(path) as handle:
+            data = json.load(handle)
+        self.assertTrue(data['requested_reload'])
+        self.assertFalse(data['effective_reload'])
+        self.assertEqual(data['detected_mode'], 'parallel')
+        self.assertEqual(data['dss_output'], output)
+        self.assertIn('cLoadModules', data['loader_file'])
+        self.assertGreater(data['timestamp_epoch_ms'], 0)
 
     def test_missing_module_is_reported(self):
         self.assertFalse(cLoadModules.loadModule(self.name + '.absent', self.absolute))

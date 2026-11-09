@@ -87,3 +87,6 @@ smoketest_results.txt
 # Transactional dummy-input staging and pre-write DSS backups
 dummy-input-backups/
 dummy-write-*/
+
+# Per-initialization reload decision receipts
+module-load-diagnostics/
