@@ -94,3 +94,9 @@ Restart ResSim. This caps Java's visible processor count; it does not guarantee
 16 compute workers or enable parallel RTS ensembles. Preserve other VM settings.
 Other machines need an appropriate validated cap. See the Start Here guide for
 the complete instructions; fresh RTS import validation begins in serial mode.
+
+
+Restart ResSim after watershed script edits. The module loader uses cached normal
+imports during compute to avoid the observed parallel Jython file-close failure.
+The processor cap alone does not establish parallel safety; validate serial and
+small parallel runs before a full ensemble.

@@ -82,7 +82,18 @@ one line:
 vmparam -XX:ActiveProcessorCount=16
 ```
 
-Restart HEC-ResSim after saving. The setting limits the processor count visible
+Restart HEC-ResSim after saving. Also restart after editing watershed Python/Jython
+scripts: `NWDJyLib/cLoadModules.py` uses cached normal imports during compute.
+Forced reloads through an explicitly opened Python file caused the November 9,
+2026 parallel initialization failure (`PySystemState.unregisterCloser` at
+`fp.close()`). Normal imports avoid that observed path; this is not certification
+of thread safety for every rule/state variable. After a failed/canceled parallel
+run, preserve logs and restart the application before another test.
+
+The cap alone did not prevent that failure. Validate a serial run first, then a
+small parallel member set against the serial results before a full ensemble.
+
+The setting limits the processor count visible
 to Java to 16 rather than allowing Java to size processor-based pools for all
 32 logical processors. It does not reserve physical cores or guarantee exactly
 16 compute workers. Keep a single ActiveProcessorCount entry. Retain the other

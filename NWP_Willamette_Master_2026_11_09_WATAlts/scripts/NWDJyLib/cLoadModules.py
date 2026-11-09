@@ -1,8 +1,9 @@
 '''
 
 These set of functions assist in loading or reloading modules
-  into the current environment so that WAT/ResSim/CWMS program doesn't
-  need to be closed and re-opened with each change.
+  into the current environment using cached imports. Restart the HEC
+  application after editing scripts; forced reloads during parallel compute
+  can crash Jython or re-execute shared module state.
 
 Using the 'loadWatershedModules' function, pass the network object
   and directories within the watershed's 'scripts' directory
@@ -17,8 +18,7 @@ e.g.,
 import os
 import fnmatch
 import glob
-import imp
-import org.python.core.PyTuple as PyTuple
+import importlib
 
 
 
@@ -66,33 +66,25 @@ def convertFilePathToModuleName(filePath, scriptsDir):
 
 def loadModule(moduleName, getAbsPath):
     '''
-    (Re)loads a module given the relative path from
+    Imports a module given the relative path from
       the watershed.
     @param moduleName String, of module name
                       e.g., 'NWDJyLib.Utils.SimplePy'
     '''
 
-    # Preparing arguments for 'load_module' function; 
-    #   check existence of external script
-    pathname = getAbsPath("scripts/"+\
-        moduleName.replace(".","/")+".py")
+    # Native ensemble workers must not force-load a module through PyFile.
+    # Closing that file can fail with PySystemState.unregisterCloser on worker
+    # threads; re-executing shared modules also races other members' imports.
+    # Use Python's normal import machinery and restart ResSim after edits.
+    pathname = getAbsPath("scripts/" + moduleName.replace(".", "/") + ".py")
     if not os.path.exists(pathname):
         return False
-    fp = open(pathname,"r")
-    description=PyTuple(imp.get_suffixes()[0])
-
-    # Loading module (will also reload if already loaded)
-    try:
-        thisSVModule = imp.load_module(moduleName, fp, pathname, description)
-    finally:
-        # Since we may exit via an exception, close fp explicitly.
-        if fp:
-            fp.close()
+    importlib.import_module(moduleName)
     return True
     
 def loadWatershedModules(network=None,currentAlt=None, modulesToLoad=["NWDJyLib"]):
     '''
-    (Re)load all modules in the watershed directory(ies) specified in modulesToLoad
+    Import all modules in the watershed directory(ies) specified in modulesToLoad
        argument
     '''
     if network: # State Variable Script or Scripted Rule
@@ -123,65 +115,13 @@ def loadWatershedModules(network=None,currentAlt=None, modulesToLoad=["NWDJyLib"
     for filePath in scriptFiles:
         moduleName = convertFilePathToModuleName(filePath, scriptsDir)
         loadModule(moduleName, getAbsPath)
-        #rjc 27-Aug-2025
-        #Below code can just print a message and still run, which is not good.
-        #In ResSim, you can run a simulation successfully, and then make a change to a script that had a syntax error,
-        #And then ResSim would still run the simulation again because it wasn't forcing a reload (bad)
-        #Force the reload instead by not nesting it in a try/except statement
-        '''
-        try:
-            success = loadModule(moduleName, getAbsPath)
-        except Exception, exception:
-            p("cLoadModules:\tError loading %s:\t%s" % \
-                (moduleName, exception.message))
-        '''
+        # Import/syntax errors propagate and fail initialization rather than
+        # allowing compute to continue with a silently missing module.
     return True
     
     
-def getNewExternalSVObj(network, svName, currentVariable):
-    moduleName = "externalSVs.%s" % svName
-
-    # Preparing arguments for 'load_module' function; 
-    #   check existence of external script
-    pathname = network.makeAbsolutePathFromWatershed("scripts/"+\
-        moduleName.replace(".","/")+".py")
-    if not os.path.exists(pathname):
-        network.printErrorMessage("Could not find state variable's \
-            external script.  Expected here:\n\t%s" % pathname)
-        return False
-    fp = open(pathname,"r")
-    description=PyTuple(imp.get_suffixes()[0])
-
-    # Loading module (will also reload if already loaded)
-    try:
-        thisSVModule = imp.load_module(moduleName, fp, pathname, description)
-    finally:
-        # Since we may exit via an exception, close fp explicitly.
-        if fp:
-            fp.close()
-            
-    # create new class object and calling __init__ function
-    return getattr(thisSVModule,svName)(network, currentVariable)
-
-# EXPERIMENT: use normal imports instead of forced module reloads.
-# Restart ResSim whenever Python scripts change.
-import importlib
-
-'''
-RJC 03Nov2026, this wasn't forcing reloads when a script changed, so commented it out.
-def loadModule(moduleName, getAbsPath):
-    pathname = getAbsPath(
-        "scripts/" + moduleName.replace(".", "/") + ".py"
-    )
-    if not os.path.exists(pathname):
-        return False
-
-    importlib.import_module(moduleName)
-    return True
-'''
-
 def getNewExternalSVObj(network, svName, currentVariable):
     module = importlib.import_module("externalSVs." + svName)
-
-    # Each call still creates a new state-variable object.
+    # Create a separate state-variable instance for every caller. Module code
+    # is cached; state must remain on that instance or the current network.
     return getattr(module, svName)(network, currentVariable)
