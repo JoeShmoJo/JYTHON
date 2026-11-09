@@ -80,3 +80,17 @@ do not commit directly to main.
 Windows instructions should support Windows PowerShell 5.1.
 Never commit credentials or interpret an existing DSS catalog or 100%
 progress as proof of a successful fresh compute.
+
+## Standalone parallel-compute startup
+
+On the user's 32-logical-processor machine, close ResSim and back up its
+installation-local `HEC_ResSim_Config`. Add or update a single VM parameter:
+
+```text
+vmparam -XX:ActiveProcessorCount=16
+```
+
+Restart ResSim. This caps Java's visible processor count; it does not guarantee
+16 compute workers or enable parallel RTS ensembles. Preserve other VM settings.
+Other machines need an appropriate validated cap. See the Start Here guide for
+the complete instructions; fresh RTS import validation begins in serial mode.

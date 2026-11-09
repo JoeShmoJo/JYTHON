@@ -71,6 +71,33 @@ Do not reuse those simulation/date choices blindly. Confirm the open model and
 active forecast. Names `Ensemble_Test` and `Ensebmle_Test` both appeared in earlier
 work; use the actual filesystem path, not a corrected spelling guessed from notes.
 
+## Standalone parallel-compute startup setting
+
+Before parallel ensemble compute on the user's 32-logical-processor machine,
+close HEC-ResSim and back up the `HEC_ResSim_Config` launcher configuration
+used by that installation. In its memory/VM parameters section, add or update
+one line:
+
+```text
+vmparam -XX:ActiveProcessorCount=16
+```
+
+Restart HEC-ResSim after saving. The setting limits the processor count visible
+to Java to 16 rather than allowing Java to size processor-based pools for all
+32 logical processors. It does not reserve physical cores or guarantee exactly
+16 compute workers. Keep a single ActiveProcessorCount entry. Retain the other
+VM settings; this instruction does not require changing the memory allocation.
+
+The 16-processor cap is the user's required setting for this machine, not a
+universal recommendation for every computer. Record and validate a suitable cap
+on other hardware. The launcher configuration is installation-local and must be
+reapplied or checked after an application reinstall/update; copying the watershed
+does not carry it over.
+
+This standalone launcher setting does not enable parallel RTS ensemble compute
+or remove RTS's separate native compute restrictions. Begin fresh RTS import
+validation in serial mode as documented.
+
 ## Upon Restart
 
 1. Back up the complete existing watershed and any study forecasts/results you

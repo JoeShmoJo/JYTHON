@@ -17,6 +17,7 @@
 <li>Preserve outputs needed for comparison before recomputing. Do not accept a failed</li>
 </ul>
 <p>or partial run. Check current native logs and all intended members/window.</p>
+<p>Before standalone parallel compute, complete the <a href="PROJECT_START_HERE.html#standalone-parallel-compute-startup-setting">processor-cap startup setup</a>. On the user&#x27;s 32-logical-processor machine, the required launcher line is <code>vmparam -XX:ActiveProcessorCount=16</code>; restart ResSim after changing it. RTS import validation still starts in serial mode.</p>
 <h2 id="a-standalone-ressim">A. Standalone ResSim</h2>
 <ol start="1">
 <li>Open the watershed and desired simulation in the Simulation module. Note the simulation directory and alternative shown in Simulation Control. Select <strong>Simulation type: Ensemble or Single POR</strong> in the workflow menu.</li>
