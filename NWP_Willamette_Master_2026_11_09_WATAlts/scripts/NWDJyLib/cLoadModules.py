@@ -98,7 +98,9 @@ def _computeReloadMode(network, currentAlt):
         launcher_name = str(launcher.getClass().getSimpleName())
         if launcher_name == 'EnsembleComputeLauncher':
             return 'parallel', launcher_name
-        # Public getter names vary across releases. Discover a zero-argument
+        # ResSim 4.1 exposes useMultithreadedCompute(), confirmed from the
+        # installed public API. Also support getter names on other releases.
+        # Discover a zero-argument
         # Boolean multithread getter on ensemble plugin data, never guess from
         # the number of CPUs or the current worker's thread name.
         serial_setting = False
@@ -107,7 +109,8 @@ def _computeReloadMode(network, currentAlt):
                 continue
             for method in plugin.getClass().getMethods():
                 name = str(method.getName()).lower()
-                if (name.startswith('get') or name.startswith('is')) and 'multithread' in name:
+                if (name == 'usemultithreadedcompute' or
+                        ((name.startswith('get') or name.startswith('is')) and 'multithread' in name)):
                     if len(method.getParameterTypes()) == 0 and str(method.getReturnType().getName()) == 'boolean':
                         enabled = method.invoke(plugin, [])
                         if enabled:

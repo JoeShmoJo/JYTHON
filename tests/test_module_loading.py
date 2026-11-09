@@ -96,7 +96,7 @@ class ModuleLoadingTests(unittest.TestCase):
             def __init__(self, enabled):
                 self.enabled = enabled
             def getName(self):
-                return 'getUseMultithreadedCompute'
+                return 'useMultithreadedCompute'
             def getParameterTypes(self):
                 return []
             def getReturnType(self):

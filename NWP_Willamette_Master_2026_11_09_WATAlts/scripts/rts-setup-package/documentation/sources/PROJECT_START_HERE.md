@@ -101,7 +101,8 @@ modules handled by `cLoadModules`, not every import/reload elsewhere in the mode
 Parallel execution overrides the toggle OFF. The native EnsembleComputeLauncher
 is treated as parallel-capable; this conservative override also applies if it
 ultimately uses only one worker. Otherwise the loader looks for a public Boolean
-multithread getter on native ensemble plugin metadata. ON is honored only when
+multithread getter on native ensemble plugin metadata, including the confirmed
+ResSim 4.1 `useMultithreadedCompute()` method. ON is honored only when
 that metadata explicitly indicates serial mode. Unknown/unavailable metadata
 also overrides it OFF. The warning reports the reason; it never guesses from
 CPU counts or thread names. Native mode detection still needs confirmation in
