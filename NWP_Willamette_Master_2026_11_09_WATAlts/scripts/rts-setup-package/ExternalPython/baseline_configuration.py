@@ -313,12 +313,21 @@ def current_configuration(root, scripts, alternative='Con_Season', marker_name='
         if key in values: result['rules']['irrm']['settings'][setting]=values[key]
     # Constants are sourced from the installed legacy implementations.
     import ast
-    import sys
-    sys.path.insert(0,str(Path(scripts).parent))
-    if originals=='_standalone_baseline_originals':
-        from standalone_baseline_runtime import CONSTANTS
+    # Read the literal mapping without importing the Jython runtime. Its I/O
+    # helpers require Java and cannot be imported by the desktop Python editor.
+    runtime_name = ('standalone_baseline_runtime.py'
+                    if originals == '_standalone_baseline_originals'
+                    else 'rts_baseline_runtime.py')
+    runtime_path = Path(scripts).parent / runtime_name
+    runtime_tree = ast.parse(runtime_path.read_text(encoding='utf-8-sig'))
+    for assignment in runtime_tree.body:
+        if (isinstance(assignment, ast.Assign) and
+                any(isinstance(target, ast.Name) and target.id == 'CONSTANTS'
+                    for target in assignment.targets)):
+            CONSTANTS = ast.literal_eval(assignment.value)
+            break
     else:
-        from rts_baseline_runtime import CONSTANTS
+        raise ValueError('Runtime CONSTANTS mapping missing: ' + str(runtime_path))
     for module,key in MODULE_KEYS.items():
         path=watershed/'scripts'/originals/'externalRules'/(module+'.py')
         text=path.read_text()
