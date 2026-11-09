@@ -19,7 +19,11 @@ def key(parts):
     return tuple(p.strip().upper() for p in parts)
 
 
-def build_plan(paths, mappings, count=1000):
+def build_plan(paths, mappings, count=1000, first_member=1982):
+    if count < 1 or first_member < 0 or first_member + count > 1000000:
+        raise ValueError("Member range must fit unique six-digit nonnegative IDs")
+    if set(range(first_member, first_member + count)) & set(range(3000,3004)):
+        raise ValueError("Target range overlaps reserved synthetic members 3000-3003")
     ensemble_keys = set()
     common_keys = set()
     for row in mappings:
@@ -66,7 +70,7 @@ def build_plan(paths, mappings, count=1000):
     member_map = []
     destinations = {key(path.split('/')) for path in common.values()}
     for index in range(count):
-        target = 1982 + index
+        target = first_member + index
         source = MEMBERS[index % len(MEMBERS)]
         member_map.append({'target_member':target, 'source_member':source})
         for signature in sorted(reference):
@@ -94,16 +98,17 @@ def in_place_copies(copies, existing_paths):
     return additions
 
 
-def append_members(source, mappings):
+def append_members(source, mappings, count=1000, first_member=1982):
     from pydsstools.heclib.dss import HecDss
     manifest = source.with_suffix('.stress-members.json')
     if manifest.exists():
         raise ValueError('Stress manifest already exists; refusing a duplicate build: ' + str(manifest))
     with HecDss.Open(str(source)) as fid:
         before = fid.getPathnameList('')
-        copies, member_map, expected = build_plan(before, mappings)
+        copies, member_map, expected = build_plan(before, mappings, count, first_member)
         additions = in_place_copies(copies, before)
-        print('Preflight passed: appending 957 members (2025-2981), %d records.' % len(additions), flush=True)
+        added_ids = {int(dst.split('/')[6][2:8]) for _,dst in additions}
+        print('Preflight passed: appending %d members, %d records; selected range %d-%d.' % (len(added_ids),len(additions),first_member,first_member+count-1), flush=True)
         print('IN-PLACE mode: failure can leave partial additions. Existing records are not deleted or overwritten.', flush=True)
         for index, (original, destination) in enumerate(additions, 1):
             status = fid.copyRecordsFrom(fid, original, destination)
@@ -121,7 +126,7 @@ def append_members(source, mappings):
                        added_records=len(additions),
                        note='Repeated input scenarios for stress testing; not independent forecasts. Existing records retained. Catalog verified; confirm selected simulation-window coverage.'),handle,indent=2)
     print('DONE:',source)
-    print('Added 957 members; total input member range: 1982-2981 (1000).')
+    print('Added %d members. Native TEST member selection: %d-%d (%d selected members).' % (len(added_ids),first_member,first_member+count-1,count))
     print('Existing inputs/outputs retained. Member map:',manifest)
 
 
@@ -132,6 +137,8 @@ def main():
     destination.add_argument('--output', type=Path)
     destination.add_argument('--in-place', action='store_true',
                              help='Append new members to source DSS; no full-file copy or backup')
+    parser.add_argument('--first-member', type=int, default=1982)
+    parser.add_argument('--count', type=int, default=1000)
     parser.add_argument('--mappings', type=Path,
                         default=Path(__file__).with_name('conseason-input-mappings.tsv'))
     args = parser.parse_args()
@@ -147,7 +154,7 @@ def main():
     with args.mappings.open(encoding='utf-8-sig', newline='') as handle:
         mappings = [row for row in csv.reader(handle, delimiter='\t') if row]
     if args.in_place:
-        append_members(source, mappings)
+        append_members(source, mappings, args.count, args.first_member)
         return
     from pydsstools.heclib.dss import HecDss
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -155,8 +162,8 @@ def main():
     with tempfile.TemporaryDirectory(prefix='stress-input-build-', dir=str(output.parent)) as temp:
         staged = Path(temp) / 'inputs.dss'
         with HecDss.Open(str(source)) as src:
-            copies, member_map, expected = build_plan(src.getPathnameList(''), mappings)
-            print('Preflight passed: 1000 unique members (1982-2981), %d physical records.' % len(copies), flush=True)
+            copies, member_map, expected = build_plan(src.getPathnameList(''), mappings, args.count, args.first_member)
+            print('Preflight passed: %d unique members (%d-%d), %d physical records.' % (args.count,args.first_member,args.first_member+args.count-1,len(copies)), flush=True)
             with HecDss.Open(str(staged)) as dst:
                 for index, (original, destination) in enumerate(copies, 1):
                     status = dst.copyRecordsFrom(src, original, destination)
@@ -171,7 +178,7 @@ def main():
                 raise RuntimeError('Destination catalog mismatch; output not published')
             ids = {int(m[1]) for p in actual_paths
                    for m in [COLLECTION.fullmatch(p.split('/')[6])] if m}
-            if ids != set(range(1982,2982)):
+            if ids != set(range(args.first_member,args.first_member+args.count)):
                 raise RuntimeError('Destination member verification failed')
         stat_after = source.stat()
         if (stat_before.st_size,stat_before.st_mtime_ns) != (stat_after.st_size,stat_after.st_mtime_ns):
@@ -195,7 +202,7 @@ def main():
             json.dump(report,handle,indent=2)
     print('DONE:',output)
     print('Member map:',manifest)
-    print('Native member selection: 1982-2981. Source DSS unchanged.')
+    print('Native member selection: %d-%d. Source DSS unchanged.' % (args.first_member,args.first_member+args.count-1))
     print('Point the TEST simulation ensemble input mappings at the NEW DSS; do not run extraction over it.')
 
 

@@ -39,6 +39,14 @@ class StressInputsTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'Target input already exists'):
             builder.in_place_copies(copies,existing)
 
+    def test_custom_range_avoids_existing_future_members(self):
+        existing = self.paths + ['//DETO3/FLOW-UNREG/01Jan2026/1Day/C:002025|/']
+        copies, mapping, _ = builder.build_plan(existing,self.rows,first_member=4000)
+        additions = builder.in_place_copies(copies,existing)
+        self.assertEqual(len(additions),1000)
+        self.assertEqual(mapping[0],dict(target_member=4000,source_member=1982))
+        self.assertEqual(mapping[-1]['target_member'],4999)
+
     def test_collision_is_rejected(self):
         with self.assertRaisesRegex(ValueError,'Duplicate source'):
             builder.build_plan(self.paths+[self.paths[0]],self.rows)
