@@ -1,0 +1,390 @@
+TSDataSet Name=FRM_EObs
+Description=Ensemble version of FRM-Only regime. Simulates many different flood events with different inflows and starting pool. See ../3.7_Synthetics_ResSim_Inputs for a legend on what each run is. 
+
+FRM Baseline Conditions for Willamette FIRO Study. 3 hour timestep suitable for flood event modeling. 
+
+Operations reflect FRM Baseline conditions (see documentation).
+
+Make sure to turn all DSS output off if you want to run a full ensemble on one computer. 
+Otherwise, the output DSS file will get huge and ResSim will choke.
+
+To run this simulation, we have to "trick" ResSim a little bit.
+If we created a simulation traditionally, 
+Ressim will try to extract all timeseries for every ensemble event from the input .dss file with all inflows/elevations.
+This would take a long time.
+Rather than doing that, it is best to do the following:
+1. Set up the ensemble alternative so it is only referencing a single event, like "000001", in the "Ensemble" tab.
+2. Create the simulation:
+	Start date: 01Jan3000 1200
+	Lookback: 01Jan3000 0300
+	End Date: 16Jan3000 0000
+3. In the simulation module, change the "Ensemble" tab of the alternative back to what it should be (e.g. "000001-0017187")
+4. Close down ResSim
+5. Copy the input .dss file with all inputs needed to the "../rss/$SIM_NAME$" folder. This is usually from "../3.7_Synthetics_ResSim_Inputs\out"
+	Rename it "simulation.dss". Delete the existing "simulation.dss" file.
+6. Re-open ResSim and then run
+7. When running multi-thread ensemble compute, Ressim will usually fail before it gets all the way through:
+	Not exactly sure why this happens, likely some memory issue
+	Doesn't have a problem if running single-thread, but much slower.
+8. After the run fails, run the "../scripts/Utilities/PrintMissingEnsembles.py" script.
+	It spits out a string showing all the runs that failed, e.g. "000069-001075, 001084, ..."
+9. Copy this text of the failed runs into the "Ensemble" tab in ResSim in the simulation, and run again
+10. Repeat as many times as needed until all ensemble members are completed. 
+11. The results for each simulation are stored in the "../rss/$SIM_NAME$/PeakExtract.csv", which is appended with every completed ensemble member.
+	If you need to re-run a simulation, delete out this file first, otherwise we'll have duplicates in the file. (Observed TS Data Set)
+
+_type=0
+ParentPath=null
+ParentClass=null
+TSRecord=0
+TSRecord Name=~N25
+TSRecord VariableId=0
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=1
+TSRecord Name=~N31
+TSRecord VariableId=0
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=2
+TSRecord Name=~N33
+TSRecord VariableId=0
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=3
+TSRecord Name=~N34
+TSRecord VariableId=0
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=4
+TSRecord Name=~N36
+TSRecord VariableId=0
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=5
+TSRecord Name=~N39
+TSRecord VariableId=0
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=6
+TSRecord Name=~N44
+TSRecord VariableId=0
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=7
+TSRecord Name=~N46
+TSRecord VariableId=0
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=8
+TSRecord Name=~N49
+TSRecord VariableId=0
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=9
+TSRecord Name=~N52
+TSRecord VariableId=0
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=10
+TSRecord Name=~N54
+TSRecord VariableId=0
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=11
+TSRecord Name=~N56
+TSRecord VariableId=0
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=12
+TSRecord Name=~N62
+TSRecord VariableId=0
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=13
+TSRecord Name=~N64
+TSRecord VariableId=0
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=14
+TSRecord Name=~N66
+TSRecord VariableId=0
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=15
+TSRecord Name=~N68
+TSRecord VariableId=0
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=16
+TSRecord Name=~N70
+TSRecord VariableId=0
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=17
+TSRecord Name=~N72
+TSRecord VariableId=0
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=18
+TSRecord Name=~N74
+TSRecord VariableId=0
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=19
+TSRecord Name=~N76
+TSRecord VariableId=0
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=20
+TSRecord Name=~N78
+TSRecord VariableId=0
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=21
+TSRecord Name=~N80
+TSRecord VariableId=0
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=22
+TSRecord Name=~N82
+TSRecord VariableId=0
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=23
+TSRecord Name=~N84
+TSRecord VariableId=0
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=24
+TSRecord Name=~N86
+TSRecord VariableId=0
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=25
+TSRecord Name=~N96
+TSRecord VariableId=0
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=26
+TSRecord Name=~N132
+TSRecord VariableId=0
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=27
+TSRecord Name=~E89:F
+TSRecord VariableId=10
+TSRecord ParamName=Elev
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=28
+TSRecord Name=~E94:F
+TSRecord VariableId=10
+TSRecord ParamName=Elev
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=29
+TSRecord Name=~E104:F
+TSRecord VariableId=10
+TSRecord ParamName=Elev
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=30
+TSRecord Name=~E109:F
+TSRecord VariableId=10
+TSRecord ParamName=Elev
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=31
+TSRecord Name=~E114:F
+TSRecord VariableId=10
+TSRecord ParamName=Elev
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=32
+TSRecord Name=~E119:F
+TSRecord VariableId=10
+TSRecord ParamName=Elev
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=33
+TSRecord Name=~E124:F
+TSRecord VariableId=10
+TSRecord ParamName=Elev
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=34
+TSRecord Name=~E129:F
+TSRecord VariableId=10
+TSRecord ParamName=Elev
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=35
+TSRecord Name=~E134:F
+TSRecord VariableId=10
+TSRecord ParamName=Elev
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=36
+TSRecord Name=~E139:F
+TSRecord VariableId=10
+TSRecord ParamName=Elev
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=37
+TSRecord Name=~E144:F
+TSRecord VariableId=10
+TSRecord ParamName=Elev
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=38
+TSRecord Name=~E149:F
+TSRecord VariableId=10
+TSRecord ParamName=Elev
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=-1
+TSRecord End=
+
+

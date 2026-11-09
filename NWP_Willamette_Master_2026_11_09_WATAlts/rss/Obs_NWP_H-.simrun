@@ -1,0 +1,55 @@
+AsciiSerializer=5
+{=hec.rss.model.RssSimRun
+  ID=0
+  FLD=_index
+  I=745
+  FLD=_name
+  STR=Obs_NWP_H-
+  FLD=_description
+  STR=For Annual Flood Damages Prevented. Modeled observed, NWP, hourly compute. Reservoirs are forced to release exactly what was observed (releases are followed, not reservoir elevations). A few reservoirs (e.g. Round Butte) don't have full data available, so they just pass inflow. This results in the reservoir elevations being a bit funky--if the stor-elev table is accurate, the modeled elevations should be close to observed data, though. This alternative is also used to compute local flows, so all "Observed Data" locations should have time series mapped in. All local flows should be defined.
+  FLD=_path
+  STR=
+  FLD=_nextTSRecordProxyIndex
+  I=0
+  FLD=_lastModifiedTime
+  J=1764616303972
+  FLD=_userName
+  STR=Obs_NWP_H
+  FLD=_altList
+  {=java.util.Vector
+    ID=1
+    {COLLECT
+      {=hec.model.AltItem
+        ID=2
+        FLD=_program
+        STR=rss
+        FLD=_altName
+        STR=Obs_NWP_H
+        FLD=_inputPos
+        I=0
+        FLD=_modelPos
+        I=1
+        FLD=_altIndex
+        I=744
+      }
+    }COLLECT
+  }
+  FLD=_trialList
+  {=java.util.Vector
+    ID=3
+  }
+  FLD=_version
+  I=3
+  FLD=_computeInundation
+  Z=false
+  FLD=_lastComputeTime
+  J=0
+  FLD=_configurationId
+  J=3
+  FLD=_activeRun
+  Z=false
+  FLD=_selectedRun
+  Z=false
+  FLD=_expanded
+  Z=false
+}

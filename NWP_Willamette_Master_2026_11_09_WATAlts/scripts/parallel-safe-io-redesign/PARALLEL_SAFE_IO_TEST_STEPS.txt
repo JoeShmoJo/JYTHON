@@ -1,0 +1,31 @@
+Parallel-Safe Java NIO I/O Redesign Test
+Created: 2026-10-21 10:00:12
+
+Changed files:
+C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\NWDJyLib\cFile.py
+C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\standalone_baseline_runtime.py
+C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\externalSVs\Alternative_Setup.py
+
+Changes:
+1. Replaced cFile read helpers with Java NIO reads.
+2. Added Java NIO SHA-256 and text-write helpers.
+3. Replaced baseline configuration/hash/receipt PyFile operations.
+4. Replaced Alternative_Setup config/report PyFile operations.
+5. Removed the normal-path duplicate Alternative_Setup close behavior.
+
+Not changed:
+No application JAR.
+No native executor or worker-state patch.
+No DSS file.
+No CSV contents.
+No alternative selection.
+No ControllerExternalSV initialization lock.
+
+Backup: C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\parallel-safe-io-redesign\backup-parallel-safe-io-20261021T100012
+
+Required validation:
+1. Restart ResSim.
+2. Run a serial regression compute.
+3. Restart ResSim again.
+4. Run exactly two parallel members.
+5. Do not accept/archive test results.

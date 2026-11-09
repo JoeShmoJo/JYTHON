@@ -1,0 +1,7 @@
+TSDataSet Name=FIS_SIDataObs
+Description=Winter FIS Ops with hard coded lookback (rule curve and min flow) and historical short interval inflows. (Observed TS Data Set)
+
+_type=0
+ParentPath=null
+ParentClass=null
+

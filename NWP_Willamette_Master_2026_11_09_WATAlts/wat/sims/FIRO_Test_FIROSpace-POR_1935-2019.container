@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SimulationContainer SimulationContainerName="FIRO_Test_FIROSpace-POR_1935-2019" Description="" AnalysisPeriod="POR_1935-2019" Alternative="FIRO_Test_FIROSpace" ProgramOrder="Default" WarmupTimeSteps="0" SimulationCount="1">
+  <Simulation0 SimulationName="FIRO_Test_FIROSpace-POR_1935-2019" />
+</SimulationContainer>
+

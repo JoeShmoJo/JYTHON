@@ -1,0 +1,27 @@
+tblName,dssPath,nSubreaches
+cw_to_40_71,/Clearwater BLW Lapwai/0.24/STORAGE-FLOW///4of4 STEADY/,1
+cw_to_37_45,/Clearwater BLW Lapwai/11.84/STORAGE-FLOW///4of4 STEADY/,1
+cw_to_29_93,/Clearwater BLW Lapwai/3.94/STORAGE-FLOW///4of4 STEADY/,1
+cw_to_15_19,/Clearwater BLW NF Clearwate/29.93/STORAGE-FLOW///4of4 STEADY/,1
+cw_to_11_84,/Clearwater BLW NF Clearwate/37.45/STORAGE-FLOW///4of4 STEADY/,1
+cw_to_3_94,/Clearwater BLW NF Clearwate/40.71/STORAGE-FLOW///4of4 STEADY/,1
+cw_to_0_24,/Clearwater BLW Potlatch/15.19/STORAGE-FLOW///4of4 STEADY/,1
+lap_to_0_23,/Lapwai Cr. Lapwai Cr./0.23/STORAGE-FLOW///4of4 STEADY/,1
+nf_cw_to_0_17,/NF Clearwater North Fork/0.17/STORAGE-FLOW///4of4 STEADY/,1
+pot_to_0_15,/Potlatch Potlatch/0.15/STORAGE-FLOW///4of4 STEADY/,2
+snk_to_227_66,/Snake River Hells Canyon/143.67/STORAGE-FLOW///4of4 STEADY/,1
+snk_to_189_89,/Snake River Hells Canyon/165.87/STORAGE-FLOW///4of4 STEADY/,1
+snk_to_186_42,/Snake River Hells Canyon/167.03/STORAGE-FLOW///4of4 STEADY/,1
+snk_to_177_48,/Snake River Hells Canyon/174.04/STORAGE-FLOW///4of4 STEADY/,1
+snk_to_174_04,/Snake River Hells Canyon/177.48/STORAGE-FLOW///4of4 STEADY/,1
+snk_to_167_03,/Snake River Hells Canyon/186.42/STORAGE-FLOW///4of4 STEADY/,1
+snk_to_165_87,/Snake River Hells Canyon/189.89/STORAGE-FLOW///4of4 STEADY/,1
+snk_to_143_67,/Snake River Hells Canyon/227.66/STORAGE-FLOW///4of4 STEADY/,1
+snk_to_137_56,/Snake River Lower/106.15/STORAGE-FLOW///4of4 STEADY/,2
+snk_to_106_15,/Snake River Lower/137.56/STORAGE-FLOW///4of4 STEADY/,1
+snk_to_92_02,/Snake River Lower/40.96/STORAGE-FLOW///2of4 STEADY/,2
+snk_to_69_77,/Snake River Lower/58.74/STORAGE-FLOW///2of4 STEADY/,1
+snk_to_61_82,/Snake River Lower/61.82/STORAGE-FLOW///2of4 STEADY/,1
+snk_to_58_74,/Snake River Lower/69.77/STORAGE-FLOW///3of4 STEADY/,2
+snk_to_40_96,/Snake River Lower/9.34/STORAGE-FLOW///1of4 STEADY/,2
+snk_to_9_34,/Snake River Lower/92.02/STORAGE-FLOW///3of4 STEADY/,1

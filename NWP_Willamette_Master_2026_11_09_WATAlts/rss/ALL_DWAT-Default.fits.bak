@@ -1,0 +1,520 @@
+TSDataSet Name=ALL_D-WAT-Default
+Description=All operations (close to real-life as possible), including BiOp and Dam Safety IRRMs.
+
+_type=0
+ParentPath=null
+ParentClass=null
+TSRecord=0
+TSRecord Name=TRSO_Thomas Creek nr Scio
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Zero Flow record.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//1DAY/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=1
+TSRecord Name=Coburg_HMSsub_McKenzieRv_S10
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Zero Flow record.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//1DAY/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=2
+TSRecord Name=HMSsub_NFMFWillametteRv_S10
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Zero Flow record.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//1DAY/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=3
+TSRecord Name=HMSsub_MFWillametteRv_S40
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Zero Flow record.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//1DAY/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=4
+TSRecord Name=ALBO_ Albany_HMSsub_WillametteRv_S60
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/EIS_1936-2019_Flows_2020-01-08.dss
+TSRecord DssPathname=//ALBANY/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=5
+TSRecord Name=OCUO_Oregon City_HMSsub_WillametteRv_S30
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/EIS_1936-2019_Flows_2020-01-08.dss
+TSRecord DssPathname=//OREGON CITY/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=6
+TSRecord Name=Willamette_at Wilsonville
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Zero Flow record.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//1DAY/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=7
+TSRecord Name=NBGO_Newberg_HMSsub_WillametteRv_S40
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Zero Flow record.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//1DAY/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=8
+TSRecord Name=SLMO_Salem_HMSsub_WillametteRv_S50
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/EIS_1936-2019_Flows_2020-01-08.dss
+TSRecord DssPathname=//SALEM/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=9
+TSRecord Name=WTLO_Waterloo_HMSsub_SSantiamRv_S15
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/EIS_1936-2019_Flows_2020-01-08.dss
+TSRecord DssPathname=//WATERLOO/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=10
+TSRecord Name=MEHO_Mehama_HMSsub_NSantiamRv_S10
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/EIS_1936-2019_Flows_2020-01-08.dss
+TSRecord DssPathname=//MEHAMA/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=11
+TSRecord Name=LSMO_Little North Santiam at Mehama
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Zero Flow record.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//1DAY/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=12
+TSRecord Name=NSJO_Greens Bridge_HMSsub_NSantiamRv_S05
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Zero Flow record.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//1DAY/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=13
+TSRecord Name=No Santiam+So Santiam_Local_NSR_S07
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Zero Flow record.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//1DAY/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=14
+TSRecord Name=No Santiam+So Santiam_Local_SSR_S08
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Zero Flow record.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//1DAY/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=15
+TSRecord Name=JFFO Santiam_at Jefferson loc
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/EIS_1936-2019_Flows_2020-01-08.dss
+TSRecord DssPathname=//JEFFERSON/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=16
+TSRecord Name=MNRO_Monroe_HMSsub_LongTomRv_S10
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/EIS_1936-2019_Flows_2020-01-08.dss
+TSRecord DssPathname=//MONROE/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=17
+TSRecord Name=HARO_Harrisburg_HMSsub_WillametteRv_S80
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/EIS_1936-2019_Flows_2020-01-08.dss
+TSRecord DssPathname=//HARRISBURG/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=18
+TSRecord Name=McKenzie+SF McKenzie_HMSsub_McKenzieRV_S20
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Zero Flow record.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//1DAY/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=19
+TSRecord Name=VIDO_Vida_HMSsub_McKenzieRv_S18
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/EIS_1936-2019_Flows_2020-01-08.dss
+TSRecord DssPathname=//VIDA/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=20
+TSRecord Name=MCZO_McKenzie nr Walterville_HMSsub_McKenzieRv_S15
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Zero Flow record.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//1DAY/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=21
+TSRecord Name=EUGO_Willamette at Eugene
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Zero Flow record.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//1DAY/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=22
+TSRecord Name=GOSO_Goshen_HMSsub_CFWillametteRv_S10
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/EIS_1936-2019_Flows_2020-01-08.dss
+TSRecord DssPathname=//GOSHEN/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=23
+TSRecord Name=JASO_Jasper_HMSsub_MFWillametteRv_S10
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/EIS_1936-2019_Flows_2020-01-08.dss
+TSRecord DssPathname=//JASPER/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=24
+TSRecord Name=Big Cliff Local Inflow_HMSsub_NSantiamRv_S15
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Zero Flow record.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//1DAY/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=25
+TSRecord Name=Detroit Inflow
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/EIS_1936-2019_Flows_2020-01-08.dss
+TSRecord DssPathname=//DETROIT/FLOW-IN//1DAY/WILLAMETTE_EIS/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=26
+TSRecord Name=Foster Local Inflow_HMSsub_SSantiamRv_S20
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/EIS_1936-2019_Flows_2020-01-08.dss
+TSRecord DssPathname=//FOSTER/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=27
+TSRecord Name=Green Peter Inflow_HMSsub_SSantiamRv_S30
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/EIS_1936-2019_Flows_2020-01-08.dss
+TSRecord DssPathname=//GREEN PETER/FLOW-IN//1DAY/WILLAMETTE_EIS/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=28
+TSRecord Name=Fern Ridge Inflow_HMSsub_LongTomRv_S20
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/EIS_1936-2019_Flows_2020-01-08.dss
+TSRecord DssPathname=//FERN RIDGE/FLOW-IN//1DAY/WILLAMETTE_EIS/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=29
+TSRecord Name=Blue River Inflow_HMSsub_BlueRv_S10
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/EIS_1936-2019_Flows_2020-01-08.dss
+TSRecord DssPathname=//BLUE RIVER/FLOW-IN//1DAY/WILLAMETTE_EIS/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=30
+TSRecord Name=Cougar Inflow_HMSsub_SFMcKenzieRv_S10
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/EIS_1936-2019_Flows_2020-01-08.dss
+TSRecord DssPathname=//COUGAR/FLOW-IN//1DAY/WILLAMETTE_EIS/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=31
+TSRecord Name=Cottage Grove Inflow_HMSsub_CFWillametteRV_S20
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/EIS_1936-2019_Flows_2020-01-08.dss
+TSRecord DssPathname=//COTTAGE GROVE/FLOW-IN//1DAY/WILLAMETTE_EIS/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=32
+TSRecord Name=Dorena Inflow_HMSsub_RowRv_S10
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/EIS_1936-2019_Flows_2020-01-08.dss
+TSRecord DssPathname=//DORENA/FLOW-IN//1DAY/WILLAMETTE_EIS/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=33
+TSRecord Name=Fall Creek Inflow_HMSsub_FallCk_S10
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/EIS_1936-2019_Flows_2020-01-08.dss
+TSRecord DssPathname=//FALL CREEK/FLOW-IN//1DAY/WILLAMETTE_EIS/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=34
+TSRecord Name=Dexter Local Inflow_HMSsub_MFWillametteRVS20
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Zero Flow record.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//1DAY/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=35
+TSRecord Name=Lookout Point Local Inflow_HMSsub_MFWillametteRV_S60
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/EIS_1936-2019_Flows_2020-01-08.dss
+TSRecord DssPathname=//LOOKOUT POINT/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=36
+TSRecord Name=Hills Creek Inflow_HMSsub_ MFWillametteRv_S60
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/EIS_1936-2019_Flows_2020-01-08.dss
+TSRecord DssPathname=//HILLS CREEK/FLOW-IN//1DAY/WILLAMETTE_EIS/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=37
+TSRecord Name=TRBO_Trail Bridge Inflow
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Zero Flow record.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//1DAY/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=38
+TSRecord Name=CANO_Molalla River at Canby_Local_JMolaR_S06
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Zero Flow record.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//1DAY/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=39
+TSRecord Name=SUVO_Suver_HMSsub_LuckiamuteRv_S10
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Zero Flow record.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//1DAY/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=40
+TSRecord Name=AURO_Pudding River nr Aurora
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Zero Flow record.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//1DAY/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=41
+TSRecord Name=MCMO_McMinnville_Local_JYamhR_S01
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Zero Flow record.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//1DAY/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=42
+TSRecord Name=WSLO_West Linn_HMSsub_TualatinRv_S10
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Zero Flow record.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//1DAY/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=43
+TSRecord Name=CORO_Corvallis_HMSsub_WillametteRv_S70
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Zero Flow record.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//1DAY/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=44
+TSRecord Name=PHIO_ Philomath_HMSsub_MarysRV_S70
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Zero Flow record.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//1DAY/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=45
+TSRecord Name=Water Year Type
+TSRecord VariableId=85
+TSRecord ParamName=
+TSRecord DssFilename=shared/WY_Classification.dss
+TSRecord DssPathname=//WY_TYPE_STORAGE/STOR-MAF//1DAY/BASELINE09DEC2025/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=46
+TSRecord Name=Detroit - Rule Curve
+TSRecord VariableId=85
+TSRecord ParamName=
+TSRecord DssFilename=shared/Willamette_Rule_Curves.dss
+TSRecord DssPathname=//DETROIT/ELEV//1DAY/RULE CURVE/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=47
+TSRecord Name=Foster - Rule Curve
+TSRecord VariableId=85
+TSRecord ParamName=
+TSRecord DssFilename=shared/Willamette_Rule_Curves.dss
+TSRecord DssPathname=//FOSTER/ELEV//1DAY/RULE CURVE/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=48
+TSRecord Name=Green Peter - Rule Curve
+TSRecord VariableId=85
+TSRecord ParamName=
+TSRecord DssFilename=shared/Willamette_Rule_Curves.dss
+TSRecord DssPathname=//GREEN PETER/ELEV//1DAY/RULE CURVE/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=49
+TSRecord Name=Fern Ridge - Rule Curve
+TSRecord VariableId=85
+TSRecord ParamName=
+TSRecord DssFilename=shared/Willamette_Rule_Curves.dss
+TSRecord DssPathname=//FERN RIDGE/ELEV//1DAY/RULE CURVE/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=50
+TSRecord Name=Blue River - Rule Curve
+TSRecord VariableId=85
+TSRecord ParamName=
+TSRecord DssFilename=shared/Willamette_Rule_Curves.dss
+TSRecord DssPathname=//BLUE RIVER/ELEV//1DAY/RULE CURVE/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=51
+TSRecord Name=Cougar - Rule Curve
+TSRecord VariableId=85
+TSRecord ParamName=
+TSRecord DssFilename=shared/Willamette_Rule_Curves.dss
+TSRecord DssPathname=//COUGAR/ELEV//1DAY/RULE CURVE/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=52
+TSRecord Name=Cottage Grove - Rule Curve
+TSRecord VariableId=85
+TSRecord ParamName=
+TSRecord DssFilename=shared/Willamette_Rule_Curves.dss
+TSRecord DssPathname=//COTTAGE GROVE/ELEV//1DAY/RULE CURVE/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=53
+TSRecord Name=Dorena - Rule Curve
+TSRecord VariableId=85
+TSRecord ParamName=
+TSRecord DssFilename=shared/Willamette_Rule_Curves.dss
+TSRecord DssPathname=//DORENA/ELEV//1DAY/RULE CURVE/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=54
+TSRecord Name=Fall Creek - Rule Curve
+TSRecord VariableId=85
+TSRecord ParamName=
+TSRecord DssFilename=shared/Willamette_Rule_Curves.dss
+TSRecord DssPathname=//FALL CREEK/ELEV//1DAY/RULE CURVE/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=55
+TSRecord Name=Lookout Point - Rule Curve
+TSRecord VariableId=85
+TSRecord ParamName=
+TSRecord DssFilename=shared/Willamette_Rule_Curves.dss
+TSRecord DssPathname=//LOOKOUT POINT/ELEV//1DAY/RULE CURVE/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=56
+TSRecord Name=Hills Creek - Rule Curve
+TSRecord VariableId=85
+TSRecord ParamName=
+TSRecord DssFilename=shared/Willamette_Rule_Curves.dss
+TSRecord DssPathname=//HILLS CREEK/ELEV//1DAY/RULE CURVE/
+TSRecord InputPosition=0
+TSRecord End=
+
+

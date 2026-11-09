@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WatSimulation SimulationName="FIRO_Base-WY_2015" Description="" FPart="FIRO_Base:WY_2015" HasComputed="true" ComputeError="false" Parent="FIRO_Base-WY_2015" LastComputedBy="g2echrc9" LastComputedDate="1793808133913" IsFrmSimulation="false">
+  <ModelAlternatives ModelAlternativeCount="1">
+    <ModelAlternative0 Program="ResSim" Name="ALL_D" File="rss/ALL_D.ralt">
+      <Description>
+        <desc cnt="0" value="All operations (close to real-life as possible), including BiOp and Dam Safety IRRMs." />
+        <desc cnt="1" value="Daily timestep." />
+      </Description>
+      <LastComputeTime Date="4 November 2026, 16:02" />
+    </ModelAlternative0>
+  </ModelAlternatives>
+  <TimeWindowManager Class="hec2.plugin.timewindow.TimeWindowManagerImpl" />
+</WatSimulation>
+

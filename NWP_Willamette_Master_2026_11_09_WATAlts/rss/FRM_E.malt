@@ -1,0 +1,47 @@
+AsciiSerializer=5
+{=hec.watershed.model.ModelAlt
+  ID=0
+  FLD=_index
+  I=854
+  FLD=_name
+  STR=FRM_E
+  FLD=_description
+  STR=
+  FLD=_path
+  STR=
+  FLD=_nextTSRecordProxyIndex
+  I=0
+  FLD=_lastModifiedTime
+  J=1792778920350
+  FLD=_programIndex
+  I=1
+  FLD=_altId
+  STR=FRM_E
+  FLD=_modelRef
+  {=hec.lang.ModelReference
+    ID=1
+    FLD=id
+    I=850
+    FLD=className
+    STR=hec.rss.model.RssAlt
+    FLD=wkspName
+    STR=rss
+    FLD=newId
+    I=850
+  }
+  FLD=_configurationIds
+  {=rma.util.LongVector
+    ID=2
+    FLD=elementData
+    {=[J
+      ID=3
+      {[=1
+      J=3,
+      }]
+    }
+    FLD=elementCount
+    I=1
+    FLD=capacityIncrement
+    I=0
+  }
+}

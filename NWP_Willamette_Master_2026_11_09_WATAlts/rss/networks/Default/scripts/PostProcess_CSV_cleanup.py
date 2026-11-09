@@ -1,0 +1,179 @@
+'''
+After the simulation is complete, extracts information and stores to CSV.
+Script is run only once, at the end of the compute.
+
+For ensemble runs:
+The peak flows/elevations are extracted at select locations
+The peaks get appended to a CSV file.
+The idea is that if run in parallel, each simulation will keep appending results to this file.
+It's too much to try to store the full time series data, we just want peaks
+
+For period of record runs:
+We are storing time series data, but only select pathnames
+The output is basically CSV format, but it is stored as a gz file
+to reduce file size while still allowing it to be quickly read by other post-processors
+
+'''
+import os, csv, datetime, gzip, cStringIO, itertools
+
+#Define output CSV file (right next to simulation.dss)
+outputDir = os.path.dirname(network.getRssRun().getDSSOutputFile())
+altName = network.getAlternative().getName().split(":")[-1]
+altSetupSV = network.getStateVariable("Alternative_Setup")
+watCompute = altSetupSV.varGet("watCompute")
+
+# Define the locations at which we want output
+#A bit clumsy to define it here, but defining it in an external CSV file and
+#reading it in every time would be slower than this for the ensemble run.
+
+#Junction names to extract flows (as named in ResSim)
+junctionNamesResSim = [
+"MF Willamette_at Jasper",
+"CF Willamette_nr Goshen",
+"McKenzie_at Vida",
+"Willamette_at Harrisburg",
+"Long Tom_at Monroe",
+"Willamette_at Albany",
+"So Santiam_at Waterloo",
+"No Santiam_at Mehama",
+"Santiam_at Jefferson",
+"Willamette_at Salem",
+"Willamette_abv Falls at Oregon City"
+]
+
+#Nicer junction names that are more commonly used.
+#A dictionary could have been used, but we need to ensure
+#that the order of locations stays consistent when looping
+junctionNamesNice = [
+"Jasper",
+"Goshen",
+"Vida",
+"Harrisburg",
+"Monroe",
+"Albany",
+"Waterloo",
+"Mehama",
+"Jefferson",
+"Salem",
+"Willamette Falls"
+]
+
+#Reservoir Names
+resvNames = [
+"Hills Creek",
+"Lookout Point",
+"Dexter",
+"Fall Creek",
+"Cottage Grove",
+"Dorena",
+"Cougar",
+"Blue River",
+"Fern Ridge",
+"Green Peter",
+"Foster",
+"Detroit",
+"Big Cliff"
+]
+
+outputFpart = network.getRssRun().getOutputFPart()
+if "C:" in outputFpart:
+	#This is an ensemble run, we want to write it out to the same CSV
+	#Define output CSV file (right next to simulation.dss)
+	outCSVFile = os.path.join(outputDir, "PeakExtract_%s.csv" %altName)
+	simulationID = int(outputFpart[2:8]) #Should be something like "000001"
+	outputHeaders = ["ResSimID", "Timestamp"]
+	outputRow = [simulationID, str(datetime.datetime.now())]
+	for i, junctionNameResSim in enumerate(junctionNamesResSim):
+		ts = network.getTimeSeries("Junction",junctionNameResSim, "", "Flow")
+		outputRow.append(round(max(ts.getTSArray()),0))
+		outputHeaders.append(junctionNamesNice[i])
+	for i, resvName in enumerate(resvNames):
+		ts = network.getTimeSeries("Reservoir",resvName, "Pool", "Elev")
+		outputRow.append(round(max(ts.getTSArray()),2))
+		ts = network.getTimeSeries("Reservoir",resvName, "Pool", "Flow-IN")
+		outputRow.append(round(max(ts.getTSArray()),0))
+		ts = network.getTimeSeries("Reservoir",resvName, "Pool", "Flow-OUT")
+		outputRow.append(round(max(ts.getTSArray()),0))
+		ts = network.getTimeSeries("Reservoir",resvName, "Spillway", "Flow-DECISION")
+		outputRow.append(round(max(ts.getTSArray()),0))
+		outputHeaders.append(resvName+"_Elev")
+		outputHeaders.append(resvName+"_Flow-In")
+		outputHeaders.append(resvName+"_Flow-Out")
+		outputHeaders.append(resvName+"_Spillway")
+	if not os.path.exists(outCSVFile):
+		outFile = open(outCSVFile, 'wb')
+		writer = csv.writer(outFile,lineterminator='\n')
+		writer.writerow(outputHeaders)
+		writer.writerow(outputRow)
+	else:
+		outFile = open(outCSVFile, 'ab')
+		writer = csv.writer(outFile,lineterminator='\n')
+		writer.writerow(outputRow)
+	outFile.close()
+else:
+	#Period of record run
+	#Spit out results to a csv file with the same name as the alternative
+	#Spit out the csv to a gzip file to save file space while still being easy to read
+	outCSVFile = os.path.join(outputDir, "%s.csv.gz" %altName)
+	if watCompute:
+		#Don't use the ResSim alternative name
+		#Use the DSS output filename, which includes the WAT alternative and the AnalysisPeriod
+		thisRun = network.getRssRun()
+		dssFileNameSimulation = thisRun.getDSSOutputFile()
+		outFileCSVName = dssFileNameSimulation.replace(".dss",".csv.gz")
+		outCSVFile = network.makeAbsolutePathFromWatershed(outFileCSVName)
+	print("Writing time series output csv: %s" %outCSVFile)
+	#Get the data as a list of lists rather than writing row by row
+	headers = []
+	columns = []
+	#Deal with dates.
+	#Always store them as a string, e.g. "1954-05-03 00:00"
+	hecTimes = network.getTimeSeries("Junction",junctionNamesResSim[0], "", "Flow").getTimeSeriesContainer().getTimes().timeArray()
+	for t in hecTimes: t.showTimeAsBeginningOfDay(True) #Python wants it as 00:00, not 24:00
+	timeStrs = [str(t.dateAndTime(-13)).replace(",","") for t in hecTimes]
+	headers.append("Timestamp")
+	columns.append(timeStrs)
+	#Add the data
+	for i, junctionNameResSim in enumerate(junctionNamesResSim):
+		ts = network.getTimeSeries("Junction",junctionNameResSim, "", "Flow")
+		headers.append("%s__Flow" %(junctionNamesNice[i]))
+		columns.append(ts.getTSArray())
+	for i, resvName in enumerate(resvNames):
+		for paramName in ["Elev","Stor","Flow-IN","Flow-OUT"]:
+			ts = network.getTimeSeries("Reservoir",resvName, "Pool", paramName)
+			headers.append("%s__%s" %(resvName, paramName))
+			columns.append(ts.getTSArray())
+	
+	# 1. Open up the output file
+	with gzip.open(outCSVFile, 'wb') as f:
+		
+		# 2. Setup an in-memory buffer using the fast C-implementation
+		buffer = cStringIO.StringIO()
+		writer = csv.writer(buffer)
+		
+		# Write headers first
+		writer.writerow(headers)
+		
+		# 3. Transpose columns to rows lazily
+		rows_generator = itertools.izip(*columns)
+		
+		chunk_size = 10000  # Buffer 10k rows at a time for speed
+		chunk = []
+		
+		for row in rows_generator:
+			chunk.append(row)
+			
+			# When chunk is full, write the whole block to gzip at once
+			if len(chunk) >= chunk_size:
+				writer.writerows(chunk)
+				f.write(buffer.getvalue())
+				
+				# Reset chunk and buffer
+				chunk = []
+				buffer.seek(0)
+				buffer.truncate()
+		        
+		# Write any remaining data
+		if chunk:
+			writer.writerows(chunk)
+			f.write(buffer.getvalue())

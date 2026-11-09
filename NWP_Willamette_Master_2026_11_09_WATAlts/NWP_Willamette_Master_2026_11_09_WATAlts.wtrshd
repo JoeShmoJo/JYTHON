@@ -1,0 +1,132 @@
+Version=1.0
+ProjectName=NWP_Willamette_Master_2026_11_09_WATAlts
+ProjectDescription=Master ResSim model
+Extents=-1000.0,1000.0,1000.0,-1000.0
+Grow Extents=true
+Created=1741292829225
+Created By=G2ECHKBM
+UnitSystemID=1
+SyncMapWindows=false
+DrawMapGridLines=false
+MapBackgroundColor=white
+
+CoordinateInfoBegin
+type=X-Y
+units=U.S. Feet
+unitMult=1.0
+spheroid=
+CoordinateInfoEnd
+
+
+ManagerBegin
+Name=Stream Alignment
+Description=
+File=stream.align
+Class=com.rma.model.StreamAlignmentContainer
+ModifiedTime=1741702345580
+CreatedBy=G2ECHKBM
+CreatedOn=1741292829041
+ModifiedBy=G2ECHKBM
+LastModified=1741702345580
+ManagerEnd
+
+ManagerBegin
+Name=StreamAlignAliasMgr
+Description=Streamalignment Reach Alias Manager
+File=shared/StreamAlignAliasMgr.sam
+Class=hec2.model.StreamAlignAliasManager
+ModifiedTime=1741702345542
+CreatedBy=G2ECHKBM
+CreatedOn=1741292829071
+ModifiedBy=G2ECHKBM
+LastModified=1741702345542
+ManagerEnd
+
+ManagerBegin
+Name=ModelLinkingManager
+Description=Model Linking Manager
+File=cavi/ModelLinkingManager.mlm
+Class=hec2.rts.model.RtsModelLinkingManager
+ModifiedTime=1741702345545
+CreatedBy=G2ECHKBM
+CreatedOn=1741292829101
+ModifiedBy=G2ECHKBM
+LastModified=1741702345545
+ManagerEnd
+
+ManagerBegin
+Name=Time Series Icons
+Description=
+File=shared/TimeSeries.icons
+Class=hec.iconlocationset.model.IconLocationSet
+ModifiedTime=1741702345646
+CreatedBy=G2ECHKBM
+CreatedOn=1741292829138
+ModifiedBy=G2ECHKBM
+LastModified=1741702345646
+ManagerEnd
+
+ManagerBegin
+Name=Program Order Manager
+Description=
+File=shared/caviProgramOrder.xml
+Class=hec2.model.ProgramOrderManager
+ModifiedTime=1741702345548
+CreatedBy=G2ECHKBM
+CreatedOn=1741292830022
+ModifiedBy=G2ECHKBM
+LastModified=1741702345548
+ManagerEnd
+
+ManagerBegin
+Name=Watershed Scripts Manager
+Description=
+File=cavi/watershedScripts.xml
+Class=hec2.rts.model.WatershedScriptMgr
+ModifiedTime=1741702349028
+CreatedBy=G2ECHKBM
+CreatedOn=1741292832629
+ModifiedBy=G2ECHKBM
+LastModified=1741702349028
+ManagerEnd
+
+ManagerBegin
+Name=ModelAlternative Key Manager
+Description=
+File=cavi/modelAltKeys.xml
+Class=hec2.rts.model.ModelAltKeyMgr
+ModifiedTime=1741702349112
+CreatedBy=G2ECHKBM
+CreatedOn=1741293096939
+ModifiedBy=G2ECHKBM
+LastModified=1741702349112
+ManagerEnd
+
+DataTimeWindow=RELATIVE:3 DAYS-0 DAYS
+TimeZone=GMT
+FileManagerUrl=//137.161.67.151:24101
+
+DssFileManagerUrl=//137.161.67.151:24101
+
+LoginManagerUrl=<cwms_source version="v1" cwms_source_type="cwms_rmi" cwms_rmi_host="137.161.67.151" cwms_rmi_port="24101">NWP T7</cwms_source>
+
+IconQualityInformation=No Report Time,3,No Report,Magenta
+
+CopyToBase=false
+CopyToMaster=false
+CopyBaseToMaster=false
+ForecastDefaults
+LookbackPeriod:3 DAYS
+ExtractPeriod:3 DAYS
+EndPeriod:3 DAYS
+DefaultTimesToStartEnd:false
+EndForecastDefaults
+
+DefaultArchiveFolder=
+DefaultArchiveName=
+
+SharedWatershedOptionsStart
+Shared:true
+LocationType:LocalNetwork
+MasterWkspPath:\\nwp-netapp1\Division_Projects\Engineering_Division\CENWP-EC-H\CENWP-EC-HR\RES_REG\CWMS\Teamwork\watershed\NWP_Willamette_Master_2026_11_09_WATAlts_ResSimMaster\watershed\NWP_Willamette_Master_2026_11_09_WATAlts
+SharedWatershedOptionsEnd

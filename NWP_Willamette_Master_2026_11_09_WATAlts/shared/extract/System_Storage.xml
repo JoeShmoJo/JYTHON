@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataexchange-configuration xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://www.hec.usace.army.mil/xmlSchema/cwms/dataexchangeconfiguration_v2.xsd">
+  <datastore>
+    <oracle id="Oracle">
+      <host />
+      <sid />
+    </oracle>
+  </datastore>
+  <datastore>
+    <model-plugin id="forecast-model-plugin" />
+  </datastore>
+  <datastore>
+    <dssfile id="forecast-dss" />
+  </datastore>
+  <ts-dataexchange-set id="System Storage" exchange-data="true" sort-order="26.0">
+    <datastore-ref id="Oracle" />
+    <datastore-ref id="forecast-model-plugin" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Replace" ts-override-protection="OFF" />
+    <ts-mapping-set />
+  </ts-dataexchange-set>
+  <ts-dataexchange-set id="System Storage1" exchange-data="true" sort-order="26.0">
+    <datastore-ref id="Oracle" />
+    <datastore-ref id="forecast-dss" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Replace" ts-override-protection="OFF" />
+    <ts-mapping-set>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">Willamette.Stor-AuthorizedCon.Inst.0.0.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//WIL/Stor-AuthorizedCon//IR-MONTH/MIXED-COMPUTED-REV/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">Willamette.Stor-AuthorizedCon.Inst.~6Hours.0.CENWP-COMPUTED-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//Willamette/Stor-AuthorizedCon//~6HOUR/CENWP-COMPUTED-FCST/</dss-timeseries>
+      </ts-mapping>
+    </ts-mapping-set>
+  </ts-dataexchange-set>
+  <timewindow>
+    <starttime>EXTRACT+PT0M</starttime>
+    <endtime>SIMEND+PT0M</endtime>
+  </timewindow>
+</dataexchange-configuration>
+

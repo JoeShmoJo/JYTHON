@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataexchange-configuration xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://www.hec.usace.army.mil/xmlSchema/cwms/dataexchangeconfiguration_v2.xsd">
+  <datastore>
+    <oracle id="Oracle">
+      <host>//nwp-cwmsdb2.nwp.usace.army.mil</host>
+      <sid>G2CWMSP2</sid>
+    </oracle>
+  </datastore>
+  <datastore>
+    <model-plugin id="forecast-model-plugin" />
+  </datastore>
+  <datastore>
+    <dssfile id="forecast-dss" />
+  </datastore>
+  <ts-dataexchange-set id="Rule Curves" exchange-data="false" sort-order="15.0">
+    <datastore-ref id="Oracle" />
+    <datastore-ref id="forecast-model-plugin" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Merge" ts-override-protection="OFF" />
+    <ts-mapping-set />
+  </ts-dataexchange-set>
+  <ts-dataexchange-set id="Rule Curves1" exchange-data="false" sort-order="15.0">
+    <datastore-ref id="Oracle" />
+    <datastore-ref id="forecast-dss" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Merge" ts-override-protection="OFF" />
+    <ts-mapping-set>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">BCL.Elev-RuleCurve.Inst.~1Day.0.CENWP-CALC</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//BCL/Elev-RuleCurve//IR-MONTH/CENWP-CALC/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">BLU.Elev-RuleCurve.Inst.~1Day.0.CENWP-CALC</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//BLU/Elev-RuleCurve//IR-MONTH/CENWP-CALC/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">COT.Elev-RuleCurve.Inst.~1Day.0.CENWP-CALC</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//COT/Elev-RuleCurve//IR-MONTH/CENWP-CALC/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">DET.Elev-RuleCurve.Inst.~1Day.0.CENWP-CALC</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DET/Elev-RuleCurve//IR-MONTH/CENWP-CALC/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">DEX.Elev-RuleCurve.Inst.~1Day.0.CENWP-CALC</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DEX/Elev-RuleCurve//IR-MONTH/CENWP-CALC/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">DOR.Elev-RuleCurve.Inst.~1Day.0.CENWP-CALC</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DOR/Elev-RuleCurve//IR-MONTH/CENWP-CALC/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">FOS.Elev-RuleCurve.Inst.~1Day.0.CENWP-CALC</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FOS/Elev-RuleCurve//IR-MONTH/CENWP-CALC/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">FRN.Elev-RuleCurve.Inst.~1Day.0.CENWP-CALC</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FRN/Elev-RuleCurve//IR-MONTH/CENWP-CALC/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">FAL.Elev-RuleCurve.Inst.~1Day.0.CENWP-CALC</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FAL/Elev-RuleCurve//IR-MONTH/CENWP-CALC/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">GPR.Elev-RuleCurve.Inst.~1Day.0.CENWP-CALC</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//GPR/Elev-RuleCurve//IR-MONTH/CENWP-CALC/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">HCR.Elev-RuleCurve.Inst.~1Day.0.CENWP-CALC</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//HCR/Elev-RuleCurve//IR-MONTH/CENWP-CALC/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">LOP.Elev-RuleCurve.Inst.~1Day.0.CENWP-CALC</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//LOP/Elev-RuleCurve//IR-MONTH/CENWP-CALC/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">CGR.Elev-RuleCurve.Inst.~1Day.0.CENWP-CALC</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//CGR/Elev-RuleCurve//IR-MONTH/CENWP-CALC/</dss-timeseries>
+      </ts-mapping>
+    </ts-mapping-set>
+  </ts-dataexchange-set>
+  <timewindow>
+    <starttime>EXTRACT-PT12H</starttime>
+    <endtime>SIMEND+PT12H</endtime>
+  </timewindow>
+</dataexchange-configuration>
+

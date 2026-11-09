@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataexchange-configuration xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://www.hec.usace.army.mil/xmlSchema/cwms/dataexchangeconfiguration_v2.xsd">
+  <datastore>
+    <model-plugin id="forecast-model-plugin" />
+  </datastore>
+  <datastore>
+    <dssfile id="DSS">
+      <filepath>C:\Users\G2ECHKBM\Desktop\CWMS\CWMS Models\WillametteFinal\watershed\watershed\NWP_Willamette\..\..\..\..\Willamette_FRM\For_Kevin\MidWillFlow_PTS_RASinput_40day_RAMP_v04AUG.dss</filepath>
+    </dssfile>
+  </datastore>
+  <datastore>
+    <dssfile id="forecast-dss" />
+  </datastore>
+  <ts-dataexchange-set id="RAS inputs for Comparison" exchange-data="false" sort-order="23.0">
+    <datastore-ref id="DSS" />
+    <datastore-ref id="forecast-model-plugin" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Replace" ts-override-protection="OFF" />
+    <ts-mapping-set />
+  </ts-dataexchange-set>
+  <ts-dataexchange-set id="RAS inputs for Comparison1" exchange-data="false" sort-order="23.0">
+    <datastore-ref id="DSS" />
+    <datastore-ref id="forecast-dss" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Replace" ts-override-protection="OFF" />
+    <ts-mapping-set>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//ALBANY/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//ALBANY/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//AURORA/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//AURORA/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//BIG CLIFF/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//BIG CLIFF/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//BLUE RIVER/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//BLUE RIVER/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//CANBY/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//CANBY/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//CFWILLAMETTERV_S10/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//CFWILLAMETTERV_S10/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//COBURG/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//COBURG/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//CORVALLIS/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//CORVALLIS/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//COTTAGE GROVE/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//COTTAGE GROVE/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//COUGAR/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//COUGAR/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//DEXTER/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DEXTER/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//DORENA/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DORENA/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//EUGENE/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//EUGENE/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//FALL CREEK/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FALL CREEK/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//FERN RIDGE/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FERN RIDGE/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//FOSTER/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FOSTER/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//GOSHEN/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//GOSHEN/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//HARRISBURG/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//HARRISBURG/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//JASPER/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//JASPER/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//JEFFERSON/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//JEFFERSON/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//LONGTOMRV_S10/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//LONGTOMRV_S10/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//MARYSRV_S10/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//MARYSRV_S10/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//MCKENZIERV_S10/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//MCKENZIERV_S10/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//MCKENZIERV_S15/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//MCKENZIERV_S15/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//MCKENZIERV_S18/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//MCKENZIERV_S18/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//MCKENZIERV_S20/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//MCKENZIERV_S20/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//MCKENZIERV_S30/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//MCKENZIERV_S30/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//MEHAMA/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//MEHAMA/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//MFWILLAMETTERV_S10/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//MFWILLAMETTERV_S10/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//MONROE/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//MONROE/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//NEWBERG/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//NEWBERG/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//NSANTIAMRV_S05/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//NSANTIAMRV_S05/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//NSANTIAMRV_S10/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//NSANTIAMRV_S10/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//SALEM/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//SALEM/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//SSANTIAMRV_S10/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//SSANTIAMRV_S10/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//SSANTIAMRV_S15/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//SSANTIAMRV_S15/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//SUVER/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//SUVER/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//SYAMHILLRV_S10/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//SYAMHILLRV_S10/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//VIDA/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//VIDA/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//WALTERVILLE/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//WALTERVILLE/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//WATERLOO/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//WATERLOO/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//WEST LINN/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//WEST LINN/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//WILLAMETTE FALLS/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//WILLAMETTE FALLS/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_TOTAL/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//WILLAMETTERV_S30/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//WILLAMETTERV_S30/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//WILLAMETTERV_S40/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//WILLAMETTERV_S40/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//WILLAMETTERV_S50/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//WILLAMETTERV_S50/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//WILLAMETTERV_S60/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//WILLAMETTERV_S60/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//WILLAMETTERV_S70/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//WILLAMETTERV_S70/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//WILLAMETTERV_S80/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//WILLAMETTERV_S80/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//WILLAMETTERV_S80_TOEUG/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//WILLAMETTERV_S80_TOEUG/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//WILLAMETTERV_S80_TOHARRISB/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//WILLAMETTERV_S80_TOHARRISB/FLOW/01Jan2023 - 20Feb2023/1HOUR/WILLAMETTE_DISPOSITION_INFLOW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">/WILLAMETTE_RIVER DS_SANTIAM/26.540/FLOW/01JAN2023 - 01FEB2023/1HOUR/DISPORAMP7/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">/WILLAMETTE_RIVER DS_SANTIAM/26.540/FLOW/01JAN2023 - 01FEB2023/1HOUR/DISPORAMP7/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">////01Feb2023 - 28Feb2023/1HOUR/50CFS/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">////01Feb2023 - 28Feb2023/1HOUR/50CFS/</dss-timeseries>
+      </ts-mapping>
+    </ts-mapping-set>
+  </ts-dataexchange-set>
+  <timewindow>
+    <starttime>EXTRACT+PT0M</starttime>
+    <endtime>SIMEND+PT0M</endtime>
+  </timewindow>
+</dataexchange-configuration>
+

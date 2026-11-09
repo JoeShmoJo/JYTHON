@@ -1,0 +1,40 @@
+{
+    "schema_version":  1,
+    "kind":  "standalone-configuration",
+    "mode":  "snapshot",
+    "model_alternative":  "Con_Season",
+    "name":  "con-season-reference-snapshot-20261022",
+    "description":  "Portable resolved Con_Season scripted-configuration snapshot with copied CSV tables.",
+    "settings":  {
+                     "DEVEL_CHECK_SCRIPTS":  "OFF",
+                     "draftToRCActive":  true,
+                     "flowAugRuleTSPathTemplate":  "//%RESV_NAME%/FLOW-MIN-EXTERNALFLOWAUG//%TIMESTEP%/%FPART%/",
+                     "irrmActive":  {
+                                        "Lookout Point":  true,
+                                        "Cougar":  true,
+                                        "Detroit":  true,
+                                        "Hills Creek":  true
+                                    },
+                     "irrmTargetElevs":  {
+                                             "Lookout Point":  921,
+                                             "Cougar":  1685,
+                                             "Detroit":  1558.5,
+                                             "Hills Creek":  1531
+                                         },
+                     "mainstemFlowAugMethod":  "AllocationBasedOnConservationStorage",
+                     "omitTrialsFromFlowAug":  "0,2,3"
+                 },
+    "tables":  {
+                   "DeepDrawdownConfigCSV":  "tables/DeepDrawdownConfig.csv",
+                   "SpringSpillConfigCSV":  "tables/SpringSpillConfig.csv",
+                   "NoDraftConfigCSV":  "tables/NoDraftConfig.csv",
+                   "secondaryDraftConfigCSV":  "tables/SecondaryFloodDraftLimitConfig.csv",
+                   "firoSpaceConfigCSV":  "tables/FIRO_SPACEConfig.csv",
+                   "minFlowConfigCSV":  "tables/MinFlowConfig.csv",
+                   "withdrawalConfigCSV":  "tables/WithdrawalConfig.csv",
+                   "diversionConfigCSV":  "tables/DiversionConfig_ALT.csv",
+                   "mainstemFlowAugReservoirConfigCSV":  "tables/MinFlowSalemAlbanyConfig.csv",
+                   "minFlowTargetCSV_Salem":  "tables/MinFlowSalem_2008BiOp.csv",
+                   "minFlowTargetCSV_Albany":  "tables/MinFlowAlbany_2008BiOp.csv"
+               }
+}

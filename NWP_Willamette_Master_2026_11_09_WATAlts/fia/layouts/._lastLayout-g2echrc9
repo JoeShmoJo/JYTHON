@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BrowserFrame width="800" height="600" positionX="560" positionY="240" childWindowCount="1" selectedTabIndex="0">
+  <horizontalDivider location="-1" />
+  <verticalDivider location="-1" />
+  <statusLine visible="true" />
+  <messageArea visible="true" />
+  <projectTabs visible="true" divider="-4" />
+  <ProjectTree>
+    <FolderNode Name="NWP_Willamette" Class="hec2.fia.ui.FiaProjectTab$FiaProjectTreeNode" Expanded="true" UserCreated="false">
+      <FolderNode Name="Map Layers" Class="hec2.fia.model.FiaProject$1" Expanded="true" UserCreated="false" DefaultOrder="true" />
+      <FolderNode Name="Watershed" Class="hec2.fia.ui.GlobalWatershedContainerNode" Expanded="true" UserCreated="false">
+        <FolderNode Name="Terrain Grids" Class="hec2.fia.ui.terrain.TerrainDataContainerNode" Expanded="true" UserCreated="false" DefaultOrder="true" />
+        <FolderNode Name="Reservoirs" Class="hec2.fia.reservoirs.nf.ui.ReservoirContainerNode" Expanded="true" UserCreated="false" DefaultOrder="true" />
+        <FolderNode Name="Stream Alignments" Class="hec2.fia.ui.streamalignment.StreamAlignmentContainerNode" Expanded="true" UserCreated="false" DefaultOrder="true" />
+        <FolderNode Name="Cross Sections" Class="hec2.fia.xsection.ui.XSectionManagerContainerNode" Expanded="true" UserCreated="false" />
+        <FolderNode Name="Storage Areas" Class="hec2.fia.storageareas.nf.ui.StorageAreasContainerNode" Expanded="true" UserCreated="false" DefaultOrder="true" />
+        <FolderNode Name="Computation Points" Class="hec2.fia.computationpoints.nf.ui.ComputationPointContainerNode" Expanded="true" UserCreated="false" />
+        <FolderNode Name="Watershed Configurations" Class="hec2.fia.watershedconfiguration.ui.WatershedConfigurationContainerNode" Expanded="true" UserCreated="false" DefaultOrder="true" />
+      </FolderNode>
+      <FolderNode Name="Geographic Data" Class="hec2.fia.ui.geographic.GeographicDataContainerNode" Expanded="true" UserCreated="false">
+        <FolderNode Name="Boundaries" Class="hec2.boundaries.nf.ui.BoundaryContainerNode" Expanded="true" UserCreated="false" DefaultOrder="true" />
+        <FolderNode Name="Emergency Planning Zone" Class="hec2.fia.ui.impactareas.ImpactAreaDataContainerNode" Expanded="true" UserCreated="false" />
+      </FolderNode>
+      <FolderNode Name="Inundation Data" Class="hec2.fia.inundationConfiguration.nf.ui.InundationConfigurationContainerNode" Expanded="true" UserCreated="false" />
+      <FolderNode Name="Inventory" Class="hec2.fia.ui.InventoryContainerNode" Expanded="true" UserCreated="false">
+        <FolderNode Name="Structure Inventories" Class="hec2.fia.ui.inventory.StructureManagerContainerNode" Expanded="true" UserCreated="false">
+          <Node Name="Damage Category" Class="hec2.fia.ui.damagecategory.DamageCategoryManagerNode" />
+          <Node Name="Structure Occ. Types" Class="hec2.fia.ui.occupancytype.OccupancyTypeNode" />
+        </FolderNode>
+        <FolderNode Name="Critical Infrastructure" Class="hec2.fia.criticalinfrastructure.nf.ui.CriticalInfrastructureContainerNode" Expanded="true" UserCreated="false" />
+        <FolderNode Name="Impact Response" Class="hec2.fia.impactresponse.nf.ui.ImpactResponseContainerNode" Expanded="true" UserCreated="false" />
+        <FolderNode Name="Agricultural Grids" Class="hec2.fia.ui.AgriculturalDataContainerNode" Expanded="true" UserCreated="false" DefaultOrder="true" />
+      </FolderNode>
+      <FolderNode Name="Warning Issuance Scenario" Class="hec2.fia.warningissuance.nf.ui.WarningIssuanceContainerNode" Expanded="true" UserCreated="false" />
+      <FolderNode Name="Alternatives" Class="hec2.fia.alternative.nf.ui.AlternativeManagerContainerNode" Expanded="true" UserCreated="false" />
+      <FolderNode Name="Time Window" Class="hec2.fia.ui.TimeWindowContainerNode" Expanded="true" UserCreated="false" DefaultOrder="true" />
+      <FolderNode Name="Simulation" Class="hec2.fia.simulation.nf.ui.SimulationContainerNode" Expanded="true" UserCreated="false" />
+    </FolderNode>
+  </ProjectTree>
+  <ChildWindow0 class="hec2.fia.client.FiaMapSchematic" title="Map Window  " width="0" height="0" positionX="5" positionY="5" maximized="false" iconized="false" selected="false" layer="0" ManagerCount="0" MapMouseAdapter="hec.map.MouseZoomAdapter" MapCount="0" DrawGrids="true" Background="white" AnalysisGroup="Default">
+    <ViewRect zoom="1.0">
+      <WorldPt n="0.0" e="0.0" />
+    </ViewRect>
+  </ChildWindow0>
+</BrowserFrame>
+

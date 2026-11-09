@@ -1,0 +1,7 @@
+TSDataSet Name=FIS_SID_88Obs
+Description=Winter FIS Ops with hard coded lookback (rule curve and min flow) and historical short interval inflows.  This alternative uses the Willamette_FIS_3HR_NGVD88 network.  The conversions for the reservoirs are as follows:
+
+_type=0
+ParentPath=null
+ParentClass=null
+

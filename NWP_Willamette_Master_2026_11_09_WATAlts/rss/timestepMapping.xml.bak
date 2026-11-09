@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ResSimTimeStepMap>
+  <TimeStepInfo ModelAlternative="ALL_D" TimeStep="1 Day" Lookback="1" />
+  <TimeStepInfo ModelAlternative="Con_Season" TimeStep="1 Day" Lookback="1" />
+  <TimeStepInfo ModelAlternative="UnregNWP_H" TimeStep="1 Hour" Lookback="24" />
+  <TimeStepInfo ModelAlternative="FRM_H" TimeStep="3 Hour" Lookback="8" />
+  <TimeStepInfo ModelAlternative="ConSeason" TimeStep="1 Day" Lookback="1" />
+  <TimeStepInfo ModelAlternative="Obs_NWP_H" TimeStep="1 Hour" Lookback="24" />
+</ResSimTimeStepMap>
+

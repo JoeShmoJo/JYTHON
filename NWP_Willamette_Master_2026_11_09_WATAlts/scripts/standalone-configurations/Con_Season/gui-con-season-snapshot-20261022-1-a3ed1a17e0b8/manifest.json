@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "kind": "standalone-configuration-manifest",
+  "mode": "snapshot",
+  "name": "gui-con-season-snapshot-20261022-1",
+  "model_alternative": "Con_Season",
+  "configuration_sha256": "f054ce535432e8fb4f3454ef67756aec370cddba2cbf9734a2a771a0ba9a9a35",
+  "table_sha256": {
+    "tables/DeepDrawdownConfigCSV.csv": "f4b5d5abb79f18ac2d864ba8061538a9ab495aa3ee0f5ab3f1ddb955e7ca2b12",
+    "tables/SpringSpillConfigCSV.csv": "ab682115d148c2f9b39f0a13a2da80705b440381c9072ccd203d18a4678d2865",
+    "tables/NoDraftConfigCSV.csv": "a3be62bd24ec78341195898ed2c49aa5fe59015c28fee1b5f80c67b56f10ca3c",
+    "tables/secondaryDraftConfigCSV.csv": "c1efa0efc47a92a3068d3bdff65c95bacfa4f55bd0b341db933d06a588f25b6a",
+    "tables/firoSpaceConfigCSV.csv": "284920856360888dbf2b12224064ae7a4d2a337d9863aaa408edce1c8517835f",
+    "tables/minFlowConfigCSV.csv": "aba62cb030b18b7720ac24ada0c774800f6a65233145b40292a68d1a6ab363af",
+    "tables/withdrawalConfigCSV.csv": "b92b1db70c4650e9da52612ee67b27f43013be4700a4793d5415d82508a22c92",
+    "tables/diversionConfigCSV.csv": "005cf8034c5245dc2b77d6cfb8e1cb2ba830fabe90fefad691246e1ee797e4dc",
+    "tables/MinFlowSalemAlbanyConfig.csv": "d0778bf505ef0ccc6fe7e0f9e41785b999646c9b9801d857d7586a1e76d4ba44",
+    "tables/MinFlowSalem_2008BiOp.csv": "7f2361658244c64767e524cbcd0596b94aa87511aa49b202f092290085dc970c",
+    "tables/MinFlowAlbany_2008BiOp.csv": "69dc4182cfa42684d75275a81afb9b7d6df3a83354a1317266d9682ed38a6b24"
+  },
+  "source_file_sha256": {
+    "source-files/_default.txt": "a0a09baccf34db10e0598863404e71201eaba12dbee43f1646a6dbf481501cfa",
+    "source-files/Con_Season.txt": "0db88da7d94ae383bcd0359a8841cb0c50180f95385afccf995f55257203492c"
+  }
+}

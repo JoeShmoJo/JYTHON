@@ -1,0 +1,934 @@
+TSDataSet Name=RAS Compar-CWMS-Default
+Description=Copy of CMWS NAVD88 network with added junctions and local flows set up for RFC forecast.  Routing data supplied from HEC-RAS models.  Flood zones are the rules from the FIS ResSim model and the conservation/buffer zones rules are from the IRRMBaseline ResSIm model. (TS Data Set for CWMS-Default)
+
+_type=0
+ParentPath=null
+ParentClass=null
+TSRecord=0
+TSRecord Name=MF Willamette_nr Dexter_Local_MFWR_S10
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=1
+TSRecord Name=Willamette+Ash Cr_Local_WR_S08
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=2
+TSRecord Name=Willamette+Ash Cr_Local_WR_AshCr_S01
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=3
+TSRecord Name=TRSO
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=4
+TSRecord Name=So Santiam+Crabtree Cr_Local_SSR_S07
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=5
+TSRecord Name=So Santiam+Crabtree Cr_Local_CrabCr_S01
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=6
+TSRecord Name=So Santiam+McDowell Cr_Local_SSR_S04
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=7
+TSRecord Name=So Santiam+McDowell Cr_Local_McDowCr_S01
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=8
+TSRecord Name=Long Tom+Amazon Cr_Local_LT_S04
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=9
+TSRecord Name=Long Tom+Amazon Cr_Local_AmazonCr_S01
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=10
+TSRecord Name=SPRO
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=11
+TSRecord Name=McKenzie+Mohawk_Local_MohawkR_S01
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//SPRO/FLOW--INST//IR-MONTH/RFC-FCST/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=12
+TSRecord Name=MF Willamette+NF MF Willamette_Local_MFWR_S06
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=13
+TSRecord Name=MF Willamette+NF MF Willamette_Local_JNFMF_S03
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=14
+TSRecord Name=MF Willamette+Salmon Cr_Local_MFWR_S05
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=15
+TSRecord Name=MF Willamette+Salmon Cr_Local_SalmonCr_S01
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=16
+TSRecord Name=MF Willamette+Salt Cr_Local_SaltCr_S01
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=17
+TSRecord Name=Row_abv Pitcher Cr nr Dorena_Local_JRowR_14154500
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=18
+TSRecord Name=Willamette_abv Falls at Oregon City_Local_WR_S15
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=19
+TSRecord Name=Willamette_Tualatin_Local_WR_S12
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//WSLO/FLOW--INST//IR-MONTH/RFC-FCST/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=20
+TSRecord Name=Willamette_Tualatin_Local_JTualR_14207500
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=21
+TSRecord Name=Willamette+Molalla_Local_JMolaR_S06
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//CANO/FLOW--INST//IR-MONTH/RFC-FCST/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=22
+TSRecord Name=Willamette_at Wilsonville_Local_WR_S13
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//WLSO/FLOW-LOCAL--INST//IR-MONTH/BLEND-RFC-OBS-RFC-FCST/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=23
+TSRecord Name=Willamette_at Newberg_Local_WR_S12
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=24
+TSRecord Name=Willamette+Yamhill_Local_WR_S11
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//MCMO/FLOW--INST//IR-MONTH/RFC-FCST/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=25
+TSRecord Name=Willamette+Yamhill_Local_JYamhR_S01
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=26
+TSRecord Name=Willamette+Mill_Local_WR_S10
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=27
+TSRecord Name=Willamette+Mill_Local_JMillCr_S03
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=28
+TSRecord Name=Willamette+Richreall_Local_JRickrCr_S02
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=29
+TSRecord Name=Willamette+Richreall_Local_WR_S09
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=30
+TSRecord Name=So Santiam+Wiley_Local_JWiley_S02
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=31
+TSRecord Name=WTLO
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=32
+TSRecord Name=MEHO
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=33
+TSRecord Name=LSMO
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=34
+TSRecord Name=No Santiam+So Santiam_Local_NSR_S07
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=35
+TSRecord Name=JFFO
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=36
+TSRecord Name=Willamette+Santiam_Local_WR_S07
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=37
+TSRecord Name=Willamette+Santiam_Local_SR_S02
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=38
+TSRecord Name=SUVO
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=39
+TSRecord Name=Willamette+Calapooia_Local_WR_S06
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=40
+TSRecord Name=Willamette+Calapooia_Local_JCal_S03
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=41
+TSRecord Name=PHIO
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=42
+TSRecord Name=CORO
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=43
+TSRecord Name=Willamette+Marys_Local_JEMuddyCr_S02
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=44
+TSRecord Name=MNRO
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=45
+TSRecord Name=Willamette+Long Tom_Local_LT_S06
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=46
+TSRecord Name=HARO
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=47
+TSRecord Name=TRBO
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=48
+TSRecord Name=McKenzie+SF McKenzie_Local_SFMKR_S03
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=49
+TSRecord Name=Blue_at Blue River_Local_BR_S03
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=50
+TSRecord Name=McKenzie+Blue_Local_MKR_S04
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=51
+TSRecord Name=VIDO
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=52
+TSRecord Name=Below Leaburg Dam_Local_MKR_S06
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=53
+TSRecord Name=McKenzie_nr Walterville_Local_MKR_S07
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=54
+TSRecord Name=Abv Hayden Bridge_at Springflied_Local_MKR_S08
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=55
+TSRecord Name=Willamette+McKenzie_Local_WR_S02
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=56
+TSRecord Name=Willamette+McKenzie_Local_MKR_S10
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=57
+TSRecord Name=EGUO
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=58
+TSRecord Name=Row_nr Cottage Grove_Local_RowR_S04
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=59
+TSRecord Name=CF Willamette+Row_Local_CFWR_S03
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=60
+TSRecord Name=CF Willamette+Row_Local_RowR_S05
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=61
+TSRecord Name=GOSO
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=62
+TSRecord Name=MF Willamette+CF Willamette_Local_MFWR_S12
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=63
+TSRecord Name=MF Willamette+CF Willamette_Local_CFWR_S05
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=64
+TSRecord Name=JASO
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=65
+TSRecord Name=MF Willamette+Fall_Local_FallCr_S03
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=66
+TSRecord Name=MF Willamette_blw NF nr Oakridge_Local_MFWR_S07
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=67
+TSRecord Name=MF Willamette_abv Salt Cr nr Oakridge_Local_MFWR_S04
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=68
+TSRecord Name=Lebanon Div_In_Local_SSR_S06
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=69
+TSRecord Name=Stayton Div_Local_NSR_S06
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=70
+TSRecord Name=Big Cliff_Local_NSR_S04
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=71
+TSRecord Name=Detroit - Flow-Res In
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//DET/FLOW-IN--INST//IR-MONTH/RFC-FCST/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=72
+TSRecord Name=Foster_Local_JSSR_S02
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//FOS/FLOW-LOCAL--INST//IR-MONTH/BLEND-RFC-OBS-RFC-FCST/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=73
+TSRecord Name=Foster_Local_SSR_S03
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=74
+TSRecord Name=Foster_Local_MSR_S04
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=75
+TSRecord Name=Green Peter_Inflow_JMSR_S03
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//GPR/FLOW-IN--INST//IR-MONTH/RFC-FCST/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=76
+TSRecord Name=Cottage Grove_Inflow_JCFWR_S02
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//COT/FLOW-IN--INST//IR-MONTH/RFC-FCST/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=77
+TSRecord Name=Dorena_Local_RowR_S03
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//DOR/FLOW-IN--INST//IR-MONTH/RFC-FCST/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=78
+TSRecord Name=Fall Creek_Inflow_J_FallCr_WinbCr
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//FAL/FLOW-IN--INST//IR-MONTH/RFC-FCST/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=79
+TSRecord Name=Dexter_Local_MFWR_S09
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=80
+TSRecord Name=Lookout Point_Local_MFWR_S08
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//LOP/FLOW-LOCAL--INST//IR-MONTH/BLEND-RFC-OBS-RFC-FCST/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=81
+TSRecord Name=Hills Cr_Inflow_J_MFWR
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//HCR/FLOW-IN--INST//IR-MONTH/RFC-FCST/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=82
+TSRecord Name=Cougar_Inflow_JSFMKR_S02
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//CGR/FLOW-IN--INST//IR-MONTH/RFC-FCST/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=83
+TSRecord Name=Blue River_Inflow_JBR_S02
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//BLU/FLOW-IN--INST//IR-MONTH/RFC-FCST/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=84
+TSRecord Name=Fern Ridge_Inflow_JLT_S03
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//FRN/FLOW-IN--INST//IR-MONTH/RFC-FCST/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=85
+TSRecord Name=Willamette_at Albany_NWS_Local
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//ALBO/FLOW-LOCAL--INST//IR-MONTH/BLEND-RFC-OBS-RFC-FCST/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=86
+TSRecord Name=Willamette_at Salem_NWS_Local
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//SLMO/FLOW-LOCAL--INST//IR-MONTH/BLEND-RFC-OBS-RFC-FCST/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=87
+TSRecord Name=Pudding River nr Aurora
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//AURO/FLOW--INST//IR-MONTH/RFC-FCST/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=88
+TSRecord Name=GreenBridge
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=
+TSRecord DssPathname=///////
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=89
+TSRecord Name=~E100:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=/usr1/g0cwmspd/nwp/watershed/2014.01.21-2400/NWP_Willamette/forecast.dss
+TSRecord DssPathname=/WILLAMETTE/HILLS CREEK/ELEVATION//1HOUR/OBSERVED/
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=90
+TSRecord Name=Water Year Type
+TSRecord VariableId=85
+TSRecord ParamName=
+TSRecord DssFilename=C:/Users/G2ECHKBM/Desktop/Willamette3/Willamette Conservation/shared/year_classification.dss
+TSRecord DssPathname=//TYPE-OF-YEAR VALUE/STOR//1DAY/SSARRDAILY0/
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=91
+TSRecord Name=~E105:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=/usr1/g0cwmspd/nwp/watershed/2014.01.21-2400/NWP_Willamette/forecast.dss
+TSRecord DssPathname=/WILLAMETTE/LOOKOUT POINT/ELEVATION//1HOUR/OBSERVED/
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=92
+TSRecord Name=~E110:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=/usr1/g0cwmspd/nwp/watershed/2014.01.21-2400/NWP_Willamette/forecast.dss
+TSRecord DssPathname=/WILLAMETTE/DEXTER/ELEVATION//1HOUR/OBSERVED/
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=93
+TSRecord Name=~E115:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=/usr1/g0cwmspd/nwp/watershed/2014.01.21-2400/NWP_Willamette/forecast.dss
+TSRecord DssPathname=/WILLAMETTE/FALL CREEK/ELEVATION//1HOUR/OBSERVED/
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=94
+TSRecord Name=~E120:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=/usr1/g0cwmspd/nwp/watershed/2014.01.21-2400/NWP_Willamette/forecast.dss
+TSRecord DssPathname=/WILLAMETTE/DORENA/ELEVATION//1HOUR/OBSERVED/
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=95
+TSRecord Name=~E125:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=/usr1/g0cwmspd/nwp/watershed/2014.01.21-2400/NWP_Willamette/forecast.dss
+TSRecord DssPathname=/WILLAMETTE/COTTAGE GROVE/ELEVATION//1HOUR/OBSERVED/
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=96
+TSRecord Name=~E130:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=/usr1/g0cwmspd/nwp/watershed/2014.01.21-2400/NWP_Willamette/forecast.dss
+TSRecord DssPathname=/WILLAMETTE/COUGAR/ELEVATION//1HOUR/OBSERVED/
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=97
+TSRecord Name=~E135:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=/usr1/g0cwmspd/nwp/watershed/2014.01.21-2400/NWP_Willamette/forecast.dss
+TSRecord DssPathname=/WILLAMETTE/BLUE RIVER/ELEVATION//1HOUR/OBSERVED/
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=98
+TSRecord Name=~E140:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=/usr1/g0cwmspd/nwp/watershed/2014.01.21-2400/NWP_Willamette/forecast.dss
+TSRecord DssPathname=/WILLAMETTE/FERN RIDGE/ELEVATION//1HOUR/OBSERVED/
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=99
+TSRecord Name=~E145:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=/usr1/g0cwmspd/nwp/watershed/2014.01.21-2400/NWP_Willamette/forecast.dss
+TSRecord DssPathname=/WILLAMETTE/GREEN PETER/ELEVATION//1HOUR/OBSERVED/
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=100
+TSRecord Name=~E150:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=/usr1/g0cwmspd/nwp/watershed/2014.01.21-2400/NWP_Willamette/forecast.dss
+TSRecord DssPathname=/WILLAMETTE/FOSTER/ELEVATION//1HOUR/OBSERVED/
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=101
+TSRecord Name=~E155:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=/usr1/g0cwmspd/nwp/watershed/2014.01.21-2400/NWP_Willamette/forecast.dss
+TSRecord DssPathname=/WILLAMETTE/DETROIT/ELEVATION//1HOUR/OBSERVED/
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=102
+TSRecord Name=~E160:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=/usr1/g0cwmspd/nwp/watershed/2014.01.21-2400/NWP_Willamette/forecast.dss
+TSRecord DssPathname=/WILLAMETTE/BIG CLIFF/ELEVATION//1HOUR/OBSERVED/
+TSRecord InputPosition=-1
+TSRecord End=
+
+

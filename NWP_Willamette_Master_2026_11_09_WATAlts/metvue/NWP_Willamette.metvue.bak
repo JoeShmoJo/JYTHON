@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <node name="metvue">
+    <node name="workstationSettings_v2">
+      <map>
+        <entry key="MetVueVersion" value="3.3.0.334" />
+        <entry key="active" value="true" />
+        <entry key="allowoptimizeddrawing" value="true" />
+        <entry key="annotationlayer" value="None" />
+        <entry key="autoencompassmapswhenadded" value="true" />
+        <entry key="dssfilesaveversion" value="V6" />
+        <entry key="enablemimicmousecursornode" value="false" />
+        <entry key="enablemousetrackingnode" value="false" />
+        <entry key="hidden" value="false" />
+        <entry key="maximumAreaChangePercentThreshold" value="0.1" />
+        <entry key="maximumCentroidChangePercentThreshold" value="0.1" />
+        <entry key="maximumInertialAxisChangePercentThreshold" value="0.1" />
+        <entry key="mousemodenode" value="ZoomIn" />
+        <entry key="mousetrackingchoicenode" value="LatLonCoords,ProjectionCoords,InterpolatedZ,ClosestPointLatLon,ClosestPointLabel,ClosestPointType,ClosestPointZ,PointArrayIndex," />
+        <entry key="name" value="/metvue" />
+        <entry key="optimizeddrawingpixelspercelllimit" value="2" />
+        <entry key="reversemousewheel" value="true" />
+        <entry key="savepathsasrelative" value="true" />
+        <entry key="showEditHistoryAfterEdit" value="true" />
+        <entry key="showdms" value="false" />
+        <entry key="unitsystemnode" value="english" />
+        <entry key="zoomoverview" value="EncompassBoth" />
+      </map>
+      <node name="dadScales">
+        <map>
+          <entry key="preferredscale" value="Auto Scale - Linear" />
+        </map>
+        <node name="scale" />
+      </node>
+      <node name="palettes">
+        <map>
+          <entry key="preferredpalette" value="Default" />
+        </map>
+        <node name="palette">
+          <map>
+            <entry key="Default" value="true,false,true,false,reserved, reserved, reserved, reserved, reserved, reserved,(0xff99ff66,0xff3333ff,Solid,2,Solid,false),(0xff666700,white,Solid,2,Solid,false),(0xff8c4d00,white,Solid,2,Solid,false),(0xffb23400,green,Solid,2,Solid,false),(0xffdb2424,yellow,Solid,2,Solid,false),(0xffb74848,0xffff3333,Solid,2,Solid,false),(0xff926d6d,white,Solid,2,Solid,false),(0xff6e9191,white,Solid,2,Solid,false),(0xff49b6b6,white,Solid,2,Solid,false),(0xff25dada,white,Solid,2,Solid,false),(cyan[88],white,Solid,2,Solid,false),(0xff00aaff,white,Solid,2,Solid,false),(0xff0055ff,white,Solid,2,Solid,false),(blue[88],white,Solid,2,Solid,false)," />
+            <entry key="Green to Red" value="true,true,true,false,reserved, reserved, reserved, reserved, reserved, reserved,(white[f2],white,Solid,1,Solid,false),(0xf299ff99,white,Solid,1,Solid,false),(0xf266dd66,white,Solid,1,Solid,false),(0xf233bb33,white,Solid,1,Solid,false),(0xf2009900,white,Solid,1,Solid,false),(0xf2ffff33,white,Solid,1,Solid,false),(0xf2ffcc66,0xfffefefe,Solid,1,Solid,false),(0xf2ff994d,0xfffdfdfd,Solid,1,Solid,false),(0xf2ff6633,0xfffcfcfc,Solid,1,Solid,false),(0xf2cc0000,0xfff8f8f8,Solid,1,Solid,false),(0xf2aa0022,0xffe5e5e5,Solid,1,Solid,false),(0xf2880044,0xffd3d3d3,Solid,1,Solid,false),(0xf2660066,palegray,Solid,1,Solid,false),(white[f2],0xff3f3f3f,Solid,1,Solid,false)" />
+            <entry key="Precipitation - 50% Transparency" value="true,false,true,false,reserved, reserved, reserved, reserved, reserved, reserved,(0xb2cccccc,0xff606060,Solid,1,Solid,false),(white[b2],0xff404040,Solid,1,Solid,false),(0xb20cd8e6,darkgray,Solid,1,Solid,false),(0xb20300f4,black,Solid,1,Solid,false),(0xb202fd02,0xff070707,Solid,1,Solid,false),(0xb201c501,0xff0f0f0f,Solid,1,Solid,false),(0xb2008e00,0xff1f1f1f,Solid,1,Solid,false),(0xb2fdf802,0xff3f3f3f,Solid,1,Solid,false),(0xb2e5bc00,0xff7f7f7f,Solid,1,Solid,false),(0xb2fd9500,white,Solid,1,Solid,false),(0xb2fd0000,0xffefefef,Solid,1,Solid,false),(0xb2d40000,0xffdfdfdf,Solid,1,Solid,false),(0xb2990000,0xffbfbfbf,Solid,1,Solid,false),(black[b2],white,Solid,1,Solid,false),(0xb2f800fd,0xff7f7f7f,Solid,1,Solid,false),(0xb29854c6,black,Solid,1,Solid,false),(0xb2999999,black,Solid,1,Solid,false)," />
+            <entry key="Snow Water Equivalent" value="true,false,true,false,reserved, reserved, reserved, reserved, reserved, reserved,(0xffcccccc,darkgray,Solid,1,Solid,false),(white,white,Solid,1,Solid,false),(0xff9fc6cd,darkgray,Solid,1,Solid,false),(0xff7ea6c0,darkgray,Solid,1,Solid,false),(0xff6584bd,darkgray,Solid,1,Solid,false),(0xff494dbb,darkgray,Solid,1,Solid,false),(0xff5233bc,0xff7f7f7f,Solid,1,Solid,false),(0xff6517b9,0xff7f7f7f,Solid,1,Solid,false),(0xff8e1fac,0xff7e7e7e,Solid,1,Solid,false),(0xffbc3ab4,0xff7c7c7c,Solid,1,Solid,false),(0xffbe589a,0xff787878,Solid,1,Solid,false),(0xffc57695,0xff707070,Solid,1,Solid,false),(0xffcc959b,0xff606060,Solid,1,Solid,false),(0xffcdb5b1,0xff404040,Solid,1,Solid,false),(0xff000000,0xff404040,Solid,1,Solid,false)" />
+            <entry key="Temperature" value="true,true,true,false,reserved, reserved, reserved, reserved, reserved, reserved,(white,black,Solid,1,Solid,false),(0xffff00f8,black,Solid,1,Solid,false),(0xffd900ff,black,Solid,1,Solid,false),(0xff7e00ff,black,Solid,1,Solid,false),(0xff0036ff,black,Solid,1,Solid,false),(0xff0092ff,black,Solid,1,Solid,false),(0xff00ecff,black,Solid,1,Solid,false),(0xff00ffe0,black,Solid,1,Solid,false),(0xff05ff00,black,Solid,1,Solid,false),(0xffbbff00,black,Solid,1,Solid,false),(0xffe6ff00,black,Solid,1,Solid,false),(0xffffe600,black,Solid,1,Solid,false),(0xffffbb00,black,Solid,1,Solid,false),(0xffff8b00,black,Solid,1,Solid,false),(0xffff6000,black,Solid,1,Solid,false),(0xffff0400,black,Solid,1,Solid,false),(black,black,Solid,1,Solid,false)," />
+          </map>
+        </node>
+      </node>
+      <node name="colorscales">
+        <map>
+          <entry key="preferredcolorscale" value="Green to Red - Linear" />
+        </map>
+        <node name="colorscales">
+          <map>
+            <entry key="(English) Precipitation - max 30 in" value="false,0.0,1.875,30.0,false,false,false,Linear,10,true,50.0,reserved,QuitAtTopPaletteLevel,true,true,true,false,false,reserved,0.0,(0x80999999,0xff606060,Solid,1,Solid,false),0.1,(white[80],0xff404040,Solid,1,Solid,false),0.25,(0x800cd8e6,darkgray,Solid,1,Solid,false),0.5,(0x800300f4,black,Solid,1,Solid,false),1.0,(0x8002fd02,0xff070707,Solid,1,Solid,false),1.5,(0x8001c501,0xff0f0f0f,Solid,1,Solid,false),2.0,(0x80008e00,0xff1f1f1f,Solid,1,Solid,false),3.0,(0x80fdf802,0xff3f3f3f,Solid,1,Solid,false),4.0,(0x80e5bc00,0xff7f7f7f,Solid,1,Solid,false),5.0,(0x80fd9500,white,Solid,1,Solid,false),6.0,(0x80fd0000,0xffefefef,Solid,1,Solid,false),8.0,(0x80d40000,0xffdfdfdf,Solid,1,Solid,false),10.0,(0x80990000,0xffbfbfbf,Solid,1,Solid,false),15.0,(0x80333333,white,Solid,1,Solid,false),20.0,(0x80f800fd,0xff7f7f7f,Solid,1,Solid,false),30.0,(0x809854c6,black,Solid,1,Solid,false),9.99999999999E11,(black[80],0xff606060,Solid,1,Solid,false)," />
+            <entry key="(English) Temperature" value="false,-30.0,10.0,140.0,false,false,false,Linear,10,true,50.0,reserved,QuitAtTopPaletteLevel,true,true,true,false,false,reserved,-40.0,(0x7f999999,black,Solid,1,Solid,false),-20.0,(0x7fff00f8,black,Solid,1,Solid,false),-10.0,(0x7fd900ff,black,Solid,1,Solid,false),0.0,(0x7f7e00ff,black,Solid,1,Solid,false),10.0,(0x7f0036ff,black,Solid,1,Solid,false),20.0,(0x7f0092ff,black,Solid,1,Solid,false),30.0,(0x7f00ecff,black,Solid,1,Solid,false),40.0,(0x7f00ffe0,black,Solid,1,Solid,false),50.0,(0x7f05ff00,black,Solid,1,Solid,false),60.0,(0x7fbbff00,black,Solid,1,Solid,false),70.0,(0x7fe6ff00,black,Solid,1,Solid,false),80.0,(0x7fffe600,black,Solid,1,Solid,false),90.0,(0x7fffbb00,black,Solid,1,Solid,false),100.0,(0x7fff8b00,black,Solid,1,Solid,false),110.0,(0x7fff6000,black,Solid,1,Solid,false),120.0,(0x7fff0400,black,Solid,1,Solid,false),9.99999999999E11,(black[7f],0xff606060,Solid,1,Solid,false)," />
+            <entry key="Green Red Teal Blue - Linear" value="true,0.0,3.642857142857143,51.0,true,true,true,Linear,10,true,50.0,reserved,UseTopPaletteLevelForExceedance,true,true,true,false,false,reserved,0.0,(0x7f999999,white,Solid,1,Solid,false),1.0,(0x7f666700,white,Solid,1,Solid,false),2.0,(0x7f8c4d00,white,Solid,1,Solid,false),3.0,(0x7fb23400,white,Solid,1,Solid,false),4.0,(0x7fdb2424,white,Solid,1,Solid,false),5.0,(0x7fb74848,white,Solid,1,Solid,false),6.0,(0x7f926d6d,white,Solid,1,Solid,false),7.0,(0x7f6e9191,white,Solid,1,Solid,false),8.0,(0x7f49b6b6,white,Solid,1,Solid,false),9.0,(0x7f25dada,white,Solid,1,Solid,false),10.0,(cyan[7f],white,Solid,1,Solid,false),11.0,(0x7f00aaff,white,Solid,1,Solid,false),12.0,(0x7f0055ff,white,Solid,1,Solid,false),9.99999999999E11,(black[7f],white,Solid,1,Solid,false)," />
+            <entry key="Green Red Teal Blue - Log" value="true,0.001,10.0,100.0,true,false,true,Log,10,true,50.0,reserved,UseTopPaletteLevelForExceedance,true,true,true,false,false,reserved,0.0,(0x7f999999,white,Solid,1,Solid,false),1.0,(0x7f666700,white,Solid,1,Solid,false),2.0,(0x7f8c4d00,white,Solid,1,Solid,false),3.0,(0x7fb23400,white,Solid,1,Solid,false),4.0,(0x7fdb2424,white,Solid,1,Solid,false),5.0,(0x7fb74848,white,Solid,1,Solid,false),6.0,(0x7f926d6d,white,Solid,1,Solid,false),7.0,(0x7f6e9191,white,Solid,1,Solid,false),8.0,(0x7f49b6b6,white,Solid,1,Solid,false),9.0,(0x7f25dada,white,Solid,1,Solid,false),10.0,(cyan[7f],white,Solid,1,Solid,false),11.0,(0x7f00aaff,white,Solid,1,Solid,false),12.0,(0x7f0055ff,white,Solid,1,Solid,false),9.99999999999E11,(black[7f],white,Solid,1,Solid,false)," />
+            <entry key="Green to Red - Linear" value="true,0.0,3.642857142857143,51.0,true,true,true,Linear,10,true,50.0,reserved,UseTopPaletteLevelForExceedance,true,true,true,false,false,reserved,2.0,(0x7f999999,white,Solid,1,Solid,false),2.5,(0x7f99ff99,white,Solid,1,Solid,false),3.0,(0x7f66dd66,white,Solid,1,Solid,false),3.5,(0x7f33bb33,white,Solid,1,Solid,false),4.5,(0x7f009900,white,Solid,1,Solid,false),6.0,(0x7fffff33,white,Solid,1,Solid,false),8.0,(0x7fffcc66,0xfffefefe,Solid,1,Solid,false),11.0,(0x7fff994d,0xfffdfdfd,Solid,1,Solid,false),15.0,(0x7fff6633,0xfffcfcfc,Solid,1,Solid,false),20.0,(0x7fcc0000,0xfff8f8f8,Solid,1,Solid,false),25.0,(0x7faa0022,0xffe5e5e5,Solid,1,Solid,false),35.0,(0x7f880044,0xffd3d3d3,Solid,1,Solid,false),55.0,(0x7f660066,palegray,Solid,1,Solid,false),9.99999999999E11,(black[7f],0xff3f3f3f,Solid,1,Solid,false)," />
+            <entry key="Green to Red - Log" value="true,0.001,10.0,100.0,true,false,true,Log,10,true,50.0,reserved,SmoothInterpolationMode,true,true,true,false,false,reserved,1.0,(0x7f999999,white,Solid,1,Solid,false),2.0,(0x7f99ff99,white,Solid,1,Solid,false),3.0,(0x7f66dd66,white,Solid,1,Solid,false),4.0,(0x7f33bb33,white,Solid,1,Solid,false),5.0,(0x7f009900,white,Solid,1,Solid,false),6.0,(0x7fffff33,white,Solid,1,Solid,false),7.0,(0x7fffcc66,0xfffefefe,Solid,1,Solid,false),8.0,(0x7fff994d,0xfffdfdfd,Solid,1,Solid,false),9.0,(0x7fff6633,0xfffcfcfc,Solid,1,Solid,false),10.0,(0x7fcc0000,0xfff8f8f8,Solid,1,Solid,false),11.0,(0x7faa0022,0xffe5e5e5,Solid,1,Solid,false),12.0,(0x7f880044,0xffd3d3d3,Solid,1,Solid,false),13.0,(0x7f660066,palegray,Solid,1,Solid,false),9.99999999999E11,(black[7f],0xff3f3f3f,Solid,1,Solid,false)," />
+            <entry key="[English] Snow 1 (Explicit, Max 40in)" value="false,0.0,3.0,50.0,true,true,true,Linear,10,true,50.0,reserved,UseTopPaletteLevelForExceedance,true,true,true,false,false,reserved,0.0,(0x7f999999,darkgray,Solid,1,Solid,false),1.0,(0x7fcccccc,white,Solid,1,Solid,false),2.0,(0x7fccffff,darkgray,Solid,1,Solid,false),4.0,(0x7f66ffff,darkgray,Solid,1,Solid,false),6.0,(0x7f75dbff,darkgray,Solid,1,Solid,false),8.0,(0x7f84b5ff,darkgray,Solid,1,Solid,false),10.0,(0x7f787fff,0xff7f7f7f,Solid,1,Solid,false),12.0,(0x7f6c47ff,0xff7f7f7f,Solid,1,Solid,false),14.0,(0x7f8d19ff,0xff7e7e7e,Solid,1,Solid,false),16.0,(0x7fbb00ea,0xff7c7c7c,Solid,1,Solid,false),18.0,(0x7fd600bf,0xff787878,Solid,1,Solid,false),20.0,(0x7fcc0033,0xff707070,Solid,1,Solid,false),30.0,(0x7f990000,0xff606060,Solid,1,Solid,false),40.0,(0x7f660000,0xff404040,Solid,1,Solid,false),9.99999999999E11,(black[7f],0xff404040,Solid,1,Solid,false)," />
+            <entry key="[English] Snow 2 (Explicit, Max 40in)" value="false,0.0,3.0,50.0,true,true,true,Linear,10,true,50.0,reserved,UseTopPaletteLevelForExceedance,true,true,true,false,false,reserved,0.0,(0x7f999999,darkgray,Solid,1,Solid,false),1.0,(0x7fcccccc,white,Solid,1,Solid,false),2.0,(0x7f9fc6cd,darkgray,Solid,1,Solid,false),4.0,(0x7f7ea6c0,darkgray,Solid,1,Solid,false),6.0,(0x7f6584bd,darkgray,Solid,1,Solid,false),8.0,(0x7f494dbb,darkgray,Solid,1,Solid,false),10.0,(0x7f5233bc,0xff7f7f7f,Solid,1,Solid,false),12.0,(0x7f6517b9,0xff7f7f7f,Solid,1,Solid,false),14.0,(0x7f8e1fac,0xff7e7e7e,Solid,1,Solid,false),16.0,(0x7fbc3ab4,0xff7c7c7c,Solid,1,Solid,false),18.0,(0x7fbe589a,0xff787878,Solid,1,Solid,false),20.0,(0x7fc57695,0xff707070,Solid,1,Solid,false),30.0,(0x7fcc959b,0xff606060,Solid,1,Solid,false),40.0,(0x7fcdb5b1,0xff404040,Solid,1,Solid,false),9.99999999999E11,(black[7f],0xff404040,Solid,1,Solid,false)," />
+          </map>
+        </node>
+      </node>
+      <node name="attributeSchemas">
+        <map>
+          <entry key="preferredschema" value="default" />
+        </map>
+        <node name="schemas">
+          <node name="default">
+            <node name="points">
+              <map>
+                <entry key="City_and_Town_Locales" value="true,Arial,8,0xff112233,black,square,white,red,12,false,true,true,true,false,0.0,3.4028234663852886E38," />
+                <entry key="DCP_Locations" value="true,Arial,12,darkgreen,black,triangle,darkgreen,white,12,false,true,true,true,false,0.0,3.4028234663852886E38," />
+                <entry key="Mesonet_Stations" value="true,Arial,8,blue,black,circle,yellow,white,12,false,true,true,true,false,0.0,3.4028234663852886E38," />
+                <entry key="Rainfall_Observers" value="true,Arial,8,yellow,red,diamond,green,darkred,12,false,true,true,true,false,0.0,3.4028234663852886E38," />
+              </map>
+            </node>
+            <node name="lines">
+              <map>
+                <entry key="Basin_Outlines" value="true,Solid,2,darkgreen,black,black,square,brown,green,12,true,false,true,false,false,false,-1.0,-1.0," />
+                <entry key="County_Outlines" value="true,Dot,1,darkgray,red,black,square,yellow,red,12,true,false,true,false,false,false,-1.0,-1.0," />
+                <entry key="Highways" value="true,Solid,1,brown,darkblue,black,x,black,black,12,true,false,true,false,false,false,-1.0,-1.0," />
+                <entry key="Incorporated_Limits" value="true,Solid,1,darkgreen,black,darkgreen,triangle2,black,black,12,false,false,true,true,false,false,-1.0,-1.0," />
+                <entry key="Interstates" value="true,Solid,3,green,darkgreen,black,plus,black,black,12,true,false,true,false,false,false,-1.0,-1.0," />
+                <entry key="Reservoirs" value="true,Solid,1,darkblue,black,darkblue,diamond,green,darkgray,12,true,false,true,true,false,false,-1.0,-1.0," />
+                <entry key="Rivers_and_Streams" value="true,Solid,1,darkblue,black,black,triangle,yellow,red,12,true,false,true,false,false,false,-1.0,-1.0," />
+                <entry key="Secondary_Roads" value="true,Solid,1,red,black,black,plus,black,black,12,true,false,true,false,false,false,-1.0,-1.0," />
+                <entry key="State_Outlines" value="true,Solid,2,black,black,black,circle,green,darkgray,12,true,false,true,false,false,false,-1.0,-1.0," />
+                <entry key="Streets_Major" value="true,Solid,1,white,black,black,square,black,black,12,true,false,true,false,false,false,-1.0,-1.0," />
+                <entry key="Streets_Subdivision" value="true,Solid,1,darkgray,black,black,square,black,black,12,true,false,true,false,false,false,-1.0,-1.0," />
+                <entry key="Subbasin_Outlines" value="true,Solid,1,darkgreen,black,black,triangle,black,black,12,true,false,true,false,false,false,-1.0,-1.0," />
+              </map>
+            </node>
+            <node name="polygons">
+              <map>
+                <entry key="Basin_Polygons" value="true,Solid,1,darkgreen,black,black,square,black,black,12,true,false,true,false,false,false,-1.0,-1.0," />
+                <entry key="Subbasin_Polygons" value="true,Solid,1,darkgreen,black,black,square,black,black,12,true,false,true,false,false,false,-1.0,-1.0," />
+              </map>
+            </node>
+          </node>
+        </node>
+      </node>
+      <node name="patterns">
+        <node name="pattern" />
+      </node>
+      <node name="temporalTransformationManager" />
+      <node name="coordinatesystems" />
+      <node name="depthareaduration">
+        <node name="outputoptionsnode" />
+      </node>
+      <node name="gage2tin" />
+      <node name="bordersandlayers" />
+      <node name="zones" />
+      <node name="basinaveragebordersandlayers" />
+      <node name="annotation" />
+      <node name="tinproviders">
+        <map>
+          <entry key="applywritetimeshift" value="false" />
+          <entry key="applywritetimeshiftforprojecting" value="false" />
+          <entry key="timeshiftdateisrelative" value="true" />
+          <entry key="timeshiftdateisrelativeforprojecting" value="true" />
+          <entry key="timeshiftdaterelative" value="0" />
+          <entry key="timeshiftdaterelativeforprojecting" value="0" />
+          <entry key="timezoneselectiontypeforprojecting" value="all" />
+          <entry key="timezoneselectiontypeforwrite" value="all" />
+        </map>
+        <node name="readsettings">
+          <node name="file">
+            <node name="resultantfiles" />
+          </node>
+          <node name="dss">
+            <map>
+              <entry key="aggregatespatially" value="Temporal" />
+              <entry key="dssfile" value="data.dss" />
+              <entry key="dsspathmask" value="/*/*/*/*/*/*/" />
+              <entry key="fileselectiontype" value="STATIC" />
+              <entry key="use_cwms_monthly_file" value="false" />
+              <entry key="usecachedspatialtins" value="true" />
+            </map>
+            <node name="resultantfiles" />
+            <node name="timeFilterOptions">
+              <map>
+                <entry key="absolutebegdate" value="1741292831250" />
+                <entry key="absoluteenddate" value="1741292831250" />
+                <entry key="durationamount" value="1" />
+                <entry key="durationinterval" value="Hours" />
+                <entry key="enabledurationfiltering" value="false" />
+                <entry key="enabletimefiltering" value="false" />
+                <entry key="isbegdaterelative" value="false" />
+                <entry key="isenddaterelative" value="false" />
+                <entry key="relativebegdate" value="0" />
+                <entry key="relativeenddate" value="0" />
+                <entry key="timespanfilteringtype" value="StartTime" />
+              </map>
+            </node>
+            <node name="readConstraints">
+              <map>
+                <entry key="aggoption" value="Aggregate" />
+                <entry key="alternatetimezone" value="GMT|0|0" />
+                <entry key="overrideaggoption" value="false" />
+                <entry key="overridespatialaggoption" value="false" />
+                <entry key="spatialaggoption" value="Average" />
+                <entry key="timezoneselectiontype" value="all" />
+                <entry key="usealternatetimezone" value="false" />
+              </map>
+              <node name="extentsReadConstraint">
+                <map>
+                  <entry key="isCustomExtents" value="true" />
+                  <entry key="issubimageconstraintactive" value="false" />
+                  <entry key="subimageconstrainttype" value="MaskLLBox" />
+                </map>
+                <node name="shapefileList" />
+              </node>
+            </node>
+          </node>
+          <node name="static" />
+        </node>
+        <node name="writesettings">
+          <node name="file" />
+          <node name="dss" />
+        </node>
+        <node name="projectionsettings">
+          <node name="file" />
+          <node name="dss" />
+          <node name="ascii_grid" />
+          <node name="nativefile" />
+          <node name="prism" />
+        </node>
+        <node name="writesettingsforprojecting">
+          <node name="writeconstraints">
+            <map>
+              <entry key="usealternatetimezoneforwrite" value="false" />
+            </map>
+          </node>
+        </node>
+        <node name="writeconstraints">
+          <map>
+            <entry key="usealternatetimezoneforwrite" value="false" />
+          </map>
+        </node>
+      </node>
+      <node name="MetInterpFileAndDisplay">
+        <node name="MetInterpResultsDisplay" />
+      </node>
+      <node name="GriddedDataEditorNode" />
+      <node name="printingnode">
+        <map>
+          <entry key="addtitle" value="true" />
+          <entry key="autogenerateimagename" value="true" />
+          <entry key="bordercolor" value="-16777216" />
+          <entry key="borderwidth" value="1" />
+          <entry key="defaultimagefilename" value="tinImage" />
+          <entry key="fontcolor" value="-16777216" />
+          <entry key="generateuniqueimagefilename" value="false" />
+          <entry key="imagesavedirectory" value="" />
+          <entry key="imagesaveheight" value="100" />
+          <entry key="imagesavetype" value="jpg" />
+          <entry key="imagesavewidth" value="100" />
+          <entry key="includelegend" value="true" />
+          <entry key="optimizeimagesize" value="true" />
+          <entry key="switchbw" value="whenBackgroundIsBlack" />
+        </map>
+      </node>
+      <node name="animationnode">
+        <map>
+          <entry key="animatelayerheight" value="20" />
+          <entry key="animatelayerllx" value="80" />
+          <entry key="animatelayerlly" value="5" />
+          <entry key="animatelayerwidth" value="20" />
+          <entry key="animatelegendlayerbkgtransparent" value="false" />
+          <entry key="animatetilelegend" value="true" />
+          <entry key="animatetilelegendside" value="RIGHT" />
+          <entry key="animatetilexsize" value="20" />
+          <entry key="animatetileysize" value="20" />
+          <entry key="animationfilenametemplateprefix" value="%t%MetVue.%n%." />
+          <entry key="animationimagesavetype" value="jpg" />
+          <entry key="animationkeepimages" value="false" />
+          <entry key="animationmodaccumulate" value="false" />
+          <entry key="animationshowlegend" value="false" />
+        </map>
+      </node>
+      <node name="layercontrol">
+        <node name="contourdisplaysettings" />
+        <node name="annotationdisplaysettings" />
+        <node name="polygonavgzvaluesdisplaysettings">
+          <node name="polygontypedrawcontrol" />
+        </node>
+        <node name="tinzvaluesdisplaysettings" />
+        <node name="tingriddisplaysettings" />
+        <node name="latlondisplaysettings" />
+        <node name="maplayersettings" />
+        <node name="gageinterplayersettings" />
+        <node name="internetmapssettings" />
+        <node name="rasterdisplaysettings" />
+        <node name="winddisplaysettings" />
+        <node name="terraindisplaysettings" />
+      </node>
+      <node name="imagesaveoptions" />
+      <node name="sessions" />
+      <node name="preferredtaliasnode">
+        <node name="English">
+          <map>
+            <entry key="%" value="%" />
+            <entry key="1000 acre" value="1000 acre" />
+            <entry key="B" value="B" />
+            <entry key="F" value="F" />
+            <entry key="GWh" value="GWh" />
+            <entry key="Hz" value="Hz" />
+            <entry key="KAF/mon" value="KAF/mon" />
+            <entry key="MHz" value="MHz" />
+            <entry key="MWh" value="MWh" />
+            <entry key="TWh" value="TWh" />
+            <entry key="Wh" value="Wh" />
+            <entry key="ac-ft" value="ac-ft" />
+            <entry key="acre" value="acre" />
+            <entry key="ampere" value="ampere" />
+            <entry key="bar" value="bar" />
+            <entry key="cfs" value="cfs" />
+            <entry key="degF-day" value="degF-day" />
+            <entry key="dsf" value="dsf" />
+            <entry key="ft" value="ft" />
+            <entry key="ft/s" value="ft/s" />
+            <entry key="ft2" value="ft2" />
+            <entry key="ft3" value="ft3" />
+            <entry key="ftUS" value="ftUS" />
+            <entry key="g/l" value="g/l" />
+            <entry key="gal" value="gal" />
+            <entry key="gpm" value="gpm" />
+            <entry key="in" value="in" />
+            <entry key="in/deg-day" value="in/deg-day" />
+            <entry key="kHz" value="kHz" />
+            <entry key="kWh" value="kWh" />
+            <entry key="kaf" value="kaf" />
+            <entry key="kcfs" value="kcfs" />
+            <entry key="kdsf" value="kdsf" />
+            <entry key="kgal" value="kgal" />
+            <entry key="knot" value="knot" />
+            <entry key="lb/ft3" value="lb/ft3" />
+            <entry key="mgal" value="mgal" />
+            <entry key="mgd" value="mgd" />
+            <entry key="mi" value="mi" />
+            <entry key="mile2" value="mile2" />
+            <entry key="mile3" value="mile3" />
+            <entry key="mph" value="mph" />
+            <entry key="psi" value="psi" />
+          </map>
+        </node>
+        <node name="SI">
+          <map>
+            <entry key="%" value="%" />
+            <entry key="1000 m2" value="1000 m2" />
+            <entry key="1000 m3" value="1000 m3" />
+            <entry key="B" value="B" />
+            <entry key="C" value="C" />
+            <entry key="GWh" value="GWh" />
+            <entry key="Hz" value="Hz" />
+            <entry key="J" value="J" />
+            <entry key="K" value="K" />
+            <entry key="MHz" value="MHz" />
+            <entry key="MJ" value="MJ" />
+            <entry key="MWh" value="MWh" />
+            <entry key="TWh" value="TWh" />
+            <entry key="Wh" value="Wh" />
+            <entry key="ampere" value="ampere" />
+            <entry key="bar" value="bar" />
+            <entry key="cal" value="cal" />
+            <entry key="cm" value="cm" />
+            <entry key="cms" value="cms" />
+            <entry key="degC-day" value="degC-day" />
+            <entry key="g/cm3" value="g/cm3" />
+            <entry key="g/l" value="g/l" />
+            <entry key="g/m3" value="g/m3" />
+            <entry key="ha" value="ha" />
+            <entry key="kHz" value="kHz" />
+            <entry key="kPa" value="kPa" />
+            <entry key="kWh" value="kWh" />
+            <entry key="kcms" value="kcms" />
+            <entry key="km" value="km" />
+            <entry key="km2" value="km2" />
+            <entry key="km3" value="km3" />
+            <entry key="m" value="m" />
+            <entry key="m/s" value="m/s" />
+            <entry key="m2" value="m2" />
+            <entry key="m3" value="m3" />
+            <entry key="mb" value="mb" />
+            <entry key="mcm" value="mcm" />
+            <entry key="mg/l" value="mg/l" />
+            <entry key="mm" value="mm" />
+            <entry key="mm/deg-day" value="mm/deg-day" />
+          </map>
+        </node>
+      </node>
+    </node>
+  </node>
+  <node name="org">
+    <node name="geotools">
+      <node name="referencing">
+        <node name="wkt" />
+      </node>
+    </node>
+  </node>
+</root>

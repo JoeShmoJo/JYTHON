@@ -1,0 +1,5 @@
+ModifiedTime=1697223745751
+GVDataSet Name=R1.5RFC-CWMS-Default
+Description=Copy of Copy of CMWS NAVD88 network with added junctions and local flows set up for RFC forecast.  Routing data supplied from HEC-RAS models.  Flood zones are the rules from the FIS ResSim model and the conservation/buffer zones rules are from the IRRMBaseline ResSIm model. (GV Data Set for CWMS-Default)
+
+

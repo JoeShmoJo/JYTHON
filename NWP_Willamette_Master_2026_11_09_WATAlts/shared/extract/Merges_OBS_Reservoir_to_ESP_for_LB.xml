@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataexchange-configuration xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://www.hec.usace.army.mil/xmlSchema/cwms/dataexchangeconfiguration_v2.xsd">
+  <datastore>
+    <oracle id="Oracle">
+      <host>coe-nwpuwd04nwp</host>
+      <sid>G2CWMSP1</sid>
+    </oracle>
+  </datastore>
+  <datastore>
+    <model-plugin id="forecast-model-plugin" />
+  </datastore>
+  <datastore>
+    <dssfile id="forecast-dss" />
+  </datastore>
+  <ts-dataexchange-set id="Merges OBS Reservoir to ESP for LB" exchange-data="false" sort-order="16.0">
+    <datastore-ref id="Oracle" />
+    <datastore-ref id="forecast-model-plugin" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Replace" ts-override-protection="OFF" />
+    <ts-mapping-set />
+  </ts-dataexchange-set>
+  <ts-dataexchange-set id="Merges OBS Reservoir to ESP for LB1" exchange-data="false" sort-order="16.0">
+    <datastore-ref id="Oracle" />
+    <datastore-ref id="forecast-dss" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Replace" ts-override-protection="OFF" />
+    <ts-mapping-set>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">HCR.Flow-In.Ave.~1Day.1Day.CBT-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//HCRO3/FLOW-UNREG/29Jan2023 - 28Jan2024/1Day/PERC-25/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">HCR.Flow-In.Ave.~1Day.1Day.CBT-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//HCRO3/FLOW-UNREG/29Jan2023 - 28Jan2024/1Day/PERC-50/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">HCR.Flow-In.Ave.~1Day.1Day.CBT-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//HCRO3/FLOW-UNREG/29Jan2023 - 28Jan2024/1Day/PERC-75/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">LOP.Flow-In.Ave.~1Day.1Day.CBT-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//LOPO3/FLOW-LOC/29Jan2023 - 21Jul2024/1Day/PERC-25/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">LOP.Flow-In.Ave.~1Day.1Day.CBT-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//LOPO3/FLOW-LOC/29Jan2023 - 21Jul2024/1Day/PERC-50/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">LOP.Flow-In.Ave.~1Day.1Day.CBT-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//LOPO3/FLOW-LOC/29Jan2023 - 21Jul2024/1Day/PERC-75/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">DOR.Flow-In.Ave.~1Day.1Day.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DORO3/FLOW-UNREG/29Jan2023 - 28Jan2024/1Day/PERC-25/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">DOR.Flow-In.Ave.~1Day.1Day.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DORO3/FLOW-UNREG/29Jan2023 - 28Jan2024/1Day/PERC-50/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">DOR.Flow-In.Ave.~1Day.1Day.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DORO3/FLOW-UNREG/29Jan2023 - 28Jan2024/1Day/PERC-75/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">COT.Flow-In.Ave.~1Day.1Day.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//COTO3/FLOW-UNREG/29Jan2023 - 28Jan2024/1Day/PERC-25/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">COT.Flow-In.Ave.~1Day.1Day.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//COTO3/FLOW-UNREG/29Jan2023 - 28Jan2024/1Day/PERC-50/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">COT.Flow-In.Ave.~1Day.1Day.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//COTO3/FLOW-UNREG/29Jan2023 - 28Jan2024/1Day/PERC-75/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">FAL.Flow-In.Ave.~1Day.1Day.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FALO3/FLOW-UNREG/29Jan2023 - 28Jan2024/1Day/PERC-25/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">FAL.Flow-In.Ave.~1Day.1Day.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FALO3/FLOW-UNREG/29Jan2023 - 28Jan2024/1Day/PERC-50/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">FAL.Flow-In.Ave.~1Day.1Day.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FALO3/FLOW-UNREG/29Jan2023 - 28Jan2024/1Day/PERC-75/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">FRN.Flow-In.Ave.~1Day.1Day.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FRNO3/FLOW-UNREG/29Jan2023 - 28Jan2024/1Day/PERC-25/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">FRN.Flow-In.Ave.~1Day.1Day.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FRNO3/FLOW-UNREG/29Jan2023 - 28Jan2024/1Day/PERC-50/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">FRN.Flow-In.Ave.~1Day.1Day.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FRNO3/FLOW-UNREG/29Jan2023 - 28Jan2024/1Day/PERC-75/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">CGR.Flow-In.Ave.~1Day.1Day.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//CGRO3/FLOW-UNREG/29Jan2023 - 28Jan2024/1Day/PERC-25/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">CGR.Flow-In.Ave.~1Day.1Day.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//CGRO3/FLOW-UNREG/29Jan2023 - 28Jan2024/1Day/PERC-50/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">CGR.Flow-In.Ave.~1Day.1Day.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//CGRO3/FLOW-UNREG/29Jan2023 - 28Jan2024/1Day/PERC-75/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">BLU.Flow-In.Ave.~1Day.1Day.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//BLUO3/FLOW-UNREG/29Jan2023 - 28Jan2024/1Day/PERC-25/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">BLU.Flow-In.Ave.~1Day.1Day.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//BLUO3/FLOW-UNREG/29Jan2023 - 28Jan2024/1Day/PERC-50/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">BLU.Flow-In.Ave.~1Day.1Day.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//BLUO3/FLOW-UNREG/29Jan2023 - 28Jan2024/1Day/PERC-75/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">GPR.Flow-In.Ave.~1Day.1Day.CBT-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//GPRO3/FLOW-UNREG/29Jan2023 - 28Jan2024/1Day/PERC-25/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">GPR.Flow-In.Ave.~1Day.1Day.CBT-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//GPRO3/FLOW-UNREG/29Jan2023 - 28Jan2024/1Day/PERC-50/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">GPR.Flow-In.Ave.~1Day.1Day.CBT-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//GPRO3/FLOW-UNREG/29Jan2023 - 28Jan2024/1Day/PERC-75/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="forecast-dss">//FOSO3/FLOW-LOC/29Jan2023 - 21Jul2024/1Day/PERC-25/</dss-timeseries>
+        <cwms-timeseries datastore-id="Oracle">FOS.Flow-Local.Inst.~6Hours.0.BLEND-RFC-OBS-RFC-FCST</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="forecast-dss">//FOSO3/FLOW-LOC/29Jan2023 - 21Jul2024/1Day/PERC-50/</dss-timeseries>
+        <cwms-timeseries datastore-id="Oracle">FOS.Flow-Local.Inst.~6Hours.0.BLEND-RFC-OBS-RFC-FCST</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">FOS.Flow-In.Ave.~1Day.1Day.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FOSO3/FLOW-LOC/29Jan2023 - 21Jul2024/1Day/PERC-75/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">DET.Flow-In.Ave.~1Day.1Day.CBT-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DETO3/FLOW-UNREG/29Jan2023 - 28Jan2024/1Day/PERC-25/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">DET.Flow-In.Ave.~1Day.1Day.CBT-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DETO3/FLOW-UNREG/29Jan2023 - 28Jan2024/1Day/PERC-50/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">DET.Flow-In.Ave.~1Day.1Day.CBT-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DETO3/FLOW-UNREG/29Jan2023 - 28Jan2024/1Day/PERC-75/</dss-timeseries>
+      </ts-mapping>
+    </ts-mapping-set>
+  </ts-dataexchange-set>
+  <timewindow>
+    <starttime>EXTRACT+PT0H</starttime>
+    <endtime>FORECAST+P0D</endtime>
+  </timewindow>
+</dataexchange-configuration>
+

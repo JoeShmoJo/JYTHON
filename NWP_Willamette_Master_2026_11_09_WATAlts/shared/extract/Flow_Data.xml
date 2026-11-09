@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataexchange-configuration xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://www.hec.usace.army.mil/xmlSchema/cwms/dataexchangeconfiguration_v2.xsd">
+  <datastore>
+    <oracle id="Oracle">
+      <host>//nwp-cwmsdb2.nwp.usace.army.mil</host>
+      <sid>G2CWMSP2</sid>
+    </oracle>
+  </datastore>
+  <datastore>
+    <model-plugin id="forecast-model-plugin" />
+  </datastore>
+  <datastore>
+    <dssfile id="forecast-dss" />
+  </datastore>
+  <ts-dataexchange-set id="Flow Data" exchange-data="false" sort-order="2.0">
+    <datastore-ref id="Oracle" />
+    <datastore-ref id="forecast-model-plugin" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Merge" ts-override-protection="OFF" />
+    <ts-mapping-set>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/ROW RIVER ABOVE PITCHER CREEK/DORENA OR/FLOW/01OCT1987 - 01SEP2006/1HOUR/USGS 14154500/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14154500" parameter-id="Flow" />
+          <location model-plugin-id="HMS" model-alternative-id="HMS_R" location-id="14154500" parameter-id="Flow" />
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14154500" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">DRRO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/CLACKAMAS RIVER/OREGON CITY OR/FLOW/01Jun2001 - 10Oct2013/1DAY/USGS 14211010/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14211010" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">OCYO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/TUALATIN RIVER/DILLEY OR/FLOW/01OCT1986 - 01SEP2006/1HOUR/USGS 14203500/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14203500" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">DLLO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/TUALATIN RIVER/WEST LINN OR/FLOW/01OCT1988 - 01SEP2006/1HOUR/USGS 14207500/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14207500" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">WSLO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/CLACKAMAS RIVER/ABOVE THREE LYNX CREEK OR/FLOW/03Feb2014 - 04Feb2014/1DAY/USGS 14209500/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14209500" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">TLYO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/CLACKAMAS RIVER/ESTACADA OR/FLOW/01Feb2014 - 05Feb2014/1DAY/USGS 14210000/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14210000" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">ESTO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/PUDDING RIVER/AURORA OR/FLOW/01OCT1993 - 01SEP2006/1HOUR/USGS 14202000/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14202000" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">AURO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/MOLALLA RIVER/CANBY OR/FLOW/01SEP2000 - 01SEP2006/1HOUR/USGS 14200000/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14200000" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">CANO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/SCOGGINS CR/HAGG DRESERVOIR/FLOW/01Oct1994 - 13Nov2013/1DAY/USBR HYDROMET DATA/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="Hagg_Out" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">SCLO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/MF WILLAMETTE RIVER BLW N FORK/OAKRIDGE OR/FLOW/01SEP1986 - 01SEP2006/1HOUR/USGS 14148000/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14148000" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">MFOO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WINBERRY CREEK/LOWELL OR/FLOW/01OCT2000 - 01SEP2006/1HOUR/USGS 14150800/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14150800" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">WCLO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/LOOKOUT CREEK/BLUE RIVER OR/FLOW//1HOUR/USGS 14161500/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14161500" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">LOCO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/QUARTZVILLE CREEK/CASCADIA OR/FLOW/01Oct1994 - 09Oct2013/1DAY/USGS 14185900/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14185900" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">QCCO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/SOUTH SANTIAM RIVER/CASCADIA OR/FLOW/01OCT1988 - 01SEP2006/1HOUR/USGS 14185000/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14185000" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">SSCO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILEY CREEK/FOSTER OR/FLOW/01OCT1988 - 01SEP2006/1HOUR/USGS 14187000/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14187000" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">WNFO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/NO SANTIAM R BLW BOULDER CRK/DETROIT OR/FLOW/01OCT1988 - 01SEP2006/1HOUR/USGS 14178000/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14178000" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">BCKO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/BREITENBUSH R ABV FRENCH CR/DETROIT OR/FLOW/01SEP1998 - 01SEP2006/1HOUR/USGS 14179000/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14179000" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">BRBO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/BLOWOUT CREEK/DETROIT OR/FLOW/01Oct1998 - 09Oct2013/1DAY/USGS 14180300/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14180300" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">DEQO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/LITTLE NORTH SANTIAM RIVER/MEHAMA OR/FLOW/01OCT1988 - 01SEP2006/1HOUR/USGS 14182500/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14182500" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">LSMO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/NORTH SANTIAM R AT GREENS BRIDGE/JEFFERSON OR/FLOW/01Oct2005 - 09Oct2013/1DAY/USGS 14184100/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14184100" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">NSJO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/LUCKIAMUTE RIVER/SUVER OR/FLOW/01OCT1986 - 01SEP2006/1HOUR/USGS 14190500/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14190500" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">SUVO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/SOUTH YAMHILL RIVER/MCMINNVILLE OR/FLOW/01Oct1994 - 09Oct2013/1DAY/USGS 14194150/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14194150" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">MCMO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE RIVER/NEWBERG OR/FLOW/01Oct2001 - 08Oct2013/1DAY/USGS 14197900/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14197900" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">NBGO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/PUDDING RIVER/WOODBURN OR/FLOW/01Oct1997 - 09Oct2013/1DAY/USGS 14201340/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14201340" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">PUWO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/MCKENZIE/TRAIL_BRIDGE/FLOW//15MIN/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="McKenzie+SF McKenzie_Local_JMKR_S03" parameter-id="Known Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">TRBO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/MCKENZIE/BL_LEABURG_DAM/FLOW//15MIN/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="McKenzie+SF McKenzie_Local_SFMKR_S03" parameter-id="Known Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">MZLO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/MCKENZIE/WALTERVILLE/FLOW//15MIN/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Blue_at Blue River_Local_BR_S03" parameter-id="Known Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">WTLO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/MCKENZIE/COBURG/FLOW//15MIN/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="McKenzie+Blue_Local_MKR_S04" parameter-id="Known Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">MNCO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/HARRISBURG/FLOW//15MIN/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="MF Willamette+CF Willamette_Local_MFWR_S12" parameter-id="Known Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">HARO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+    </ts-mapping-set>
+  </ts-dataexchange-set>
+  <ts-dataexchange-set id="Flow Data1" exchange-data="false" sort-order="2.0">
+    <datastore-ref id="Oracle" />
+    <datastore-ref id="forecast-dss" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Merge" ts-override-protection="OFF" />
+    <ts-mapping-set />
+  </ts-dataexchange-set>
+  <timewindow>
+    <starttime>EXTRACT-PT12H</starttime>
+    <endtime>FORECAST+PT12H</endtime>
+  </timewindow>
+</dataexchange-configuration>
+

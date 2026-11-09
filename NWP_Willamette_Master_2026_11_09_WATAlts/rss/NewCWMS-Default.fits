@@ -1,0 +1,304 @@
+TSDataSet Name=New-CWMS-Default
+Description=imported from another model (TS Data Set for CWMS-Default)
+
+_type=0
+ParentPath=null
+ParentClass=null
+TSRecord=0
+TSRecord Name=Hills Creek - Flow-Res In
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//Hills_Creek_In/FLOW//1HOUR/6010/
+TSRecord InputPosition=2
+TSRecord End=
+
+TSRecord=1
+TSRecord Name=Lookout Point - Flow-Res Loc
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//Lookout_Point_In/FLOW//1HOUR/6010/
+TSRecord InputPosition=2
+TSRecord End=
+
+TSRecord=2
+TSRecord Name=Cottage Grove - Flow-Res In
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//Cottage_Grove_In/FLOW//1HOUR/6010/
+TSRecord InputPosition=2
+TSRecord End=
+
+TSRecord=3
+TSRecord Name=Fall Creek - Flow-Res In
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//Fall_Creek_In/FLOW//1HOUR/6010/
+TSRecord InputPosition=2
+TSRecord End=
+
+TSRecord=4
+TSRecord Name=Cougar - Flow-Res In
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//Cougar_In/FLOW//1HOUR/6010/
+TSRecord InputPosition=2
+TSRecord End=
+
+TSRecord=5
+TSRecord Name=Blue River - Flow-Res In
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//Blue_River_In/FLOW//1HOUR/6010/
+TSRecord InputPosition=2
+TSRecord End=
+
+TSRecord=6
+TSRecord Name=Fern Ridge - Flow-Res In
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//Fern_Ridge_In/FLOW//1HOUR/6010/
+TSRecord InputPosition=2
+TSRecord End=
+
+TSRecord=7
+TSRecord Name=Jasper - Flow-Loc Inc
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//Foster_In/FLOW//1HOUR/6010/
+TSRecord InputPosition=2
+TSRecord End=
+
+TSRecord=8
+TSRecord Name=Vida - Flow-Loc Inc
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//Big_Cliff_In/FLOW//1HOUR/6010/
+TSRecord InputPosition=2
+TSRecord End=
+
+TSRecord=9
+TSRecord Name=Goshen - Flow-Loc Inc
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//Dorena_In/FLOW//1HOUR/6010/
+TSRecord InputPosition=2
+TSRecord End=
+
+TSRecord=10
+TSRecord Name=Harrisburg - Flow-Loc Inc
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//Big_Cliff_In/FLOW//1HOUR/6010/
+TSRecord InputPosition=2
+TSRecord End=
+
+TSRecord=11
+TSRecord Name=Monroe - Flow-Loc Inc
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//Dorena_In/FLOW//1HOUR/6010/
+TSRecord InputPosition=2
+TSRecord End=
+
+TSRecord=12
+TSRecord Name=Albany - Flow-Loc Inc
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//Fall_Creek_In/FLOW//1HOUR/6010/
+TSRecord InputPosition=2
+TSRecord End=
+
+TSRecord=13
+TSRecord Name=Green Peter - Flow-Res In
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//Green_Peter_In/FLOW//1HOUR/6010/
+TSRecord InputPosition=2
+TSRecord End=
+
+TSRecord=14
+TSRecord Name=Foster - Flow-Loc Inc (Cascadia)
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//CalR_S01/FLOW//1HOUR/6010/
+TSRecord InputPosition=2
+TSRecord End=
+
+TSRecord=15
+TSRecord Name=Waterloo - Flow-Loc Inc
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//Detroit_In/FLOW//1HOUR/6010/
+TSRecord InputPosition=2
+TSRecord End=
+
+TSRecord=16
+TSRecord Name=Detroit - Flow-Res In
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//Detroit_In/FLOW//1HOUR/6010/
+TSRecord InputPosition=2
+TSRecord End=
+
+TSRecord=17
+TSRecord Name=Mehama - Flow-Loc Inc
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//Cottage_Grove_In/FLOW//1HOUR/6010/
+TSRecord InputPosition=2
+TSRecord End=
+
+TSRecord=18
+TSRecord Name=Jefferson - Flow-Loc Inc
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//Detroit_In/FLOW//1HOUR/6010/
+TSRecord InputPosition=2
+TSRecord End=
+
+TSRecord=19
+TSRecord Name=Salem - Flow-Loc Inc
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//Fall_Creek_In/FLOW//1HOUR/6010/
+TSRecord InputPosition=2
+TSRecord End=
+
+TSRecord=20
+TSRecord Name=Dorena IN
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//Dorena_In/FLOW//1HOUR/6010/
+TSRecord InputPosition=2
+TSRecord End=
+
+TSRecord=21
+TSRecord Name=~E161:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//Detroit_In/FLOW//1HOUR/6010/
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=22
+TSRecord Name=North Santiam Diversion
+TSRecord VariableId=85
+TSRecord ParamName=
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//Cottage_Grove_In/FLOW//1HOUR/6010/
+TSRecord InputPosition=2
+TSRecord End=
+
+TSRecord=23
+TSRecord Name=~E166:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//Foster_In/FLOW//1HOUR/6010/
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=24
+TSRecord Name=~E171:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//Green_Peter_In/FLOW//1HOUR/6010/
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=25
+TSRecord Name=~E176:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=forecast.dss
+TSRecord DssPathname=//Fern_Ridge_In/FLOW//1HOUR/6010/
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=26
+TSRecord Name=Water Year Type
+TSRecord VariableId=85
+TSRecord ParamName=
+TSRecord DssFilename=shared/year_classification.dss
+TSRecord DssPathname=//TYPE-OF-YEAR VALUE/STOR//1DAY/SSARRDAILY0/
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=27
+TSRecord Name=~E191:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=shared/Willamette_Rule_Curves.dss
+TSRecord DssPathname=/COAST FORK/DORENA/ELEV//1DAY/RULE CURVE/
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=28
+TSRecord Name=~E196:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=shared/Willamette_Rule_Curves.dss
+TSRecord DssPathname=/COAST FORK/COTTAGE GROVE/ELEV//1DAY/RULE CURVE/
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=29
+TSRecord Name=~E201:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=shared/Willamette_Rule_Curves.dss
+TSRecord DssPathname=/MIDDLE FORK/FALL CREEK/ELEV//1DAY/RULE CURVE/
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=30
+TSRecord Name=~E206:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=shared/Willamette_Rule_Curves.dss
+TSRecord DssPathname=/MIDDLE FORK/LOOKOUT POINT/ELEV//1DAY/RULE CURVE/
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=31
+TSRecord Name=~E216:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=shared/Willamette_Rule_Curves.dss
+TSRecord DssPathname=/MIDDLE FORK/HILLS CREEK/ELEV//1DAY/RULE CURVE/
+TSRecord InputPosition=-1
+TSRecord End=
+
+TSRecord=32
+TSRecord Name=North Santiam Irrigation
+TSRecord VariableId=85
+TSRecord ParamName=
+TSRecord DssFilename=shared/year_classification.dss
+TSRecord DssPathname=//NORTH SANTIAM DIVERSION/STOR//1DAY/SSARRDAILY0/
+TSRecord InputPosition=-1
+TSRecord End=
+
+

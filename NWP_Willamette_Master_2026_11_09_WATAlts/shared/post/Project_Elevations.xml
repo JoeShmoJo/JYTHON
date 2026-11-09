@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataexchange-configuration xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://www.hec.usace.army.mil/xmlSchema/cwms/dataexchangeconfiguration_v2.xsd">
+  <datastore>
+    <model-plugin id="forecast-model-plugin" />
+  </datastore>
+  <datastore>
+    <dssfilemanager id="REMOTEDSS">
+      <filepath>/wm/wmshare/share/common/cavi_results/NWP_results.dss</filepath>
+      <port>-1</port>
+      <host />
+    </dssfilemanager>
+  </datastore>
+  <datastore>
+    <dssfile id="forecast-dss" />
+  </datastore>
+  <ts-dataexchange-set id="Project Elevations" exchange-data="false" sort-order="2.0">
+    <datastore-ref id="REMOTEDSS" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Replace" ts-override-protection="OFF" />
+    <datastore-ref id="forecast-model-plugin" />
+    <ts-mapping-set />
+    <ensemble />
+  </ts-dataexchange-set>
+  <ts-dataexchange-set id="Project Elevations1" exchange-data="false" sort-order="2.0">
+    <datastore-ref id="REMOTEDSS" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Replace" ts-override-protection="OFF" />
+    <datastore-ref id="forecast-dss" />
+    <ts-mapping-set>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//BLUE RIVER-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------20/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//BLUE RIVER-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------20/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//COTTAGE GROVE-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------20/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//COTTAGE GROVE-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------20/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//COUGAR-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------20/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//COUGAR-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------20/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//DETROIT-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------20/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DETROIT-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------20/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//DORENA-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------20/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DORENA-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------20/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//FALL CREEK-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------20/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FALL CREEK-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------20/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//FERN RIDGE-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------20/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FERN RIDGE-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------20/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//FOSTER-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------20/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FOSTER-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------20/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//GREEN PETER-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------20/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//GREEN PETER-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------20/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//HILLS CREEK-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------20/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//HILLS CREEK-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------20/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//LOOKOUT POINT-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------20/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//LOOKOUT POINT-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------20/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//COTTAGE GROVE-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------2050/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//COTTAGE GROVE-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------2050/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//COUGAR-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------2050/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//COUGAR-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------2050/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//BLUE RIVER-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------2050/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//BLUE RIVER-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------2050/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//DORENA-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------2050/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DORENA-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------2050/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//FALL CREEK-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------2050/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FALL CREEK-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------2050/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//FOSTER-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------2050/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FOSTER-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------2050/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//GREEN PETER-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------2050/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//GREEN PETER-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------2050/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//HILLS CREEK-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------2050/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//HILLS CREEK-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------2050/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//LOOKOUT POINT-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------2050/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//LOOKOUT POINT-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------2050/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//BLUE RIVER-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------205070/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//BLUE RIVER-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------205070/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//COTTAGE GROVE-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------205070/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//COTTAGE GROVE-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------205070/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//COUGAR-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------205070/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//COUGAR-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------205070/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//DETROIT-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------205070/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DETROIT-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------205070/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//DORENA-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------205070/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DORENA-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------205070/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//FALL CREEK-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------205070/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FALL CREEK-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------205070/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//FERN RIDGE-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------205070/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FERN RIDGE-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------205070/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//FOSTER-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------205070/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FOSTER-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------205070/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//GREEN PETER-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------205070/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//GREEN PETER-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------205070/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//HILLS CREEK-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------205070/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//HILLS CREEK-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------205070/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//LOOKOUT POINT-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------205070/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//LOOKOUT POINT-POOL/ELEV/31Dec2023 - 30Jun2025/1Day/------205070/</dss-timeseries>
+      </ts-mapping>
+    </ts-mapping-set>
+    <ensemble />
+  </ts-dataexchange-set>
+  <timewindow>
+    <starttime>SIMSTART+PT0M</starttime>
+    <endtime>SIMEND+PT0M</endtime>
+  </timewindow>
+</dataexchange-configuration>
+

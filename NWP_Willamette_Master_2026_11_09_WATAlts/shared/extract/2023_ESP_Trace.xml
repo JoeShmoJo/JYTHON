@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataexchange-configuration xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://www.hec.usace.army.mil/xmlSchema/cwms/dataexchangeconfiguration_v2.xsd">
+  <datastore>
+    <model-plugin id="forecast-model-plugin" />
+  </datastore>
+  <datastore>
+    <dssfilemanager id="REMOTEDSS">
+      <filepath>/wm/wmshare/share/common/espdata/willamette10.dss</filepath>
+      <port>24101</port>
+      <host>137.161.67.151</host>
+    </dssfilemanager>
+  </datastore>
+  <datastore>
+    <dssfile id="forecast-dss" />
+  </datastore>
+  <ts-dataexchange-set id="2023 ESP Trace" exchange-data="false" sort-order="22.0">
+    <datastore-ref id="REMOTEDSS" />
+    <datastore-ref id="forecast-model-plugin" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Replace" ts-override-protection="OFF" />
+    <ts-mapping-set />
+  </ts-dataexchange-set>
+  <ts-dataexchange-set id="2023 ESP Trace1" exchange-data="false" sort-order="22.0">
+    <datastore-ref id="REMOTEDSS" />
+    <datastore-ref id="forecast-dss" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Replace" ts-override-protection="OFF" />
+    <ts-mapping-set>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//ALBO3/FLOW-LOC/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//ALBO3/FLOW-LOC/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//ALBO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//ALBO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//AURO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//AURO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//BLUO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//BLUO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//CANO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//CANO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/CWY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//CGRO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//CGRO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//CORO3/FLOW-LOC/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//CORO3/FLOW-LOC/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//CORO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//CORO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//COTO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//COTO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//DETO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DETO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//DORO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DORO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//EUGO3/FLOW-LOC/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//EUGO3/FLOW-LOC/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//EUGO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//EUGO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//FALO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FALO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//FOSO3/FLOW-LOC/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FOSO3/FLOW-LOC/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//FOSO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FOSO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//FRNO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FRNO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//GOSO3/FLOW-LOC/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//GOSO3/FLOW-LOC/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//GOSO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//GOSO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//GPRO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//GPRO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//HARO3/FLOW-LOC/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//HARO3/FLOW-LOC/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//HARO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//HARO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//HCRO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//HCRO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//JASO3/FLOW-LOC/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//JASO3/FLOW-LOC/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//JASO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//JASO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//JFFO3/FLOW-LOC/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//JFFO3/FLOW-LOC/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//JFFO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//JFFO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//LOPO3/FLOW-LOC/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//LOPO3/FLOW-LOC/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//LOPO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//LOPO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//LSMO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//LSMO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//MCMO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//MCMO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//MCZO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//MCZO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//MEHO3/FLOW-LOC/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//MEHO3/FLOW-LOC/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//MEHO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//MEHO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//MNRO3/FLOW-LOC/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//MNRO3/FLOW-LOC/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//MNRO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//MNRO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//PHIO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//PHIO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//SCOO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//SCOO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//SLMO3/FLOW-LOC/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//SLMO3/FLOW-LOC/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//SLMO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//SLMO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//SPRO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//SPRO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//SUVO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//SUVO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//TRBO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TRBO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//TRSO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TRSO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//VIDO3/FLOW-LOC/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//VIDO3/FLOW-LOC/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//VIDO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//VIDO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//WLSO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//WLSO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/CWY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//WSLO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//WSLO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//WTLO3/FLOW-LOC/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//WTLO3/FLOW-LOC/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//WTLO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//WTLO3/FLOW-UNREG/10Apr2024 - 01Oct2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">/ESP/ALBANY/FLOW-LOCAL/10Apr2024 - 09Apr2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">/ESP/ALBANY/FLOW-LOCAL/10Apr2024 - 09Apr2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">/ESP/BLUE RIVER/FLOW/10Apr2024 - 09Apr2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">/ESP/BLUE RIVER/FLOW/10Apr2024 - 09Apr2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">/ESP/COTTAGE GROVE/FLOW/10Apr2024 - 09Apr2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">/ESP/COTTAGE GROVE/FLOW/10Apr2024 - 09Apr2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">/ESP/COUGAR/FLOW/10Apr2024 - 09Apr2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">/ESP/COUGAR/FLOW/10Apr2024 - 09Apr2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">/ESP/DETROIT/FLOW/10Apr2024 - 09Apr2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">/ESP/DETROIT/FLOW/10Apr2024 - 09Apr2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">/ESP/DORENA/FLOW/10Apr2024 - 09Apr2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">/ESP/DORENA/FLOW/10Apr2024 - 09Apr2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">/ESP/FALL CREEK/FLOW/10Apr2024 - 09Apr2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">/ESP/FALL CREEK/FLOW/10Apr2024 - 09Apr2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">/ESP/FERN RIDGE/FLOW/10Apr2024 - 09Apr2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">/ESP/FERN RIDGE/FLOW/10Apr2024 - 09Apr2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">/ESP/FOSTER/FLOW-LOCAL/10Apr2024 - 09Apr2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">/ESP/FOSTER/FLOW-LOCAL/10Apr2024 - 09Apr2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">/ESP/GOSHEN/FLOW-LOCAL/10Apr2024 - 09Apr2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">/ESP/GOSHEN/FLOW-LOCAL/10Apr2024 - 09Apr2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">/ESP/GREEN PETER/FLOW/10Apr2024 - 09Apr2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">/ESP/GREEN PETER/FLOW/10Apr2024 - 09Apr2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">/ESP/HARRISBURG/FLOW-LOCAL/10Apr2024 - 09Apr2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">/ESP/HARRISBURG/FLOW-LOCAL/10Apr2024 - 09Apr2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">/ESP/HILLS CREEK/FLOW/10Apr2024 - 09Apr2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">/ESP/HILLS CREEK/FLOW/10Apr2024 - 09Apr2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">/ESP/JASPER/FLOW-LOCAL/10Apr2024 - 09Apr2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">/ESP/JASPER/FLOW-LOCAL/10Apr2024 - 09Apr2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">/ESP/JEFFERSON/FLOW-LOCAL/10Apr2024 - 09Apr2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">/ESP/JEFFERSON/FLOW-LOCAL/10Apr2024 - 09Apr2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">/ESP/LOOKOUT POINT/FLOW-LOCAL/10Apr2024 - 09Apr2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">/ESP/LOOKOUT POINT/FLOW-LOCAL/10Apr2024 - 09Apr2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">/ESP/MEHAMA/FLOW-LOCAL/10Apr2024 - 09Apr2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">/ESP/MEHAMA/FLOW-LOCAL/10Apr2024 - 09Apr2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">/ESP/MONROE/FLOW-LOCAL/10Apr2024 - 09Apr2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">/ESP/MONROE/FLOW-LOCAL/10Apr2024 - 09Apr2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">/ESP/SALEM/FLOW-LOCAL/10Apr2024 - 09Apr2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">/ESP/SALEM/FLOW-LOCAL/10Apr2024 - 09Apr2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">/ESP/VIDA/FLOW-LOCAL/10Apr2024 - 09Apr2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">/ESP/VIDA/FLOW-LOCAL/10Apr2024 - 09Apr2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">/ESP/WATERLOO/FLOW-LOCAL/10Apr2024 - 09Apr2025/1Day/C:002023|/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">/ESP/WATERLOO/FLOW-LOCAL/10Apr2024 - 09Apr2025/1Day/WY23Trace/</dss-timeseries>
+      </ts-mapping>
+    </ts-mapping-set>
+  </ts-dataexchange-set>
+  <timewindow>
+    <starttime>FORECAST+PT0M</starttime>
+    <endtime>SIMEND+PT0M</endtime>
+  </timewindow>
+</dataexchange-configuration>
+

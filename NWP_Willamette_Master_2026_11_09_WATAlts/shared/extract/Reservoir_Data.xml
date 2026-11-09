@@ -1,0 +1,922 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataexchange-configuration xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://www.hec.usace.army.mil/xmlSchema/cwms/dataexchangeconfiguration_v2.xsd">
+  <datastore>
+    <oracle id="Oracle">
+      <host>//nwp-cwmsdb2.nwp.usace.army.mil</host>
+      <sid>G2CWMSP2</sid>
+    </oracle>
+  </datastore>
+  <datastore>
+    <model-plugin id="forecast-model-plugin" />
+  </datastore>
+  <datastore>
+    <dssfile id="forecast-dss" />
+  </datastore>
+  <ts-dataexchange-set id="Reservoir Data" exchange-data="false" sort-order="0.0">
+    <datastore-ref id="Oracle" />
+    <datastore-ref id="forecast-model-plugin" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Merge" ts-override-protection="OFF" />
+    <ts-mapping-set>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/HILLS CREEK/FLOW-SPILL//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Hills Creek-Regulated Outlet" parameter-id="Lookback Release" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Hills Creek-Regulated Outlet" parameter-id="Lookback Release" />
+          <location model-plugin-id="ResSim" model-alternative-id="R2RFC" location-id="Hills Creek-Regulated Outlet" parameter-id="Lookback Release" />
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Hills Creek-Regulated Outlet" parameter-id="Lookback Release" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Hills Creek-Regulated Outlet" parameter-id="Lookback Release" />
+          <location model-plugin-id="ResSim" model-alternative-id="ESP10_50P" location-id="Hills Creek-Regulated Outlet" parameter-id="Lookback Release" />
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Hills Creek-Regulated Outlet" parameter-id="Lookback Release" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Hills Creek-Regulated Outlet" parameter-id="Lookback Release" />
+          <location model-plugin-id="ResSim" model-alternative-id="R2RFC" location-id="Hills Creek-Regulated Outlet" parameter-id="Lookback Release" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">HCR.Flow-Spill.Ave.1Hour.1Hour.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/HILLS CREEK/FLOW-GEN//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Hills Creek-Power Plant" parameter-id="Lookback Release" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Hills Creek-Power Plant" parameter-id="Lookback Release" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">HCR.Flow-Gen.Ave.1Hour.1Hour.CBT-REV</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/LOOKOUT POINT/FLOW-SPILL//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Lookout Point-Regulated Outlet" parameter-id="Lookback Release" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Lookout Point-Regulated Outlet" parameter-id="Lookback Release" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">LOP.Flow-Spill.Ave.1Hour.1Hour.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/LOOKOUT POINT/FLOW-GEN//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Lookout Point-Power Plant" parameter-id="Lookback Release" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Lookout Point-Power Plant" parameter-id="Lookback Release" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">LOP.Flow-Gen.Ave.1Hour.1Hour.CBT-REV</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/DEXTER/FLOW-SPILL//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Dexter-Spillway" parameter-id="Lookback Release" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Dexter-Spillway" parameter-id="Lookback Release" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">DEX.Flow-Spill.Ave.1Hour.1Hour.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/DEXTER/FLOW-GEN//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Dexter-Power Plant" parameter-id="Lookback Release" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Dexter-Power Plant" parameter-id="Lookback Release" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">DEX.Flow-Gen.Ave.1Hour.1Hour.CBT-REV</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/FALL CREEK/FLOW-OUT//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Fall Creek-Regulated Outlet" parameter-id="Lookback Release" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Fall Creek-Regulated Outlet" parameter-id="Lookback Release" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">FAL.Flow-Out.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/DORENA/FLOW-OUT//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Dorena-Regulated Outlet" parameter-id="Lookback Release" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Dorena-Regulated Outlet" parameter-id="Lookback Release" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">DOR.Flow-Out.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/COTTAGE GROVE/FLOW-OUT//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Cottage Grove-Regulated Outlet" parameter-id="Lookback Release" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Cottage Grove-Regulated Outlet" parameter-id="Lookback Release" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">COT.Flow-Out.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/COUGAR/FLOW-SPILL//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Cougar-Regulating Outlet" parameter-id="Lookback Release" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Cougar-Regulating Outlet" parameter-id="Lookback Release" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">CGR.Flow-Spill.Ave.1Hour.1Hour.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/COUGAR/FLOW-GEN//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Cougar-Power Plant" parameter-id="Lookback Release" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Cougar-Power Plant" parameter-id="Lookback Release" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">CGR.Flow-Gen.Ave.1Hour.1Hour.CBT-REV</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/BLUE RIVER/FLOW-OUT//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Blue River-Regulating Outlet" parameter-id="Lookback Release" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Blue River-Regulating Outlet" parameter-id="Lookback Release" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">BLU.Flow-Out.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/FERN RIDGE/FLOW-OUT//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Fern Ridge-Regulated Outlet" parameter-id="Lookback Release" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Fern Ridge-Regulated Outlet" parameter-id="Lookback Release" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">FRN.Flow-Out.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/GREEN PETER/FLOW-SPILL//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Green Peter-Regulated Outlet" parameter-id="Lookback Release" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Green Peter-Regulated Outlet" parameter-id="Lookback Release" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">GPR.Flow-Spill.Ave.1Hour.1Hour.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/GREEN PETER/FLOW-GEN//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Green Peter-Power Plant" parameter-id="Lookback Release" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Green Peter-Power Plant" parameter-id="Lookback Release" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">GPR.Flow-Gen.Ave.1Hour.1Hour.CBT-REV</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/FOSTER/FLOW-SPILL//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Foster-Spillway" parameter-id="Lookback Release" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Foster-Spillway" parameter-id="Lookback Release" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">FOS.Flow-Spill.Ave.1Hour.1Hour.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/FOSTER/FLOW-GEN//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Foster-Power Plant" parameter-id="Lookback Release" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Foster-Power Plant" parameter-id="Lookback Release" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">FOS.Flow-Gen.Ave.1Hour.1Hour.CBT-REV</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/DETROIT/FLOW-SPILL//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Detroit-Upper Controlled Outlet" parameter-id="Lookback Release" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Detroit-Upper Controlled Outlet" parameter-id="Lookback Release" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">DET.Flow-Spill.Ave.1Hour.1Hour.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/DETROIT/FLOW-GEN//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Detroit-Power Plant" parameter-id="Lookback Release" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Detroit-Power Plant" parameter-id="Lookback Release" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">DET.Flow-Gen.Ave.1Hour.1Hour.CBT-REV</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/BIG CLIFF/FLOW-SPILL//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Big Cliff-Spillway" parameter-id="Lookback Release" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Big Cliff-Spillway" parameter-id="Lookback Release" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">BCL.Flow-Spill.Ave.1Hour.1Hour.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/BIG CLIFF/FLOW-GEN//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Big Cliff-Power Plant" parameter-id="Lookback Release" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Big Cliff-Power Plant" parameter-id="Lookback Release" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">BCL.Flow-Gen.Ave.1Hour.1Hour.CBT-REV</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/HILLS CREEK/FLOW-IN/01Feb2014 - 06Feb2014/IR-MON/OBSERVED/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="Hills Creek Lake Inflow" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">HCR.Flow-In.Ave.15Minutes.3Hours.MIXED-COMPUTED-REV</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/LOOKOUT POINT/FLOW-IN/01Feb2014 - 06Feb2014/IR-MON/OBSERVED/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="Lookout_Point_Inflow" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">LOP.Flow-In.Ave.1Hour.6Hours.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/DEXTER/FLOW-IN/01Feb2014 - 06Feb2014/IR-MON/OBSERVED/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="Dexter_Inflow" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">DEX.Flow-In.Ave.15Minutes.6Hours.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/FALL CREEK/FLOW-IN/01Feb2014 - 06Feb2014/IR-MON/OBSERVED/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="Fall_Creek_Inflow" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">BCL.Flow-In.Ave.15Minutes.3Hours.MIXED-COMPUTED-REV</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/DORENA/FLOW-IN/01Feb2014 - 06Feb2014/IR-MON/OBSERVED/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="Dorena Lake Inflow" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">DOR.Flow-In.Ave.15Minutes.3Hours.MIXED-COMPUTED-REV</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/COTTAGE GROVE/FLOW-IN/01Feb2014 - 06Feb2014/IR-MON/OBSERVED/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="Cottage_Grove_Inflow" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">COT.Flow-In.Ave.15Minutes.3Hours.MIXED-COMPUTED-REV</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/COUGAR/FLOW-IN/01Feb2014 - 06Feb2014/IR-MON/OBSERVED/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="Cougar_Inflow" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">CGR.Flow-In.Ave.15Minutes.3Hours.MIXED-COMPUTED-REV</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/BLUE RIVER/FLOW-IN/01Feb2014 - 06Feb2014/IR-MON/OBSERVED/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="Blue_River_Inflow" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">BLU.Flow-In.Ave.15Minutes.3Hours.MIXED-COMPUTED-REV</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/FERN RIDGE/FLOW-IN/01Feb2014 - 06Feb2014/IR-MON/OBSERVED/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="Fern_Ridge_Inflow" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">FRN.Flow-In.Ave.15Minutes.3Hours.MIXED-COMPUTED-REV</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/GREEN PETER/FLOW-IN/01Feb2014 - 06Feb2014/IR-MON/OBSERVED/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="Green_Peter_Inflow" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">GPR.Flow-In.Ave.15Minutes.3Hours.CBT-COMPUTED-REV</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/FOSTER/FLOW-IN/01Feb2014 - 06Feb2014/IR-MON/OBSERVED/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="Foster_Inflow" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">FOS.Flow-In.Ave.15Minutes.3Hours.MIXED-COMPUTED-REV</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/DETROIT/FLOW-IN/01Feb2014 - 06Feb2014/IR-MON/OBSERVED/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="Detroit_Inflow" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">DET.Flow-In.Ave.15Minutes.3Hours.CBT-COMPUTED-REV</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/BIG CLIFF/FLOW-IN/01Feb2014 - 06Feb2014/IR-MON/OBSERVED/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="Big_Cliff_Inflow" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">BCL.Flow-In.Ave.15Minutes.3Hours.MIXED-COMPUTED-REV</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/HILLS CREEK/FLOW-OUT/09Nov2005 - 01Mar2006/1HOUR/OBSERVED/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="Hills Creek Lake Outflow" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">HCR.Flow-Out.Inst.0.0.MIXED-COMPUTED-REV</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/LOOKOUT POINT/FLOW-OUT/01Feb2014 - 06Feb2014/1HOUR/OBSERVED/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="Lookout Point Lake Outflow" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">LOP.Flow-Out.Ave.1Hour.1Hour.CBT-REV</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>//FOSTER/FLOW-OUT/22Aug1968 - 12Mar2013/1DAY/FOSTER OUTFLOW-2/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="Green_Peter_Out" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">FOS.Flow-Out.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/DETROIT/FLOW-OUT/01Feb2014 - 06Feb2014/1HOUR/OBSERVED/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="Detroit_Out" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">DET.Flow-Out.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/BIG CLIFF/FLOW-OUT/09Nov2005 - 15Nov2005/1HOUR/OBSERVED/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="Big_Cliff_Out" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">BCL.Flow-Out.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/HILLS CREEK/ELEV(29)//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Hills Creek-Pool" parameter-id="Lookback Elevation" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">HCR.Elev-Forebay.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/LOOKOUT POINT/ELEV(29)//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Lookout Point-Pool" parameter-id="Lookback Elevation" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">LOP.Elev-Forebay.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/DEXTER/ELEV(29)//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Dexter-Pool" parameter-id="Lookback Elevation" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">DEX.Elev-Forebay.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/FALL CREEK/ELEV(29)//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Fall Creek-Pool" parameter-id="Lookback Elevation" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">FAL.Elev-Forebay.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/DORENA/ELEV(29)//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Dorena-Pool" parameter-id="Lookback Elevation" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">DOR.Elev-Forebay.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/COTTAGE GROVE/ELEV(29)//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Cottage Grove-Pool" parameter-id="Lookback Elevation" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">COT.Elev-Forebay.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/COUGAR/ELEV(29)//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Cougar-Pool" parameter-id="Lookback Elevation" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">CGR.Elev-Forebay.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/BLUE RIVER/ELEV(29)//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Blue River-Pool" parameter-id="Lookback Elevation" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">BLU.Elev-Forebay.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/GREEN PETER/ELEV(29)//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Green Peter-Pool" parameter-id="Lookback Elevation" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">GPR.Elev-Forebay.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/FOSTER/ELEV(29)//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Foster-Pool" parameter-id="Lookback Elevation" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">FOS.Elev-Forebay.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/DETROIT/ELEV(29)//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Detroit-Pool" parameter-id="Lookback Elevation" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">DET.Elev-Forebay.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/BIG CLIFF/ELEV(29)//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Big Cliff-Pool" parameter-id="Lookback Elevation" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">BCL.Elev-Forebay.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/FERN RIDGE/ELEV(29)//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Fern Ridge-Pool" parameter-id="Lookback Elevation" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">FRN.Elev-Forebay.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>//FOSTER/FLOW-OUT/22Aug1968 - 12Mar2013/1DAY/FOSTER OUTFLOW/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="Foster_Out" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">FOS.Flow-Out.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/SOUTH SANTIAM RIVER/FOSTER OR/FLOW/01OCT1988 - 01SEP2006/1HOUR/USGS 14187200/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14187200" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">SSFO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+    </ts-mapping-set>
+  </ts-dataexchange-set>
+  <ts-dataexchange-set id="Reservoir Data1" exchange-data="false" sort-order="0.0">
+    <datastore-ref id="Oracle" />
+    <datastore-ref id="forecast-dss" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Merge" ts-override-protection="OFF" />
+    <ts-mapping-set>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">GPR.Flow-Out.Ave.1Hour.1Hour.CBT-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">/WILLAMETTE/GREEN PETER/FLOW-OUT//1HOUR/OBSERVED/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1935/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1935/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1936/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1936/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1937/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1937/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1938/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1938/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1939/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1939/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1940/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1940/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1941/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1941/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1942/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1942/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1943/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1943/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1944/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1944/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1945/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1945/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1946/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1946/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1947/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1947/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1948/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1948/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1949/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1949/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1950/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1950/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1951/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1951/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1952/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1952/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1953/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1953/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1954/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1954/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1955/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1955/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1956/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1956/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1957/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1957/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1958/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1958/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1959/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1959/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1960/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1960/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1961/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1961/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1962/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1962/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1963/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1963/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1964/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1964/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1965/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1965/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1966/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1966/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1967/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1967/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1968/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1968/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1969/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1969/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1970/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1970/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1971/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1971/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1972/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1972/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1973/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1973/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1974/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1974/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1975/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1975/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1976/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1976/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1977/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1977/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1978/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1978/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1979/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1979/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1980/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1980/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1981/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1981/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1982/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1982/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1983/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1983/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1984/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1984/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1985/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1985/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1986/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1986/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1987/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1987/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1988/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1988/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1989/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1989/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1990/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1990/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1991/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1991/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1992/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1992/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1993/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1993/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1994/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1994/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1995/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1995/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1996/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1996/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1997/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1997/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1998/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1998/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN1999/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN1999/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN2000/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN2000/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN2001/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN2001/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN2002/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN2002/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN2003/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN2003/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN2004/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN2004/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN2005/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN2005/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN2006/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN2006/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN2007/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN2007/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN2008/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN2008/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN2009/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN2009/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN2010/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN2010/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN2011/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN2011/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN2012/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN2012/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN2013/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN2013/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN2014/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN2014/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN2015/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN2015/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN2016/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN2016/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN2017/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN2017/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN2018/1DAY/SSARRDAILY0/</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN2018/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="forecast-dss">//TYPE-OF-YEAR VALUE/STOR/01JAN2019/1DAY/SSARRDAILY0/</dss-timeseries>
+        <cwms-timeseries datastore-id="Oracle">//TYPE-OF-YEAR VALUE/STOR/01JAN2019/1DAY/SSARRDAILY0/</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">SSFO.Flow.Inst.0.0.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//SSFO/Flow//IR-MONTH/MIXED-COMPUTED-REV/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">FRN.Flow-In.Ave.15Minutes.3Hours.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FRN/Flow-In//15Minute/MIXED-COMPUTED-REV/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">CGR.Flow-In.Ave.15Minutes.3Hours.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//CGR/Flow-In//15Minute/MIXED-COMPUTED-REV/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">DOR.Flow-In.Ave.15Minutes.3Hours.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DOR/Flow-In//15Minute/MIXED-COMPUTED-REV/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">BLU.Flow-In.Ave.15Minutes.3Hours.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//BLU/Flow-In//15Minute/MIXED-COMPUTED-REV/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">COT.Flow-In.Ave.15Minutes.3Hours.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//COT/Flow-In//15Minute/MIXED-COMPUTED-REV/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="forecast-dss">//FAL/Flow-In//15Minute/MIXED-COMPUTED-REV/</dss-timeseries>
+        <cwms-timeseries datastore-id="Oracle">FAL.Flow-In.Ave.15Minutes.3Hours.MIXED-COMPUTED-REV</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">FOS.Flow-Out.Inst.0.0.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FOS/Flow-Out//15Minute/MIXED-COMPUTED-REV/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">DEX.Flow-Out.Inst.0.0.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DEX/Flow-Out//15Minute/MIXED-COMPUTED-REV/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">CGR.Flow-Out.Inst.0.0.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//CGR/Flow-Out//15Minute/MIXED-COMPUTED-REV/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">DET.Elev-Forebay.Inst.1Hour.0.CBT-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DET/Elev-Forebay//1HOUR/CBT-REV/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">FOS.Elev-Forebay.Inst.1Hour.0.CBT-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FOS/Elev-Forebay//1HOUR/CBT-REV/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">BCL.Elev-Forebay.Inst.1Hour.0.CBT-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//BCL/Elev-Forebay//1HOUR/CBT-REV/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">HCR.Elev-Forebay.Inst.1Hour.0.CBT-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//HCR/Elev-Forebay//1HOUR/CBT-REV/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">LOP.Elev-Forebay.Inst.1Hour.0.CBT-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//LOP/Elev-Forebay//1HOUR/CBT-REV/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">DEX.Elev-Forebay.Inst.1Hour.0.CBT-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DEX/Elev-Forebay//1HOUR/CBT-REV/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">FAL.Elev-Forebay.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FAL/Elev-Forebay//6HOUR/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">COT.Elev-Forebay.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//COT/Elev-Forebay//6HOUR/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">CGR.Elev-Forebay.Inst.1Hour.0.CBT-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//CGR/Elev-Forebay//1HOUR/CBT-REV/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">BLU.Elev-Forebay.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//BLU/Elev-Forebay//6HOUR/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">GPR.Elev-Forebay.Inst.1Hour.0.CBT-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//GPR/Elev-Forebay//1HOUR/CBT-REV/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">FOS.Flow-Out.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FOS/Flow-Out//6HOUR/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">BCL.Flow-Out.Ave.1Hour.1Hour.CBT-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//BCL/Flow-Out//1HOUR/CBT-REV/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">DET.Flow-Out.Ave.1Hour.1Hour.CBT-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DET/Flow-Out//1HOUR/CBT-REV/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">DOR.Elev-Forebay.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DOR/Elev-Forebay//6HOUR/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">FRN.Elev-Forebay.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FRN/Elev-Forebay//6HOUR/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">GPR.Flow-Spill.Ave.1Hour.1Hour.CBT-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//GPR/Flow-Spill//1HOUR/CBT-REV/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">LOP.Flow-Out.Ave.1Hour.1Hour.CBT-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//LOP/Flow-Out//1HOUR/CBT-REV/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">HCR.Flow-Out.Ave.1Hour.1Hour.CBT-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//HCR/Flow-Out//1HOUR/CBT-REV/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">FAL.Flow-Out.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FAL/Flow-Out//6HOUR/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">COT.Flow-Out.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//COT/Flow-Out//6HOUR/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">BLU.Flow-Out.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//BLU/Flow-Out//6HOUR/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">FRN.Flow-Out.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FRN/Flow-Out//6HOUR/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">GPR.Flow-Out.Ave.1Hour.1Hour.CBT-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//GPR/Flow-Out//1HOUR/CBT-REV/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">DOR.Flow-Out.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DOR/Flow-Out//6HOUR/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+    </ts-mapping-set>
+  </ts-dataexchange-set>
+  <timewindow>
+    <starttime>EXTRACT-PT12H</starttime>
+    <endtime>FORECAST+PT12H</endtime>
+  </timewindow>
+</dataexchange-configuration>
+

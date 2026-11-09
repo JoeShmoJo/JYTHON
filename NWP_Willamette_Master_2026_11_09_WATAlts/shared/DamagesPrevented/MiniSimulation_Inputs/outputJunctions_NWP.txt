@@ -1,0 +1,26 @@
+#This file contains all junctions necessary to calculate flow reductions distributed amongst upstream reservoirs for AFDRR purposes, since all of these points have damages aggreggated to them in the FIA models.
+####################Willamette
+MF Willamette_at Jasper
+CF WIllamette_nr Goshen
+Willamette_at Eugene
+McKenzie_at Vida
+Willamette_at Harrisburg
+Long Tom_at Monroe
+Willamette_at Albany
+No Santiam_at Mehama
+So Santiam_at Waterloo
+Santiam_at Jefferson
+Willamette_at Salem
+Willamette_at Newberg
+Willamette_abv Falls at Oregon City
+#Willamette+Clackamas
+Willamette+Marys
+Mkenzie_nr Walterville
+MF Willamette NR Oakridge
+McKenzie_nr Coburg
+Cottage Grove_OUT
+Dorena_OUT
+No Santiam_at Niagara
+Fall Creek_OUT
+Foster_OUT
+

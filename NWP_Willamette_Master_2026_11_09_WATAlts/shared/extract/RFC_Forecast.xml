@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataexchange-configuration xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://www.hec.usace.army.mil/xmlSchema/cwms/dataexchangeconfiguration_v2.xsd">
+  <datastore>
+    <oracle id="Oracle">
+      <host>//nwp-cwmsdb2.nwp.usace.army.mil</host>
+      <sid>G2CWMSP2</sid>
+    </oracle>
+  </datastore>
+  <datastore>
+    <model-plugin id="forecast-model-plugin" />
+  </datastore>
+  <datastore>
+    <dssfile id="forecast-dss" />
+  </datastore>
+  <ts-dataexchange-set id="RFC Forecast" exchange-data="false" sort-order="3.0">
+    <datastore-ref id="Oracle" />
+    <datastore-ref id="forecast-model-plugin" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Merge" ts-override-protection="OFF" />
+    <ts-mapping-set />
+  </ts-dataexchange-set>
+  <ts-dataexchange-set id="RFC Forecast1" exchange-data="false" sort-order="3.0">
+    <datastore-ref id="Oracle" />
+    <datastore-ref id="forecast-dss" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Merge" ts-override-protection="OFF" />
+    <ts-mapping-set>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">HCR.Flow-In.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//HCR/Flow-In--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">LOP.Flow-In.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//LOP/Flow-In--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">COT.Flow-In.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//COT/Flow-In--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">DOR.Flow-In.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DOR/Flow-In--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">FAL.Flow-In.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FAL/Flow-In--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">CGR.Flow-In.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//CGR/Flow-In--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">BLU.Flow-In.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//BLU/Flow-In--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">FRN.Flow-In.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FRN/Flow-In--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">FOS.Flow-In.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FOS/Flow-In--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">GPR.Flow-In.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//GPR/Flow-In--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">DET.Flow-In.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DET/Flow-In--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">JASO.Flow.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//JASO/Flow--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">GOSO.Flow.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//GOSO/Flow--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">EUGO.Flow.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//EUGO/Flow--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">VIDO.Flow.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//VIDO/Flow--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">HARO.Flow.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//HARO/Flow--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">MNRO.Flow.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//MNRO/Flow--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">CORO.Flow.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//CORO/Flow--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">ALBO.Flow.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//ALBO/Flow--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">MEHO.Flow.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//MEHO/Flow--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">WTLO.Flow.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//WTLO/Flow--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">JFFO.Flow.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//JFFO/Flow--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">BCLO.Flow.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//BCLO/Flow--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">DEXO.Flow.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DEXO/Flow--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">SLMO.Flow.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//SLMO/Flow--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">WLSO.Flow.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//WLSO/Flow--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">SPRO.Flow.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//SPRO/Flow--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">SUVO.Flow.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//SUVO/Flow--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">PHIO.Flow.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//PHIO/Flow--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">MCMO.Flow.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//MCMO/Flow--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">AURO.Flow.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//AURO/Flow--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">CANO.Flow.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//CANO/Flow--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">ESTO.Flow.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//ESTO/Flow--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">JASO.Flow-Local.Inst.~6Hours.0.BLEND-RFC-OBS-RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//JASO/Flow-Local--Inst//6hour/BLEND-RFC-OBS-RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">GOSO.Flow-Local.Inst.~6Hours.0.BLEND-RFC-OBS-RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//GOSO/Flow-Local--Inst//6hour/BLEND-RFC-OBS-RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">EUGO.Flow-Local.Inst.~6Hours.0.BLEND-RFC-OBS-RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//EUGO/Flow-Local--Inst//6hour/BLEND-RFC-OBS-RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">VIDO.Flow-Local.Inst.~6Hours.0.BLEND-RFC-OBS-RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//VIDO/Flow-Local--Inst//6hour/BLEND-RFC-OBS-RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">MNRO.Flow-Local.Inst.~6Hours.0.BLEND-RFC-OBS-RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//MNRO/Flow-Local--Inst//6hour/BLEND-RFC-OBS-RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">HARO.Flow-Local.Inst.~6Hours.0.BLEND-RFC-OBS-RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//HARO/Flow-Local--Inst//6hour/BLEND-RFC-OBS-RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">CORO.Flow-Local.Inst.~6Hours.0.BLEND-RFC-OBS-RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//CORO/Flow-Local--Inst//6hour/BLEND-RFC-OBS-RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">ALBO.Flow-Local.Inst.~6Hours.0.BLEND-RFC-OBS-RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//ALBO/Flow-Local--Inst//6hour/BLEND-RFC-OBS-RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">MEHO.Flow-Local.Inst.~6Hours.0.BLEND-RFC-OBS-RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//MEHO/Flow-Local--Inst//6hour/BLEND-RFC-OBS-RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">WTLO.Flow-Local.Inst.~6Hours.0.BLEND-RFC-OBS-RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//WTLO/Flow-Local--Inst//6hour/BLEND-RFC-OBS-RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">JFFO.Flow-Local.Inst.~6Hours.0.BLEND-RFC-OBS-RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//JFFO/Flow-Local--Inst//6hour/BLEND-RFC-OBS-RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">WLSO.Flow-Local.Inst.~6Hours.0.BLEND-RFC-OBS-RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//WLSO/Flow-Local--Inst//6hour/BLEND-RFC-OBS-RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">DLLO.Flow-Local.Inst.~6Hours.0.BLEND-RFC-OBS-RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DLLO/Flow-Local--Inst//6hour/BLEND-RFC-OBS-RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">SLMO.Flow-Local.Inst.~6Hours.0.BLEND-RFC-OBS-RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//SLMO/Flow-Local--Inst//6hour/BLEND-RFC-OBS-RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">WSLO.Flow-Local.Inst.~6Hours.0.BLEND-RFC-OBS-RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//WSLO/Flow-Local--Inst//6hour/BLEND-RFC-OBS-RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">LOP.Flow-Local.Inst.~6Hours.0.BLEND-RFC-OBS-RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//LOP/Flow-Local--Inst//6hour/BLEND-RFC-OBS-RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">LOP.Flow-Local.Inst.~6Hours.0.BLEND-RFC-OBS-RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//LOP/Flow-Local--Inst//6hour/BLEND-RFC-OBS-RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">FOS.Flow-Local.Inst.~6Hours.0.BLEND-RFC-OBS-RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FOS/Flow-Local--Inst//6hour/BLEND-RFC-OBS-RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">WSLO.Flow.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//WSLO/Flow--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">FRMO.Flow.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FRMO/Flow--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">DLLO.Flow.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DLLO/Flow--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">FRMO.Flow-Local.Inst.~6Hours.0.BLEND-RFC-OBS-RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FRMO/Flow-Local--Inst//6hour/BLEND-RFC-OBS-RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">LSMO.Flow.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//LSMO/Flow--Inst//6hour/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">SHNO.Stage.Inst.1Hour.0.RFC-RVF-WFO-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//SHNO/Stage--Inst//1HOUR/RFC-RVF-WFO-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">VAPW.Elev-Tide.Inst.6Minutes.0.NOAA-RAW</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//VAPW/Elev-Tide--Inst//6Minute/NOAA-RAW/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">VAPW.Stage.Inst.1Hour.0.RFC-RVF-WFO-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//VAPW/Stage--Inst//1HOUR/RFC-RVF-WFO-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">TRSO.Flow.Inst.~6Hours.0.RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//TRSO/Flow//6HOUR/RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+    </ts-mapping-set>
+  </ts-dataexchange-set>
+  <timewindow>
+    <starttime>EXTRACT-PT12H</starttime>
+    <endtime>SIMEND+PT12H</endtime>
+  </timewindow>
+</dataexchange-configuration>
+

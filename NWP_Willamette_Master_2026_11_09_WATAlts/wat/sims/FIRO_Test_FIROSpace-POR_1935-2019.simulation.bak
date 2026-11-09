@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WatSimulation SimulationName="FIRO_Test_FIROSpace-POR_1935-2019" Description="" FPart="FIRO_Test_:POR_1935-2" HasComputed="true" ComputeError="false" Parent="FIRO_Test_FIROSpace-POR_1935-2019" LastComputedBy="g2echrc9" LastComputedDate="1793901580966" IsFrmSimulation="false">
+  <ModelAlternatives ModelAlternativeCount="1">
+    <ModelAlternative0 Program="ResSim" Name="ALL_D" File="rss/ALL_D.ralt">
+      <Description>
+        <desc cnt="0" value="All operations (close to real-life as possible), including BiOp and Dam Safety IRRMs." />
+        <desc cnt="1" value="Daily timestep." />
+      </Description>
+      <LastComputeTime Date="5 November 2026, 17:59:40" />
+    </ModelAlternative0>
+  </ModelAlternatives>
+  <TimeWindowManager Class="hec2.plugin.timewindow.TimeWindowManagerImpl" />
+</WatSimulation>
+

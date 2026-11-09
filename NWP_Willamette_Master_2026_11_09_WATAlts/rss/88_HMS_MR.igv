@@ -1,0 +1,5 @@
+ModifiedTime=1711485422777
+GVDataSet Name=88_HMS_MR
+Description=Copy of CMWS NAVD88 network with added junctions and local flows set up for HMS forecast.  Routing data supplied from HEC-RAS models.  Uses Minimal reservoir rules. (Global Variable Data Set)
+
+

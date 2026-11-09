@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BrowserFrame width="1479" height="903" positionX="224" positionY="92" childWindowCount="0" selectedTabIndex="0">
+  <horizontalDivider location="653" />
+  <verticalDivider location="426" />
+  <statusLine visible="true" />
+  <messageArea visible="true" />
+  <projectTabs visible="true" divider="434" />
+</BrowserFrame>
+

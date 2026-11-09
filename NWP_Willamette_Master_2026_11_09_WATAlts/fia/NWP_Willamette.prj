@@ -1,0 +1,82 @@
+Version=3.4
+ProjectName=NWP_Willamette
+ProjectDescription=Project Created by the FiaPluginServer
+Extents=-1000.0,1000.0,1000.0,-1000.0
+Grow Extents=true
+Created=1741292831196
+Created By=G2ECHKBM
+UnitSystemID=1
+SyncMapWindows=false
+DrawMapGridLines=true
+MapBackgroundColor=white
+
+CoordinateInfoBegin
+type=X-Y
+units=U.S. Feet
+unitMult=1.0
+spheroid=
+CoordinateInfoEnd
+
+AdditionalProjectInfoBegin
+AdditionalProjectInfoEnd
+
+ManagerBegin
+Name=OccupancyTypeManager
+Description=
+File=inventory/structure inventories/occtype.dbf
+Class=hec2.fia.model.OccupancyTypeManager
+ModifiedTime=1741292830832
+CreatedBy=G2ECHKBM
+CreatedOn=1741292830832
+ModifiedBy=G2ECHKBM
+LastModified=1741292830832
+ManagerEnd
+
+ManagerBegin
+Name=StructureGroupManager
+Description=
+File=inventory/structure inventories/sgrpdata.dbf
+Class=hec2.fia.model.StructureGroupManager
+ModifiedTime=1741292830986
+CreatedBy=G2ECHKBM
+CreatedOn=1741292830905
+ModifiedBy=G2ECHKBM
+LastModified=1741292830986
+ManagerEnd
+
+ManagerBegin
+Name=Global Data
+Description=
+File=geographic data/boundaries/global.fgd
+Class=hec2.fia.model.GlobalData
+ModifiedTime=1741292831073
+CreatedBy=G2ECHKBM
+CreatedOn=1741292831073
+ModifiedBy=G2ECHKBM
+LastModified=1741292831073
+ManagerEnd
+
+ManagerBegin
+Name=Damage Category
+Description=
+File=inventory/structure inventories/category.dbf
+Class=hec2.fia.model.DamageCategoryManager
+ModifiedTime=1741292831143
+CreatedBy=G2ECHKBM
+CreatedOn=1741292831143
+ModifiedBy=G2ECHKBM
+LastModified=1741292831143
+ManagerEnd
+
+ManagerBegin
+Name=Default
+Description=Default AnalysisGroup
+File=Default.ag
+Class=com.rma.model.AnalysisGroup
+ModifiedTime=1741292831784
+CreatedBy=G2ECHKBM
+CreatedOn=1741292831784
+ModifiedBy=G2ECHKBM
+LastModified=1741292831784
+ManagerEnd
+

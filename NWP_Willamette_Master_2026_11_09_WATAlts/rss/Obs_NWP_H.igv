@@ -1,0 +1,5 @@
+ModifiedTime=1763750684461
+GVDataSet Name=Obs_NWP_H
+Description=Modeled observed, NWP, hourly compute. Reservoirs are forced to release exactly what was observed (releases are followed, not reservoir elevations). A few reservoirs (e.g. Round Butte) don't have full data available, so they just pass inflow. This results in the reservoir elevations being a bit funky--if the stor-elev table is accurate, the modeled elevations should be close to observed data, though. This alternative is also used to compute local flows, so all "Observed Data" locations should have time series mapped in. All local flows should be defined. (Global Variable Data Set)
+
+

@@ -1,0 +1,5 @@
+ModifiedTime=1711485292046
+GVDataSet Name=GPR-FOS_Op
+Description=Based on the Wil_Ops alternative with Winter FIS rules and flow-frequency study inflow timeseries (Oct 1990 - Jun 2010). This is the base alternative that would most closely match the real-time model developed by HY for the flow-frequency study. Other alternatives for GPR-FOS would branch from here. (Global Variable Data Set)
+
+

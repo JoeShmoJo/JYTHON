@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataexchange-configuration xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://www.hec.usace.army.mil/xmlSchema/cwms/dataexchangeconfiguration_v2.xsd">
+  <datastore>
+    <model-plugin id="forecast-model-plugin" />
+  </datastore>
+  <datastore>
+    <cumulus id="cumulus" url="https://cumulus-api.corps.cloud/" office-id="NWP" />
+  </datastore>
+  <datastore>
+    <dssfile id="forecast-dss" />
+  </datastore>
+  <grid-dataexchange-set id="Cumulus" exchange-data="false" sort-order="20.0">
+    <datastore-ref watershed-id="49200a82-fba3-458e-8929-e5c8b5e4f726" id="cumulus">
+      <products>
+        <product id="5bfec3ee-3f11-4142-b959-b76c28ca5170" />
+        <product id="630ea9a7-9ef3-47ff-9e99-77d23af78ceb" />
+        <product id="757c809c-dda0-412b-9831-cb9bd0f62d1d" />
+        <product id="a10d5f10-9074-4afc-925d-1271e469226e" />
+        <product id="c2f2f0ed-d120-478a-b38f-427e91ab18e2" />
+        <product id="d60307f1-55d4-4ca8-86d5-516b399427c5" />
+        <product id="e0baa220-1310-445b-816b-6887465cc94b" />
+      </products>
+    </datastore-ref>
+    <datastore-ref id="forecast-model-plugin" />
+    <grid-mapping-set />
+  </grid-dataexchange-set>
+  <grid-dataexchange-set id="Cumulus1" exchange-data="false" sort-order="20.0">
+    <datastore-ref watershed-id="d212f4d6-8158-4020-89e7-54ccc1f8c4cb" id="cumulus">
+      <products />
+    </datastore-ref>
+    <datastore-ref id="forecast-dss" />
+    <grid-mapping-set>
+      <grid-mapping>
+        <dss-grids datastore-id="cumulus">/SHG/Willamette River/PRECIP/13Oct2023:0600/13Oct2023:1200/NWRFC-QPE/</dss-grids>
+        <dss-grids datastore-id="forecast-dss">/SHG/Willamette River/PRECIP/13Oct2023:0600/13Oct2023:1200/NWRFC-QPE/</dss-grids>
+      </grid-mapping>
+      <grid-mapping>
+        <dss-grids datastore-id="cumulus">/SHG/Willamette River/AIRTEMP/23Oct2023:1200//NWRFC-QTF/</dss-grids>
+        <dss-grids datastore-id="forecast-dss">/SHG/Willamette River/AIRTEMP/23Oct2023:1200//NWRFC-QTF/</dss-grids>
+      </grid-mapping>
+      <grid-mapping>
+        <dss-grids datastore-id="cumulus">/SHG/Willamette River/SWE/13Oct2023:0600//SNODAS/</dss-grids>
+        <dss-grids datastore-id="forecast-dss">/SHG/Willamette River/SWE/13Oct2023:0600//SNODAS/</dss-grids>
+      </grid-mapping>
+      <grid-mapping>
+        <dss-grids datastore-id="cumulus">/SHG/Willamette River/PRECIP/23Oct2023:0600/23Oct2023:1200/NWRFC-QPF/</dss-grids>
+        <dss-grids datastore-id="forecast-dss">/SHG/Willamette River/PRECIP/23Oct2023:0600/23Oct2023:1200/NWRFC-QPF/</dss-grids>
+      </grid-mapping>
+      <grid-mapping>
+        <dss-grids datastore-id="cumulus">/SHG/Willamette River/COLD CONTENT/13Oct2023:0600//SNODAS/</dss-grids>
+        <dss-grids datastore-id="forecast-dss">/SHG/Willamette River/COLD CONTENT/13Oct2023:0600//SNODAS/</dss-grids>
+      </grid-mapping>
+      <grid-mapping>
+        <dss-grids datastore-id="cumulus">/SHG/Willamette River/AIRTEMP/13Oct2023:1200//NWRFC-QTE/</dss-grids>
+        <dss-grids datastore-id="forecast-dss">/SHG/Willamette River/AIRTEMP/13Oct2023:1200//NWRFC-QTE/</dss-grids>
+      </grid-mapping>
+      <grid-mapping>
+        <dss-grids datastore-id="cumulus">/SHG/Willamette River/SNOW DEPTH/13Oct2023:0600//SNODAS/</dss-grids>
+        <dss-grids datastore-id="forecast-dss">/SHG/Willamette River/SNOW DEPTH/13Oct2023:0600//SNODAS/</dss-grids>
+      </grid-mapping>
+    </grid-mapping-set>
+  </grid-dataexchange-set>
+  <timewindow>
+    <starttime>EXTRACT-P1D</starttime>
+    <endtime>SIMEND+P1D</endtime>
+  </timewindow>
+</dataexchange-configuration>
+

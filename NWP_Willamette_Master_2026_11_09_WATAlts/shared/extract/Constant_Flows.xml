@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataexchange-configuration xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://www.hec.usace.army.mil/xmlSchema/cwms/dataexchangeconfiguration_v2.xsd">
+  <datastore>
+    <model-plugin id="forecast-model-plugin" />
+  </datastore>
+  <datastore>
+    <dssfile id="DSS">
+      <filepath>C:\Users\G2ECHKBM\Desktop\CWMS\CWMS Models\WillametteFinal\watershed\watershed\NWP_Willamette\shared\Constant_flows.dss</filepath>
+    </dssfile>
+  </datastore>
+  <datastore>
+    <dssfile id="forecast-dss" />
+  </datastore>
+  <ts-dataexchange-set id="Constant Flows" exchange-data="true" sort-order="12.0">
+    <datastore-ref id="DSS" />
+    <datastore-ref id="forecast-model-plugin" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Merge" ts-override-protection="OFF" />
+    <ts-mapping-set>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>//DUMMY_500/FLOW//1HOUR/CONSTANT/</record>
+          <location model-plugin-id="RAS" model-alternative-id="Steady RFC ResSim Flows" location-id="Col-Bachelor RM 090 Right RS 2.583618" parameter-id="Flow" />
+          <location model-plugin-id="RAS" model-alternative-id="Steady RFC ResSim Flows" location-id="Lake Reach 2 RS 11.35877" parameter-id="Flow" />
+          <location model-plugin-id="RAS" model-alternative-id="Steady HMS ResSim Flows" location-id="Col-Bachelor RM 090 Right RS 2.583618" parameter-id="Flow" />
+          <location model-plugin-id="RAS" model-alternative-id="Steady HMS ResSim Flows" location-id="Lake Reach 2 RS 11.35877" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <dss-timeseries datastore-id="DSS">//DUMMY_500/FLOW//1HOUR/CONSTANT/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>//DUMMY_200000/FLOW//1HOUR/CONSTANT/</record>
+          <location model-plugin-id="RAS" model-alternative-id="Steady RFC ResSim Flows" location-id="Columbia RM 102.5-108 RS 108.241" parameter-id="Flow" />
+          <location model-plugin-id="RAS" model-alternative-id="Steady HMS ResSim Flows" location-id="Columbia RM 102.5-108 RS 108.241" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <dss-timeseries datastore-id="DSS">//DUMMY_200000/FLOW//1HOUR/CONSTANT/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>//DUMMY_50/FLOW//1HOUR/CONSTANT/</record>
+          <location model-plugin-id="RAS" model-alternative-id="Steady RFC ResSim Flows" location-id="Flushing Channel Vancouver Lake RS 1.356817" parameter-id="Flow" />
+          <location model-plugin-id="RAS" model-alternative-id="Steady RFC ResSim Flows" location-id="Silk Cr. Silk Creek RS 1.840" parameter-id="Flow" />
+          <location model-plugin-id="RAS" model-alternative-id="Steady HMS ResSim Flows" location-id="Flushing Channel Vancouver Lake RS 1.356817" parameter-id="Flow" />
+          <location model-plugin-id="RAS" model-alternative-id="Steady HMS ResSim Flows" location-id="Silk Cr. Silk Creek RS 1.840" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <dss-timeseries datastore-id="DSS">//DUMMY_50/FLOW//1HOUR/CONSTANT/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>//DUMMY_5000/FLOW//1HOUR/CONSTANT/</record>
+          <location model-plugin-id="RAS" model-alternative-id="Steady RFC ResSim Flows" location-id="Lake Reach 1 RS 1.727183" parameter-id="Flow" />
+          <location model-plugin-id="RAS" model-alternative-id="Steady RFC ResSim Flows" location-id="Multnomah Reach 1 RS 21.59741" parameter-id="Flow" />
+          <location model-plugin-id="RAS" model-alternative-id="Steady RFC ResSim Flows" location-id="Will-Ross Isl RM 15 Right RS 2.057271" parameter-id="Flow" />
+          <location model-plugin-id="RAS" model-alternative-id="Steady HMS ResSim Flows" location-id="Lake Reach 1 RS 1.727183" parameter-id="Flow" />
+          <location model-plugin-id="RAS" model-alternative-id="Steady HMS ResSim Flows" location-id="Multnomah Reach 1 RS 21.59741" parameter-id="Flow" />
+          <location model-plugin-id="RAS" model-alternative-id="Steady HMS ResSim Flows" location-id="Will-Ross Isl RM 15 Right RS 2.057271" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <dss-timeseries datastore-id="DSS">//DUMMY_5000/FLOW//1HOUR/CONSTANT/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="MF Willamette_nr Dexter_Local_MFWR_S10" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Willamette+Ash Cr_Local_WR_S08" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Willamette+Ash Cr_Local_WR_AshCr_S01" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="So Santiam+Thomas Cr_Local_ThomCr_S01" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="So Santiam+Crabtree Cr_Local_SSR_S07" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="So Santiam+Crabtree Cr_Local_CrabCr_S01" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="So Santiam+McDowell Cr_Local_SSR_S04" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="So Santiam+McDowell Cr_Local_McDowCr_S01" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Long Tom+Amazon Cr_Local_LT_S04" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Long Tom+Amazon Cr_Local_AmazonCr_S01" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="McKenzie_nr Coburg_Local_MKR_S09" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="MF Willamette+NF MF Willamette_Local_MFWR_S06" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="MF Willamette+NF MF Willamette_Local_JNFMF_S03" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="MF Willamette+Salmon Cr_Local_MFWR_S05" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="MF Willamette+Salmon Cr_Local_SalmonCr_S01" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="MF Willamette+Salt Cr_Local_SaltCr_S01" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Row_abv Pitcher Cr nr Dorena_Local_JRowR_14154500" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Willamette_abv Falls at Oregon City_Local_WR_S15" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Willamette_Tualatin_Local_JTualR_14207500" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Willamette_at Newberg_Local_WR_S12" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Willamette+Yamhill_Local_JYamhR_S01" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Willamette+Mill_Local_WR_S10" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Willamette+Mill_Local_JMillCr_S03" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Willamette+Richreall_Local_JRickrCr_S02" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Willamette+Richreall_Local_WR_S09" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="So Santiam+Wiley_Local_JWiley_S02" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="No Santiam+So Santiam_Local_NSR_S07" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="No Santiam+So Santiam_Local_SSR_S08" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Willamette+Santiam_Local_WR_S07" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Willamette+Santiam_Local_SR_S02" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Willamette+Calapooia_Local_WR_S06" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Willamette+Calapooia_Local_JCal_S03" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Willamette+Marys_Local_JEMuddyCr_S02" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Willamette+Long Tom_Local_LT_S06" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="McKenzie+SF McKenzie_Local_JMKR_S03" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="McKenzie+SF McKenzie_Local_SFMKR_S03" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Blue_at Blue River_Local_BR_S03" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="McKenzie+Blue_Local_MKR_S04" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Below Leaburg Dam_Local_MKR_S06" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="McKenzie_nr Walterville_Local_MKR_S07" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Abv Hayden Bridge_at Springflied_Local_MKR_S08" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Willamette+McKenzie_Local_WR_S02" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Willamette+McKenzie_Local_MKR_S10" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Row_nr Cottage Grove_Local_RowR_S04" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="CF Willamette+Row_Local_CFWR_S03" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="CF Willamette+Row_Local_RowR_S05" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="MF Willamette+CF Willamette_Local_MFWR_S12" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="MF Willamette+CF Willamette_Local_CFWR_S05" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="MF Willamette+Fall_Local_FallCr_S03" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="MF Willamette_blw NF nr Oakridge_Local_MFWR_S07" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="MF Willamette_abv Salt Cr nr Oakridge_Local_MFWR_S04" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Lebanon Div_In_Local_SSR_S06" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Stayton Div_Local_NSR_S06" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Big Cliff_Local_NSR_S04" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Foster_Local_SSR_S03" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Foster_Local_MSR_S04" parameter-id="Known Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Dexter_Local_MFWR_S09" parameter-id="Known Flow" />
+        </model-plugin-timeseries>
+        <dss-timeseries datastore-id="DSS">/WILLAMETTE/ZERO/FLOW//6HOUR/CONSTANT/</dss-timeseries>
+      </ts-mapping>
+    </ts-mapping-set>
+  </ts-dataexchange-set>
+  <ts-dataexchange-set id="Constant Flows1" exchange-data="true" sort-order="12.0">
+    <datastore-ref id="DSS" />
+    <datastore-ref id="forecast-dss" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Merge" ts-override-protection="OFF" />
+    <ts-mapping-set />
+  </ts-dataexchange-set>
+  <timewindow>
+    <starttime>EXTRACT-PT12H</starttime>
+    <endtime>SIMEND+PT12M</endtime>
+  </timewindow>
+</dataexchange-configuration>
+

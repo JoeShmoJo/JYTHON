@@ -1,0 +1,229 @@
+RssAlt Name=cwms ENSEM
+RssAlt Description=Copy of CMWS NAVD88 network with added junctions and local flows set up for RFC forecast.  Routing data supplied from HEC-RAS models.  Flood zones are the rules from the FIS ResSim model and the conservation/buffer zones rules are from the IRRMBaseline ResSIm model.
+Version=1001
+ModifiedTime=1579189416617
+NetworkID=61
+System Path=rss/WIllamette_CWMS_NGVD88.rsys
+Operations Path=
+InputTSData Path=rss/cwms_ENSEM.fits
+OutputTSData Path=
+OutputVerticalDatum=AS_DEFINED
+FlowComputeType=1
+ComputeHoldouts=false
+ComputeUnreg=true
+UseObsTSData=false
+LogLevel=3
+UseYieldAnalysis=false
+ReservoirYieldAnalysisBegin
+YieldAnalysisBegin
+UseHydropowerRules=false
+MaxIteration=25
+UseBisectionOnly=true
+MaxHeuristicIterations=8
+YieldAnalysisEnd
+ReservoirYieldAnalysisEnd
+TimeStep=3
+TimeIncrement=2
+ObservedTSData Path=rss/cwms_ENSEMObs.fits
+resOpSelection=114,15
+resOpSelection=159,11
+resOpSelection=134,14
+resOpSelection=109,11
+resOpSelection=154,13
+resOpSelection=129,13
+resOpSelection=104,11
+resOpSelection=149,15
+resOpSelection=124,14
+resOpSelection=99,11
+resOpSelection=144,12
+resOpSelection=119,15
+resOpSelection=139,13
+ReplaceAllReleaseOverrides=false
+UseDiffAltResultsTableBegin
+UseDiffAltResultsTableEnd
+DssOutputDataBegin
+WriteAllDssOutput;true
+WriteAllInputDss;true
+DssOutputDataEnd
+Hindcast=~E100:F;14;0;-Infinity
+Hindcast=~E100:F;15;2;-Infinity
+Hindcast=~E247:F;41;1;0.0
+Hindcast=~E248:F;41;0;-Infinity
+Hindcast=~E249:F;41;0;-Infinity
+Hindcast=~E105:F;14;0;-Infinity
+Hindcast=~E105:F;15;2;-Infinity
+Hindcast=~E256:F;41;1;0.0
+Hindcast=~E257:F;41;0;-Infinity
+Hindcast=~E258:F;41;0;-Infinity
+Hindcast=~E110:F;14;0;-Infinity
+Hindcast=~E110:F;15;2;-Infinity
+Hindcast=~E262:F;41;0;-Infinity
+Hindcast=~E263:F;41;0;-Infinity
+Hindcast=~E115:F;14;0;-Infinity
+Hindcast=~E115:F;15;2;-Infinity
+Hindcast=~E264:F;41;0;-Infinity
+Hindcast=~E265:F;41;1;0.0
+Hindcast=~E120:F;14;0;-Infinity
+Hindcast=~E120:F;15;2;-Infinity
+Hindcast=~E272:F;41;0;-Infinity
+Hindcast=~E273:F;96;1;0.0
+Hindcast=~E125:F;14;0;-Infinity
+Hindcast=~E125:F;15;2;-Infinity
+Hindcast=~E254:F;41;0;-Infinity
+Hindcast=~E255:F;96;1;0.0
+Hindcast=~E130:F;14;0;-Infinity
+Hindcast=~E130:F;15;2;-Infinity
+Hindcast=~E259:F;41;1;0.0
+Hindcast=~E260:F;41;0;-Infinity
+Hindcast=~E261:F;41;0;-Infinity
+Hindcast=~E135:F;14;0;-Infinity
+Hindcast=~E135:F;15;2;-Infinity
+Hindcast=~E250:F;41;1;0.0
+Hindcast=~E251:F;41;0;-Infinity
+Hindcast=~E140:F;14;0;-Infinity
+Hindcast=~E140:F;15;2;-Infinity
+Hindcast=~E277:F;41;0;-Infinity
+Hindcast=~E278:F;41;1;0.0
+Hindcast=~E279:F;41;1;0.0
+Hindcast=~E145:F;14;0;-Infinity
+Hindcast=~E145:F;15;2;-Infinity
+Hindcast=~E274:F;41;0;-Infinity
+Hindcast=~E275:F;41;1;0.0
+Hindcast=~E276:F;41;0;-Infinity
+Hindcast=~E150:F;14;0;-Infinity
+Hindcast=~E150:F;15;2;-Infinity
+Hindcast=~E270:F;41;0;-Infinity
+Hindcast=~E271:F;41;0;-Infinity
+Hindcast=~E155:F;14;0;-Infinity
+Hindcast=~E155:F;15;2;-Infinity
+Hindcast=~E266:F;41;1;0.0
+Hindcast=~E267:F;41;0;-Infinity
+Hindcast=~E268:F;41;1;0.0
+Hindcast=~E269:F;41;0;-Infinity
+Hindcast=~E160:F;14;0;-Infinity
+Hindcast=~E160:F;15;2;-Infinity
+Hindcast=~E252:F;41;0;-Infinity
+Hindcast=~E253:F;41;0;-Infinity
+Hindcast=~S1;98;1;0.0
+Hindcast=~S2;98;1;1.2
+UsingInflowFactors=true
+InflowFactorType=1
+GlobalInflowFactor=1.0
+LocalInflowFactor=~E0;MF Willamette_nr Dexter_Local_MFWR_S10;0.0
+LocalInflowFactor=~E4;Willamette+Ash Cr_Local_WR_S08;0.0
+LocalInflowFactor=~E4;Willamette+Ash Cr_Local_WR_AshCr_S01;0.0
+LocalInflowFactor=~E5;So Santiam+Thomas Cr_Local_ThomCr_S01;0.0
+LocalInflowFactor=~E6;So Santiam+Crabtree Cr_Local_SSR_S07;0.0
+LocalInflowFactor=~E6;So Santiam+Crabtree Cr_Local_CrabCr_S01;0.0
+LocalInflowFactor=~E7;So Santiam+McDowell Cr_Local_SSR_S04;0.0
+LocalInflowFactor=~E7;So Santiam+McDowell Cr_Local_McDowCr_S01;0.0
+LocalInflowFactor=~E8;Long Tom+Amazon Cr_Local_LT_S04;0.0
+LocalInflowFactor=~E8;Long Tom+Amazon Cr_Local_AmazonCr_S01;0.0
+LocalInflowFactor=~E9;McKenzie_nr Coburg_Local_MKR_S09;0.0
+LocalInflowFactor=~E10;McKenzie+Mohawk_Local_MohawkR_S01;0.0
+LocalInflowFactor=~E11;MF Willamette+NF MF Willamette_Local_MFWR_S06;0.0
+LocalInflowFactor=~E11;MF Willamette+NF MF Willamette_Local_JNFMF_S03;0.0
+LocalInflowFactor=~E12;MF Willamette+Salmon Cr_Local_MFWR_S05;0.0
+LocalInflowFactor=~E12;MF Willamette+Salmon Cr_Local_SalmonCr_S01;0.0
+LocalInflowFactor=~E13;MF Willamette+Salt Cr_Local_SaltCr_S01;0.0
+LocalInflowFactor=~E14;Row_abv Pitcher Cr nr Dorena_Local_JRowR_14154500;1.0
+LocalInflowFactor=~E16;Willamette_at Albany_NWS_Local;1.0
+LocalInflowFactor=~E22;Willamette_abv Falls at Oregon City_Local_WR_S15;0.0
+LocalInflowFactor=~E23;Willamette_Tualatin_Local_WR_S12;0.0
+LocalInflowFactor=~E23;Willamette_Tualatin_Local_JTualR_14207500;0.0
+LocalInflowFactor=~E24;Willamette+Molalla_Local_JMolaR_S06;0.0
+LocalInflowFactor=~E25;Willamette_at Wilsonville_Local_WR_S13;0.0
+LocalInflowFactor=~E26;Willamette_at Newberg_Local_WR_S12;0.0
+LocalInflowFactor=~E27;Willamette+Yamhill_Local_WR_S11;0.0
+LocalInflowFactor=~E27;Willamette+Yamhill_Local_JYamhR_S01;0.0
+LocalInflowFactor=~E28;Willamette+Mill_Local_WR_S10;0.0
+LocalInflowFactor=~E28;Willamette+Mill_Local_JMillCr_S03;0.0
+LocalInflowFactor=~E29;Willamette_at Salem_NWS_Local;1.0
+LocalInflowFactor=~E30;Willamette+Richreall_Local_JRickrCr_S02;0.0
+LocalInflowFactor=~E30;Willamette+Richreall_Local_WR_S09;0.0
+LocalInflowFactor=~E31;So Santiam+Wiley_Local_JWiley_S02;0.0
+LocalInflowFactor=~E33;So Santiam_at Waterloo_Local_SSR_S05;1.0
+LocalInflowFactor=~E35;No Santiam_at Mehama_Local_NSR_S05;1.0
+LocalInflowFactor=~E35;No Santiam_at Mehama_Local_JLNSR_14182500;0.0
+LocalInflowFactor=~E37;No Santiam+So Santiam_Local_NSR_S07;0.0
+LocalInflowFactor=~E37;No Santiam+So Santiam_Local_SSR_S08;0.0
+LocalInflowFactor=~E38;Santiam_at Jefferson_Local_SR_S01;1.0
+LocalInflowFactor=~E39;Willamette+Santiam_Local_WR_S07;0.0
+LocalInflowFactor=~E39;Willamette+Santiam_Local_SR_S02;0.0
+LocalInflowFactor=~E40;Willamette+Luckiamute_Local_Jluck_S03;0.0
+LocalInflowFactor=~E41;Willamette+Calapooia_Local_WR_S06;0.0
+LocalInflowFactor=~E41;Willamette+Calapooia_Local_JCal_S03;0.0
+LocalInflowFactor=~E42;Willamette+Marys_Local_WR_S05;0.0
+LocalInflowFactor=~E42;Willamette+Marys_Local_JMarysR_S02;0.0
+LocalInflowFactor=~E42;Willamette+Marys_Local_JEMuddyCr_S02;0.0
+LocalInflowFactor=~E44;Long Tom_at Monroe_Local_LT_S05;1.0
+LocalInflowFactor=~E45;Willamette+Long Tom_Local_LT_S06;0.0
+LocalInflowFactor=~E46;Willamette_at Harrisburg_Local_WR_S03;1.0
+LocalInflowFactor=~E48;McKenzie+SF McKenzie_Local_JMKR_S03;0.0
+LocalInflowFactor=~E48;McKenzie+SF McKenzie_Local_SFMKR_S03;0.0
+LocalInflowFactor=~E49;Blue_at Blue River_Local_BR_S03;0.0
+LocalInflowFactor=~E50;McKenzie+Blue_Local_MKR_S04;0.0
+LocalInflowFactor=~E51;McKenzie_at Vida_Local_MKR_S05;1.0
+LocalInflowFactor=~E52;Below Leaburg Dam_Local_MKR_S06;0.0
+LocalInflowFactor=~E53;McKenzie_nr Walterville_Local_MKR_S07;0.0
+LocalInflowFactor=~E54;Abv Hayden Bridge_at Springflied_Local_MKR_S08;0.0
+LocalInflowFactor=~E55;Willamette+McKenzie_Local_WR_S02;0.0
+LocalInflowFactor=~E55;Willamette+McKenzie_Local_MKR_S10;0.0
+LocalInflowFactor=~E56;Willamette_at Eugene_Local_WR_S01;0.0
+LocalInflowFactor=~E58;Row_nr Cottage Grove_Local_RowR_S04;0.0
+LocalInflowFactor=~E59;CF Willamette+Row_Local_CFWR_S03;0.0
+LocalInflowFactor=~E59;CF Willamette+Row_Local_RowR_S05;0.0
+LocalInflowFactor=~E60;CF Willamette_nr Goshen_Local_CFWR_S04;1.0
+LocalInflowFactor=~E61;MF Willamette+CF Willamette_Local_MFWR_S12;0.0
+LocalInflowFactor=~E61;MF Willamette+CF Willamette_Local_CFWR_S05;0.0
+LocalInflowFactor=~E62;MF Willamette_at Jasper_Local_MFWR_S11;1.0
+LocalInflowFactor=~E64;MF Willamette+Fall_Local_FallCr_S03;0.0
+LocalInflowFactor=~E65;MF Willamette_blw NF nr Oakridge_Local_MFWR_S07;0.0
+LocalInflowFactor=~E66;MF Willamette_abv Salt Cr nr Oakridge_Local_MFWR_S04;0.0
+LocalInflowFactor=~E68;Lebanon Div_In_Local_SSR_S06;0.0
+LocalInflowFactor=~E70;Stayton Div_Local_NSR_S06;0.0
+LocalInflowFactor=~E74;Big Cliff_Local_NSR_S04;0.0
+LocalInflowFactor=~E76;Detroit_Inflow_JNSR_S03;1.0
+LocalInflowFactor=~E78;Foster_Local_JSSR_S02;0.0
+LocalInflowFactor=~E78;Foster_Local_SSR_S03;1.0
+LocalInflowFactor=~E78;Foster_Local_MSR_S04;0.0
+LocalInflowFactor=~E80;Green Peter_Inflow_JMSR_S03;1.0
+LocalInflowFactor=~E82;Fern Ridge_Inflow_JLT_S03;1.0
+LocalInflowFactor=~E84;Blue River_Inflow_JBR_S02;1.0
+LocalInflowFactor=~E86;Cougar_Inflow_JSFMKR_S02;1.0
+LocalInflowFactor=~E88;Cottage Grove_Inflow_JCFWR_S02;1.0
+LocalInflowFactor=~E90;Dorena_Local_RowR_S03;0.0
+LocalInflowFactor=~E92;Fall Creek_Inflow_J_FallCr_WinbCr;1.0
+LocalInflowFactor=~E94;Dexter_Local_MFWR_S09;0.0
+LocalInflowFactor=~E96;Lookout Point_Local_MFWR_S08;1.0
+LocalInflowFactor=~E98;Hills Cr_Inflow_J_MFWR;1.0
+Hotstart Options
+CreateHotStart:false
+SaveAtEnd:false
+SaveAtLookback:false
+SaveAtInterval:false
+IntervalDateTime:
+TimeStep:1
+TimeIncrement:2
+SaveAtDateTime:false
+TimeStepsToSave:0.0
+LoadHotstart:false
+Hotstart End
+PlugInDataBegin
+PlugIn:Monte Carlo
+MinIterations:100
+MaxIterations:1000
+LastIteration:0
+CumulativeTime:0
+SimulationOption:0
+ScriptFilePath:rss/cwms_ENSEM.mcscript
+IterationString:
+Compute:false
+StandAloneRandomSeed:0.0
+PlugInEnd
+PlugIn:Ensemble
+EnsembleMembersString:
+Compute:true
+UseMultithreadedCompute:false
+PlugInEnd
+PlugInDataEnd

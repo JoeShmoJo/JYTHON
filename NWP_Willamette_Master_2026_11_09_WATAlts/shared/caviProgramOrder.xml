@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ProgramOrderManager ProgramOrderManagerName="Program Order Manager" Description="" ProgramOrderCount="5">
+  <ProgramOrder0 ProgramOrderName="Default" Description="Default Program Order" ProgramOrderItemCnt="8">
+    <ProgramOrderItem0 ProgramOrderName="MetVue" Description="Start/show MetVue" Index="1" StandardModel="false" InputPosition="-1" IconName="hec/metvue/client/rtsplugin/resources/MetVue_Icon_18.png" ShortName="MetVue application" />
+    <ProgramOrderItem1 ProgramOrderName="Scripting" Description="Scripting" Index="2" StandardModel="false" InputPosition="-1" IconName="Images/scripting.gif" ShortName="Scripting" />
+    <ProgramOrderItem2 ProgramOrderName="HMS" Description="Hydrologic" Index="3" StandardModel="true" InputPosition="-1" IconName="Images/hms18.gif" ShortName="HMS" />
+    <ProgramOrderItem3 ProgramOrderName="ResSim" Description="Reservoir Op." Index="4" StandardModel="true" InputPosition="-1" IconName="Images/rss18.gif" ShortName="RSS" />
+    <ProgramOrderItem4 ProgramOrderName="ResSim" Description="Reservoir Op." Index="5" StandardModel="true" InputPosition="-1" IconName="Images/rss18.gif" ShortName="RSS" />
+    <ProgramOrderItem5 ProgramOrderName="ResSim" Description="Reservoir Op." Index="6" StandardModel="true" InputPosition="-1" IconName="Images/rss18.gif" ShortName="RSS" />
+    <ProgramOrderItem6 ProgramOrderName="RAS" Description="Hydraulics" Index="7" StandardModel="true" InputPosition="-1" IconName="Images/ras18.gif" ShortName="RAS" />
+    <ProgramOrderItem7 ProgramOrderName="FIA" Description="Consequences" Index="8" StandardModel="true" InputPosition="-1" IconName="Images/fia18.gif" ShortName="FIA" />
+  </ProgramOrder0>
+  <ProgramOrder1 ProgramOrderName="ResSim Only" Description="" ProgramOrderItemCnt="1">
+    <ProgramOrderItem0 ProgramOrderName="ResSim" Description="Reservoir Op." Index="1" StandardModel="true" InputPosition="-1" IconName="Images/rss18.gif" ShortName="RSS" />
+  </ProgramOrder1>
+  <ProgramOrder2 ProgramOrderName="RASOnly" Description="" ProgramOrderItemCnt="1">
+    <ProgramOrderItem0 ProgramOrderName="RAS" Description="Hydraulics" Index="1" StandardModel="true" InputPosition="-1" IconName="Images/ras18.gif" ShortName="RAS" />
+  </ProgramOrder2>
+  <ProgramOrder3 ProgramOrderName="ResSim_RAS" Description="" ProgramOrderItemCnt="2">
+    <ProgramOrderItem0 ProgramOrderName="ResSim" Description="Reservoir Op." Index="1" StandardModel="true" InputPosition="-1" IconName="Images/rss18.gif" ShortName="RSS" />
+    <ProgramOrderItem1 ProgramOrderName="RAS" Description="Hydraulics" Index="2" StandardModel="true" InputPosition="-1" IconName="Images/ras18.gif" ShortName="RAS" />
+  </ProgramOrder3>
+  <ProgramOrder4 ProgramOrderName="ResSim25,50,75" Description="" ProgramOrderItemCnt="3">
+    <ProgramOrderItem0 ProgramOrderName="ResSim" Description="Reservoir Op." Index="1" StandardModel="true" InputPosition="-1" IconName="Images/rss18.gif" ShortName="RSS" />
+    <ProgramOrderItem1 ProgramOrderName="ResSim" Description="Reservoir Op." Index="2" StandardModel="true" InputPosition="-1" IconName="Images/rss18.gif" ShortName="RSS" />
+    <ProgramOrderItem2 ProgramOrderName="ResSim" Description="Reservoir Op." Index="3" StandardModel="true" InputPosition="-1" IconName="Images/rss18.gif" ShortName="RSS" />
+  </ProgramOrder4>
+</ProgramOrderManager>
+

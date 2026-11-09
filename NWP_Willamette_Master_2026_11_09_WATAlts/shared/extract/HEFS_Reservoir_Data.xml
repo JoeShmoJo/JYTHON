@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataexchange-configuration xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://www.hec.usace.army.mil/xmlSchema/cwms/dataexchangeconfiguration_v2.xsd">
+  <datastore>
+    <model-plugin id="forecast-model-plugin" />
+  </datastore>
+  <datastore>
+    <dssfilemanager id="REMOTEDSS">
+      <filepath>/wm/wmshare/share/common/espdata/willamette15.dss</filepath>
+      <port>24101</port>
+      <host>137.161.185.113</host>
+    </dssfilemanager>
+  </datastore>
+  <datastore>
+    <dssfile id="forecast-dss" />
+  </datastore>
+  <ts-dataexchange-set id="HEFS Reservoir Data" exchange-data="false" sort-order="5.0">
+    <datastore-ref id="REMOTEDSS" />
+    <datastore-ref id="forecast-model-plugin" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Replace" ts-override-protection="OFF" />
+    <ts-mapping-set />
+  </ts-dataexchange-set>
+  <ts-dataexchange-set id="HEFS Reservoir Data1" exchange-data="false" sort-order="5.0">
+    <datastore-ref id="REMOTEDSS" />
+    <datastore-ref id="forecast-dss" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Replace" ts-override-protection="OFF" />
+    <ts-mapping-set>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//FOSO3/FLOW-LOC/26Oct2023 - 17Apr2025/1Day/PERC-25/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FOSO3/FLOW-LOC/26Oct2023 - 17Apr2025/1Day/PERC-25/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//LOPO3/FLOW-LOC/26Oct2023 - 17Apr2025/1Day/PERC-25/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//LOPO3/FLOW-LOC/26Oct2023 - 17Apr2025/1Day/PERC-25/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//COTO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-25/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//COTO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-25/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//DETO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-25/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DETO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-25/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//DORO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-25/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DORO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-25/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//BLUO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-25/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//BLUO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-25/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//FRNO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-25/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FRNO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-25/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//GPRO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-25/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//GPRO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-25/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//HCRO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-25/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//HCRO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-25/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//CGRO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-25/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//CGRO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-25/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//FALO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-25/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FALO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-25/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//BLUO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-50/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//BLUO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-50/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//CGRO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-50/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//CGRO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-50/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//COTO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-50/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//COTO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-50/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//DETO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-50/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DETO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-50/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//DORO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-50/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DORO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-50/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//FALO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-50/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FALO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-50/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//FOSO3/FLOW-LOC/26Oct2023 - 17Apr2025/1Day/PERC-50/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FOSO3/FLOW-LOC/26Oct2023 - 17Apr2025/1Day/PERC-50/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//FRNO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-50/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FRNO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-50/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//GPRO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-50/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//GPRO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-50/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//HCRO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-50/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//HCRO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-50/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//LOPO3/FLOW-LOC/26Oct2023 - 17Apr2025/1Day/PERC-50/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//LOPO3/FLOW-LOC/26Oct2023 - 17Apr2025/1Day/PERC-50/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//BLUO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-75/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//BLUO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-75/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//CGRO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-75/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//CGRO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-75/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//COTO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-75/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//COTO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-75/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//DETO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-75/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DETO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-75/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//DORO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-75/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//DORO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-75/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//FALO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-75/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FALO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-75/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//FOSO3/FLOW-LOC/26Oct2023 - 17Apr2025/1Day/PERC-75/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FOSO3/FLOW-LOC/26Oct2023 - 17Apr2025/1Day/PERC-75/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//FRNO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-75/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//FRNO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-75/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//GPRO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-75/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//GPRO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-75/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//HCRO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-75/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//HCRO3/FLOW-UNREG/26Oct2023 - 17Apr2025/1Day/PERC-75/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="REMOTEDSS">//LOPO3/FLOW-LOC/26Oct2023 - 17Apr2025/1Day/PERC-75/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//LOPO3/FLOW-LOC/26Oct2023 - 17Apr2025/1Day/PERC-75/</dss-timeseries>
+      </ts-mapping>
+    </ts-mapping-set>
+  </ts-dataexchange-set>
+  <timewindow>
+    <starttime>EXTRACT+PT0M</starttime>
+    <endtime>SIMEND+P2D</endtime>
+  </timewindow>
+</dataexchange-configuration>
+

@@ -1,0 +1,28 @@
+﻿Parallel Initialization Mitigation Test
+Created: 2026-10-21 09:24:51
+
+Changed file:
+C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\externalSVs\ControllerExternalSV.py
+
+Test changes:
+1. Added a Java ReentrantLock around ControllerExternalSV.initialization().
+2. Corrected reinitializeExternalSV() to obtain local time-series names from svBackup.
+
+Purpose:
+Serialize the initialization/file-I/O phase across native worker threads.
+Correct local time-series restoration after a ResSim state-variable reset.
+
+Not changed:
+No HEC application JAR files.
+No DSS files.
+No alternative configuration files.
+No rule CSV files.
+No native executor/private-JVM worker patch.
+
+Backup:
+C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\parallel-init-mitigation-test\backup-20261021T092451
+
+Required next action:
+Close and restart ResSim before the test.
+Use a disposable two-member parallel test.
+Do not accept or archive the test results.

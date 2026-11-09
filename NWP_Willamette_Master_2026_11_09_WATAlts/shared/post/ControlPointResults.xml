@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataexchange-configuration xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://www.hec.usace.army.mil/xmlSchema/cwms/dataexchangeconfiguration_v2.xsd">
+  <datastore>
+    <model-plugin id="forecast-model-plugin" />
+  </datastore>
+  <datastore>
+    <dssfile id="DSS">
+      <filepath>/wm/wmshare/share/common/cavi_results/NWP_results.dss</filepath>
+    </dssfile>
+  </datastore>
+  <datastore>
+    <dssfile id="forecast-dss" />
+  </datastore>
+  <ts-dataexchange-set id="ControlPointResults" exchange-data="true" sort-order="0.0">
+    <datastore-ref id="DSS" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Replace" ts-override-protection="OFF" />
+    <datastore-ref id="forecast-model-plugin" />
+    <ts-mapping-set />
+    <ensemble />
+  </ts-dataexchange-set>
+  <ts-dataexchange-set id="ControlPointResults1" exchange-data="true" sort-order="0.0">
+    <datastore-ref id="DSS" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Replace" ts-override-protection="OFF" />
+    <datastore-ref id="forecast-dss" />
+    <ts-mapping-set>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//WILLAMETTE_AT SALEM/FLOW/31Dec2023 - 15Nov2024/1DAY/------2050/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//WILLAMETTE_AT SALEM/FLOW/31Dec2023 - 15Nov2024/1DAY/------2050/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//WILLAMETTE_AT ALBANY/FLOW/31Dec2023 - 15Nov2024/1DAY/------2050/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//WILLAMETTE_AT ALBANY/FLOW/31Dec2023 - 15Nov2024/1DAY/------2050/</dss-timeseries>
+      </ts-mapping>
+    </ts-mapping-set>
+    <ensemble />
+  </ts-dataexchange-set>
+  <timewindow>
+    <starttime>SIMSTART+PT0M</starttime>
+    <endtime>SIMEND+PT0M</endtime>
+  </timewindow>
+</dataexchange-configuration>
+

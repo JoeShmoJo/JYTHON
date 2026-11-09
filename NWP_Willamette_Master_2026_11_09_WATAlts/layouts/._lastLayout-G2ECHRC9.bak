@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BrowserFrame width="1218" height="733" positionX="560" positionY="240" childWindowCount="0" selectedTabIndex="3">
+  <horizontalDivider location="481" />
+  <verticalDivider location="328" />
+  <statusLine visible="true" />
+  <messageArea visible="true" />
+  <projectTabs visible="true" divider="487" />
+  <ProjectTree>
+    <FolderNode Name="NWP_Willamette" Class="hec2.rts.ui.RtsProjectTab$2$2$1" Expanded="true" UserCreated="false">
+      <FolderNode Name="Models" Class="hec2.rts.ui.ModelContainerNode" Expanded="true" UserCreated="false">
+        <Node Name="EFP" Class="hec2.rts.ui.SelfContainedPluginNode" />
+        <Node Name="MFP" Class="hec2.rts.ui.SelfContainedPluginNode" />
+        <Node Name="HMS" Class="hec2.rts.ui.PluginNode" />
+        <FolderNode Name="ResSim" Class="hec2.rts.ui.PluginNode" Expanded="true" UserCreated="false">
+          <Node Name="ESP_RFC" Class="hec2.rts.plugin.ui.ModelAltContentNodeImpl" />
+          <Node Name="Temp1Day" Class="hec2.rts.plugin.ui.ModelAltContentNodeImpl" />
+        </FolderNode>
+        <Node Name="FIA" Class="hec2.rts.ui.PluginNode" />
+        <Node Name="Scripting" Class="hec2.rts.ui.SelfContainedPluginNode" />
+        <Node Name="MetVue" Class="hec2.rts.ui.PluginNode" />
+      </FolderNode>
+      <FolderNode Name="Stream Alignments" Class="com.rma.ui.StreamAlignmentContainerNode" Expanded="true" UserCreated="false">
+        <Node Name="Stream Alignment" Class="com.rma.ui.StreamAlignmentNode" />
+      </FolderNode>
+      <FolderNode Name="Forecast Runs" Class="hec2.rts.client.RtsWatershed$2" Expanded="true" UserCreated="false" DefaultOrder="true" />
+    </FolderNode>
+  </ProjectTree>
+  <ProjectTreeSelections SelectedPath0="root, NWP_Willamette, Models, ResSim, Temp1Day" />
+  <DataVisTab>
+    <IconComboBoxes>
+      <ActiveLayers>
+        <Layer name="Air Temp" selected="true" />
+        <Layer name="All" selected="true" />
+        <Layer name="Elevation" selected="true" />
+        <Layer name="Flow" selected="true" />
+        <Layer name="Precip" selected="true" />
+        <Layer name="RFC FLOW IN" selected="true" />
+        <Layer name="Regulation Gages" selected="true" />
+        <Layer name="Snow" selected="true" />
+        <Layer name="Stage" selected="true" />
+      </ActiveLayers>
+      <ActiveValues>
+        <value name="Default" selected="true" />
+        <value name="Name" selected="false" />
+        <value name="Last" selected="false" />
+        <value name="Total" selected="false" />
+        <value name="Max" selected="false" />
+        <value name="Min" selected="false" />
+        <value name="Average" selected="false" />
+        <value name="Date" selected="false" />
+        <value name="Time" selected="false" />
+        <value name="Color" selected="false" />
+        <value name="Don't Show" selected="false" />
+      </ActiveValues>
+    </IconComboBoxes>
+  </DataVisTab>
+  <DataAcqTab>
+    <IconComboBoxes>
+      <ActiveLayers>
+        <Layer name="Air Temp" selected="true" />
+        <Layer name="All" selected="true" />
+        <Layer name="Elevation" selected="true" />
+        <Layer name="Flow" selected="true" />
+        <Layer name="Precip" selected="true" />
+        <Layer name="RFC FLOW IN" selected="true" />
+        <Layer name="Regulation Gages" selected="true" />
+        <Layer name="Snow" selected="true" />
+        <Layer name="Stage" selected="true" />
+      </ActiveLayers>
+      <ActiveValues>
+        <value name="Default" selected="true" />
+        <value name="Name" selected="false" />
+        <value name="Last" selected="false" />
+        <value name="Total" selected="false" />
+        <value name="Max" selected="false" />
+        <value name="Min" selected="false" />
+        <value name="Average" selected="false" />
+        <value name="Date" selected="false" />
+        <value name="Time" selected="false" />
+        <value name="Color" selected="false" />
+        <value name="Don't Show" selected="false" />
+      </ActiveValues>
+    </IconComboBoxes>
+  </DataAcqTab>
+  <ForecastTab>
+    <IconComboBoxes>
+      <ActiveLayers>
+        <Layer name="Air Temp" selected="false" />
+        <Layer name="All" selected="false" />
+        <Layer name="Elevation" selected="false" />
+        <Layer name="Flow" selected="false" />
+        <Layer name="Precip" selected="false" />
+        <Layer name="RFC FLOW IN" selected="false" />
+        <Layer name="Regulation Gages" selected="false" />
+        <Layer name="Snow" selected="false" />
+        <Layer name="Stage" selected="false" />
+      </ActiveLayers>
+      <ActiveValues>
+        <value name="Default" selected="true" />
+        <value name="Name" selected="false" />
+        <value name="Last" selected="false" />
+        <value name="Total" selected="false" />
+        <value name="Max" selected="false" />
+        <value name="Min" selected="false" />
+        <value name="Average" selected="false" />
+        <value name="Date" selected="false" />
+        <value name="Time" selected="false" />
+        <value name="Color" selected="false" />
+        <value name="Don't Show" selected="false" />
+      </ActiveValues>
+    </IconComboBoxes>
+    <SelectedTab>0</SelectedTab>
+    <DividerLocation>108</DividerLocation>
+  </ForecastTab>
+</BrowserFrame>
+

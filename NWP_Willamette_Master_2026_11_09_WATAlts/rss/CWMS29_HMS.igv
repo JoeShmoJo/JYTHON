@@ -1,0 +1,5 @@
+ModifiedTime=1711485043709
+GVDataSet Name=CWMS29_HMS
+Description=Copy of CMWS NGVD29 network with added junctions and local flows set up for HMS forecast.  Routing data supplied from HEC-RAS models.  Flood zones are the rules from the FIS ResSim model and the conservation/buffer zones rules are from the IRRMBaseline ResSIm model. (Global Variable Data Set)
+
+

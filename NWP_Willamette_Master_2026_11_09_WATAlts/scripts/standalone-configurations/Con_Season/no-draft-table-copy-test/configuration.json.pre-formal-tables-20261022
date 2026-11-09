@@ -1,0 +1,10 @@
+﻿{
+  "schema_version": 1,
+  "kind": "standalone-configuration",
+  "mode": "patch",
+  "model_alternative": "Con_Season",
+  "name": "no-draft-table-copy-test",
+  "settings": {
+    "NoDraftConfigCSV": "scripts/standalone-configurations/Con_Season/no-draft-table-copy-test/tables/NoDraftConfig.csv"
+  }
+}

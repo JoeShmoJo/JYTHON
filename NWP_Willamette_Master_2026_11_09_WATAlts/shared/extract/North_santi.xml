@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataexchange-configuration xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://www.hec.usace.army.mil/xmlSchema/cwms/dataexchangeconfiguration_v2.xsd">
+  <datastore>
+    <model-plugin id="forecast-model-plugin" />
+  </datastore>
+  <datastore>
+    <dssfile id="DSS">
+      <filepath>C:\Users\G2ECHKBM\Desktop\CWMS\CWMS Models\WillametteFinal\watershed\watershed\NWP_Willamette\shared\year_classification.dss</filepath>
+    </dssfile>
+  </datastore>
+  <datastore>
+    <dssfile id="forecast-dss" />
+  </datastore>
+  <ts-dataexchange-set id="North santi" exchange-data="false" sort-order="13.0">
+    <datastore-ref id="DSS" />
+    <datastore-ref id="forecast-model-plugin" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Merge" ts-override-protection="OFF" />
+    <ts-mapping-set />
+  </ts-dataexchange-set>
+  <ts-dataexchange-set id="North santi1" exchange-data="false" sort-order="13.0">
+    <datastore-ref id="DSS" />
+    <datastore-ref id="forecast-dss" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Merge" ts-override-protection="OFF" />
+    <ts-mapping-set>
+      <ts-mapping>
+        <dss-timeseries datastore-id="DSS">//NORTH SANTIAM DIVERSION/STOR/30Sep1929 - 01Jan2010/1DAY/SSARRDAILY0/</dss-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//NORTH SANTIAM DIVERSION/STOR/30Sep1929 - 01Jan2010/1DAY/SSARRDAILY0/</dss-timeseries>
+      </ts-mapping>
+    </ts-mapping-set>
+  </ts-dataexchange-set>
+  <timewindow>
+    <starttime>EXTRACT-PT12H</starttime>
+    <endtime>FORECAST+PT12H</endtime>
+  </timewindow>
+</dataexchange-configuration>
+

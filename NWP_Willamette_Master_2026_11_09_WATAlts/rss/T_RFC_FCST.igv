@@ -1,0 +1,5 @@
+ModifiedTime=1711485070629
+GVDataSet Name=T_RFC_FCST
+Description=Copy of CMWS new network with added junctions and local set up for local flows from RFC forecast.  This test alternative is to test pulling real-time data from Forecast.dss. (Global Variable Data Set)
+
+

@@ -1,0 +1,26 @@
+{
+    "schema_version":  1,
+    "kind":  "standalone-configuration-manifest",
+    "name":  "con-season-reference-snapshot-20261022",
+    "model_alternative":  "Con_Season",
+    "mode":  "snapshot",
+    "created_utc":  "2026-10-22T15:33:19.3845370Z",
+    "configuration_sha256":  "1F461A181C0194855A7E24031847481039FF18B75AF52E4A767EEF1BE870B463",
+    "table_sha256":  {
+                         "tables/DeepDrawdownConfig.csv":  "7BBCA2CE061F984B56583E7867DE9B27BFFD9A78FE11E867F9310BE42C64A2F8",
+                         "tables/SpringSpillConfig.csv":  "B4E9430F5631CD7212D7D07B6F3345443B6CFE620E1BEECF19AFF13780450604",
+                         "tables/NoDraftConfig.csv":  "B674BA8F7CFE6EDA05DC4E76D9BED00BC945F64342354E7D3C2C276ED2770955",
+                         "tables/SecondaryFloodDraftLimitConfig.csv":  "95531075F71B3F5F66557A21701CF9306F6436D65728D3DB4E46D0F0E7F7EC71",
+                         "tables/FIRO_SPACEConfig.csv":  "A676BFCD202A73E4AB5F876AF769B1B18DB31623711E6786DF314EA67B73791E",
+                         "tables/MinFlowConfig.csv":  "FEBB5922922D6B5DD176D31826B13EFB21EF30908F6096184F5970C4D094BA46",
+                         "tables/WithdrawalConfig.csv":  "00C08826C8CA454003A921DBF3B6DFA8E6EDAAA82915DA682413029D6877CCF7",
+                         "tables/DiversionConfig_ALT.csv":  "6F96C7A9B71A6870958CDA8EA0C1F7CE0BF3387B815F907BAC423E67CC0F0470",
+                         "tables/MinFlowSalemAlbanyConfig.csv":  "D0778BF505EF0CCC6FE7E0F9E41785B999646C9B9801D857D7586A1E76D4BA44",
+                         "tables/MinFlowSalem_2008BiOp.csv":  "7F2361658244C64767E524CBCD0596B94AA87511AA49B202F092290085DC970C",
+                         "tables/MinFlowAlbany_2008BiOp.csv":  "69DC4182CFA42684D75275A81AFB9B7D6DF3A83354A1317266D9682ED38A6B24"
+                     },
+    "source_file_sha256":  {
+                               "source-files/_default.txt":  "A0A09BACCF34DB10E0598863404E71201EABA12DBEE43F1646A6DBF481501CFA",
+                               "source-files/Con_Season.txt":  "0DB88DA7D94AE383BCD0359A8841CB0C50180F95385AFCCF995F55257203492C"
+                           }
+}

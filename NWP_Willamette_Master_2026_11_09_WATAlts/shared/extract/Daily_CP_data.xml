@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataexchange-configuration xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://www.hec.usace.army.mil/xmlSchema/cwms/dataexchangeconfiguration_v2.xsd">
+  <datastore>
+    <oracle id="Oracle" />
+  </datastore>
+  <datastore>
+    <model-plugin id="forecast-model-plugin" />
+  </datastore>
+  <datastore>
+    <dssfile id="forecast-dss" />
+  </datastore>
+  <ts-dataexchange-set id="Daily CP data" exchange-data="true" sort-order="25.0">
+    <datastore-ref id="Oracle" />
+    <datastore-ref id="forecast-model-plugin" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Replace" ts-override-protection="OFF" />
+    <ts-mapping-set />
+  </ts-dataexchange-set>
+  <ts-dataexchange-set id="Daily CP data1" exchange-data="true" sort-order="25.0">
+    <datastore-ref id="Oracle" />
+    <datastore-ref id="forecast-dss" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Replace" ts-override-protection="OFF" />
+    <ts-mapping-set>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">EUGO.Flow.Inst.~1Day.0.MIXED-COMPUTED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//EUGO/Flow//1DAY/MIXED-COMPUTED-REV/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">HARO.Flow.Ave.~1Day.1Day.MIXED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//HARO/Flow//1DAY/MIXED-REV/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">ALBO.Flow.Ave.~1Day.1Day.MIXED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//ALBO/Flow//1DAY/MIXED-REV/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">SLMO.Flow.Ave.~1Day.1Day.MIXED-REV</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//SLMO/Flow//~1DAY/MIXED-REV/</dss-timeseries>
+      </ts-mapping>
+    </ts-mapping-set>
+  </ts-dataexchange-set>
+  <timewindow>
+    <starttime>EXTRACT+PT0M</starttime>
+    <endtime>FORECAST+PT0M</endtime>
+  </timewindow>
+</dataexchange-configuration>
+

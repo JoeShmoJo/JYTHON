@@ -1,0 +1,27 @@
+WorkspaceName=1941
+WorkspaceDescription=
+Version=1001
+AppVersion=4.1.0
+ModifiedTime=1793821279594
+UnitSystemID=1
+GmtOffset=0
+Extents=-1000.0,1000.0,-1000.0,1000.0
+
+CoordinateInfoBegin
+type=X-Y
+units=null
+unitMult=1.0
+spheroid=null
+CoordinateInfoEnd
+
+Grow Extents=true
+ManagerIndex=11
+
+ManagerProxyBegin
+Name=Untitled
+Description=
+Path=stream.align
+Class=hec.clientapp.model.StreamAlignment
+Index=10
+ModifiedTime=9223372036854775807
+ManagerProxyEnd

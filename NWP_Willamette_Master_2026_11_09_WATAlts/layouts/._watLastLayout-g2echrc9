@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BrowserFrame width="1479" height="903" positionX="224" positionY="92" childWindowCount="0" selectedTabIndex="0">
+  <horizontalDivider location="653" />
+  <verticalDivider location="426" />
+  <statusLine visible="true" />
+  <messageArea visible="true" />
+  <projectTabs visible="true" divider="434" />
+  <ProjectTreeSelections SelectedPath0="root, NWP_Willamette_Master_2026_11_03_WATCapable, Alternatives, FIRO_Base_NoWithdrawals, Simulations (2), FIRO_Base_NoWithdrawals-POR_1935-2019" />
+</BrowserFrame>
+

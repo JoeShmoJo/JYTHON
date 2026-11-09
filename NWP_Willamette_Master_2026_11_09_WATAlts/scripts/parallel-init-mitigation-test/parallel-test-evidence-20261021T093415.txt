@@ -1,0 +1,29 @@
+PARALLEL INITIALIZATION MITIGATION TEST EVIDENCE
+Created: 2026-10-21 09:34:15
+Test start threshold: 10/21/2026 09:35:00
+Root: C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2
+Log directory: C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\rss\E_Test_2\rss
+
+=== MODIFIED SCRIPT HASH ===
+
+
+Path      : C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\externalSVs\ControllerExternalSV
+            .py
+Algorithm : SHA256
+Hash      : 537E086BC82DD070FC4951C1823D35869434766F5D9B1173D90EFB679276A5C9
+
+
+
+
+
+=== LOG FILES MODIFIED AFTER TEST START ===
+No .log files were modified after the supplied test-start time.
+
+=== TEST OPERATOR NOTES ===
+Record manually:
+  - Serial baseline result: pass/fail
+  - Parallel member IDs used
+  - Worker count selected
+  - Parallel result: pass/fail
+  - Whether all intended member outputs were written
+  - Whether any result was accepted or archived: should be NO

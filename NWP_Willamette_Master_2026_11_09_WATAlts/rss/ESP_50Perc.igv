@@ -1,0 +1,5 @@
+ModifiedTime=1710507806570
+GVDataSet Name=ESP_50Perc
+Description=Copy of CMWS NAVD88 network with added junctions and local flows set up for RFC forecast.  Routing data supplied from HEC-RAS models.  Flood zones are the rules from the FIS ResSim model and the conservation/buffer zones rules are from the IRRMBaseline ResSIm model. (Global Variable Data Set)
+
+

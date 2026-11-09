@@ -1,0 +1,651 @@
+TSDataSet Name=Input TS DataSet for FRM_E
+Description=Ensemble version of FRM-Only regime. Simulates many different flood events with different inflows and starting pool. See ../3.7_Synthetics_ResSim_Inputs for a legend on what each run is. 
+
+FRM Baseline Conditions for Willamette FIRO Study. 3 hour timestep suitable for flood event modeling. 
+
+Operations reflect FRM Baseline conditions (see documentation).
+
+Make sure to turn all DSS output off if you want to run a full ensemble on one computer. 
+Otherwise, the output DSS file will get huge and ResSim will choke.
+
+To run this simulation, we have to "trick" ResSim a little bit.
+If we created a simulation traditionally, 
+Ressim will try to extract all timeseries for every ensemble event from the input .dss file with all inflows/elevations.
+This would take a long time.
+Rather than doing that, it is best to do the following:
+1. Set up the ensemble alternative so it is only referencing a single event, like "000001", in the "Ensemble" tab.
+2. Create the simulation:
+	Start date: 01Jan3000 1200
+	Lookback: 01Jan3000 0300
+	End Date: 16Jan3000 0000
+3. In the simulation module, change the "Ensemble" tab of the alternative back to what it should be (e.g. "000001-0017187")
+4. Close down ResSim
+5. Copy the input .dss file with all inputs needed to the "../rss/$SIM_NAME$" folder. This is usually from "../3.7_Synthetics_ResSim_Inputs\out"
+	Rename it "simulation.dss". Delete the existing "simulation.dss" file.
+6. Re-open ResSim and then run
+7. When running multi-thread ensemble compute, Ressim will usually fail before it gets all the way through:
+	Not exactly sure why this happens, likely some memory issue
+	Doesn't have a problem if running single-thread, but much slower.
+8. After the run fails, run the "../scripts/Utilities/PrintMissingEnsembles.py" script.
+	It spits out a string showing all the runs that failed, e.g. "000069-001075, 001084, ..."
+9. Copy this text of the failed runs into the "Ensemble" tab in ResSim in the simulation, and run again
+10. Repeat as many times as needed until all ensemble members are completed. 
+11. The results for each simulation are stored in the "../rss/$SIM_NAME$/PeakExtract.csv", which is appended with every completed ensemble member.
+	If you need to re-run a simulation, delete out this file first, otherwise we'll have duplicates in the file. (TS Data Set)
+
+_type=0
+ParentPath=null
+ParentClass=null
+TSRecord=0
+TSRecord Name=TRSO_Thomas Creek nr Scio
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//3Hour/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=1
+TSRecord Name=Coburg_HMSsub_McKenzieRv_S10
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//COBURG/FLOW-LOC//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=2
+TSRecord Name=HMSsub_NFMFWillametteRv_S10
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//NFORKWILLAMETTE/FLOW-LOC//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=3
+TSRecord Name=HMSsub_MFWillametteRv_S40
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//OAKRIDGE_BELOW_NFORK/FLOW-LOC//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=4
+TSRecord Name=ALBO_ Albany_HMSsub_WillametteRv_S60
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//ALBANY/FLOW-LOC//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=5
+TSRecord Name=OCUO_Oregon City_HMSsub_WillametteRv_S30
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//WILLAMETTE FALLS/FLOW-LOC//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=6
+TSRecord Name=Willamette_at Wilsonville
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//3Hour/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=7
+TSRecord Name=NBGO_Newberg_HMSsub_WillametteRv_S40
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//3Hour/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=8
+TSRecord Name=SLMO_Salem_HMSsub_WillametteRv_S50
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//SALEM/FLOW-LOC//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=9
+TSRecord Name=WTLO_Waterloo_HMSsub_SSantiamRv_S15
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//WATERLOO/FLOW-LOC//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=10
+TSRecord Name=MEHO_Mehama_HMSsub_NSantiamRv_S10
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//MEHAMA/FLOW-LOC//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=11
+TSRecord Name=LSMO_Little North Santiam at Mehama
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//3Hour/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=12
+TSRecord Name=NSJO_Greens Bridge_HMSsub_NSantiamRv_S05
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//GREENS BRIDGE/FLOW-LOC//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=13
+TSRecord Name=No Santiam+So Santiam_Local_NSR_S07
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//3Hour/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=14
+TSRecord Name=No Santiam+So Santiam_Local_SSR_S08
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//3Hour/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=15
+TSRecord Name=JFFO Santiam_at Jefferson loc
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//JEFFERSON/FLOW-LOC//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=16
+TSRecord Name=MNRO_Monroe_HMSsub_LongTomRv_S10
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//MONROE/FLOW-LOC//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=17
+TSRecord Name=HARO_Harrisburg_HMSsub_WillametteRv_S80
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//HARRISBURG/FLOW-LOC//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=18
+TSRecord Name=McKenzie+SF McKenzie_HMSsub_McKenzieRV_S20
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//SFMCKENZIE_CF/FLOW-LOC//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=19
+TSRecord Name=VIDO_Vida_HMSsub_McKenzieRv_S18
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//VIDA/FLOW-LOC//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=20
+TSRecord Name=MCZO_McKenzie nr Walterville_HMSsub_McKenzieRv_S15
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//WALTERVILLE/FLOW-LOC//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=21
+TSRecord Name=EUGO_Willamette at Eugene
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=/ZERO/ZERO/FLOW//3Hour/DUMMY/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=22
+TSRecord Name=GOSO_Goshen_HMSsub_CFWillametteRv_S10
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//GOSHEN/FLOW-LOC//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=23
+TSRecord Name=JASO_Jasper_HMSsub_MFWillametteRv_S10
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//JASPER/FLOW-LOC//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=24
+TSRecord Name=Big Cliff Local Inflow_HMSsub_NSantiamRv_S15
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//BIG CLIFF/FLOW-LOC//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=25
+TSRecord Name=Detroit Inflow
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//DETROIT/FLOW-IN//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=26
+TSRecord Name=Foster Local Inflow_HMSsub_SSantiamRv_S20
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//FOSTER/FLOW-LOC//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=27
+TSRecord Name=Green Peter Inflow_HMSsub_SSantiamRv_S30
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//GREEN PETER/FLOW-IN//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=28
+TSRecord Name=Fern Ridge Inflow_HMSsub_LongTomRv_S20
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//FERN RIDGE/FLOW-IN//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=29
+TSRecord Name=Blue River Inflow_HMSsub_BlueRv_S10
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//BLUE RIVER/FLOW-IN//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=30
+TSRecord Name=Cougar Inflow_HMSsub_SFMcKenzieRv_S10
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//COUGAR/FLOW-IN//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=31
+TSRecord Name=Cottage Grove Inflow_HMSsub_CFWillametteRV_S20
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//COTTAGE GROVE/FLOW-IN//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=32
+TSRecord Name=Dorena Inflow_HMSsub_RowRv_S10
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//DORENA/FLOW-IN//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=33
+TSRecord Name=Fall Creek Inflow_HMSsub_FallCk_S10
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//FALL CREEK/FLOW-IN//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=34
+TSRecord Name=Dexter Local Inflow_HMSsub_MFWillametteRVS20
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//DEXTER/FLOW-LOC//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=35
+TSRecord Name=Lookout Point Local Inflow_HMSsub_MFWillametteRV_S60
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//LOOKOUT POINT/FLOW-LOC//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=36
+TSRecord Name=Hills Creek Inflow_HMSsub_ MFWillametteRv_S60
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//HILLS CREEK/FLOW-IN//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=37
+TSRecord Name=TRBO_Trail Bridge Inflow
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//TRAIL BRIDGE/FLOW-IN//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=38
+TSRecord Name=CANO_Molalla River at Canby_Local_JMolaR_S06
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//CANBY/FLOW-IN//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=39
+TSRecord Name=SUVO_Suver_HMSsub_LuckiamuteRv_S10
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//SUVER/FLOW-IN//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=40
+TSRecord Name=AURO_Pudding River nr Aurora
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//AURORA/FLOW-IN//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=41
+TSRecord Name=MCMO_McMinnville_Local_JYamhR_S01
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//MCMINNVILLE/FLOW-IN//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=42
+TSRecord Name=WSLO_West Linn_HMSsub_TualatinRv_S10
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//WEST LINN/FLOW-IN//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=43
+TSRecord Name=CORO_Corvallis_HMSsub_WillametteRv_S70
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//CORVALLIS/FLOW-LOC//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=44
+TSRecord Name=PHIO_ Philomath_HMSsub_MarysRV_S70
+TSRecord VariableId=4
+TSRecord ParamName=Flow
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//PHILOMATH/FLOW-IN//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=45
+TSRecord Name=Water Year Type
+TSRecord VariableId=85
+TSRecord ParamName=
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//FAKEYEAR3000/STOR//3Hour/FOR_ENSEMBLE_COMPUTE/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=46
+TSRecord Name=~E94:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//DETROIT/ELEV-STARTING//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=47
+TSRecord Name=Detroit - Rule Curve
+TSRecord VariableId=85
+TSRecord ParamName=
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//DETROIT/ELEV-STARTING//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=48
+TSRecord Name=~E99:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//FOSTER/ELEV-STARTING//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=49
+TSRecord Name=Foster - Rule Curve
+TSRecord VariableId=85
+TSRecord ParamName=
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//FOSTER/ELEV-STARTING//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=50
+TSRecord Name=~E104:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//GREEN PETER/ELEV-STARTING//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=51
+TSRecord Name=Green Peter - Rule Curve
+TSRecord VariableId=85
+TSRecord ParamName=
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//GREEN PETER/ELEV-STARTING//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=52
+TSRecord Name=~E109:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//FERN RIDGE/ELEV-STARTING//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=53
+TSRecord Name=Fern Ridge - Rule Curve
+TSRecord VariableId=85
+TSRecord ParamName=
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//FERN RIDGE/ELEV-STARTING//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=54
+TSRecord Name=~E114:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//BLUE RIVER/ELEV-STARTING//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=55
+TSRecord Name=Blue River - Rule Curve
+TSRecord VariableId=85
+TSRecord ParamName=
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//BLUE RIVER/ELEV-STARTING//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=56
+TSRecord Name=~E119:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//COUGAR/ELEV-STARTING//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=57
+TSRecord Name=Cougar - Rule Curve
+TSRecord VariableId=85
+TSRecord ParamName=
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//COUGAR/ELEV-STARTING//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=58
+TSRecord Name=~E124:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//COTTAGE GROVE/ELEV-STARTING//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=59
+TSRecord Name=Cottage Grove - Rule Curve
+TSRecord VariableId=85
+TSRecord ParamName=
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//COTTAGE GROVE/ELEV-STARTING//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=60
+TSRecord Name=~E129:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//DORENA/ELEV-STARTING//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=61
+TSRecord Name=Dorena - Rule Curve
+TSRecord VariableId=85
+TSRecord ParamName=
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//DORENA/ELEV-STARTING//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=62
+TSRecord Name=~E134:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//FALL CREEK/ELEV-STARTING//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=63
+TSRecord Name=Fall Creek - Rule Curve
+TSRecord VariableId=85
+TSRecord ParamName=
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//FALL CREEK/ELEV-STARTING//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=64
+TSRecord Name=~E144:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//LOOKOUT POINT/ELEV-STARTING//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=65
+TSRecord Name=Lookout Point - Rule Curve
+TSRecord VariableId=85
+TSRecord ParamName=
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//LOOKOUT POINT/ELEV-STARTING//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=66
+TSRecord Name=~E149:F
+TSRecord VariableId=14
+TSRecord ParamName=Elev
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//HILLS CREEK/ELEV-STARTING//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+TSRecord=67
+TSRecord Name=Hills Creek - Rule Curve
+TSRecord VariableId=85
+TSRecord ParamName=
+TSRecord DssFilename=shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+TSRecord DssPathname=//HILLS CREEK/ELEV-STARTING//3Hour/C:000001|INPUT/
+TSRecord InputPosition=0
+TSRecord End=
+
+

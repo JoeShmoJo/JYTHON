@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ModelLinking>
+  <Name>
+    FIRO_Test_FIROSpaceNoWithdrawals-POR_1935-2019
+    <ModelAlternative Program="ResSim" Name="ALL_D" File="rss/ALL_D.ralt">
+      <Description>
+        <desc cnt="0" value="All operations (close to real-life as possible), including BiOp and Dam Safety IRRMs." />
+        <desc cnt="1" value="Daily timestep." />
+      </Description>
+      <DataLocations>
+        <DataLocation Name="TRSO_Thomas Creek nr Scio" Class="hec2.model.DataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="ZERO" Class="hec2.model.DssDataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Parameter="FLOW" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Zero Flow record.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="Coburg_HMSsub_McKenzieRv_S10" Class="hec2.model.DataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="ZERO" Class="hec2.model.DssDataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Parameter="FLOW" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Zero Flow record.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="HMSsub_NFMFWillametteRv_S10" Class="hec2.model.DataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="ZERO" Class="hec2.model.DssDataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Parameter="FLOW" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Zero Flow record.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="HMSsub_MFWillametteRv_S40" Class="hec2.model.DataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="ZERO" Class="hec2.model.DssDataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Parameter="FLOW" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Zero Flow record.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="ALBO_ Albany_HMSsub_WillametteRv_S60" Class="hec2.model.DataLocation" DssPath="//ALBANY/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="ALBANY" Class="hec2.model.DssDataLocation" DssPath="//ALBANY/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Parameter="FLOW-LOCAL" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/EIS_1936-2019_Flows_2020-01-08.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="OCUO_Oregon City_HMSsub_WillametteRv_S30" Class="hec2.model.DataLocation" DssPath="//OREGON CITY/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="OREGON CITY" Class="hec2.model.DssDataLocation" DssPath="//OREGON CITY/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Parameter="FLOW-LOCAL" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/EIS_1936-2019_Flows_2020-01-08.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="Willamette_at Wilsonville" Class="hec2.model.DataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="ZERO" Class="hec2.model.DssDataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Parameter="FLOW" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Zero Flow record.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="NBGO_Newberg_HMSsub_WillametteRv_S40" Class="hec2.model.DataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="ZERO" Class="hec2.model.DssDataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Parameter="FLOW" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Zero Flow record.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="SLMO_Salem_HMSsub_WillametteRv_S50" Class="hec2.model.DataLocation" DssPath="//SALEM/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="SALEM" Class="hec2.model.DssDataLocation" DssPath="//SALEM/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Parameter="FLOW-LOCAL" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/EIS_1936-2019_Flows_2020-01-08.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="WTLO_Waterloo_HMSsub_SSantiamRv_S15" Class="hec2.model.DataLocation" DssPath="//WATERLOO/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="WATERLOO" Class="hec2.model.DssDataLocation" DssPath="//WATERLOO/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Parameter="FLOW-LOCAL" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/EIS_1936-2019_Flows_2020-01-08.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="MEHO_Mehama_HMSsub_NSantiamRv_S10" Class="hec2.model.DataLocation" DssPath="//MEHAMA/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="MEHAMA" Class="hec2.model.DssDataLocation" DssPath="//MEHAMA/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Parameter="FLOW-LOCAL" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/EIS_1936-2019_Flows_2020-01-08.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="LSMO_Little North Santiam at Mehama" Class="hec2.model.DataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="ZERO" Class="hec2.model.DssDataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Parameter="FLOW" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Zero Flow record.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="NSJO_Greens Bridge_HMSsub_NSantiamRv_S05" Class="hec2.model.DataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="ZERO" Class="hec2.model.DssDataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Parameter="FLOW" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Zero Flow record.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="No Santiam+So Santiam_Local_NSR_S07" Class="hec2.model.DataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="ZERO" Class="hec2.model.DssDataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Parameter="FLOW" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Zero Flow record.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="No Santiam+So Santiam_Local_SSR_S08" Class="hec2.model.DataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="ZERO" Class="hec2.model.DssDataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Parameter="FLOW" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Zero Flow record.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="JFFO Santiam_at Jefferson loc" Class="hec2.model.DataLocation" DssPath="//JEFFERSON/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="JEFFERSON" Class="hec2.model.DssDataLocation" DssPath="//JEFFERSON/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Parameter="FLOW-LOCAL" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/EIS_1936-2019_Flows_2020-01-08.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="MNRO_Monroe_HMSsub_LongTomRv_S10" Class="hec2.model.DataLocation" DssPath="//MONROE/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="MONROE" Class="hec2.model.DssDataLocation" DssPath="//MONROE/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Parameter="FLOW-LOCAL" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/EIS_1936-2019_Flows_2020-01-08.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="HARO_Harrisburg_HMSsub_WillametteRv_S80" Class="hec2.model.DataLocation" DssPath="//HARRISBURG/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="HARRISBURG" Class="hec2.model.DssDataLocation" DssPath="//HARRISBURG/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Parameter="FLOW-LOCAL" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/EIS_1936-2019_Flows_2020-01-08.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="McKenzie+SF McKenzie_HMSsub_McKenzieRV_S20" Class="hec2.model.DataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="ZERO" Class="hec2.model.DssDataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Parameter="FLOW" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Zero Flow record.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="VIDO_Vida_HMSsub_McKenzieRv_S18" Class="hec2.model.DataLocation" DssPath="//VIDA/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="VIDA" Class="hec2.model.DssDataLocation" DssPath="//VIDA/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Parameter="FLOW-LOCAL" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/EIS_1936-2019_Flows_2020-01-08.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="MCZO_McKenzie nr Walterville_HMSsub_McKenzieRv_S15" Class="hec2.model.DataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="ZERO" Class="hec2.model.DssDataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Parameter="FLOW" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Zero Flow record.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="EUGO_Willamette at Eugene" Class="hec2.model.DataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="ZERO" Class="hec2.model.DssDataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Parameter="FLOW" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Zero Flow record.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="GOSO_Goshen_HMSsub_CFWillametteRv_S10" Class="hec2.model.DataLocation" DssPath="//GOSHEN/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="GOSHEN" Class="hec2.model.DssDataLocation" DssPath="//GOSHEN/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Parameter="FLOW-LOCAL" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/EIS_1936-2019_Flows_2020-01-08.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="JASO_Jasper_HMSsub_MFWillametteRv_S10" Class="hec2.model.DataLocation" DssPath="//JASPER/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="JASPER" Class="hec2.model.DssDataLocation" DssPath="//JASPER/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Parameter="FLOW-LOCAL" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/EIS_1936-2019_Flows_2020-01-08.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="Big Cliff Local Inflow_HMSsub_NSantiamRv_S15" Class="hec2.model.DataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="ZERO" Class="hec2.model.DssDataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Parameter="FLOW" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Zero Flow record.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="Detroit Inflow" Class="hec2.model.DataLocation" DssPath="//DETROIT/FLOW-IN//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="DETROIT" Class="hec2.model.DssDataLocation" DssPath="//DETROIT/FLOW-IN//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Parameter="FLOW-IN" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/EIS_1936-2019_Flows_2020-01-08.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="Foster Local Inflow_HMSsub_SSantiamRv_S20" Class="hec2.model.DataLocation" DssPath="//FOSTER/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="FOSTER" Class="hec2.model.DssDataLocation" DssPath="//FOSTER/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Parameter="FLOW-LOCAL" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/EIS_1936-2019_Flows_2020-01-08.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="Green Peter Inflow_HMSsub_SSantiamRv_S30" Class="hec2.model.DataLocation" DssPath="//GREEN PETER/FLOW-IN//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="GREEN PETER" Class="hec2.model.DssDataLocation" DssPath="//GREEN PETER/FLOW-IN//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Parameter="FLOW-IN" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/EIS_1936-2019_Flows_2020-01-08.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="Fern Ridge Inflow_HMSsub_LongTomRv_S20" Class="hec2.model.DataLocation" DssPath="//FERN RIDGE/FLOW-IN//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="FERN RIDGE" Class="hec2.model.DssDataLocation" DssPath="//FERN RIDGE/FLOW-IN//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Parameter="FLOW-IN" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/EIS_1936-2019_Flows_2020-01-08.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="Blue River Inflow_HMSsub_BlueRv_S10" Class="hec2.model.DataLocation" DssPath="//BLUE RIVER/FLOW-IN//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="BLUE RIVER" Class="hec2.model.DssDataLocation" DssPath="//BLUE RIVER/FLOW-IN//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Parameter="FLOW-IN" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/EIS_1936-2019_Flows_2020-01-08.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="Cougar Inflow_HMSsub_SFMcKenzieRv_S10" Class="hec2.model.DataLocation" DssPath="//COUGAR/FLOW-IN//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="COUGAR" Class="hec2.model.DssDataLocation" DssPath="//COUGAR/FLOW-IN//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Parameter="FLOW-IN" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/EIS_1936-2019_Flows_2020-01-08.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="Cottage Grove Inflow_HMSsub_CFWillametteRV_S20" Class="hec2.model.DataLocation" DssPath="//COTTAGE GROVE/FLOW-IN//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="COTTAGE GROVE" Class="hec2.model.DssDataLocation" DssPath="//COTTAGE GROVE/FLOW-IN//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Parameter="FLOW-IN" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/EIS_1936-2019_Flows_2020-01-08.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="Dorena Inflow_HMSsub_RowRv_S10" Class="hec2.model.DataLocation" DssPath="//DORENA/FLOW-IN//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="DORENA" Class="hec2.model.DssDataLocation" DssPath="//DORENA/FLOW-IN//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Parameter="FLOW-IN" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/EIS_1936-2019_Flows_2020-01-08.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="Fall Creek Inflow_HMSsub_FallCk_S10" Class="hec2.model.DataLocation" DssPath="//FALL CREEK/FLOW-IN//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="FALL CREEK" Class="hec2.model.DssDataLocation" DssPath="//FALL CREEK/FLOW-IN//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Parameter="FLOW-IN" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/EIS_1936-2019_Flows_2020-01-08.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="Dexter Local Inflow_HMSsub_MFWillametteRVS20" Class="hec2.model.DataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="ZERO" Class="hec2.model.DssDataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Parameter="FLOW" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Zero Flow record.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="Lookout Point Local Inflow_HMSsub_MFWillametteRV_S60" Class="hec2.model.DataLocation" DssPath="//LOOKOUT POINT/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="LOOKOUT POINT" Class="hec2.model.DssDataLocation" DssPath="//LOOKOUT POINT/FLOW-LOCAL//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Parameter="FLOW-LOCAL" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/EIS_1936-2019_Flows_2020-01-08.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="Hills Creek Inflow_HMSsub_ MFWillametteRv_S60" Class="hec2.model.DataLocation" DssPath="//HILLS CREEK/FLOW-IN//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="HILLS CREEK" Class="hec2.model.DssDataLocation" DssPath="//HILLS CREEK/FLOW-IN//1DAY/WILLAMETTE_EIS/" ComputeType="Computed" Parameter="FLOW-IN" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/EIS_1936-2019_Flows_2020-01-08.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="TRBO_Trail Bridge Inflow" Class="hec2.model.DataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="ZERO" Class="hec2.model.DssDataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Parameter="FLOW" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Zero Flow record.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="CANO_Molalla River at Canby_Local_JMolaR_S06" Class="hec2.model.DataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="ZERO" Class="hec2.model.DssDataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Parameter="FLOW" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Zero Flow record.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="SUVO_Suver_HMSsub_LuckiamuteRv_S10" Class="hec2.model.DataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="ZERO" Class="hec2.model.DssDataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Parameter="FLOW" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Zero Flow record.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="AURO_Pudding River nr Aurora" Class="hec2.model.DataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="ZERO" Class="hec2.model.DssDataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Parameter="FLOW" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Zero Flow record.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="MCMO_McMinnville_Local_JYamhR_S01" Class="hec2.model.DataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="ZERO" Class="hec2.model.DssDataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Parameter="FLOW" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Zero Flow record.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="WSLO_West Linn_HMSsub_TualatinRv_S10" Class="hec2.model.DataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="ZERO" Class="hec2.model.DssDataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Parameter="FLOW" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Zero Flow record.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="CORO_Corvallis_HMSsub_WillametteRv_S70" Class="hec2.model.DataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="ZERO" Class="hec2.model.DssDataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Parameter="FLOW" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Zero Flow record.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="PHIO_ Philomath_HMSsub_MarysRV_S70" Class="hec2.model.DataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Model="DSS File" Parameter="Known Flow" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="ZERO" Class="hec2.model.DssDataLocation" DssPath="/ZERO/ZERO/FLOW//1DAY/DUMMY/" ComputeType="Computed" Parameter="FLOW" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Zero Flow record.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="Water Year Type" Class="hec2.model.DataLocation" DssPath="//WY_TYPE_STORAGE/STOR-MAF//1DAY/BASELINE09DEC2025/" ComputeType="Computed" Model="DSS File" Parameter="Input Time Series" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="WY_TYPE_STORAGE" Class="hec2.model.DssDataLocation" DssPath="//WY_TYPE_STORAGE/STOR-MAF//1DAY/BASELINE09DEC2025/" ComputeType="Computed" Parameter="STOR-MAF" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/WY_Classification.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="Detroit - Rule Curve" Class="hec2.model.DataLocation" DssPath="//DETROIT/ELEV//1DAY/RULE CURVE/" ComputeType="Computed" Model="DSS File" Parameter="Input Time Series" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="DETROIT" Class="hec2.model.DssDataLocation" DssPath="//DETROIT/ELEV//1DAY/RULE CURVE/" ComputeType="Computed" Parameter="ELEV" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Willamette_Rule_Curves.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="Foster - Rule Curve" Class="hec2.model.DataLocation" DssPath="//FOSTER/ELEV//1DAY/RULE CURVE/" ComputeType="Computed" Model="DSS File" Parameter="Input Time Series" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="FOSTER" Class="hec2.model.DssDataLocation" DssPath="//FOSTER/ELEV//1DAY/RULE CURVE/" ComputeType="Computed" Parameter="ELEV" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Willamette_Rule_Curves.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="Green Peter - Rule Curve" Class="hec2.model.DataLocation" DssPath="//GREEN PETER/ELEV//1DAY/RULE CURVE/" ComputeType="Computed" Model="DSS File" Parameter="Input Time Series" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="GREEN PETER" Class="hec2.model.DssDataLocation" DssPath="//GREEN PETER/ELEV//1DAY/RULE CURVE/" ComputeType="Computed" Parameter="ELEV" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Willamette_Rule_Curves.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="Fern Ridge - Rule Curve" Class="hec2.model.DataLocation" DssPath="//FERN RIDGE/ELEV//1DAY/RULE CURVE/" ComputeType="Computed" Model="DSS File" Parameter="Input Time Series" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="FERN RIDGE" Class="hec2.model.DssDataLocation" DssPath="//FERN RIDGE/ELEV//1DAY/RULE CURVE/" ComputeType="Computed" Parameter="ELEV" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Willamette_Rule_Curves.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="Blue River - Rule Curve" Class="hec2.model.DataLocation" DssPath="//BLUE RIVER/ELEV//1DAY/RULE CURVE/" ComputeType="Computed" Model="DSS File" Parameter="Input Time Series" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="BLUE RIVER" Class="hec2.model.DssDataLocation" DssPath="//BLUE RIVER/ELEV//1DAY/RULE CURVE/" ComputeType="Computed" Parameter="ELEV" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Willamette_Rule_Curves.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="Cougar - Rule Curve" Class="hec2.model.DataLocation" DssPath="//COUGAR/ELEV//1DAY/RULE CURVE/" ComputeType="Computed" Model="DSS File" Parameter="Input Time Series" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="COUGAR" Class="hec2.model.DssDataLocation" DssPath="//COUGAR/ELEV//1DAY/RULE CURVE/" ComputeType="Computed" Parameter="ELEV" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Willamette_Rule_Curves.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="Cottage Grove - Rule Curve" Class="hec2.model.DataLocation" DssPath="//COTTAGE GROVE/ELEV//1DAY/RULE CURVE/" ComputeType="Computed" Model="DSS File" Parameter="Input Time Series" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="COTTAGE GROVE" Class="hec2.model.DssDataLocation" DssPath="//COTTAGE GROVE/ELEV//1DAY/RULE CURVE/" ComputeType="Computed" Parameter="ELEV" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Willamette_Rule_Curves.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="Dorena - Rule Curve" Class="hec2.model.DataLocation" DssPath="//DORENA/ELEV//1DAY/RULE CURVE/" ComputeType="Computed" Model="DSS File" Parameter="Input Time Series" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="DORENA" Class="hec2.model.DssDataLocation" DssPath="//DORENA/ELEV//1DAY/RULE CURVE/" ComputeType="Computed" Parameter="ELEV" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Willamette_Rule_Curves.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="Fall Creek - Rule Curve" Class="hec2.model.DataLocation" DssPath="//FALL CREEK/ELEV//1DAY/RULE CURVE/" ComputeType="Computed" Model="DSS File" Parameter="Input Time Series" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="FALL CREEK" Class="hec2.model.DssDataLocation" DssPath="//FALL CREEK/ELEV//1DAY/RULE CURVE/" ComputeType="Computed" Parameter="ELEV" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Willamette_Rule_Curves.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="Lookout Point - Rule Curve" Class="hec2.model.DataLocation" DssPath="//LOOKOUT POINT/ELEV//1DAY/RULE CURVE/" ComputeType="Computed" Model="DSS File" Parameter="Input Time Series" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="LOOKOUT POINT" Class="hec2.model.DssDataLocation" DssPath="//LOOKOUT POINT/ELEV//1DAY/RULE CURVE/" ComputeType="Computed" Parameter="ELEV" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Willamette_Rule_Curves.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+        <DataLocation Name="Hills Creek - Rule Curve" Class="hec2.model.DataLocation" DssPath="//HILLS CREEK/ELEV//1DAY/RULE CURVE/" ComputeType="Computed" Model="DSS File" Parameter="Input Time Series" OutOfDate="false" PrevModelIndex="0">
+          <ModelAlternative Name="ALL_D" Program="ResSim" />
+          <DownStreamLocation>
+            <DataLocation Name="HILLS CREEK" Class="hec2.model.DssDataLocation" DssPath="//HILLS CREEK/ELEV//1DAY/RULE CURVE/" ComputeType="Computed" Parameter="ELEV" OutOfDate="false" PrevModelIndex="0">
+              <DssFile>shared/Willamette_Rule_Curves.dss</DssFile>
+            </DataLocation>
+          </DownStreamLocation>
+        </DataLocation>
+      </DataLocations>
+    </ModelAlternative>
+  </Name>
+</ModelLinking>
+

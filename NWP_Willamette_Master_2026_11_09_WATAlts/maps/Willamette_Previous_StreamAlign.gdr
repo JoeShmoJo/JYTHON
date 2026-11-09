@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ShapefileProperties>
+  <DefaultRGB>-16776961</DefaultRGB>
+  <HighlightRGB>-65536</HighlightRGB>
+  <DrawUsingDefaultColor>true</DrawUsingDefaultColor>
+  <DrawLabels>false</DrawLabels>
+  <DrawLines>true</DrawLines>
+  <DrawArea>true</DrawArea>
+  <Alpha>75.0</Alpha>
+  <BorderColor>black</BorderColor>
+  <BorderWidth>1</BorderWidth>
+  <BorderStyle />
+  <FillColor>blue</FillColor>
+  <FillStyle>Solid</FillStyle>
+  <SymbolDrawType>0</SymbolDrawType>
+  <PolygonDrawType>0</PolygonDrawType>
+  <LabelFont Name="SansSerif" Style="0" Size="12" />
+  <DisplayFieldIndex>0</DisplayFieldIndex>
+  <ColorContourStartColor>blue</ColorContourStartColor>
+  <ColorContourEndColor>red</ColorContourEndColor>
+  <NumContourSteps>10</NumContourSteps>
+  <LabelRotation>0.0</LabelRotation>
+  <LabelPosition>0</LabelPosition>
+  <LabelFieldIndex>-1</LabelFieldIndex>
+  <PointSize>5</PointSize>
+  <SymbolIndex>0</SymbolIndex>
+  <UseGradations>false</UseGradations>
+  <NumGradations>5</NumGradations>
+  <AttributeMap>
+    <Entry>
+      <Field>
+        <Value>Quartzville Creek</Value>
+        <Hash>1226175731</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Oswego Creek</Value>
+        <Hash>1168050550</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Winberry Creek</Value>
+        <Hash>-922071530</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Johnson Creek</Value>
+        <Hash>1462512643</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Middle Santiam River</Value>
+        <Hash>46927618</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Tualatin River</Value>
+        <Hash>702699504</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Columbia River</Value>
+        <Hash>2058530382</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Molalla River</Value>
+        <Hash>438911766</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Hills Creek</Value>
+        <Hash>1883021678</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Coast Fork Willamette River</Value>
+        <Hash>-1258701666</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Willamette River</Value>
+        <Hash>2017611594</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Wiley Creek</Value>
+        <Hash>-1881127894</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Long Tom River</Value>
+        <Hash>-1432550150</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>South Fork McKenzie River</Value>
+        <Hash>2016230767</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Row River</Value>
+        <Hash>1524870150</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>North Santiam River</Value>
+        <Hash>-1680454094</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Marys River</Value>
+        <Hash>2000814244</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Salt Creek</Value>
+        <Hash>1737496754</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Blue River</Value>
+        <Hash>467467974</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Santiam River</Value>
+        <Hash>-669927891</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Pudding River</Value>
+        <Hash>-1712495511</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>North Yamhill River</Value>
+        <Hash>1817782103</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Clackamas River</Value>
+        <Hash>1861409802</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Mill Creek</Value>
+        <Hash>-1463218184</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Yamhill River</Value>
+        <Hash>-1466658990</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Middle Fork Willamette River</Value>
+        <Hash>-517414243</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>South Santiam River</Value>
+        <Hash>-1842884358</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Fish Creek</Value>
+        <Hash>-27900620</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>McKenzie River</Value>
+        <Hash>-2125231772</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Calapooia River</Value>
+        <Hash>-561580319</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Fall Creek</Value>
+        <Hash>1487110167</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Rickreall Creek</Value>
+        <Hash>462105195</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>South Yamhill River</Value>
+        <Hash>1655351839</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Multnomah Channel</Value>
+        <Hash>714120806</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Luckiamute River</Value>
+        <Hash>-1755552114</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Scoggins Creek</Value>
+        <Hash>1877673963</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+    <Entry>
+      <Field>
+        <Value>Oak Grove Fork Clackamas River</Value>
+        <Hash>-1870132192</Hash>
+        <FieldType>C</FieldType>
+      </Field>
+      <DrawingAttribute>
+        <DrawingColor>blue</DrawingColor>
+        <BrushSize>1.0</BrushSize>
+      </DrawingAttribute>
+    </Entry>
+  </AttributeMap>
+</ShapefileProperties>
+

@@ -1,0 +1,347 @@
+PARALLEL INITIALIZATION MITIGATION TEST EVIDENCE
+Created: 2026-10-21 09:31:45
+Test start threshold: 
+Root: C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2
+Log directory: C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\rss\E_Test_2\rss
+
+=== MODIFIED SCRIPT HASH ===
+
+
+Path      : C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\externalSVs\ControllerExternalSV
+            .py
+Algorithm : SHA256
+Hash      : 537E086BC82DD070FC4951C1823D35869434766F5D9B1173D90EFB679276A5C9
+
+
+
+
+
+=== LOG FILES MODIFIED AFTER TEST START ===
+
+Name              LastWriteTime         Length
+----              -------------         ------
+Con_Season01.log  10/21/2026 9:27:34 AM 296868
+Con_Season02.log  10/21/2026 9:27:34 AM 290538
+Con_Season03.log  10/21/2026 9:27:34 AM 293811
+Con_Season04.log  10/21/2026 9:27:34 AM 295292
+Con_Season05.log  10/21/2026 9:27:34 AM 295242
+Con_Season06.log  10/21/2026 9:27:34 AM 289417
+Con_Season07.log  10/21/2026 9:27:34 AM 295166
+Con_Season08.log  10/21/2026 9:27:34 AM 296868
+Con_Season09.log  10/21/2026 9:27:34 AM 295114
+Con_Season010.log 10/21/2026 9:27:34 AM 301585
+Con_Season011.log 10/21/2026 9:27:34 AM 293663
+Con_Season0.log   10/21/2026 9:31:07 AM 571844
+
+
+
+
+=== ERROR/TRACEBACK HITS ===
+
+===== C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\rss\E_Test_2\rss\Con_Season01.log =====
+LINE 9470: T-1 ERROR Ensemble Compute exception during computing java.lang.RuntimeException: Traceback (most recent call last):
+  PRE: T-1 ElementGraph: Order 169, Block  89,  Elem  Tualitan+Scoggins to Willamette+Tualatin
+  PRE: 
+  PRE: T-1 ElementGraph: Order 170, Block  90,  Elem  Willamette+Tualatin
+  PRE: 
+  PRE: T-1 ElementGraph: Order 171, Block  91,  Elem  Willamette+Tualatin to Willamette_abv Falls at Oregon City
+  PRE: 
+  PRE: T-1 ElementGraph: Order 172, Block  92,  Elem  Willamette_abv Falls at Oregon City
+  PRE: 
+  PRE: T-1 ElementGraph: Order 173, Block  93,  Elem  Willamette_abv Falls at Oregon City to Willamette Falls
+  PRE: 
+  PRE: T-1 ElementGraph: Order 174, Block  94,  Elem  Willamette Falls
+  PRE: 
+  POST:   File "<script>", line 1, in <module>
+  POST:   File "C:/Projects/FIRO/watershed/NWP_Willamette_Master_2026_10_21_RTS_V2/rss/E_Test_2/rss/networks/Con_Season0_Default/scripts/Big_Cliff__DUMMY__Initialize_ControllerExternalSV.py", line 33, in initRuleScript
+  POST:     ControllerExternalSV.initialization(currentVariable, network)
+  POST:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\externalSVs\ControllerExternalSV.py", line 150, in initialization
+  POST:     sv = self.createExternalSV(svName, network)
+  POST:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\externalSVs\ControllerExternalSV.py", line 332, in createExternalSV
+  POST:     thisSV.initialization(network, stateVar)
+  POST:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\externalSVs\Alternative_Setup.py", line 135, in initialization
+  POST:     configDict.update(alternative_overrides(network))
+  POST:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\standalone_baseline_runtime.py", line 84, in alternative_overrides
+  POST:     found = active(network)
+  POST:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\standalone_baseline_runtime.py", line 73, in active
+  POST:     if digest(os.path.join(source, relative)) != expected:
+  POST:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\standalone_baseline_runtime.py", line 35, in digest
+  POST:     for block in iter(lambda: handle.read(1024 * 1024), b''):
+  POST: java.lang.NullPointerException: Cannot invoke "org.python.core.PySystemState.unregisterCloser(java.util.concurrent.Callable)" because "this.sys" is null
+  POST: 	at org.python.core.PyFile$Closer.close(PyFile.java:716)
+  POST: 	at org.python.core.PyFile.file_close(PyFile.java:554)
+  POST: 	at org.python.core.PyFile.close(PyFile.java:562)
+  POST: 	at org.python.core.PyFile.file___exit__(PyFile.java:567)
+----
+LINE 9486: java.lang.NullPointerException: Cannot invoke "org.python.core.PySystemState.unregisterCloser(java.util.concurrent.Callable)" because "this.sys" is null
+  PRE:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\externalSVs\ControllerExternalSV.py", line 150, in initialization
+  PRE:     sv = self.createExternalSV(svName, network)
+  PRE:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\externalSVs\ControllerExternalSV.py", line 332, in createExternalSV
+  PRE:     thisSV.initialization(network, stateVar)
+  PRE:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\externalSVs\Alternative_Setup.py", line 135, in initialization
+  PRE:     configDict.update(alternative_overrides(network))
+  PRE:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\standalone_baseline_runtime.py", line 84, in alternative_overrides
+  PRE:     found = active(network)
+  PRE:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\standalone_baseline_runtime.py", line 73, in active
+  PRE:     if digest(os.path.join(source, relative)) != expected:
+  PRE:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\standalone_baseline_runtime.py", line 35, in digest
+  PRE:     for block in iter(lambda: handle.read(1024 * 1024), b''):
+  POST: 	at org.python.core.PyFile$Closer.close(PyFile.java:716)
+  POST: 	at org.python.core.PyFile.file_close(PyFile.java:554)
+  POST: 	at org.python.core.PyFile.close(PyFile.java:562)
+  POST: 	at org.python.core.PyFile.file___exit__(PyFile.java:567)
+  POST: 	at org.python.core.PyFile$file___exit___exposer.__call__(Unknown Source)
+  POST: 	at org.python.core.PyObject.__call__(PyObject.java:498)
+  POST: 	at org.python.core.ContextGuard.__exit__(ContextGuard.java:29)
+  POST: 	at standalone_baseline_runtime$py.digest$1(C:/Projects/FIRO/watershed/NWP_Willamette_Master_2026_10_19_RTS_V1/scripts/standalone_baseline_runtime.py:37)
+  POST: 	at standalone_baseline_runtime$py.call_function(C:/Projects/FIRO/watershed/NWP_Willamette_Master_2026_10_19_RTS_V1/scripts/standalone_baseline_runtime.py)
+  POST: 	at org.python.core.PyTableCode.call(PyTableCode.java:173)
+  POST: 	at org.python.core.PyBaseCode.call(PyBaseCode.java:134)
+  POST: 	at org.python.core.PyFunction.__call__(PyFunction.java:416)
+  POST: 	at standalone_baseline_runtime$py.active$3(C:/Projects/FIRO/watershed/NWP_Willamette_Master_2026_10_19_RTS_V1/scripts/standalone_baseline_runtime.py:80)
+  POST: 	at standalone_baseline_runtime$py.call_function(C:/Projects/FIRO/watershed/NWP_Willamette_Master_2026_10_19_RTS_V1/scripts/standalone_baseline_runtime.py)
+  POST: 	at org.python.core.PyTableCode.call(PyTableCode.java:173)
+  POST: 	at org.python.core.PyBaseCode.call(PyBaseCode.java:134)
+  POST: 	at org.python.core.PyFunction.__call__(PyFunction.java:416)
+  POST: 	at standalone_baseline_runtime$py.alternative_overrides$4(C:/Projects/FIRO/watershed/NWP_Willamette_Master_2026_10_19_RTS_V1/scripts/standalone_baseline_runtime.py:97)
+  POST: 	at standalone_baseline_runtime$py.call_function(C:/Projects/FIRO/watershed/NWP_Willamette_Master_2026_10_19_RTS_V1/scripts/standalone_baseline_runtime.py)
+  POST: 	at org.python.core.PyTableCode.call(PyTableCode.java:173)
+----
+LINE 9487: 	at org.python.core.PyFile$Closer.close(PyFile.java:716)
+  PRE:     sv = self.createExternalSV(svName, network)
+  PRE:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\externalSVs\ControllerExternalSV.py", line 332, in createExternalSV
+  PRE:     thisSV.initialization(network, stateVar)
+  PRE:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\externalSVs\Alternative_Setup.py", line 135, in initialization
+  PRE:     configDict.update(alternative_overrides(network))
+  PRE:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\standalone_baseline_runtime.py", line 84, in alternative_overrides
+  PRE:     found = active(network)
+  PRE:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\standalone_baseline_runtime.py", line 73, in active
+  PRE:     if digest(os.path.join(source, relative)) != expected:
+  PRE:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\standalone_baseline_runtime.py", line 35, in digest
+  PRE:     for block in iter(lambda: handle.read(1024 * 1024), b''):
+  PRE: java.lang.NullPointerException: Cannot invoke "org.python.core.PySystemState.unregisterCloser(java.util.concurrent.Callable)" because "this.sys" is null
+  POST: 	at org.python.core.PyFile.file_close(PyFile.java:554)
+  POST: 	at org.python.core.PyFile.close(PyFile.java:562)
+  POST: 	at org.python.core.PyFile.file___exit__(PyFile.java:567)
+  POST: 	at org.python.core.PyFile$file___exit___exposer.__call__(Unknown Source)
+  POST: 	at org.python.core.PyObject.__call__(PyObject.java:498)
+  POST: 	at org.python.core.ContextGuard.__exit__(ContextGuard.java:29)
+  POST: 	at standalone_baseline_runtime$py.digest$1(C:/Projects/FIRO/watershed/NWP_Willamette_Master_2026_10_19_RTS_V1/scripts/standalone_baseline_runtime.py:37)
+  POST: 	at standalone_baseline_runtime$py.call_function(C:/Projects/FIRO/watershed/NWP_Willamette_Master_2026_10_19_RTS_V1/scripts/standalone_baseline_runtime.py)
+  POST: 	at org.python.core.PyTableCode.call(PyTableCode.java:173)
+  POST: 	at org.python.core.PyBaseCode.call(PyBaseCode.java:134)
+  POST: 	at org.python.core.PyFunction.__call__(PyFunction.java:416)
+  POST: 	at standalone_baseline_runtime$py.active$3(C:/Projects/FIRO/watershed/NWP_Willamette_Master_2026_10_19_RTS_V1/scripts/standalone_baseline_runtime.py:80)
+  POST: 	at standalone_baseline_runtime$py.call_function(C:/Projects/FIRO/watershed/NWP_Willamette_Master_2026_10_19_RTS_V1/scripts/standalone_baseline_runtime.py)
+  POST: 	at org.python.core.PyTableCode.call(PyTableCode.java:173)
+  POST: 	at org.python.core.PyBaseCode.call(PyBaseCode.java:134)
+  POST: 	at org.python.core.PyFunction.__call__(PyFunction.java:416)
+  POST: 	at standalone_baseline_runtime$py.alternative_overrides$4(C:/Projects/FIRO/watershed/NWP_Willamette_Master_2026_10_19_RTS_V1/scripts/standalone_baseline_runtime.py:97)
+  POST: 	at standalone_baseline_runtime$py.call_function(C:/Projects/FIRO/watershed/NWP_Willamette_Master_2026_10_19_RTS_V1/scripts/standalone_baseline_runtime.py)
+  POST: 	at org.python.core.PyTableCode.call(PyTableCode.java:173)
+  POST: 	at org.python.core.PyBaseCode.call(PyBaseCode.java:134)
+----
+LINE 9488: 	at org.python.core.PyFile.file_close(PyFile.java:554)
+  PRE:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\externalSVs\ControllerExternalSV.py", line 332, in createExternalSV
+  PRE:     thisSV.initialization(network, stateVar)
+  PRE:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\externalSVs\Alternative_Setup.py", line 135, in initialization
+  PRE:     configDict.update(alternative_overrides(network))
+  PRE:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\standalone_baseline_runtime.py", line 84, in alternative_overrides
+  PRE:     found = active(network)
+  PRE:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\standalone_baseline_runtime.py", line 73, in active
+  PRE:     if digest(os.path.join(source, relative)) != expected:
+  PRE:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\standalone_baseline_runtime.py", line 35, in digest
+  PRE:     for block in iter(lambda: handle.read(1024 * 1024), b''):
+  PRE: java.lang.NullPointerException: Cannot invoke "org.python.core.PySystemState.unregisterCloser(java.util.concurrent.Callable)" because "this.sys" is null
+  PRE: 	at org.python.core.PyFile$Closer.close(PyFile.java:716)
+  POST: 	at org.python.core.PyFile.close(PyFile.java:562)
+  POST: 	at org.python.core.PyFile.file___exit__(PyFile.java:567)
+  POST: 	at org.python.core.PyFile$file___exit___exposer.__call__(Unknown Source)
+  POST: 	at org.python.core.PyObject.__call__(PyObject.java:498)
+  POST: 	at org.python.core.ContextGuard.__exit__(ContextGuard.java:29)
+  POST: 	at standalone_baseline_runtime$py.digest$1(C:/Projects/FIRO/watershed/NWP_Willamette_Master_2026_10_19_RTS_V1/scripts/standalone_baseline_runtime.py:37)
+  POST: 	at standalone_baseline_runtime$py.call_function(C:/Projects/FIRO/watershed/NWP_Willamette_Master_2026_10_19_RTS_V1/scripts/standalone_baseline_runtime.py)
+  POST: 	at org.python.core.PyTableCode.call(PyTableCode.java:173)
+  POST: 	at org.python.core.PyBaseCode.call(PyBaseCode.java:134)
+  POST: 	at org.python.core.PyFunction.__call__(PyFunction.java:416)
+  POST: 	at standalone_baseline_runtime$py.active$3(C:/Projects/FIRO/watershed/NWP_Willamette_Master_2026_10_19_RTS_V1/scripts/standalone_baseline_runtime.py:80)
+  POST: 	at standalone_baseline_runtime$py.call_function(C:/Projects/FIRO/watershed/NWP_Willamette_Master_2026_10_19_RTS_V1/scripts/standalone_baseline_runtime.py)
+  POST: 	at org.python.core.PyTableCode.call(PyTableCode.java:173)
+  POST: 	at org.python.core.PyBaseCode.call(PyBaseCode.java:134)
+  POST: 	at org.python.core.PyFunction.__call__(PyFunction.java:416)
+  POST: 	at standalone_baseline_runtime$py.alternative_overrides$4(C:/Projects/FIRO/watershed/NWP_Willamette_Master_2026_10_19_RTS_V1/scripts/standalone_baseline_runtime.py:97)
+  POST: 	at standalone_baseline_runtime$py.call_function(C:/Projects/FIRO/watershed/NWP_Willamette_Master_2026_10_19_RTS_V1/scripts/standalone_baseline_runtime.py)
+  POST: 	at org.python.core.PyTableCode.call(PyTableCode.java:173)
+  POST: 	at org.python.core.PyBaseCode.call(PyBaseCode.java:134)
+  POST: 	at org.python.core.PyFunction.__call__(PyFunction.java:416)
+----
+LINE 9558: java.lang.NullPointerException: java.lang.NullPointerException: Cannot invoke "org.python.core.PySystemState.unregisterCloser(java.util.concurrent.Callable)" because "this.sys" is null
+  PRE: 	at hec.rss.model.RssRun.regCompute(Unknown Source)
+  PRE: 	at hec.rss.plugins.ensemble.model.EnsembleAltPluginData.compute(Unknown Source)
+  PRE: 	at hec.rss.model.RssAlt.compute(Unknown Source)
+  PRE: 	at hec.rss.model.RssRun.compute(Unknown Source)
+  PRE: 	at hec.rss.model.RssRun.call(Unknown Source)
+  PRE: 	at hec.rss.model.RssRun.call(Unknown Source)
+  PRE: 	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+  PRE: 	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572)
+  PRE: 	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+  PRE: 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+  PRE: 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+  PRE: 	at java.base/java.lang.Thread.run(Thread.java:1583)
+  POST: 
+  POST: 
+  POST: T-1 ResSim Compute Complete
+  POST: T-1 Total Compute Time 11 Seconds.
+  POST: 
+  POST: T-1 ERROR ResSim Compute Failed
+  POST: 
+----
+LINE 9564: T-1 ERROR ResSim Compute Failed
+  PRE: 	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+  PRE: 	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572)
+  PRE: 	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+  PRE: 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+  PRE: 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+  PRE: 	at java.base/java.lang.Thread.run(Thread.java:1583)
+  PRE: java.lang.NullPointerException: java.lang.NullPointerException: Cannot invoke "org.python.core.PySystemState.unregisterCloser(java.util.concurrent.Callable)" because "this.sys" is null
+  PRE: 
+  PRE: 
+  PRE: T-1 ResSim Compute Complete
+  PRE: T-1 Total Compute Time 11 Seconds.
+  PRE: 
+  POST: 
+----
+
+===== C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\rss\E_Test_2\rss\Con_Season02.log =====
+LINE 9470: T-2 ERROR Ensemble Compute exception during computing java.lang.RuntimeException: Traceback (most recent call last):
+  PRE: T-2 ElementGraph: Order 169, Block  89,  Elem  Tualitan+Scoggins to Willamette+Tualatin
+  PRE: 
+  PRE: T-2 ElementGraph: Order 170, Block  90,  Elem  Willamette+Tualatin
+  PRE: 
+  PRE: T-2 ElementGraph: Order 171, Block  91,  Elem  Willamette+Tualatin to Willamette_abv Falls at Oregon City
+  PRE: 
+  PRE: T-2 ElementGraph: Order 172, Block  92,  Elem  Willamette_abv Falls at Oregon City
+  PRE: 
+  PRE: T-2 ElementGraph: Order 173, Block  93,  Elem  Willamette_abv Falls at Oregon City to Willamette Falls
+  PRE: 
+  PRE: T-2 ElementGraph: Order 174, Block  94,  Elem  Willamette Falls
+  PRE: 
+  POST:   File "<script>", line 1, in <module>
+  POST:   File "C:/Projects/FIRO/watershed/NWP_Willamette_Master_2026_10_21_RTS_V2/rss/E_Test_2/rss/networks/Con_Season0_Default/scripts/Detroit_Secondary_Flood_Draft_Limit.py", line 11, in initRuleScript
+  POST:     return SecondaryFloodDraftLimit.initRuleScript(currentRule, network)
+  POST:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\externalRules\SecondaryFloodDraftLimit.py", line 108, in initRuleScript
+  POST:     return initialize_rule("SecondaryFloodDraftLimit", currentRule, network, globals())
+  POST:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\standalone_baseline_runtime.py", line 167, in initialize_rule
+  POST:     outcome = module.initRuleScript(rule, network)
+  POST:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\externalRules\SecondaryFloodDraftLimit.py", line 62, in initRuleScript
+  POST:     resvConfig = loadReservoirConfig(csvFileName)
+  POST:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\externalRules\SecondaryFloodDraftLimit.py", line 40, in loadReservoirConfig
+  POST:     lines = fileOpenReadClose(configCSV)
+  POST:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\NWDJyLib\cFile.py", line 70, in fileOpenReadClose
+  POST:     txtLines = txtFile.readlines()
+  POST: IOError: java.nio.channels.ClosedChannelException
+  POST: 
+  POST: 
+  POST: T-2 ResSim Compute Complete
+  POST: T-2 Total Compute Time 11 Seconds.
+  POST: 
+  POST: T-2 ERROR ResSim Compute Failed
+----
+LINE 9484: IOError: java.nio.channels.ClosedChannelException
+  PRE:   File "C:/Projects/FIRO/watershed/NWP_Willamette_Master_2026_10_21_RTS_V2/rss/E_Test_2/rss/networks/Con_Season0_Default/scripts/Detroit_Secondary_Flood_Draft_Limit.py", line 11, in initRuleScript
+  PRE:     return SecondaryFloodDraftLimit.initRuleScript(currentRule, network)
+  PRE:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\externalRules\SecondaryFloodDraftLimit.py", line 108, in initRuleScript
+  PRE:     return initialize_rule("SecondaryFloodDraftLimit", currentRule, network, globals())
+  PRE:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\standalone_baseline_runtime.py", line 167, in initialize_rule
+  PRE:     outcome = module.initRuleScript(rule, network)
+  PRE:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\externalRules\SecondaryFloodDraftLimit.py", line 62, in initRuleScript
+  PRE:     resvConfig = loadReservoirConfig(csvFileName)
+  PRE:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\externalRules\SecondaryFloodDraftLimit.py", line 40, in loadReservoirConfig
+  PRE:     lines = fileOpenReadClose(configCSV)
+  PRE:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\NWDJyLib\cFile.py", line 70, in fileOpenReadClose
+  PRE:     txtLines = txtFile.readlines()
+  POST: 
+  POST: 
+  POST: T-2 ResSim Compute Complete
+  POST: T-2 Total Compute Time 11 Seconds.
+  POST: 
+  POST: T-2 ERROR ResSim Compute Failed
+  POST: 
+----
+LINE 9490: T-2 ERROR ResSim Compute Failed
+  PRE:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\externalRules\SecondaryFloodDraftLimit.py", line 62, in initRuleScript
+  PRE:     resvConfig = loadReservoirConfig(csvFileName)
+  PRE:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\externalRules\SecondaryFloodDraftLimit.py", line 40, in loadReservoirConfig
+  PRE:     lines = fileOpenReadClose(configCSV)
+  PRE:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\NWDJyLib\cFile.py", line 70, in fileOpenReadClose
+  PRE:     txtLines = txtFile.readlines()
+  PRE: IOError: java.nio.channels.ClosedChannelException
+  PRE: 
+  PRE: 
+  PRE: T-2 ResSim Compute Complete
+  PRE: T-2 Total Compute Time 11 Seconds.
+  PRE: 
+  POST: 
+----
+
+===== C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\rss\E_Test_2\rss\Con_Season03.log =====
+LINE 9470: T-3 ERROR Ensemble Compute exception during computing java.lang.RuntimeException: Traceback (most recent call last):
+  PRE: T-3 ElementGraph: Order 169, Block  89,  Elem  Tualitan+Scoggins to Willamette+Tualatin
+  PRE: 
+  PRE: T-3 ElementGraph: Order 170, Block  90,  Elem  Willamette+Tualatin
+  PRE: 
+  PRE: T-3 ElementGraph: Order 171, Block  91,  Elem  Willamette+Tualatin to Willamette_abv Falls at Oregon City
+  PRE: 
+  PRE: T-3 ElementGraph: Order 172, Block  92,  Elem  Willamette_abv Falls at Oregon City
+  PRE: 
+  PRE: T-3 ElementGraph: Order 173, Block  93,  Elem  Willamette_abv Falls at Oregon City to Willamette Falls
+  PRE: 
+  PRE: T-3 ElementGraph: Order 174, Block  94,  Elem  Willamette Falls
+  PRE: 
+  POST:   File "<script>", line 1, in <module>
+  POST:   File "C:/Projects/FIRO/watershed/NWP_Willamette_Master_2026_10_21_RTS_V2/rss/E_Test_2/rss/networks/Con_Season0_Default/scripts/Detroit_No_Draft.py", line 11, in initRuleScript
+  POST:     return NoDraft.initRuleScript(currentRule, network)
+  POST:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\externalRules\NoDraft.py", line 95, in initRuleScript
+  POST:     return initialize_rule("NoDraft", currentRule, network, globals())
+  POST:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\standalone_baseline_runtime.py", line 182, in initialize_rule
+  POST:     json.dump({'configuration_id': pointer['id'], 'member': int(match.group(1)) if match else None,
+  POST: java.lang.NullPointerException: Cannot invoke "org.python.core.PySystemState.unregisterCloser(java.util.concurrent.Callable)" because "this.sys" is null
+  POST: 	at org.python.core.PyFile$Closer.close(PyFile.java:716)
+  POST: 	at org.python.core.PyFile.file_close(PyFile.java:554)
+  POST: 	at org.python.core.PyFile.close(PyFile.java:562)
+  POST: 	at org.python.core.PyFile.file___exit__(PyFile.java:567)
+  POST: 	at org.python.core.PyFile$file___exit___exposer.__call__(Unknown Source)
+  POST: 	at org.python.core.PyObject.__call__(PyObject.java:498)
+  POST: 	at org.python.core.ContextGuard.__exit__(ContextGuard.java:29)
+  POST: 	at standalone_baseline_runtime$py.initialize_rule$11(C:/Projects/FIRO/watershed/NWP_Willamette_Master_2026_10_19_RTS_V1/scripts/standalone_baseline_runtime.py:185)
+  POST: 	at standalone_baseline_runtime$py.call_function(C:/Projects/FIRO/watershed/NWP_Willamette_Master_2026_10_19_RTS_V1/scripts/standalone_baseline_runtime.py)
+  POST: 	at org.python.core.PyTableCode.call(PyTableCode.java:173)
+  POST: 	at org.python.core.PyBaseCode.call(PyBaseCode.java:187)
+  POST: 	at org.python.core.PyFunction.__call__(PyFunction.java:449)
+----
+LINE 9478: java.lang.NullPointerException: Cannot invoke "org.python.core.PySystemState.unregisterCloser(java.util.concurrent.Callable)" because "this.sys" is null
+  PRE: T-3 ElementGraph: Order 173, Block  93,  Elem  Willamette_abv Falls at Oregon City to Willamette Falls
+  PRE: 
+  PRE: T-3 ElementGraph: Order 174, Block  94,  Elem  Willamette Falls
+  PRE: 
+  PRE: T-3 ERROR Ensemble Compute exception during computing java.lang.RuntimeException: Traceback (most recent call last):
+  PRE:   File "<script>", line 1, in <module>
+  PRE:   File "C:/Projects/FIRO/watershed/NWP_Willamette_Master_2026_10_21_RTS_V2/rss/E_Test_2/rss/networks/Con_Season0_Default/scripts/Detroit_No_Draft.py", line 11, in initRuleScript
+  PRE:     return NoDraft.initRuleScript(currentRule, network)
+  PRE:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\externalRules\NoDraft.py", line 95, in initRuleScript
+  PRE:     return initialize_rule("NoDraft", currentRule, network, globals())
+  PRE:   File "C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_21_RTS_V2\scripts\standalone_baseline_runtime.py", line 182, in initialize_rule
+  PRE:     json.dump({'configuration_id': pointer['id'], 'member': int(match.group(1)) if match else None,
+  POST: 	at org.python.core.PyFile$Closer.close(PyFile.java:716)
+  POST: 	at org.python.core.PyFile.file_close(PyFile.java:554)
+  POST: 	at org.python.core.PyFile.close(PyFile.java:562)
+  POST: 	at org.python.core.PyFile.file___exit__(PyFile.java:567)
+
+=== TEST OPERATOR NOTES ===
+Record manually:
+  - Serial baseline result: pass/fail
+  - Parallel member IDs used
+  - Worker count selected
+  - Parallel result: pass/fail
+  - Whether all intended member outputs were written
+  - Whether any result was accepted or archived: should be NO

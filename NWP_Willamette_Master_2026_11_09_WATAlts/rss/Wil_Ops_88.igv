@@ -1,0 +1,5 @@
+ModifiedTime=1711485061330
+GVDataSet Name=Wil_Ops_88
+Description=CMWS new network with added junctions and local for HMS flows which should still allow for NWS flows.  This test alternative is to check that hte FIS_SIData simulations still work with new network setup. First test will be with NGVD88 elevations. (Global Variable Data Set)
+
+

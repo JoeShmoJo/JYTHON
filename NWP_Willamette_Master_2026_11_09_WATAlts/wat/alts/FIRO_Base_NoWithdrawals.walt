@@ -1,0 +1,5 @@
+WatAlternative
+Name=FIRO_Base_NoWithdrawals
+AlignmentName=Stream Alignment
+ConditionId=3
+NextNodeIndex=0

@@ -1,0 +1,132 @@
+
+
+Performing Simulation for Con_Season0
+
+Starting compute at Wed Oct 21 12:00:24 PDT 2026
+
+Performing Simulation for Con_Season0
+Running ResSim alternative Con_Season0
+
+Running ResSim
+DssFile=C:/Projects/FIRO/watershed/NWP_Willamette_Master_2026_10_21_RTS_V2/rss/E_Test_2/simulation.dss
+Using Compute Launcher Multithreaded Ensemble Compute Launcher
+
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Using Alternative's timestep of 1DAY
+Have 43 Ensemble runs over 32 threads
+
+Run 0 ensemble start=0 end=2
+
+Run 1 ensemble start=2 end=4
+
+Run 2 ensemble start=4 end=6
+
+Run 3 ensemble start=6 end=8
+
+Run 4 ensemble start=8 end=10
+
+Run 5 ensemble start=10 end=12
+
+Run 6 ensemble start=12 end=14
+
+Run 7 ensemble start=14 end=16
+
+Run 8 ensemble start=16 end=18
+
+Run 9 ensemble start=18 end=20
+
+Run 10 ensemble start=20 end=22
+
+Run 11 ensemble start=22 end=23
+
+Run 12 ensemble start=23 end=24
+
+Run 13 ensemble start=24 end=25
+
+Run 14 ensemble start=25 end=26
+
+Run 15 ensemble start=26 end=27
+
+Run 16 ensemble start=27 end=28
+
+Run 17 ensemble start=28 end=29
+
+Run 18 ensemble start=29 end=30
+
+Run 19 ensemble start=30 end=31
+
+Run 20 ensemble start=31 end=32
+
+Run 21 ensemble start=32 end=33
+
+Run 22 ensemble start=33 end=34
+
+Run 23 ensemble start=34 end=35
+
+Run 24 ensemble start=35 end=36
+
+Run 25 ensemble start=36 end=37
+
+Run 26 ensemble start=37 end=38
+
+Run 27 ensemble start=38 end=39
+
+Run 28 ensemble start=39 end=40
+
+Run 29 ensemble start=40 end=41
+
+Run 30 ensemble start=41 end=42
+
+Run 31 ensemble start=42 end=43
+
+Using 32 runs for 43 ensembles
+Launching run thread 1
+
+Exception thrown during compute is:
+java.util.concurrent.RejectedExecutionException: Task java.util.concurrent.ExecutorCompletionService$QueueingFuture@59621159[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@62dec4a2[Wrapped task = java.util.concurrent.FutureTask@5e7d80ae[Not completed, task = Con_Season0]]] rejected from java.util.concurrent.ThreadPoolExecutor@11daf1cc[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 32]
+    java.base/java.util.concurrent.ThreadPoolExecutor$AbortPolicy.rejectedExecution(ThreadPoolExecutor.java:2081)
+    java.base/java.util.concurrent.ThreadPoolExecutor.reject(ThreadPoolExecutor.java:841)
+    java.base/java.util.concurrent.ThreadPoolExecutor.execute(ThreadPoolExecutor.java:1376)
+    hec.rss.compute.d.execute(Unknown Source)
+    java.base/java.util.concurrent.ExecutorCompletionService.submit(ExecutorCompletionService.java:186)
+    hec.rss.compute.MultithreadedComputeLauncher.compute(Unknown Source)
+    hec.rss.server.RssRmiWorkspaceImpl.computeAlternative(Unknown Source)
+    hec.clientapp.model.AbstractSimulation.computeModel(AbstractSimulation.java:586)
+    hec.clientapp.model.SimulationPeriod.computeRunPrivate(SimulationPeriod.java:1575)
+    hec.clientapp.model.SimulationPeriod.computeRun(SimulationPeriod.java:1387)
+    hec.clientapp.client.AbstractSimulationMode$11.run(AbstractSimulationMode.java:2087)
+    java.base/java.lang.Thread.run(Thread.java:1583)
+
+ERROR: ResSim compute failed!
+
+COMPUTE FAILED

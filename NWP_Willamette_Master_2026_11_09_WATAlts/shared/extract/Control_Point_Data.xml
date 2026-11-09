@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataexchange-configuration xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://www.hec.usace.army.mil/xmlSchema/cwms/dataexchangeconfiguration_v2.xsd">
+  <datastore>
+    <oracle id="Oracle">
+      <host>//nwp-cwmsdb2.nwp.usace.army.mil</host>
+      <sid>G2CWMSP2</sid>
+    </oracle>
+  </datastore>
+  <datastore>
+    <model-plugin id="forecast-model-plugin" />
+  </datastore>
+  <datastore>
+    <dssfile id="forecast-dss" />
+  </datastore>
+  <ts-dataexchange-set id="Control Point Data" exchange-data="false" sort-order="1.0">
+    <datastore-ref id="Oracle" />
+    <datastore-ref id="forecast-model-plugin" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Merge" ts-override-protection="OFF" />
+    <ts-mapping-set>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE RIVER/ALBANY OR/FLOW//1HOUR/USGS 14174000/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Willamette_at Albany" parameter-id="Obs Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Willamette_at Albany" parameter-id="Obs Flow" />
+          <location model-plugin-id="RAS" model-alternative-id="Unsteady RFC ResSim Final RAS" location-id="Willamette_River DS_Long_Tom RS 119.777 (Willamette River)" parameter-id="Observed - FLOW" />
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Willamette_at Albany" parameter-id="Obs Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Willamette_at Albany" parameter-id="Obs Flow" />
+          <location model-plugin-id="RAS" model-alternative-id="Unsteady RFC ResSim Final RAS" location-id="Willamette_River DS_Long_Tom RS 119.777" parameter-id="Observed - FLOW" />
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Willamette_at Albany" parameter-id="Obs Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Willamette_at Albany" parameter-id="Obs Flow" />
+          <location model-plugin-id="RAS" model-alternative-id="Unsteady RFC ResSim Final RAS" location-id="Willamette_River DS_Long_Tom RS 119.777 (Willamette River)" parameter-id="Observed - FLOW" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">ALBO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE RIVER/SALEM OR/FLOW//1HOUR/USGS 14191000/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Willamette_at Salem" parameter-id="Obs Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Willamette_at Salem" parameter-id="Obs Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">SLMO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/SOUTH SANTIAM RIVER/WATERLOO OR/FLOW//1HOUR/USGS 14187500/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="So Santiam_at Waterloo" parameter-id="Obs Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="So Santiam_at Waterloo" parameter-id="Obs Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">WTLO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/LITTLE NORTH SANTIAM RIVER/MEHAMA OR/FLOW//1HOUR/USGS 14182500/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="No Santiam_at Mehama" parameter-id="Obs Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="No Santiam_at Mehama" parameter-id="Obs Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">MEHO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/SANTIAM RIVER/JEFFERSON OR/FLOW//1HOUR/USGS 14189000/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Santiam_at Jefferson" parameter-id="Obs Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Santiam_at Jefferson" parameter-id="Obs Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">JFFO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/LONG TOM RIVER/MONROE OR/FLOW//1HOUR/USGS 14170000/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Long Tom_at Monroe" parameter-id="Obs Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Long Tom_at Monroe" parameter-id="Obs Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">MNRO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE RIVER/HARRISBURG OR/FLOW//1HOUR/USGS 14166000/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="Willamette_at Harrisburg" parameter-id="Obs Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Willamette_at Harrisburg" parameter-id="Obs Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">HARO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/MCKENZIE RIVER/VIDA OR/FLOW//1HOUR/USGS 14162500/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="McKenzie_at Vida" parameter-id="Obs Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="McKenzie_at Vida" parameter-id="Obs Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">VIDO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/COAST FORK WILLAMETTE RIVER/GOSHEN OR/FLOW//1HOUR/USGS 14157500/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="CF Willamette_nr Goshen" parameter-id="Obs Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="CF Willamette_nr Goshen" parameter-id="Obs Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">GOSO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/MIDDLE FORK WILLAMETTE RIVER/JASPER OR/FLOW//1HOUR/USGS 14152000/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14152000" parameter-id="Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="I:CWMS88_HMS" location-id="MF Willamette_at Jasper" parameter-id="Obs Flow" />
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="MF Willamette_at Jasper" parameter-id="Obs Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">JASO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/MF WILLAMETTE RIVER ABV SALT CRK/OAKRIDGE OR/FLOW/01SEP1986 - 01SEP2006/1HOUR/USGS 14145500/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14145500" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">HCRO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/MIDDLE FORK WILLAMETTE RIVER/DEXTER OR/FLOW/01OCT1986 - 01SEP2006/1HOUR/USGS 14150000/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14150000" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">DEXO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/FALL CREEK BLW WINBERRY CREEK/FALL CREEK OR/FLOW/01OCT1987 - 01SEP2006/1HOUR/USGS 14151000/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14151000" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">FALO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/ROW RIVER/COTTAGE GROVE OR/FLOW/01OCT1987 - 01SEP2006/1HOUR/USGS 14155500/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14155500" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">DORO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/COAST FORK WILLAMETTE R/COTTAGE GROVE DAM OR/FLOW/01OCT1987 - 01SEP2006/1HOUR/USGS 14153500/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14153500" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">COTO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/SOUTH FORK MCKENZIE RIVER/RAINBOW OR/FLOW/01OCT1986 - 01SEP2006/1HOUR/USGS 14159500/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14159500" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">CGRO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/BLUE RIVER/BLUE RIVER OR/FLOW/01OCT1986 - 01SEP2006/1HOUR/USGS 14162200/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14162200" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">BLUO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/LONG TOM RIVER/ALVADORE OR/FLOW/01Oct1941 - 24Oct2013/1DAY/FERN RIDGE OUTFLOW/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="Fern Ridge Lake Outflow" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">FRNO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/NORTH SANTIAM RIVER/NIAGARA OR/FLOW/01OCT1988 - 01SEP2006/1HOUR/USGS 14181500/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14181500" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">BCLO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE RIVER/PORTLAND OR/FLOW/01Oct1994 - 10Oct2013/1DAY/USGS 14211720/</record>
+          <location model-plugin-id="HMS" model-alternative-id="HMS" location-id="14211720" parameter-id="Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">PRTO.Flow.Inst.15Minutes.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/EUGENE/FLOW//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="Willamette_at Eugene_Local_WR_S01" parameter-id="Known Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">EUGO.Flow.Inst.0.0.Best</cwms-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <model-plugin-timeseries datastore-id="forecast-model-plugin">
+          <record>/WILLAMETTE/CORVALLIS/FLOW//1HOUR/OBSERVED/</record>
+          <location model-plugin-id="ResSim" model-alternative-id="R:CWMS88_RFC" location-id="MF Willamette+CF Willamette_Local_CFWR_S05" parameter-id="Known Flow" />
+        </model-plugin-timeseries>
+        <cwms-timeseries datastore-id="Oracle">CORO.Flow.Inst.0.0.Mixed-Raw</cwms-timeseries>
+      </ts-mapping>
+    </ts-mapping-set>
+  </ts-dataexchange-set>
+  <ts-dataexchange-set id="Control Point Data1" exchange-data="false" sort-order="1.0">
+    <datastore-ref id="Oracle" />
+    <datastore-ref id="forecast-dss" dss-regular-ts-store-rule="Replace All" dss-irregular-ts-store-rule="Merge" ts-override-protection="OFF" />
+    <ts-mapping-set>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">EGLO.Flow-Local.Inst.~6Hours.0.BLEND-RFC-OBS-RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//EGLO/Flow-Local--Inst//IR-MONTH/BLEND-RFC-OBS-RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">ALBO.Flow-Local.Inst.~6Hours.0.BLEND-RFC-OBS-RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//ALBO/Flow-Local--Inst//IR-MONTH/BLEND-RFC-OBS-RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">SLMO.Flow-Local.Inst.~6Hours.0.BLEND-RFC-OBS-RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//SLMO/Flow-Local--Inst//IR-MONTH/BLEND-RFC-OBS-RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+      <ts-mapping>
+        <cwms-timeseries datastore-id="Oracle">WSLO.Flow-Local.Inst.~6Hours.0.BLEND-RFC-OBS-RFC-FCST</cwms-timeseries>
+        <dss-timeseries datastore-id="forecast-dss">//WSLO/Flow-Local--Inst//IR-MONTH/BLEND-RFC-OBS-RFC-FCST/</dss-timeseries>
+      </ts-mapping>
+    </ts-mapping-set>
+  </ts-dataexchange-set>
+  <timewindow>
+    <starttime>EXTRACT-PT12H</starttime>
+    <endtime>FORECAST+PT12H</endtime>
+  </timewindow>
+</dataexchange-configuration>
+
