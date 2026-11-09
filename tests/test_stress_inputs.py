@@ -26,6 +26,19 @@ class StressInputsTests(unittest.TestCase):
         self.assertEqual(mapping[43],dict(target_member=2025,source_member=1982))
         self.assertFalse(any('Con_Season' in dst or '003000|' in dst for _,dst in copies))
 
+    def test_in_place_skips_original_members_and_common_records(self):
+        copies, _, _ = builder.build_plan(self.paths,self.rows)
+        additions = builder.in_place_copies(copies,self.paths)
+        self.assertEqual(len(additions),957)
+        self.assertTrue(all(2025 <= int(dst.split('/')[6][2:8]) <= 2981
+                            for _,dst in additions))
+
+    def test_in_place_rejects_existing_target_before_writes(self):
+        copies, _, _ = builder.build_plan(self.paths,self.rows)
+        existing = self.paths + ['//DETO3/FLOW-UNREG/01Jan2026/1Day/C:002025|/']
+        with self.assertRaisesRegex(ValueError,'Target input already exists'):
+            builder.in_place_copies(copies,existing)
+
     def test_collision_is_rejected(self):
         with self.assertRaisesRegex(ValueError,'Duplicate source'):
             builder.build_plan(self.paths+[self.paths[0]],self.rows)

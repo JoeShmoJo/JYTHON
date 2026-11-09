@@ -1,6 +1,6 @@
 """Build a NEW DSS input file using native record copies (pydsstools 2.4).
 
-Only mappings in the supplied TSV are copied. Source DSS is never changed.
+Only mappings in the supplied TSV are copied. Source is changed only with --in-place.
 Close HEC/extraction jobs before running. Target IDs are 1982..2981 (1000).
 """
 import argparse
@@ -82,24 +82,73 @@ def build_plan(paths, mappings, count=1000):
     return copies, member_map, destinations
 
 
+def in_place_copies(copies, existing_paths):
+    existing = {key(p.split('/')) for p in existing_paths}
+    additions = []
+    for original, destination in copies:
+        if key(original.split('/')) == key(destination.split('/')):
+            continue  # Original members and common inputs already exist.
+        if key(destination.split('/')) in existing:
+            raise ValueError('Target input already exists; no writes made: ' + destination)
+        additions.append((original, destination))
+    return additions
+
+
+def append_members(source, mappings):
+    from pydsstools.heclib.dss import HecDss
+    manifest = source.with_suffix('.stress-members.json')
+    if manifest.exists():
+        raise ValueError('Stress manifest already exists; refusing a duplicate build: ' + str(manifest))
+    with HecDss.Open(str(source)) as fid:
+        before = fid.getPathnameList('')
+        copies, member_map, expected = build_plan(before, mappings)
+        additions = in_place_copies(copies, before)
+        print('Preflight passed: appending 957 members (2025-2981), %d records.' % len(additions), flush=True)
+        print('IN-PLACE mode: failure can leave partial additions. Existing records are not deleted or overwritten.', flush=True)
+        for index, (original, destination) in enumerate(additions, 1):
+            status = fid.copyRecordsFrom(fid, original, destination)
+            if status != 0:
+                raise RuntimeError('Copy failed (%s): %s; partial additions may remain' % (status,destination))
+            if index % 2000 == 0:
+                print('Copied %d / %d records' % (index,len(additions)), flush=True)
+    with HecDss.Open(str(source)) as check:
+        actual = {key(p.split('/')) for p in check.getPathnameList('')}
+        expected_all = {key(p.split('/')) for p in before} | expected
+        if actual != expected_all:
+            raise RuntimeError('Post-write catalog mismatch; do not use this stress build')
+    with manifest.open('x', encoding='utf-8') as handle:
+        json.dump(dict(mode='in-place', dss=str(source), members=member_map,
+                       added_records=len(additions),
+                       note='Repeated input scenarios for stress testing; not independent forecasts. Existing records retained. Catalog verified; confirm selected simulation-window coverage.'),handle,indent=2)
+    print('DONE:',source)
+    print('Added 957 members; total input member range: 1982-2981 (1000).')
+    print('Existing inputs/outputs retained. Member map:',manifest)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source', type=Path, required=True)
-    parser.add_argument('--output', type=Path, required=True)
+    destination = parser.add_mutually_exclusive_group(required=True)
+    destination.add_argument('--output', type=Path)
+    destination.add_argument('--in-place', action='store_true',
+                             help='Append new members to source DSS; no full-file copy or backup')
     parser.add_argument('--mappings', type=Path,
                         default=Path(__file__).with_name('conseason-input-mappings.tsv'))
     args = parser.parse_args()
     source = args.source.resolve()
-    output = args.output.resolve()
+    output = args.output.resolve() if args.output else None
     if not source.is_file():
         raise ValueError('Source DSS does not exist: ' + str(source))
-    if source == output or output.exists():
+    if output is not None and (source == output or output.exists()):
         raise ValueError('Output must be a NEW file distinct from source')
-    manifest = output.with_suffix('.members.json')
-    if manifest.exists():
+    manifest = output.with_suffix('.members.json') if output else None
+    if manifest is not None and manifest.exists():
         raise ValueError('Manifest already exists: ' + str(manifest))
     with args.mappings.open(encoding='utf-8-sig', newline='') as handle:
         mappings = [row for row in csv.reader(handle, delimiter='\t') if row]
+    if args.in_place:
+        append_members(source, mappings)
+        return
     from pydsstools.heclib.dss import HecDss
     output.parent.mkdir(parents=True, exist_ok=True)
     stat_before = source.stat()
