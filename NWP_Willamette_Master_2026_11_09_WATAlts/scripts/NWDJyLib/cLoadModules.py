@@ -19,6 +19,8 @@ import os
 import fnmatch
 import glob
 import importlib
+import json
+import sys
 
 
 
@@ -34,6 +36,7 @@ def getAllFilesInDir(moduleDir, fileFilters= ["*.py","[!__init__.py]*"]):
             filenames = fnmatch.filter(filenames, fileFilter)
         
         for filename in filenames:
+            if filename == "cLoadModules.py": continue
             if "offline_tests" in filename or "offline_tests" in root: continue #Some AI thing, ignore this
             matches.append(os.path.join(root, filename))
     return matches
@@ -64,7 +67,56 @@ def convertFilePathToModuleName(filePath, scriptsDir):
     return filePath
     
 
-def loadModule(moduleName, getAbsPath):
+def _readLoadSettings(getAbsPath):
+    pathname = getAbsPath("scripts/module-load-settings.json")
+    if not os.path.exists(pathname):
+        return False
+    # Read at every initialization so this toggle does not itself require a
+    # restart. Java NIO avoids the worker-thread PyFile close failure.
+    from NWDJyLib.cFile import parallelSafeReadText
+    settings = json.loads(parallelSafeReadText(pathname, 'UTF-8'))
+    if not isinstance(settings, dict) or set(settings) != set(['force_reload']):
+        raise ValueError('module-load-settings.json must contain only force_reload')
+    if not isinstance(settings['force_reload'], bool):
+        raise ValueError('force_reload must be true or false')
+    return settings['force_reload']
+
+
+def _computeReloadMode(network, currentAlt):
+    """Inspect native launcher/plugin metadata; unknown must not allow reloads."""
+    try:
+        alternative = network.getAlternative() if network else currentAlt
+        launcher = alternative.getComputeLauncher()
+        launcher_name = str(launcher.getClass().getSimpleName())
+        if launcher_name == 'EnsembleComputeLauncher':
+            return 'parallel', launcher_name
+        # Public getter names vary across releases. Discover a zero-argument
+        # Boolean multithread getter on ensemble plugin data, never guess from
+        # the number of CPUs or the current worker's thread name.
+        serial_setting = False
+        for plugin in alternative.getPluginDataList():
+            if 'Ensemble' not in str(plugin.getClass().getSimpleName()):
+                continue
+            for method in plugin.getClass().getMethods():
+                name = str(method.getName()).lower()
+                if (name.startswith('get') or name.startswith('is')) and 'multithread' in name:
+                    if len(method.getParameterTypes()) == 0 and str(method.getReturnType().getName()) == 'boolean':
+                        enabled = method.invoke(plugin, [])
+                        if enabled:
+                            return 'parallel', str(method.getName()) + '=true'
+                        serial_setting = True
+        if serial_setting:
+            return 'serial', 'native ensemble multithread setting=false'
+        return 'unknown', 'launcher=' + launcher_name
+    except Exception as error:
+        return 'unknown', str(error)
+
+
+def _effectiveReload(requested, mode):
+    return requested and mode == 'serial'
+
+
+def loadModule(moduleName, getAbsPath, force_reload=False):
     '''
     Imports a module given the relative path from
       the watershed.
@@ -79,7 +131,14 @@ def loadModule(moduleName, getAbsPath):
     pathname = getAbsPath("scripts/" + moduleName.replace(".", "/") + ".py")
     if not os.path.exists(pathname):
         return False
-    importlib.import_module(moduleName)
+    if force_reload and moduleName in sys.modules:
+        try:
+            reload_module = reload  # Jython / Python 2
+        except NameError:
+            reload_module = importlib.reload  # Desktop Python tests
+        reload_module(sys.modules[moduleName])
+    else:
+        importlib.import_module(moduleName)
     return True
     
 def loadWatershedModules(network=None,currentAlt=None, modulesToLoad=["NWDJyLib"]):
@@ -93,6 +152,25 @@ def loadWatershedModules(network=None,currentAlt=None, modulesToLoad=["NWDJyLib"
     elif currentAlt: # ScriptingPlugin Script
         p = currentAlt.addComputeMessage
         getAbsPath = currentAlt.getAbsolutePath
+    requested_reload = _readLoadSettings(getAbsPath)
+    mode, mode_detail = _computeReloadMode(network, currentAlt)
+    force_reload = _effectiveReload(requested_reload, mode)
+    if requested_reload and not force_reload:
+        warning = ("MODULE RELOAD OVERRIDDEN OFF: requested ON, but compute mode is %s (%s). "
+                   "Cached code will be used; fully restart ResSim after script edits. "
+                   "Reloading is allowed only when native metadata confirms serial mode.") % (mode, mode_detail)
+    elif force_reload:
+        warning = ("MODULE RELOAD ON: native metadata indicates serial mode (%s). "
+                   "Module source is reloaded during initialization for development. "
+                   "Do not use forced reloads in parallel computes.") % mode_detail
+    else:
+        warning = ("MODULE RELOAD OFF: cached module code is reused. "
+                   "Fully restart ResSim after script edits or those edits may not run. "
+                   "This mode avoids forced reloads but does not guarantee parallel safety.")
+    if network and hasattr(network, 'printWarningMessage'):
+        network.printWarningMessage(warning)
+    else:
+        p("WARNING: " + warning)
     p("cLoadModules:\tStart modules load")
     # Grab all module directories
     scriptsDir = getAbsPath("scripts")
@@ -114,7 +192,7 @@ def loadWatershedModules(network=None,currentAlt=None, modulesToLoad=["NWDJyLib"
     # Convert the module file paths to "." convention for loading
     for filePath in scriptFiles:
         moduleName = convertFilePathToModuleName(filePath, scriptsDir)
-        loadModule(moduleName, getAbsPath)
+        loadModule(moduleName, getAbsPath, force_reload)
         # Import/syntax errors propagate and fail initialization rather than
         # allowing compute to continue with a silently missing module.
     return True

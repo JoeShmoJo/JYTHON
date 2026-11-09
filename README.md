@@ -96,7 +96,9 @@ Other machines need an appropriate validated cap. See the Start Here guide for
 the complete instructions; fresh RTS import validation begins in serial mode.
 
 
-Restart ResSim after watershed script edits. The module loader uses cached normal
-imports during compute to avoid the observed parallel Jython file-close failure.
-The processor cap alone does not establish parallel safety; validate serial and
-small parallel runs before a full ensemble.
+Module reload behavior is controlled by `scripts/module-load-settings.json`
+inside the watershed (`force_reload`, default `false`). Both modes emit an
+initialization warning. ON is honored only for confirmed serial mode; parallel
+or unrecognized modes override it OFF and log the reason. When effectively OFF,
+restart ResSim after script edits. See the Start Here guide for detection limits.
+The processor cap alone does not establish parallel safety.

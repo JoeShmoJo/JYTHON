@@ -497,3 +497,15 @@ Added WithdrawalConfigNone.csv to be able to model no additional consumptive use
 Added softMin fall flow at Fern Ridge per andy martin
 Added new wat alternative "FIRO_Test_FIROSpaceNoWithdrawals" with FIRO but no withdrawals to show how often we hit rule curve in the fall
 Added new wat alt "FIRO_Base_NoWithdrawals" to show what that looks like.
+
+# Repository update [09 Nov 2026 / Codex]
+
+Added scripts/module-load-settings.json with force_reload=false by default.
+The module loader logs warnings for cached and reload modes. Requested reloads
+are overridden OFF for the native ensemble launcher, parallel metadata, or
+unrecognized compute modes; ON requires an explicit serial indication.
+The setting is reread at initialization using Java NIO. Restart ResSim after
+script edits whenever reload is effectively OFF. This follows the observed
+parallel PySystemState.unregisterCloser failure in the old explicit-file loader.
+Loader unit checks run under desktop Python and Jython 2.7.3; native HEC mode
+detection and full model/parallel result validation remain outstanding.

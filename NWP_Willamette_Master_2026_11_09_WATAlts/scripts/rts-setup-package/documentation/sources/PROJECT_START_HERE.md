@@ -82,13 +82,42 @@ one line:
 vmparam -XX:ActiveProcessorCount=16
 ```
 
-Restart HEC-ResSim after saving. Also restart after editing watershed Python/Jython
-scripts: `NWDJyLib/cLoadModules.py` uses cached normal imports during compute.
-Forced reloads through an explicitly opened Python file caused the November 9,
-2026 parallel initialization failure (`PySystemState.unregisterCloser` at
-`fp.close()`). Normal imports avoid that observed path; this is not certification
-of thread safety for every rule/state variable. After a failed/canceled parallel
-run, preserve logs and restart the application before another test.
+Restart HEC-ResSim after saving the launcher configuration.
+
+### Module reload toggle
+
+Edit the watershed's `scripts/module-load-settings.json`:
+
+```json
+{"force_reload": false}
+```
+
+The default `false` uses cached imports in `cLoadModules`. Its initialization
+warning reminds you to fully restart ResSim after script edits. Set `true` for
+serial development when you want this loader to re-execute already imported
+modules. The ON warning identifies that development behavior. This controls only
+modules handled by `cLoadModules`, not every import/reload elsewhere in the model.
+
+Parallel execution overrides the toggle OFF. The native EnsembleComputeLauncher
+is treated as parallel-capable; this conservative override also applies if it
+ultimately uses only one worker. Otherwise the loader looks for a public Boolean
+multithread getter on native ensemble plugin metadata. ON is honored only when
+that metadata explicitly indicates serial mode. Unknown/unavailable metadata
+also overrides it OFF. The warning reports the reason; it never guesses from
+CPU counts or thread names. Native mode detection still needs confirmation in
+the installed ResSim version.
+
+The JSON is read with Java NIO at each loader initialization, so changing this
+setting does not itself require a restart. Malformed settings fail initialization
+rather than silently selecting a mode. Other script edits still require a restart
+when the effective mode is OFF. Forced reloads can affect shared state and are
+not appropriate for parallel compute.
+
+The November 9 failure was a forced-reload file-close exception
+(`PySystemState.unregisterCloser` at `fp.close()`). Normal imports avoid that
+observed path; this is not certification of thread safety for every rule/state
+variable. After a failed/canceled parallel run, preserve logs and restart the
+application before another test.
 
 The cap alone did not prevent that failure. Validate a serial run first, then a
 small parallel member set against the serial results before a full ensemble.

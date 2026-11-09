@@ -54,6 +54,107 @@ class ModuleLoadingTests(unittest.TestCase):
         self.assertTrue(cLoadModules.loadModule(name, self.absolute))
         self.assertEqual(module.value, ['initialized', 'retained'])
 
+    def test_reload_toggle_refreshes_an_already_imported_module(self):
+        self.write('toggle.py', 'values = ["initialized"]\n')
+        name = self.name + '.toggle'
+        cLoadModules.loadModule(name, self.absolute)
+        module = sys.modules[name]
+        module.values.append('cached')
+        cLoadModules.loadModule(name, self.absolute, force_reload=False)
+        self.assertEqual(module.values, ['initialized', 'cached'])
+        cLoadModules.loadModule(name, self.absolute, force_reload=True)
+        self.assertEqual(module.values, ['initialized'])
+
+    def test_parallel_and_unknown_override_requested_reload(self):
+        for mode in ('parallel', 'unknown'):
+            self.assertFalse(cLoadModules._effectiveReload(True, mode))
+        self.assertTrue(cLoadModules._effectiveReload(True, 'serial'))
+        self.assertFalse(cLoadModules._effectiveReload(False, 'serial'))
+
+    def test_native_ensemble_launcher_detected_and_missing_api_is_unknown(self):
+        class JavaClass(object):
+            def getSimpleName(self):
+                return 'EnsembleComputeLauncher'
+        class Launcher(object):
+            def getClass(self):
+                return JavaClass()
+        class Alternative(object):
+            def getComputeLauncher(self):
+                return Launcher()
+        self.assertEqual(cLoadModules._computeReloadMode(None, Alternative())[0], 'parallel')
+        self.assertEqual(cLoadModules._computeReloadMode(None, object())[0], 'unknown')
+
+    def test_native_plugin_serial_and_parallel_settings(self):
+        class Type(object):
+            def __init__(self, name):
+                self.name = name
+            def getName(self):
+                return self.name
+            def getSimpleName(self):
+                return self.name
+        class Method(object):
+            def __init__(self, enabled):
+                self.enabled = enabled
+            def getName(self):
+                return 'getUseMultithreadedCompute'
+            def getParameterTypes(self):
+                return []
+            def getReturnType(self):
+                return Type('boolean')
+            def invoke(self, instance, args):
+                return self.enabled
+        class PluginClass(Type):
+            def __init__(self, enabled):
+                Type.__init__(self, 'EnsembleAltPluginData')
+                self.enabled = enabled
+            def getMethods(self):
+                return [Method(self.enabled)]
+        class Plugin(object):
+            def __init__(self, enabled):
+                self.enabled = enabled
+            def getClass(self):
+                return PluginClass(self.enabled)
+        class Launcher(object):
+            def getClass(self):
+                return Type('ResSimComputeLauncher')
+        class Alternative(object):
+            def __init__(self, enabled):
+                self.enabled = enabled
+            def getComputeLauncher(self):
+                return Launcher()
+            def getPluginDataList(self):
+                return [Plugin(self.enabled)]
+        self.assertEqual(cLoadModules._computeReloadMode(None, Alternative(False))[0], 'serial')
+        self.assertEqual(cLoadModules._computeReloadMode(None, Alternative(True))[0], 'parallel')
+
+    def test_both_modes_emit_warning_and_parallel_override_is_reported(self):
+        class Network(object):
+            def __init__(self, test):
+                self.test = test
+                self.warnings = []
+            def printMessage(self, message):
+                pass
+            def printWarningMessage(self, message):
+                self.warnings.append(message)
+            def makeAbsolutePathFromWatershed(self, path):
+                return self.test.absolute(path)
+        old_read = cLoadModules._readLoadSettings
+        old_mode = cLoadModules._computeReloadMode
+        try:
+            for requested, mode, phrase in [(False, 'serial', 'RELOAD OFF'),
+                                            (True, 'serial', 'RELOAD ON'),
+                                            (True, 'parallel', 'OVERRIDDEN OFF'),
+                                            (True, 'unknown', 'OVERRIDDEN OFF')]:
+                cLoadModules._readLoadSettings = lambda unused: requested
+                cLoadModules._computeReloadMode = lambda *unused: (mode, 'test metadata')
+                network = Network(self)
+                cLoadModules.loadWatershedModules(network=network, modulesToLoad=[])
+                self.assertEqual(len(network.warnings), 1)
+                self.assertIn(phrase, network.warnings[0])
+        finally:
+            cLoadModules._readLoadSettings = old_read
+            cLoadModules._computeReloadMode = old_mode
+
     def test_missing_module_is_reported(self):
         self.assertFalse(cLoadModules.loadModule(self.name + '.absent', self.absolute))
 
