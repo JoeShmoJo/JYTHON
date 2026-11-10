@@ -42,29 +42,17 @@ print("TARGET_ENSEMBLE_YEAR:", TARGET_ENSEMBLE_YEAR)
 # Keep these aligned with the RFC loading script
 # =====================================================================
 
-SITES_3XE_SQIN = [
-    "ALBO", "EUGO", "GOSO", "HARO", "JASO",
-    "JFFO", "LOPO", "MCMO", "MCZO", "MEHO", "MNRO",
-    "JFFO", "LOPO", "MCMO", "MCZO", "MEHO", "MNRO",
-    "SLMO", "VIDO", "WLSO", "WTLO",
-    "FOSO", "CORO"
-]
-SITES_3_QINE = ["AURO", "CANO", "LSMO", "PHIO", "TRSO", "TRBO", "SUVO", "SPRO", "MCMO"]
-SITES_3I_QINE = ["DETO", "GPRO", "BLUO", "CGRO", "HCRO", "FALO", "COTO", "DORO", "FRNO"]
-SLMO_UNREG_CHECK = ["SLMO"]
+SITES_3XE_SQIN = ['WTLO', 'VIDO', 'SLMO', 'MNRO', 'MEHO', 'LOPO', 'JFFO', 'JASO', 'HARO', 'GOSO', 'FOSO', 'CORO', 'ALBO']
+SITES_3N_SQIN = ['TRBO', 'SUVO', 'SPRO', 'PHIO', 'LSMO', 'HCRO', 'GPRO', 'FRNO', 'FALO', 'DORO', 'DETO', 'COTO', 'CGRO', 'BLUO']
 
 GROUP_TO_BPART = {
-    "unadjusted_3XE_SQIN": "FLOW-LOC",
-    "unadjusted_3_QINE": "FLOW-UNREG",
-    "unadjusted_3I_QINE": "FLOW-UNREG",
-    "SalemUnregCheck": "FLOW-UNREG",
+    'unadjusted_3XE_SQIN': 'FLOW-LOC',
+    'natural_3N_SQIN': 'FLOW-UNREG',
 }
 
 GROUP_TO_SITES = {
-    "unadjusted_3XE_SQIN": SITES_3XE_SQIN,
-    "unadjusted_3_QINE": SITES_3_QINE,
-    "unadjusted_3I_QINE": SITES_3I_QINE,
-    "SalemUnregCheck": SLMO_UNREG_CHECK,
+    'unadjusted_3XE_SQIN': SITES_3XE_SQIN,
+    'natural_3N_SQIN': SITES_3N_SQIN,
 }
 
 # =====================================================================

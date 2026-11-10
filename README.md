@@ -2,7 +2,7 @@
 
 The working project is:
 
-NWP_Willamette_Master_2026_11_09_WATAlts/
+NWP_Willamette_Master_2026_11_10_Multithread/
 
 This repository contains the watershed's model definitions, scripts,
 configuration, installation tooling, and offline documentation.
@@ -129,3 +129,14 @@ for the first validation. Use a small serial reference and the same members in
 parallel with more members than workers (17 members for a 16-worker pool), then
 check completion and output coverage before expanding. Read the per-initialization
 reload receipts separately; successful compute is not proof of toggle behavior.
+
+
+## RFC station selection
+
+The RFC downloader and OSI copy step use the requested 27 stations: 13
+unadjusted FLOW-LOC products (`3XE_SQIN.ESPF10.csv`) and 14 natural FLOW-UNREG
+products (`3N_SQIN.ESPF10.csv`). Installed and kit payload copies are updated
+together. This replaces the old QINE routes and removes duplicate selections
+and the additional Salem natural check from this extraction list. Existing DSS
+records are not deleted by this selection change. Downloads retrieve the current
+RFC issue; this change does not implement historical forecast extraction.

@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 
 SOURCE = (Path(__file__).resolve().parents[1] /
-          'NWP_Willamette_Master_2026_11_09_WATAlts/scripts/ExternalPython/'
+          'NWP_Willamette_Master_2026_11_10_Multithread/scripts/ExternalPython/'
           'Dummy_0_and_WY_Abundant_Module.py')
 WY = '/ALL_ABUNDANT//STOR//1DAY/WY_TYPE/'
 

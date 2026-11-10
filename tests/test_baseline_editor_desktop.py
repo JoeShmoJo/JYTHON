@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 
 SCRIPTS = (Path(__file__).resolve().parents[1] /
-           'NWP_Willamette_Master_2026_11_09_WATAlts' / 'scripts')
+           'NWP_Willamette_Master_2026_11_10_Multithread' / 'scripts')
 
 
 class DesktopEditorTests(unittest.TestCase):

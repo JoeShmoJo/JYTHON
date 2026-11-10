@@ -8,7 +8,7 @@ import unittest
 import uuid
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-LIB = os.path.join(ROOT, 'NWP_Willamette_Master_2026_11_09_WATAlts',
+LIB = os.path.join(ROOT, 'NWP_Willamette_Master_2026_11_10_Multithread',
                    'scripts', 'NWDJyLib')
 sys.path.insert(0, LIB)
 import cLoadModules

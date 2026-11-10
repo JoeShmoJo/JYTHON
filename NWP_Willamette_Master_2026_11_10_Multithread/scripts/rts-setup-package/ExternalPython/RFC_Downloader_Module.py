@@ -70,29 +70,20 @@ print("DSS_FILE_OUT:", DSS_FILE_OUT)
 BASE_URL_UNADJUSTED = "https://www.nwrfc.noaa.gov/chpsesp/ensemble/unadjusted/"
 BASE_URL_NATURAL    = "https://www.nwrfc.noaa.gov/chpsesp/ensemble/natural/"
 
-SITES_3XE_SQIN = [
-    "ALBO","EUGO","GOSO","HARO","JASO",
-    "JFFO","LOPO","MCMO","MCZO","MEHO","MNRO",
-    "JFFO","LOPO","MCMO","MCZO","MEHO","MNRO",
-    "SLMO","VIDO","WLSO","WTLO",
-    "FOSO","CORO"
-]
-SITES_3_QINE   = ["AURO","CANO","LSMO","PHIO","TRSO","TRBO","SUVO","SPRO","MCMO"]
-SITES_3I_QINE  = ["DETO","GPRO","BLUO","CGRO","HCRO","FALO","COTO","DORO","FRNO"]
-SLMO_UNREG_CHECK = ["SLMO"]
+SITES_3XE_SQIN = ['WTLO', 'VIDO', 'SLMO', 'MNRO', 'MEHO', 'LOPO', 'JFFO', 'JASO', 'HARO', 'GOSO', 'FOSO', 'CORO', 'ALBO']
+SITES_3N_SQIN = ['TRBO', 'SUVO', 'SPRO', 'PHIO', 'LSMO', 'HCRO', 'GPRO', 'FRNO', 'FALO', 'DORO', 'DETO', 'COTO', 'CGRO', 'BLUO']
 
+# Source products match the supplied NWRFC station/URL catalog.
 SPECS = [
-    {"name": "unadjusted_3XE_SQIN", "base_url": BASE_URL_UNADJUSTED, "pattern": "{site}3XE_SQIN.ESPF10.csv", "sites": SITES_3XE_SQIN},
-    {"name": "unadjusted_3_QINE",   "base_url": BASE_URL_UNADJUSTED, "pattern": "{site}3_QINE.ESPF10.csv",   "sites": SITES_3_QINE},
-    {"name": "unadjusted_3I_QINE",  "base_url": BASE_URL_UNADJUSTED, "pattern": "{site}3I_QINE.ESPF10.csv",  "sites": SITES_3I_QINE},
-    {"name": "SalemUnregCheck",     "base_url": BASE_URL_NATURAL,    "pattern": "{site}3N_SQIN.ESPF10.csv",  "sites": SLMO_UNREG_CHECK},
+    {'name': 'unadjusted_3XE_SQIN', 'base_url': BASE_URL_UNADJUSTED,
+     'pattern': '{site}3XE_SQIN.ESPF10.csv', 'sites': SITES_3XE_SQIN},
+    {'name': 'natural_3N_SQIN', 'base_url': BASE_URL_NATURAL,
+     'pattern': '{site}3N_SQIN.ESPF10.csv', 'sites': SITES_3N_SQIN},
 ]
 
 GROUP_TO_BPART = {
-    "unadjusted_3XE_SQIN": "FLOW-LOC",
-    "unadjusted_3_QINE":   "FLOW-UNREG",
-    "unadjusted_3I_QINE":  "FLOW-UNREG",
-    "SalemUnregCheck":     "FLOW-UNREG",
+    'unadjusted_3XE_SQIN': 'FLOW-LOC',
+    'natural_3N_SQIN': 'FLOW-UNREG',
 }
 
 # =====================================================================
