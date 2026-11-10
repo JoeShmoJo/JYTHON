@@ -18,8 +18,8 @@ MNRO_Monroe_HMSsub_LongTomRv_S10,Known Flow,rss/2026.02.24-2400/simulation.dss, 
 HARO_Harrisburg_HMSsub_WillametteRv_S80,Known Flow,rss/2026.02.24-2400/simulation.dss, ,HARO3,FLOW-LOC,1DAY,C:003002|
 McKenzie+SF McKenzie_HMSsub_McKenzieRV_S20,Known Flow,shared/Zero Flow record.dss,ZERO,ZERO,FLOW,1DAY,DUMMY
 VIDO_Vida_HMSsub_McKenzieRv_S18,Known Flow,rss/2026.02.24-2400/simulation.dss, ,VIDO3,FLOW-LOC,1DAY,C:003002|
-MCZO_McKenzie nr Walterville_HMSsub_McKenzieRv_S15,Known Flow,rss/2026.02.24-2400/simulation.dss, ,MCZO3,FLOW-LOC,1DAY,C:003002|
-EUGO_Willamette at Eugene,Known Flow,rss/2026.02.24-2400/simulation.dss, ,EUGO3,FLOW-LOC,1DAY,C:003002|
+MCZO_McKenzie nr Walterville_HMSsub_McKenzieRv_S15,Known Flow,shared/Zero Flow record.dss,ZERO,ZERO,FLOW,1DAY,DUMMY
+EUGO_Willamette at Eugene,Known Flow,shared/Zero Flow record.dss,ZERO,ZERO,FLOW,1DAY,DUMMY
 GOSO_Goshen_HMSsub_CFWillametteRv_S10,Known Flow,rss/2026.02.24-2400/simulation.dss, ,GOSO3,FLOW-LOC,1DAY,C:003002|
 JASO_Jasper_HMSsub_MFWillametteRv_S10,Known Flow,rss/2026.02.24-2400/simulation.dss, ,JASO3,FLOW-LOC,1DAY,C:003002|
 Big Cliff Local Inflow_HMSsub_NSantiamRv_S15,Known Flow,shared/Zero Flow record.dss,ZERO,ZERO,FLOW,1DAY,DUMMY
@@ -36,10 +36,10 @@ Dexter Local Inflow_HMSsub_MFWillametteRVS20,Known Flow,shared/Zero Flow record.
 Lookout Point Local Inflow_HMSsub_MFWillametteRV_S60,Known Flow,rss/2026.02.24-2400/simulation.dss, ,LOPO3,FLOW-LOC,1DAY,C:003002|
 Hills Creek Inflow_HMSsub_ MFWillametteRv_S60,Known Flow,rss/2026.02.24-2400/simulation.dss, ,HCRO3,FLOW-UNREG,1DAY,C:003002|
 TRBO_Trail Bridge Inflow,Known Flow,rss/2026.02.24-2400/simulation.dss, ,TRBO3,FLOW-UNREG,1DAY,C:003002|
-CANO_Molalla River at Canby_Local_JMolaR_S06,Known Flow,rss/2026.02.24-2400/simulation.dss, ,CANO3,FLOW-UNREG,1DAY,C:003002|
+CANO_Molalla River at Canby_Local_JMolaR_S06,Known Flow,shared/Zero Flow record.dss,ZERO,ZERO,FLOW,1DAY,DUMMY
 SUVO_Suver_HMSsub_LuckiamuteRv_S10,Known Flow,rss/2026.02.24-2400/simulation.dss, ,SUVO3,FLOW-UNREG,1DAY,C:003002|
-AURO_Pudding River nr Aurora,Known Flow,rss/2026.02.24-2400/simulation.dss, ,AURO3,FLOW-UNREG,1DAY,C:003002|
-MCMO_McMinnville_Local_JYamhR_S01,Known Flow,rss/2026.02.24-2400/simulation.dss, ,MCMO3,FLOW-LOC,1DAY,C:003002|
+AURO_Pudding River nr Aurora,Known Flow,shared/Zero Flow record.dss,ZERO,ZERO,FLOW,1DAY,DUMMY
+MCMO_McMinnville_Local_JYamhR_S01,Known Flow,shared/Zero Flow record.dss,ZERO,ZERO,FLOW,1DAY,DUMMY
 WSLO_West Linn_HMSsub_TualatinRv_S10,Known Flow,shared/Zero Flow record.dss,ZERO,ZERO,FLOW,1DAY,DUMMY
 CORO_Corvallis_HMSsub_WillametteRv_S70,Known Flow,rss/2026.02.24-2400/simulation.dss, ,CORO3,FLOW-LOC,1DAY,C:003002|
 PHIO_ Philomath_HMSsub_MarysRV_S70,Known Flow,rss/2026.02.24-2400/simulation.dss, ,PHIO3,FLOW-UNREG,1DAY,C:003002|
