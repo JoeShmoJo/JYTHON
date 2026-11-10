@@ -266,7 +266,7 @@ def write_rfc_to_dss(
                     df_shift.index = df_shift.index - pd.Timedelta(hours=6)
                     df1d = df_shift.resample("1D").mean()
                     df1d = df1d.dropna(how="all")
-                    
+
                                         # Add daily row-wise percentile members across the original ensemble years
                     # Shared standalone/RTS IDs: 3000 = 25%, 3001 = 50%, 3002 = 75%.
                     base_cols = list(df1d.columns)

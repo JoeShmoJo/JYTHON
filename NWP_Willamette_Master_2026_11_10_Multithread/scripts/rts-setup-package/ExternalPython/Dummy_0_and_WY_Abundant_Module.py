@@ -203,8 +203,8 @@ def write_dummy_records():
     # 1) Daily WY_TYPE record (all values = 4)
     # Path: /ALL_ABUNDANT//STOR//1DAY/WY_TYPE/
     # -----------------------------------------------------------------
-    
-    
+
+
     wy_path = "/ALL_ABUNDANT//STOR//1DAY/WY_TYPE/"
     daily_index = pd.date_range(start=start, end=end, freq="D")
     wy_series = pd.Series(4.0, index=daily_index)

@@ -17,7 +17,3 @@ H_LINE_DICT = {
 # OSI mods are tied to the ensemble year so changing this won't reset them.
 
 ENSEMBLE_YEAR_TO_COPY = 2011
-
-
-
-
