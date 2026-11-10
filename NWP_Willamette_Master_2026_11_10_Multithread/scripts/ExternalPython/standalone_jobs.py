@@ -13,7 +13,7 @@ import tempfile
 DEFAULTS={'run_type':'ensemble','osi_source_member':2011,
           'rfc_archive_folder':r'C:\Projects\FIRO\Historic_Forecasts_ESPFM',
           'simulation_utc_offset_hours':-8}
-JOBS={'archive-extract':['RFC_Archive_Module.py','CWMS_Downloader_Module.py',
+JOBS={'archive-check':[], 'archive-extract':['RFC_Archive_Module.py','CWMS_Downloader_Module.py',
                          'Dummy_0_and_WY_Abundant_Module.py','OSI_Ensemble_Year.py'],
       'extract':['CWMS_Downloader_Module.py','RFC_Downloader_Module.py',
                  'Dummy_0_and_WY_Abundant_Module.py','OSI_Ensemble_Year.py'],
@@ -77,7 +77,7 @@ def run_script(script,scripts,values):
         if old_config is not None:sys.modules['CONFIG']=old_config
 
 
-def execute(watershed,simulation,alternative,job,run_type=None):
+def execute(watershed,simulation,alternative,job,run_type=None,report_path=None):
     from standalone_configuration import context
     from baseline_configuration import digest_file
     ctx=context(watershed,alternative,simulation);root=Path(ctx['dss_path']).parent
@@ -94,14 +94,14 @@ def execute(watershed,simulation,alternative,job,run_type=None):
     if 'standalone_workflow' not in data:raise ValueError('Older applied set has no standalone job settings. Open Baseline Configuration, review Standalone job settings, and Apply again')
     settings=data['standalone_workflow'];mode=settings.get('run_type','ensemble')
     if run_type is not None and mode!=run_type:raise ValueError('Run type differs from applied configuration; open Baseline Configuration and Apply for the selected mode')
-    if mode=='por' and job in ('extract','archive-extract'):
+    if mode=='por' and job in ('extract','archive-extract','archive-check'):
         raise ValueError('RFC ensemble extraction is unavailable in POR mode. Use existing POR inputs. No OSI copy was run.')
     values=compatibility(ctx,settings)
-    if job in ('extract','archive-extract'):
+    if job in ('extract','archive-extract','archive-check'):
         from standalone_dates import simulation_window
         values['SIMULATION_WINDOW']=simulation_window(watershed,simulation,settings.get('simulation_utc_offset_hours',-8))
         print('Saved simulation window:',json.dumps(values['SIMULATION_WINDOW']),flush=True)
-    if job=='archive-extract':
+    if job in ('archive-extract','archive-check'):
         from standalone_dates import selected_ensemble_members
         members, member_source=selected_ensemble_members(watershed,alternative,simulation,return_source=True)
         values['SELECTED_ENSEMBLE_MEMBERS']=members
@@ -109,6 +109,15 @@ def execute(watershed,simulation,alternative,job,run_type=None):
         print('Selected ensemble settings source:',member_source,flush=True)
         values['RFC_ARCHIVE_FOLDER']=settings.get('rfc_archive_folder',DEFAULTS['rfc_archive_folder'])
         if not Path(values['RFC_ARCHIVE_FOLDER']).is_dir():raise ValueError('Archive folder not found: '+values['RFC_ARCHIVE_FOLDER'])
+    if job in ('archive-extract','archive-check'):
+        from RFC_Archive_Module import check_archive,format_archive_check
+        report=check_archive(values['RFC_ARCHIVE_FOLDER'],values['SIMULATION_WINDOW'],members,settings['osi_source_member'])
+        report['member_source']=member_source
+        report['summary']=format_archive_check(report)
+        print(report['summary'],flush=True)
+        if report_path is not None:Path(report_path).write_text(json.dumps(report,indent=2),encoding='utf-8')
+        if job=='archive-check':return
+        if not report['compatible']:raise ValueError('Archive compatibility check failed. Correct the dates/member selection shown above before extracting.')
     paths=[scripts/name for name in JOBS[job]]
     for path in paths:
         if not path.is_file():raise ValueError('Missing job script: '+str(path))
@@ -170,6 +179,7 @@ def run_archive_transaction(root, scripts, paths, values):
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--request',type=Path)
+    parser.add_argument('--report',type=Path,help='Read-only archive compatibility report destination')
     parser.add_argument('--run-type',choices=('ensemble','por'))
     parser.add_argument('--watershed',type=Path)
     parser.add_argument('--simulation');parser.add_argument('--alternative');parser.add_argument('--job',choices=tuple(JOBS))
@@ -179,4 +189,4 @@ if __name__=='__main__':
         run_script(script,script.parent,request['values'])
     else:
         if not all((args.watershed,args.simulation,args.alternative,args.job)):parser.error('watershed, simulation, alternative and job are required')
-        execute(args.watershed,args.simulation,args.alternative,args.job,args.run_type)
+        execute(args.watershed,args.simulation,args.alternative,args.job,args.run_type,args.report)

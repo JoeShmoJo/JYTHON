@@ -6,6 +6,15 @@ hours** (default -8, fixed PST), and **OSI source member**, then Save/Apply.
 The folder contains the individual station ZIP files; the large OneDrive wrapper
 ZIPs are not used. Python's `pyarrow` package must be installed in hydro39.
 
+Use **Check archive dates / members** for a read-only preview. It lists the
+selected nominal cycle, common issue-date range (which may contain gaps),
+historical member years available at every station, selected ResSim members,
+OSI source, and complete daily forecast coverage. Incompatible dates, missing
+issues, unavailable years and OSI settings are reported together. This writes
+only a diagnostic JSON/log, never DSS records. **Extract archived ensemble inputs**
+also opens this summary automatically and blocks extraction when errors remain.
+CWMS availability is validated during extraction, not by the archive preview.
+
 Save Simulation Control before extracting. The job reads the selected
 `rss/<simulation>.simperiod`; it never uses `.bak`, the simulation folder name as
 a date, or the computer clock. HEC `2400` rolls to midnight the following day.

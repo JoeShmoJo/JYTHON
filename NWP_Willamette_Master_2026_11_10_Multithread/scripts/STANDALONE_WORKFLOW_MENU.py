@@ -1,5 +1,6 @@
 # Paste into the standalone ResSim Script Editor (Jython).
 import os
+import json
 from java.lang import Thread, Runnable, System, ProcessBuilder
 from java.io import File
 from java.util import ArrayList
@@ -50,12 +51,13 @@ class Menu:
         buttons.add(self.run_type)
         buttons.add(JButton('Baseline Configuration', actionPerformed=lambda e: self.open_baseline()))
         jobs = [('Extract ensemble inputs', 'extract'),
+                ('Check archive dates / members', 'archive-check'),
                 ('Extract archived ensemble inputs', 'archive-extract'),
                 ('Calculate augmentation', 'augmentation')]
         self.ensemble_buttons = []
         for title, job in jobs:
             button = JButton(title, actionPerformed=lambda e, t=title, j=job: self.start(t, j))
-            if job in ('extract','archive-extract'): self.ensemble_buttons.append(button)
+            if job in ('extract','archive-extract','archive-check'): self.ensemble_buttons.append(button)
             buttons.add(button)
         self.run_type.addActionListener(self.update_mode)
         buttons.add(JButton('Archive / Plot Results', actionPerformed=lambda e: self.open_results()))
@@ -122,16 +124,47 @@ class Menu:
         if self.simulation.getSelectedIndex() == 0 or not alternative:
             JOptionPane.showMessageDialog(self.frame, 'Select the simulation and alternative first. Review and Apply Baseline Configuration before running jobs.')
             return
-        if JOptionPane.showConfirmDialog(self.frame,
+        if job not in ('archive-check','archive-extract') and JOptionPane.showConfirmDialog(self.frame,
             title + '\nSimulation: ' + simulation + '\nAlternative: ' + alternative + '\nUses applied Baseline Configuration job settings. Save Simulation Control dates first. Confirm no compute is running and DSS views are closed.',
             'Run standalone scripts', JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION:
             return
         run_type = 'por' if self.run_type.getSelectedIndex() == 1 else 'ensemble'
-        if run_type == 'por' and job in ('extract','archive-extract'):
+        if run_type == 'por' and job in ('extract','archive-extract','archive-check'):
             JOptionPane.showMessageDialog(self.frame, 'Use existing POR inputs and compute in ResSim. Ensemble extraction is unavailable in Single POR mode; no OSI copy is needed.')
             return
         self.busy = True
         Thread(Call(lambda: self.run(title, job, simulation, alternative, run_type)), 'Standalone workflow job').start()
+    def archive_check(self, simulation, alternative, run_type, extract):
+        report_path = self.log + '.check.json'
+        check_log = self.log + '.check.log'
+        command = ArrayList()
+        for arg in [python, '-u', os.path.join(scripts, 'standalone_jobs.py'),
+                    '--watershed', root, '--simulation', simulation, '--alternative', alternative,
+                    '--run-type', run_type, '--job', 'archive-check', '--report', report_path]: command.add(arg)
+        self.message('Checking archive dates and available members. Log: ' + check_log)
+        builder = ProcessBuilder(command);builder.directory(File(scripts))
+        builder.redirectErrorStream(True);builder.redirectOutput(File(check_log))
+        code = builder.start().waitFor()
+        if code != 0 or not os.path.isfile(report_path):
+            with open(check_log, 'r') as handle: detail = ''.join(handle.readlines()[-14:])
+            raise RuntimeError('Archive check failed. ' + detail + '\nLog: ' + check_log)
+        with open(report_path, 'r') as handle: report = json.load(handle)
+        self.message(report['summary'])
+        answer = [False]
+        def display():
+            area = JTextArea(report['summary'], 24, 95)
+            area.setEditable(False);area.setLineWrap(True);area.setWrapStyleWord(True)
+            view = JScrollPane(area)
+            if extract and report['compatible']:
+                answer[0] = JOptionPane.showConfirmDialog(self.frame, view,
+                    'Archive ready - close DSS views and finish computes before continuing',
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION
+            else:
+                JOptionPane.showMessageDialog(self.frame, view, 'Archive dates / ensemble members',
+                    JOptionPane.INFORMATION_MESSAGE if report['compatible'] else JOptionPane.WARNING_MESSAGE)
+        SwingUtilities.invokeAndWait(Call(display))
+        return answer[0]
+
     def run(self, title, job, simulation, alternative, run_type):
         try:
             filename = os.path.join(scripts, 'standalone_jobs.py')
@@ -140,6 +173,8 @@ class Menu:
             if not os.path.isdir(directory): os.makedirs(directory)
             self.log = os.path.join(directory, 'job-' + str(System.currentTimeMillis()) + '.log')
             self.message(title + '\nLog: ' + self.log)
+            if job in ('archive-check','archive-extract'):
+                if not self.archive_check(simulation, alternative, run_type, job == 'archive-extract'): return
             command = ArrayList()
             for arg in [python, '-u', filename, '--watershed', root, '--simulation', simulation,
                         '--alternative', alternative, '--run-type', run_type, '--job', job]: command.add(arg)
@@ -155,6 +190,9 @@ class Menu:
             self.message('Finished. Compute remains manual in ResSim.')
         except Exception as error:
             self.message('FAILED: ' + str(error))
+            if job in ('archive-check','archive-extract'):
+                detail = str(error)
+                SwingUtilities.invokeLater(Call(lambda: JOptionPane.showMessageDialog(self.frame, detail, 'Archive check / extraction failed', JOptionPane.WARNING_MESSAGE)))
         finally:
             self.busy = False
 

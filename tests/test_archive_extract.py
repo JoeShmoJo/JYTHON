@@ -139,6 +139,65 @@ class ArchiveTests(unittest.TestCase):
                 with contextlib.redirect_stdout(io.StringIO()),self.assertRaisesRegex(ValueError,'selected ensemble members unavailable'):
                     archive.load_archive(root,self.window(),2011,[1982,2024])
 
+    @unittest.skipUnless(pa, 'pyarrow is required for Parquet fixtures')
+    def test_preview_reports_available_years_and_selected_mismatch_without_writes(self):
+        with tempfile.TemporaryDirectory() as temp:
+            self.zips(temp)
+            window=dict(self.window(),lookback='2020-01-01T00:00:00',utc_offset_hours=-8)
+            before={p.name:p.stat().st_mtime_ns for p in Path(temp).iterdir()}
+            report=archive.check_archive(temp,window,[1982,2024,3000],2011)
+            self.assertFalse(report['compatible'])
+            self.assertEqual(report['available_years'],[1982,2011])
+            self.assertEqual(report['common_cycles'],['2020010112'])
+            self.assertTrue(any('2024' in error for error in report['errors']))
+            summary=archive.format_archive_check(report)
+            self.assertIn('CHANGES REQUIRED',summary);self.assertIn('1982,2011',summary)
+            self.assertIn('2020-01-03',summary)
+            self.assertEqual(before,{p.name:p.stat().st_mtime_ns for p in Path(temp).iterdir()})
+            good=archive.check_archive(temp,window,[1982,3000,3001,3002],2011)
+            self.assertTrue(good['compatible'],good['errors'])
+            self.assertIn('READY',archive.format_archive_check(good))
+
+    @unittest.skipUnless(pa, 'pyarrow is required for Parquet fixtures')
+    def test_preview_reports_missing_issue_short_coverage_and_invalid_daily_start(self):
+        with tempfile.TemporaryDirectory() as temp:
+            self.zips(temp)
+            window=dict(self.window(),lookback='2020-01-01T00:00:00',utc_offset_hours=-8)
+            missing=archive.check_archive(temp,dict(window,archive_cycle='2020010212'),[1982],2011)
+            self.assertFalse(missing['compatible']);self.assertEqual(missing['available_years'],[])
+            self.assertEqual(missing['common_cycles'],['2020010112'])
+            self.assertTrue(all('absent' in error for error in missing['errors']))
+            short=archive.check_archive(temp,dict(window,end='2021-01-01'),[1982],2011)
+            self.assertFalse(short['compatible']);self.assertEqual(short['available_years'],[1982,2011])
+            self.assertTrue(any('coverage' in error for error in short['errors']))
+            clock=archive.check_archive(temp,dict(window,start='2020-01-02T06:00:00'),[1982],2011)
+            self.assertTrue(any('midnight' in error for error in clock['errors']))
+            osi=archive.check_archive(temp,window,[1982],2000)
+            self.assertTrue(any('OSI source member 2000' in error for error in osi['errors']))
+
+    @unittest.skipUnless(pa, 'pyarrow is required for Parquet fixtures')
+    def test_read_only_check_job_writes_report_without_touching_dss(self):
+        import hashlib
+        with tempfile.TemporaryDirectory() as temp,contextlib.redirect_stdout(io.StringIO()):
+            root=Path(temp);folder=root/'archives';folder.mkdir();self.zips(folder)
+            sim=root/'rss/Historical';sim.mkdir(parents=True)
+            dss=sim/'simulation.dss';dss.write_bytes(b'unchanged native DSS')
+            (root/'rss/Historical.simperiod').write_text('FLD=_lookbackDate\nSTR=31Dec2019,2400\nFLD=_startDate\nSTR=01Jan2020,2400\nFLD=_endDate\nSTR=02Jan2020,2400\n')
+            (sim/'rss').mkdir()
+            (sim/'rss/Con_Season0_Con_Season.ralt').write_text('RssAlt Name=Con_Season0:Con_Season\nEnsembleMembersString:1982,3000-3002\n')
+            (sim/'cfg').mkdir();config=sim/'cfg/resolved.json'
+            config.write_text(json.dumps({'standalone_workflow':dict(jobs.DEFAULTS,rfc_archive_folder=str(folder))}))
+            (sim/'standalone-baseline-config-active.json').write_text(json.dumps(dict(
+                model_alternative='Con_Season',directory='cfg',resolved_sha256=hashlib.sha256(config.read_bytes()).hexdigest(),id='fixture')))
+            report=root/'check.json'
+            with patch.object(jobs,'run_archive_transaction') as transaction:
+                jobs.execute(root,'Historical','Con_Season','archive-check','ensemble',report)
+                transaction.assert_not_called()
+            data=json.loads(report.read_text())
+            self.assertTrue(data['compatible'],data['errors'])
+            self.assertEqual(data['available_years'],[1982,2011]);self.assertEqual(dss.read_bytes(),b'unchanged native DSS')
+            self.assertFalse((sim/'archive-input-backups').exists())
+
     def test_cwms_buffer_and_required_midnight_sample(self):
         window=dict(self.window(),lookback='2020-02-01T00:00:00',start='2020-02-02T00:00:00',
                     lookback_utc='2020-02-01T08:00:00+00:00',start_utc='2020-02-02T08:00:00+00:00',

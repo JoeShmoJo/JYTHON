@@ -114,6 +114,106 @@ def load_archive(folder, window, osi_member, selected_members=None):
     return frames, receipts
 
 
+
+def member_ranges(members):
+    groups=[]
+    for member in sorted(set(members)):
+        if groups and member==groups[-1][1]+1:groups[-1][1]=member
+        else:groups.append([member,member])
+    return ','.join(str(a) if a==b else str(a)+'-'+str(b) for a,b in groups) or '(none)'
+
+
+def check_archive(folder, window, selected_members, osi_member):
+    """Read-only preview across every station; never imports DSS or contacts CWMS."""
+    report=dict(folder=str(folder),window=window,selected_members=sorted(selected_members),
+                osi_member=osi_member,errors=[],warnings=[],stations=[])
+    errors=report['errors'];warnings=report['warnings']
+    try:
+        import pyarrow.parquet as pq
+    except ImportError:
+        errors.append('Install pyarrow in hydro39 to inspect archived forecasts.')
+        report.update(compatible=False,available_years=[],common_cycles=[])
+        return report
+    cycle=window['archive_cycle'];cycles=[];year_sets=[];indices=[];first_days=[];last_days=[]
+    nominal=pd.Timestamp(pd.to_datetime(cycle,format='%Y%m%d%H'),tz='UTC')
+    for station,name,parameter,flow in archive_specs():
+        item=dict(station=station,archive=name+'.zip');report['stations'].append(item)
+        try:
+            with ZipFile(Path(folder)/(name+'.zip')) as archive:
+                pattern=re.compile(re.escape(name+'_'+parameter+'.ESPFM_')+r'(\d{10})\.parquet$')
+                entries={}
+                for entry in archive.infolist():
+                    match=pattern.fullmatch(entry.filename.replace('\\','/').split('/')[-1])
+                    if match:entries.setdefault(match.group(1),[]).append(entry)
+                cycles.append(set(entries))
+                if cycle not in entries:raise ValueError('forecast '+cycle+' is absent')
+                if len(entries[cycle])!=1:raise ValueError('duplicate entries for forecast '+cycle)
+                frame,attrs=parse_table(pq.read_table(BytesIO(archive.read(entries[cycle][0]))))
+            years=set(frame.columns);year_sets.append(years);indices.append(frame.index)
+            item['years']=sorted(years)
+            issued=pd.to_datetime(attrs.get('ISSUED'),format='%Y-%m-%d_%H:%M_GMT',utc=True,errors='raise')
+            if pd.isna(issued) or issued.normalize()!=nominal.normalize():
+                raise ValueError('issue metadata disagrees with filename date')
+            if issued>pd.Timestamp(window['start_utc']):raise ValueError('forecast was issued after simulation start')
+            if frame.index[0]!=nominal.tz_localize(None)+pd.Timedelta(hours=6):
+                raise ValueError('unexpected forecast valid-time origin')
+            shifted=frame.copy();shifted.index-=pd.Timedelta(hours=6)
+            counts=shifted.resample('1D').count()
+            complete=counts.index[(counts==4).all(axis=1)]
+            if not len(complete):raise ValueError('no complete daily forecast bins')
+            first_days.append(complete[0]);last_days.append(complete[-1])
+            item.update(first_complete_day=str(complete[0]),last_complete_day=str(complete[-1]))
+            required=pd.date_range(pd.Timestamp(window['start']).ceil('D'),pd.Timestamp(window['end']).floor('D'),freq='D')
+            if not len(required) or not required.isin(complete).all():
+                raise ValueError('simulation exceeds complete daily forecast coverage '+str(complete[0])+' through '+str(complete[-1]))
+        except Exception as error:
+            item['error']=str(error);errors.append(station+': '+str(error))
+    # A year is offered only when every required station supplied it.
+    all_stations=len(report['stations'])
+    common_years=set.intersection(*year_sets) if len(year_sets)==all_stations else set()
+    common_cycles=set.intersection(*cycles) if len(cycles)==all_stations else set()
+    report['available_years']=sorted(common_years);report['common_cycles']=sorted(common_cycles)
+    if year_sets and any(years!=year_sets[0] for years in year_sets[1:]):
+        errors.append('Station ensemble year sets differ; extraction requires consistent member sets.')
+    if indices and any(not index.equals(indices[0]) for index in indices[1:]):
+        errors.append('Station forecast valid-time grids differ.')
+    if common_years:
+        missing=set(selected_members)-(common_years|{3000,3001,3002,3003})
+        if missing:errors.append('Selected members unavailable: '+member_ranges(missing)+'. Change the ResSim ensemble selection.')
+        if osi_member not in common_years:errors.append('OSI source member '+str(osi_member)+' is unavailable. Change it in Baseline Configuration and Apply.')
+    if pd.Timestamp(window['start'])!=pd.Timestamp(window['start']).normalize() or pd.Timestamp(window['end'])!=pd.Timestamp(window['end']).normalize():
+        errors.append('Daily archive extraction requires midnight simulation start/end (0000 or preceding-day 2400).')
+    if first_days and len(first_days)==all_stations:
+        report['first_complete_day']=str(max(first_days));report['last_complete_day']=str(min(last_days))
+    warnings.append('CWMS lookback availability is checked during extraction; this preview does not download CWMS data.')
+    warnings.append('UTC offset is fixed at '+str(window['utc_offset_hours'])+' hours; daylight-saving changes are not automatic.')
+    report['compatible']=not errors
+    return report
+
+
+def format_archive_check(report):
+    window=report['window'];cycles=report.get('common_cycles',[])
+    lines=['ARCHIVED FORECAST CHECK: '+('READY' if report['compatible'] else 'CHANGES REQUIRED'),
+           'Archive folder: '+report['folder'],
+           'Saved lookback: '+window['lookback'],
+           'Saved start: '+window['start']+'; end: '+window['end'],
+           'Selected nominal forecast cycle (UTC): '+window['archive_cycle']]
+    if cycles:
+        lines.append('Cycles present at all 27 stations: '+cycles[0]+' through '+cycles[-1]+f' ({len(cycles)} issues; gaps are possible)')
+    lines.append('Historical years available at all 27 stations for this issue: '+member_ranges(report.get('available_years',[])))
+    if report.get('available_years'):
+        lines.append('Also generated: 3000=25th, 3001=50th, 3002=75th percentile; 3003=OSI copy.')
+    lines.append('ResSim selected members: '+member_ranges(report['selected_members']))
+    lines.append('OSI source member: '+str(report['osi_member']))
+    if report.get('first_complete_day'):
+        lines.append('Complete daily forecast coverage: '+report['first_complete_day']+' through '+report['last_complete_day'])
+    if report.get('member_source'):lines.append('Ensemble settings read from: '+report['member_source'])
+    for error in report['errors']:lines.append('ERROR: '+error)
+    for warning in report['warnings']:lines.append('NOTE: '+warning)
+    lines.append('No DSS records changed by this check.')
+    return '\n'.join(lines)
+
+
 def write_archive(frames, target):
     from pydsstools.heclib.dss import HecDss
     from pydsstools.core import TimeSeriesContainer
