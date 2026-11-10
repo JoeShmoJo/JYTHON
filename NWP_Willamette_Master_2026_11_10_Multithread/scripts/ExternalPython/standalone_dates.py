@@ -76,3 +76,32 @@ def selected_ensemble_members(watershed, alternative, simulation=None, return_so
         if first>last:raise ValueError('Reversed ensemble range')
         members.update(range(first,last+1))
     return (sorted(members), str(filename)) if return_source else sorted(members)
+
+
+def cwms_lookback_bounds(window):
+    """Fetch a leading buffer: query boundaries need not be source sample times.
+
+    This preserves the standalone downloader's established DSS timestamp labels;
+    it does not change time zones or interpolate/extend elevations.
+    """
+    import pandas as pd
+    begin = pd.Timestamp(window['lookback_utc']) - pd.Timedelta(days=1)
+    end = min(pd.Timestamp(window['end_utc']),
+              pd.Timestamp(window['start_utc']) + pd.Timedelta(days=10))
+    return begin, end
+
+
+def validate_cwms_lookback(series, window, interval_minutes):
+    """Require actual samples at every native lookback step, including endpoints."""
+    import pandas as pd
+    import numpy as np
+    required = pd.date_range(window['lookback'],window['start'],
+                             freq=pd.Timedelta(minutes=interval_minutes))
+    if series.index.has_duplicates:
+        raise ValueError('Duplicate CWMS lookback elevation timestamps')
+    values = series.reindex(required)
+    missing = values.index[~np.isfinite(values.to_numpy(dtype=float)) |
+                           (np.abs(values.to_numpy(dtype=float)) >= 1e30)]
+    if len(missing):
+        raise ValueError('CWMS lookback elevations missing at '+str(missing[0])+
+                         ' ('+str(len(missing))+' required samples missing); no fill or extrapolation applied')

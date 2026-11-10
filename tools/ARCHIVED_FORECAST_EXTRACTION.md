@@ -46,8 +46,9 @@ An RFC forecast alone does not supply observations before its first valid time.
 
 CWMS observed elevations/outflows and rule curves are requested through the saved
 simulation start, beginning at the earlier of January 1 or the lookback. The
-existing RFC-FCST elevation group is requested from lookback through the earlier
-of simulation end or start plus ten days. Existing CWMS TSIDs and timestamp-writing
+existing RFC-FCST elevation group is requested with a one-day leading buffer before lookback through the earlier
+of simulation end or start plus ten days. Every six-hour lookback sample, including its first and last timestamps, must
+be present before installing the staged DSS. Existing CWMS TSIDs and timestamp-writing
 conventions are retained. No interpolation, year substitution, or fabricated
 historical reservoir elevations is introduced. Required CWMS empty/error groups
 stop the standalone archive job; gaps cannot be compressed into a regular series.

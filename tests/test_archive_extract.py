@@ -126,7 +126,7 @@ class ArchiveTests(unittest.TestCase):
         exec(compile(ast.Module(body=body,type_ignores=[]),'<CWMS main>','exec'),env)
         self.assertEqual(calls[0][1],pd.Timestamp(window['lookback_utc']))
         self.assertEqual(calls[0][2],pd.Timestamp(window['start_utc']))
-        self.assertEqual(calls[2][1],pd.Timestamp(window['lookback_utc']))
+        self.assertEqual(calls[2][1],pd.Timestamp(window['lookback_utc'])-pd.Timedelta(days=1))
         self.assertEqual(calls[2][2],pd.Timestamp(window['end_utc']))
 
     def test_requested_years_are_validated_against_actual_archive(self):
@@ -138,6 +138,21 @@ class ArchiveTests(unittest.TestCase):
                 self.zips(root)
                 with contextlib.redirect_stdout(io.StringIO()),self.assertRaisesRegex(ValueError,'selected ensemble members unavailable'):
                     archive.load_archive(root,self.window(),2011,[1982,2024])
+
+    def test_cwms_buffer_and_required_midnight_sample(self):
+        window=dict(self.window(),lookback='2020-02-01T00:00:00',start='2020-02-02T00:00:00',
+                    lookback_utc='2020-02-01T08:00:00+00:00',start_utc='2020-02-02T08:00:00+00:00',
+                    end_utc='2020-12-01T08:00:00+00:00')
+        begin,end=dates.cwms_lookback_bounds(window)
+        self.assertEqual(begin,pd.Timestamp('2020-01-31T08:00:00Z'))
+        late=pd.Series(1000.,index=pd.date_range('2020-02-01 12:00',periods=10,freq='6h'))
+        with self.assertRaisesRegex(ValueError,'missing at 2020-02-01 00:00:00'):
+            dates.validate_cwms_lookback(late,window,360)
+        padded=pd.Series(1000.,index=pd.date_range('2020-01-31 12:00',periods=14,freq='6h'))
+        dates.validate_cwms_lookback(padded,window,360)
+        padded.loc['2020-02-01 06:00']=float('nan')
+        with self.assertRaisesRegex(ValueError,'missing at 2020-02-01 06:00:00'):
+            dates.validate_cwms_lookback(padded,window,360)
 
     def test_simulation_alternative_overrides_shared_member_selection(self):
         with tempfile.TemporaryDirectory() as temp:

@@ -282,6 +282,10 @@ def cwms_download_and_write(
                     s = _shift_series_index(s, time_shift)
 
                 interval_min, dss_type = _infer_dss_meta_from_path(dss_path)
+                window = getattr(cfg, 'SIMULATION_WINDOW', None)
+                if window and tsid_to_dss is LOOKBACK_ELEV_DICT:
+                    from standalone_dates import validate_cwms_lookback
+                    validate_cwms_lookback(s, window, interval_min)
                 if force_dss_type is not None:
                     dss_type = force_dss_type
 
@@ -363,7 +367,10 @@ if __name__ == "__main__":
         decimals=1,
     )
 
-    # LOOKBACK/FORECAST: now -> +10 days
+    # Request a leading buffer; validate the actual DSS lookback sample times.
+    if window:
+        from standalone_dates import cwms_lookback_bounds
+        lookback_utc, ten_days_future_utc = cwms_lookback_bounds(window)
     n3 = cwms_download_and_write(
         LOOKBACK_ELEV_DICT,
         lookback_utc,

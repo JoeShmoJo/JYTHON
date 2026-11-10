@@ -162,6 +162,18 @@ def install(watershed, mode="standalone"):
                 y=template.index('    # -----------------------------------------------------------------',x)
                 if '\n    if CONTEXT:' in template[x:y]:y=template.index('\n    if CONTEXT:',x)
                 source=source[:a]+template[x:y]+source[b:]
+            if filename=='CWMS_Downloader_Module.py' and 'cwms_lookback_bounds' not in source:
+                # Standalone legacy main: derive padded bounds immediately before
+                # its existing lookback group call, preserving local TSID mappings.
+                anchor='    n3 = cwms_download_and_write('
+                if source.count(anchor)!=1:raise ValueError('Unrecognized standalone lookback job')
+                source=source.replace(anchor,"    if window:\n        from standalone_dates import cwms_lookback_bounds\n        lookback_utc, ten_days_future_utc = cwms_lookback_bounds(window)\n"+anchor)
+                source=source.replace("pd.Timestamp(window['lookback_utc']) if window else now_utc,",'lookback_utc,')
+                # Preserve legacy fallback when this script is invoked without a window.
+                source=source.replace('    if window:\n        from standalone_dates import cwms_lookback_bounds', '    lookback_utc = now_utc\n    if window:\n        from standalone_dates import cwms_lookback_bounds')
+                anchor='                if force_dss_type is not None:'
+                if source.count(anchor)!=1:raise ValueError('Unrecognized standalone CWMS writer')
+                source=source.replace(anchor,"                window = getattr(cfg, 'SIMULATION_WINDOW', None)\n                if window and tsid_to_dss is LOOKBACK_ELEV_DICT:\n                    from standalone_dates import validate_cwms_lookback\n                    validate_cwms_lookback(s, window, interval_min)\n"+anchor)
             writes[target]=source.encode('utf-8')
     backup=watershed/'standalone-configuration-backups'/(datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')+'-'+uuid.uuid4().hex[:8])
     backup.mkdir(parents=True)

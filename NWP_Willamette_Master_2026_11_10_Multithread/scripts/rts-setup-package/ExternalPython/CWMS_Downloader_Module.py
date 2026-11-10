@@ -279,6 +279,11 @@ def cwms_download_and_write(
                 if time_shift is not None:
                     s = _shift_series_index(s, time_shift)
 
+                window = getattr(cfg, 'SIMULATION_WINDOW', None)
+                if window and not CONTEXT and tsid_to_dss is LOOKBACK_ELEV_DICT:
+                    from standalone_dates import validate_cwms_lookback
+                    validate_cwms_lookback(s, window, interval_min)
+
                 historical_observations = tsid_to_dss is OBS_ELEV_DICT or tsid_to_dss is OBS_OUTFLOW_DICT
                 if CONTEXT and historical_observations:
                     from cwms_time import preserve_gaps
@@ -368,6 +373,10 @@ if __name__ == "__main__":
     else:
         begin = pd.Timestamp(window['lookback_utc']) if window else now_utc
         end = min(pd.Timestamp(window['end_utc']),now_utc+pd.Timedelta(days=10)) if window else now_utc+pd.Timedelta(days=10)
+
+    if window and not CONTEXT:
+        from standalone_dates import cwms_lookback_bounds
+        begin, end = cwms_lookback_bounds(window)
 
     required = ("lookback elevations", LOOKBACK_ELEV_DICT, begin, end,
                 dict(units="FT", decimals=2))
