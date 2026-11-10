@@ -59,7 +59,7 @@ DSS_PATH = (
     / "simulation.dss"
 ).resolve()
 
-DSS_FILE_OUT = str(DSS_PATH)
+DSS_FILE_OUT = str(getattr(cfg, 'DSS_FILE_OUT', DSS_PATH))
 
 print("DSS_FILE_OUT:", DSS_FILE_OUT)
 
@@ -206,6 +206,10 @@ def _write_series_v6(fid, pathname: str, series: pd.Series, units: str, interval
         return False
 
     series = series.sort_index()
+    if getattr(cfg, 'DSS_FILE_OUT', None):
+        gaps = series.index[1:] - series.index[:-1]
+        if series.index.has_duplicates or not (gaps == pd.Timedelta(minutes=interval_min)).all():
+            raise ValueError('Historical CWMS series has gaps or unexpected spacing; refusing to compress timestamps')
     start_dt = series.index[0].strftime("%d%b%Y %H%M").upper()
 
     tsc = TimeSeriesContainer()
@@ -316,6 +320,8 @@ def cwms_download_and_write(
         for tsid, msg in failed:
             print(f"  - {tsid} -> {msg}")
 
+    if getattr(cfg, 'DSS_FILE_OUT', None) and (empty or failed):
+        raise RuntimeError(f'Historical CWMS group incomplete: {empty} empty, {len(failed)} failed series; original DSS unchanged')
     return written
 
 # =====================================================================
@@ -325,9 +331,20 @@ def cwms_download_and_write(
 if __name__ == "__main__":
     enable_insecure_ssl()
 
-    now_utc = pd.Timestamp.now(tz="UTC")
-    first_of_year_utc = now_utc.normalize().replace(month=1, day=1)
-    ten_days_future_utc = now_utc + pd.Timedelta(days=10)
+    window = getattr(cfg, 'SIMULATION_WINDOW', None)
+    if window:
+        now_utc = pd.Timestamp(window['start_utc'])
+        lookback_utc = pd.Timestamp(window['lookback_utc'])
+        # Include the whole lookback even when it crosses New Year.
+        first_of_year_utc = min(now_utc.normalize().replace(month=1, day=1), lookback_utc)
+        ten_days_future_utc = min(pd.Timestamp(window['end_utc']), now_utc + pd.Timedelta(days=10))
+        print('[CWMS] Simulation-date requests:', window, flush=True)
+        print('[CWMS] Historical queries return available/revised data, not a guaranteed as-issued forecast vintage.', flush=True)
+    else:
+        now_utc = pd.Timestamp.now(tz="UTC")
+        first_of_year_utc = now_utc.normalize().replace(month=1, day=1)
+        ten_days_future_utc = now_utc + pd.Timedelta(days=10)
+        lookback_utc = now_utc
 
     # OBS: first of year -> now
     n1 = cwms_download_and_write(
@@ -349,7 +366,7 @@ if __name__ == "__main__":
     # LOOKBACK/FORECAST: now -> +10 days
     n3 = cwms_download_and_write(
         LOOKBACK_ELEV_DICT,
-        now_utc,
+        lookback_utc,
         ten_days_future_utc,
         units="FT",
         decimals=2,

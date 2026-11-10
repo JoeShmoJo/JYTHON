@@ -55,7 +55,7 @@ DSS_PATH = (
     / "simulation.dss"
 ).resolve()
 
-DSS_FILE_OUT = str(DSS_PATH)
+DSS_FILE_OUT = str(getattr(cfg, 'DSS_FILE_OUT', DSS_PATH))
 print("DSS_FILE_OUT:", DSS_FILE_OUT)
 
 # =====================================================================

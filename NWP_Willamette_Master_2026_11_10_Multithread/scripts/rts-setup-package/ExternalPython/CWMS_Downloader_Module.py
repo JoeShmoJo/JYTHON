@@ -64,7 +64,7 @@ CONTEXT = load_context()
 if CONTEXT is not None:
     DSS_PATH = CONTEXT.dss_path
 
-DSS_FILE_OUT = str(DSS_PATH)
+DSS_FILE_OUT = str(getattr(cfg, 'DSS_FILE_OUT', DSS_PATH))
 
 print("DSS_FILE_OUT:", DSS_FILE_OUT)
 
@@ -199,6 +199,10 @@ def _write_series_v6(fid, pathname: str, series: pd.Series, units: str, interval
         return False
 
     series = series.sort_index()
+    if getattr(cfg, 'DSS_FILE_OUT', None):
+        gaps = series.index[1:] - series.index[:-1]
+        if series.index.has_duplicates or not (gaps == pd.Timedelta(minutes=interval_min)).all():
+            raise ValueError('Historical CWMS series has gaps or unexpected spacing; refusing to compress timestamps')
     start_dt = series.index[0].strftime("%d%b%Y %H%M").upper()
 
     tsc = TimeSeriesContainer()
@@ -325,7 +329,7 @@ def cwms_download_and_write(
         for tsid, msg in failed:
             print(f"  - {tsid} -> {msg}")
 
-    if CONTEXT and (failed or empty):
+    if (CONTEXT or getattr(cfg, 'DSS_FILE_OUT', None)) and (failed or empty):
         raise RuntimeError("CWMS missing or failed series: %r; empty=%d" % (failed, empty))
     return written
 
@@ -353,13 +357,17 @@ def prepare_cwms_groups(required_job, optional_jobs, download):
 if __name__ == "__main__":
     from windows_ca import configure_ca_bundle
     configure_ca_bundle()
-    now_utc = pd.Timestamp.now(tz="UTC")
+    window = getattr(cfg, 'SIMULATION_WINDOW', None)
+    now_utc = pd.Timestamp(window['start_utc']) if window and not CONTEXT else pd.Timestamp.now(tz="UTC")
     first_of_year_utc = now_utc.normalize().replace(month=1, day=1)
+    if window and not CONTEXT:
+        first_of_year_utc = min(first_of_year_utc, pd.Timestamp(window['lookback_utc']))
     if CONTEXT:
         first_of_year_utc = min(first_of_year_utc, pd.Timestamp(CONTEXT.utc(CONTEXT.lookback)))
         begin, end = CONTEXT.lookback_request_bounds()
     else:
-        begin, end = now_utc, now_utc + pd.Timedelta(days=10)
+        begin = pd.Timestamp(window['lookback_utc']) if window else now_utc
+        end = min(pd.Timestamp(window['end_utc']),now_utc+pd.Timedelta(days=10)) if window else now_utc+pd.Timedelta(days=10)
 
     required = ("lookback elevations", LOOKBACK_ELEV_DICT, begin, end,
                 dict(units="FT", decimals=2))

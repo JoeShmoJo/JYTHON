@@ -52,7 +52,7 @@ DSS_PATH = (
     / "simulation.dss"
 ).resolve()   # <-- forces full absolute path
 
-DSS_FILE_OUT = str(DSS_PATH)
+DSS_FILE_OUT = str(getattr(cfg, 'DSS_FILE_OUT', DSS_PATH))
 
 print("DSS_FILE_OUT:", DSS_FILE_OUT)
 
@@ -181,9 +181,14 @@ def write_dummy_records():
     dss_path = DSS_FILE_OUT
 
     # Anchor at UTC midnight, strip timezone for DSS
-    today = pd.Timestamp.utcnow().normalize()
-    start = (today - pd.Timedelta(days=365)).tz_localize(None)
-    end   = (today + pd.Timedelta(days=365)).tz_localize(None)
+    window = getattr(cfg, 'SIMULATION_WINDOW', None)
+    if window:
+        start = pd.Timestamp(window['lookback']).floor('D') - pd.Timedelta(days=1)
+        end = pd.Timestamp(window['end']).ceil('D') + pd.Timedelta(days=1)
+    else:
+        today = pd.Timestamp.utcnow().normalize()
+        start = (today - pd.Timedelta(days=365)).tz_localize(None)
+        end = (today + pd.Timedelta(days=365)).tz_localize(None)
 
     # -----------------------------------------------------------------
     # 1) Daily WY_TYPE record (all values = 4)

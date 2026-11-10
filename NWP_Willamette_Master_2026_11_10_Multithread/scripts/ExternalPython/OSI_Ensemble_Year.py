@@ -31,7 +31,7 @@ DSS_PATH = (
     / "simulation.dss"
 ).resolve()
 
-DSS_FILE = str(DSS_PATH)
+DSS_FILE = str(getattr(cfg, 'DSS_FILE_OUT', DSS_PATH))
 
 print("DSS_FILE:", DSS_FILE)
 print("SOURCE_ENSEMBLE_YEAR:", SOURCE_ENSEMBLE_YEAR)

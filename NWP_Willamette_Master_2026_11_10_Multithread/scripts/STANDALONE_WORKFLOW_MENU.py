@@ -50,11 +50,12 @@ class Menu:
         buttons.add(self.run_type)
         buttons.add(JButton('Baseline Configuration', actionPerformed=lambda e: self.open_baseline()))
         jobs = [('Extract ensemble inputs', 'extract'),
+                ('Extract archived ensemble inputs', 'archive-extract'),
                 ('Calculate augmentation', 'augmentation')]
         self.ensemble_buttons = []
         for title, job in jobs:
             button = JButton(title, actionPerformed=lambda e, t=title, j=job: self.start(t, j))
-            if job == 'extract': self.ensemble_buttons.append(button)
+            if job in ('extract','archive-extract'): self.ensemble_buttons.append(button)
             buttons.add(button)
         self.run_type.addActionListener(self.update_mode)
         buttons.add(JButton('Archive / Plot Results', actionPerformed=lambda e: self.open_results()))
@@ -122,11 +123,11 @@ class Menu:
             JOptionPane.showMessageDialog(self.frame, 'Select the simulation and alternative first. Review and Apply Baseline Configuration before running jobs.')
             return
         if JOptionPane.showConfirmDialog(self.frame,
-            title + '\nSimulation: ' + simulation + '\nAlternative: ' + alternative + '\nUses applied Baseline Configuration job settings. Confirm no compute is running.',
+            title + '\nSimulation: ' + simulation + '\nAlternative: ' + alternative + '\nUses applied Baseline Configuration job settings. Save Simulation Control dates first. Confirm no compute is running and DSS views are closed.',
             'Run standalone scripts', JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION:
             return
         run_type = 'por' if self.run_type.getSelectedIndex() == 1 else 'ensemble'
-        if run_type == 'por' and job == 'extract':
+        if run_type == 'por' and job in ('extract','archive-extract'):
             JOptionPane.showMessageDialog(self.frame, 'Use existing POR inputs and compute in ResSim. Ensemble extraction is unavailable in Single POR mode; no OSI copy is needed.')
             return
         self.busy = True

@@ -10,8 +10,12 @@ import runpy
 import sys
 import tempfile
 
-DEFAULTS={'run_type':'ensemble','osi_source_member':2011}
-JOBS={'extract':['CWMS_Downloader_Module.py','RFC_Downloader_Module.py',
+DEFAULTS={'run_type':'ensemble','osi_source_member':2011,
+          'rfc_archive_folder':r'C:\Projects\FIRO\Historic_Forecasts_ESPFM',
+          'simulation_utc_offset_hours':-8}
+JOBS={'archive-extract':['RFC_Archive_Module.py','CWMS_Downloader_Module.py',
+                         'Dummy_0_and_WY_Abundant_Module.py','OSI_Ensemble_Year.py'],
+      'extract':['CWMS_Downloader_Module.py','RFC_Downloader_Module.py',
                  'Dummy_0_and_WY_Abundant_Module.py','OSI_Ensemble_Year.py'],
       'augmentation':['MainstemAugmentation.py']}
 
@@ -19,10 +23,15 @@ JOBS={'extract':['CWMS_Downloader_Module.py','RFC_Downloader_Module.py',
 def validate(settings):
     # Older saved sets may carry retired plot controls. They are ignored, never
     # consulted by the saved-run archive/plot workflow.
-    allowed={'run_type','osi_source_member','plot_trial','comparison_trials','plot_reference_lines'}
+    allowed={'rfc_archive_folder','simulation_utc_offset_hours','run_type','osi_source_member','plot_trial','comparison_trials','plot_reference_lines'}
     if not isinstance(settings,dict) or not set(settings)<=allowed :
         raise ValueError('Invalid standalone workflow settings')
     if settings.get('run_type','ensemble') not in ('ensemble','por'):raise ValueError('Invalid run type')
+    folder=settings.get('rfc_archive_folder',DEFAULTS['rfc_archive_folder'])
+    if not isinstance(folder,str):raise ValueError('Archive folder must be text')
+    offset=settings.get('simulation_utc_offset_hours',-8)
+    if isinstance(offset,bool) or not isinstance(offset,int) or not -12<=offset<=14:
+        raise ValueError('Simulation UTC offset must be a whole number from -12 to 14')
     if settings.get('run_type','ensemble')=='por':return settings
     value=settings.get('osi_source_member')
     if isinstance(value,bool) or not isinstance(value,int) or value<0:raise ValueError('Expected nonnegative whole number: osi_source_member')
@@ -40,7 +49,7 @@ def include(configuration,scripts):
     import copy
     result=copy.deepcopy(configuration)
     settings=result.get('standalone_workflow',defaults(scripts));validate(settings)
-    result['standalone_workflow']={'run_type':settings.get('run_type','ensemble'),'osi_source_member':settings.get('osi_source_member')}
+    result['standalone_workflow']={key:settings.get(key,value) for key,value in DEFAULTS.items()}
     return result
 
 
@@ -59,7 +68,10 @@ def run_script(script,scripts,values):
             path.write_text('\n'.join(name+' = '+repr(value) for name,value in values.items())+'\n',encoding='utf-8')
             sys.path[:]=[directory,str(scripts)]+[p for p in old_path if p!=str(scripts)]
             sys.argv=[str(script)]
-            runpy.run_path(str(script),run_name='__main__')
+            result=runpy.run_path(str(script),run_name='__main__')
+            if values.get('DSS_FILE_OUT') and script.name=='OSI_Ensemble_Year.py':
+                if result.get('misses') or result.get('copied')!=27:
+                    raise RuntimeError('OSI copy did not produce all 27 station inputs; original DSS unchanged')
     finally:
         sys.path[:]=old_path;sys.argv[:]=old_argv;sys.modules.pop('CONFIG',None)
         if old_config is not None:sys.modules['CONFIG']=old_config
@@ -82,23 +94,74 @@ def execute(watershed,simulation,alternative,job,run_type=None):
     if 'standalone_workflow' not in data:raise ValueError('Older applied set has no standalone job settings. Open Baseline Configuration, review Standalone job settings, and Apply again')
     settings=data['standalone_workflow'];mode=settings.get('run_type','ensemble')
     if run_type is not None and mode!=run_type:raise ValueError('Run type differs from applied configuration; open Baseline Configuration and Apply for the selected mode')
-    if mode=='por' and job=='extract':
+    if mode=='por' and job in ('extract','archive-extract'):
         raise ValueError('RFC ensemble extraction is unavailable in POR mode. Use existing POR inputs. No OSI copy was run.')
     values=compatibility(ctx,settings)
+    if job in ('extract','archive-extract'):
+        from standalone_dates import simulation_window
+        values['SIMULATION_WINDOW']=simulation_window(watershed,simulation,settings.get('simulation_utc_offset_hours',-8))
+        print('Saved simulation window:',json.dumps(values['SIMULATION_WINDOW']),flush=True)
+    if job=='archive-extract':
+        from standalone_dates import selected_ensemble_members
+        values['SELECTED_ENSEMBLE_MEMBERS']=selected_ensemble_members(watershed,alternative)
+        values['RFC_ARCHIVE_FOLDER']=settings.get('rfc_archive_folder',DEFAULTS['rfc_archive_folder'])
+        if not Path(values['RFC_ARCHIVE_FOLDER']).is_dir():raise ValueError('Archive folder not found: '+values['RFC_ARCHIVE_FOLDER'])
     paths=[scripts/name for name in JOBS[job]]
     for path in paths:
         if not path.is_file():raise ValueError('Missing job script: '+str(path))
     print('Standalone job target:',ctx['run_name'],'/',alternative,flush=True)
     print('Applied configuration:',pointer['id'],flush=True)
     print('Job settings:',json.dumps(values),flush=True)
-    # Extraction is a sequence of fresh interpreters so one legacy script cannot
-    # retain or mutate another script's module state.
+    if job=='archive-extract':
+        run_archive_transaction(root, scripts, paths, values)
+    else:
+        run_sequence(scripts, paths, values)
+
+
+def run_sequence(scripts, paths, values):
+    # Fresh interpreter for every legacy script and its private CONFIG module.
     import subprocess
     for path in paths:
         print('Running:',path.name,flush=True)
         with tempfile.TemporaryDirectory(prefix='standalone-job-') as directory:
-            request=Path(directory)/'request.json';request.write_text(json.dumps({'script':str(path),'values':values}))
+            request=Path(directory)/'request.json'
+            request.write_text(json.dumps({'script':str(path),'values':values}))
             subprocess.run([sys.executable,'-u',str(Path(__file__).resolve()),'--request',str(request)],cwd=scripts,check=True)
+
+
+def run_archive_transaction(root, scripts, paths, values):
+    import hashlib
+    import os
+    import shutil
+    import uuid
+    def digest(path):
+        h=hashlib.sha256()
+        with path.open('rb') as handle:
+            for chunk in iter(lambda:handle.read(1024*1024),b''):h.update(chunk)
+        return h.hexdigest()
+    target=Path(root)/'simulation.dss'
+    if not target.is_file():raise ValueError('Run the normal ResSim input extract to create simulation.dss first')
+    before=digest(target)
+    with tempfile.TemporaryDirectory(prefix='archive-extract-',dir=root) as directory:
+        staged=Path(directory)/'simulation.dss'
+        shutil.copy2(target,staged)
+        settings=dict(values,DSS_FILE_OUT=str(staged))
+        run_sequence(scripts,paths,settings)
+        if digest(target)!=before:raise ValueError('simulation.dss changed during extraction; staged results were not installed')
+        backup_dir=Path(root)/'archive-input-backups';backup_dir.mkdir(exist_ok=True)
+        backup=backup_dir/('simulation-'+uuid.uuid4().hex+'.dss')
+        shutil.copy2(target,backup)
+        if digest(backup)!=before or digest(target)!=before:
+            raise ValueError('Original DSS changed or backup verification failed; no replacement made')
+        # Write provenance before replacement. A failed replacement retains the old DSS.
+        receipt=json.loads(staged.with_suffix('.archive.json').read_text())
+        receipt.update(backup=str(backup),target=str(target),original_sha256=before,
+                       staged_sha256=digest(staged))
+        receipt_file=backup.with_suffix('.json')
+        receipt_file.write_text(json.dumps(receipt,indent=2),encoding='utf-8')
+        os.replace(staged,target)
+        print('Installed archive inputs:',target,flush=True)
+        print('Original DSS backup and receipt:',backup,flush=True)
 
 
 if __name__=='__main__':

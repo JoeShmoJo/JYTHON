@@ -62,7 +62,7 @@ def install(watershed, mode="standalone"):
     source=source.replace(needle,needle+'\n        from '+runtime+' import alternative_overrides\n        configDict.update(alternative_overrides(network))')
     writes[setup]=source.encode('utf-8')
     writes[scripts/(runtime+'.py')]=runtime_source() if mode=='standalone' else (HERE/'baseline-runtime/rts_baseline_runtime.py').read_bytes()
-    for name in ('baseline_configuration.py','baseline_versions.py','standalone_configuration.py','standalone_jobs.py','standalone_results.py','standalone_model_check.py','standalone_por_augmentation.py','run_archive.py','run_data_cache.py','plot_rts_forecast.py','write_rule_curves.py','extraction_context.py','augmentation_mapping.py','ensemble_ids.py'):
+    for name in ('baseline_configuration.py','baseline_versions.py','standalone_configuration.py','standalone_jobs.py','standalone_dates.py','RFC_Archive_Module.py','standalone_results.py','standalone_model_check.py','standalone_por_augmentation.py','run_archive.py','run_data_cache.py','plot_rts_forecast.py','write_rule_curves.py','extraction_context.py','augmentation_mapping.py','ensemble_ids.py'):
         writes[scripts/'ExternalPython'/name]=(HERE/'ExternalPython'/name).read_bytes()
     for name,sourcefile in [('baseline-editor.html','editor-mockup.html'),('baseline-configuration.example.json','baseline-configuration.example.json')]:
         writes[scripts/'ExternalPython'/name]=(HERE/'baseline-editor-design'/sourcefile).read_bytes()
@@ -125,6 +125,44 @@ def install(watershed, mode="standalone"):
         writes[scripts/'model_check'/name]=(model_source/name).read_bytes()
     writes[scripts/'workflow-mode.json']=(json.dumps({'mode':mode},indent=2)+'\n').encode()
     # Every source/guard above is checked before the first mutation.
+    if mode=='standalone':
+        for filename in ('CWMS_Downloader_Module.py','RFC_Downloader_Module.py',
+                         'Dummy_0_and_WY_Abundant_Module.py','OSI_Ensemble_Year.py'):
+            target=scripts/'ExternalPython'/filename
+            source=writes.get(target,target.read_bytes()).decode('utf-8-sig').replace('\r\n','\n')
+            template=(HERE/'ExternalPython'/filename).read_text()
+            output='DSS_FILE' if filename=='OSI_Ensemble_Year.py' else 'DSS_FILE_OUT'
+            old=output+' = str(DSS_PATH)'
+            new=output+" = str(getattr(cfg, 'DSS_FILE_OUT', DSS_PATH))"
+            if new not in source:
+                if source.count(old)!=1:raise ValueError('Unrecognized DSS target in '+filename)
+                source=source.replace(old,new)
+            if filename=='CWMS_Downloader_Module.py':
+                if "window = getattr(cfg, 'SIMULATION_WINDOW', None)" not in source:
+                    old='    now_utc = pd.Timestamp.now(tz="UTC")'
+                    if source.count(old)!=1:raise ValueError('Unrecognized CWMS date controls')
+                    source=source.replace(old,"    window = getattr(cfg, 'SIMULATION_WINDOW', None)\n    now_utc = pd.Timestamp(window['start_utc']) if window else pd.Timestamp.now(tz=\"UTC\")")
+                    old='    first_of_year_utc = now_utc.normalize().replace(month=1, day=1)'
+                    source=source.replace(old,old+"\n    if window:\n        first_of_year_utc = min(first_of_year_utc, pd.Timestamp(window['lookback_utc']))")
+                    source=source.replace('        LOOKBACK_ELEV_DICT,\n        now_utc,',"        LOOKBACK_ELEV_DICT,\n        pd.Timestamp(window['lookback_utc']) if window else now_utc,")
+                anchor='    start_dt = series.index[0].strftime("%d%b%Y %H%M").upper()'
+                if 'refusing to compress timestamps' not in source:
+                    a=template.index("    if getattr(cfg, 'DSS_FILE_OUT', None):")
+                    b=template.index(anchor,a)
+                    if source.count(anchor)!=1:raise ValueError('Unrecognized CWMS writer')
+                    source=source.replace(anchor,template[a:b]+anchor)
+                if 'Historical CWMS group incomplete' not in source:
+                    check="    if getattr(cfg, 'DSS_FILE_OUT', None) and (empty or failed):\n        raise RuntimeError('Historical CWMS group incomplete; original DSS unchanged')\n"
+                    if source.count('    return written')!=1:raise ValueError('Unrecognized CWMS result')
+                    source=source.replace('    return written',check+'    return written')
+            if filename=='Dummy_0_and_WY_Abundant_Module.py' and "window = getattr(cfg, 'SIMULATION_WINDOW', None)" not in source:
+                a=source.index('    today = pd.Timestamp.utcnow().normalize()')
+                b=source.index('    # -----------------------------------------------------------------',a)
+                x=template.index("    window = getattr(cfg, 'SIMULATION_WINDOW', None)")
+                y=template.index('    # -----------------------------------------------------------------',x)
+                if '\n    if CONTEXT:' in template[x:y]:y=template.index('\n    if CONTEXT:',x)
+                source=source[:a]+template[x:y]+source[b:]
+            writes[target]=source.encode('utf-8')
     backup=watershed/'standalone-configuration-backups'/(datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')+'-'+uuid.uuid4().hex[:8])
     backup.mkdir(parents=True)
     paths=dict(preserve);paths.update(writes)

@@ -60,7 +60,7 @@ CONTEXT = load_context()
 if CONTEXT is not None:
     DSS_PATH = CONTEXT.dss_path
 
-DSS_FILE_OUT = str(DSS_PATH)
+DSS_FILE_OUT = str(getattr(cfg, 'DSS_FILE_OUT', DSS_PATH))
 print("DSS_FILE_OUT:", DSS_FILE_OUT)
 
 # =====================================================================

@@ -98,3 +98,7 @@ raw_rfc_csv/
 *.stress-members.json
 *.members.json
 *.zip
+
+# Archived forecast extraction staging and original-input backups
+archive-extract-*/
+archive-input-backups/
