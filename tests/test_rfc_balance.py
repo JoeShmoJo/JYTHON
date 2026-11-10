@@ -45,6 +45,7 @@ class RfcBalanceTests(unittest.TestCase):
             self.assertTrue(row['complete'])
             self.assertEqual(row['mae_cfs'],0)
             self.assertEqual(row['volume_bias_percent'],0)
+        self.assertAlmostEqual(rows[0]['reference_volume_acft'],7*86400/43560)
         self.assertAlmostEqual(rows[1]['reference_volume_acft'],10*rows[0]['reference_volume_acft'])
 
     def test_missing_input_is_not_zero_filled_or_integrated(self):

@@ -125,7 +125,7 @@ def parse_members(value):
 def compare(reference, components, members):
     if len(reference.index) < 2:
         raise ValueError('At least two reference timestamps are needed')
-    seconds = np.diff(reference.index.asi8).astype(float) / 1e9
+    seconds = np.diff(reference.index.to_numpy(dtype='datetime64[ns]').astype(np.int64)).astype(float) / 1e9
     if (seconds <= 0).any() or not np.allclose(seconds, seconds[0]):
         raise ValueError('Reference timestamps must be uniformly spaced')
     total = components[0].reindex(index=reference.index,columns=members).copy()
