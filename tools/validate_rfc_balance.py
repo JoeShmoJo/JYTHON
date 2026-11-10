@@ -271,6 +271,7 @@ def main():
                         help='Trace disputed locals through downstream checkpoints using only explicit project inflows and locals')
     parser.add_argument('--candidate-checks', action='store_true',
                         help='Also run exploratory upstream equations; their N-product total-flow interpretation is unverified')
+    parser.add_argument('--extra-source',action='append',default=[],help='Additional optional source for audits, e.g. MCMO3L')
     parser.add_argument('--members',help='Optional: 1982-2024 or 1982,1985; default all Salem reference members')
     args=parser.parse_args()
     if args.fetch_missing and not args.raw_dir:
@@ -280,7 +281,9 @@ def main():
         checks.update(CANDIDATE_CHECKS)
     if args.downstream_trace:
         checks.update(TRACE_CHECKS)
-    sources = sorted({source for ref, inputs in checks.values() for source in [ref]+inputs})
+    if any(not re.fullmatch(r'[A-Z]{4}3[NL]',source) for source in args.extra_source):
+        parser.error('Extra sources must look like MCMO3L or SPRO3N')
+    sources = sorted({source for ref, inputs in checks.values() for source in [ref]+inputs} | set(args.extra_source))
     if args.output.exists():
         raise ValueError('Output already exists; choose a new directory')
     args.output.mkdir(parents=True)
