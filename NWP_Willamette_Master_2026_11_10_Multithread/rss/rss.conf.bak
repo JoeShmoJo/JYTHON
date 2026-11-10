@@ -1419,7 +1419,16 @@ Description=
 Path=rss/1941.simperiod
 Class=hec.clientapp.model.SimulationPeriod
 Index=880
-ModifiedTime=1793748346099
+ModifiedTime=1794250572685
+ManagerProxyEnd
+
+ManagerProxyBegin
+Name=TestTrial
+Description=
+Path=rss/TestTrial.simperiod
+Class=hec.clientapp.model.SimulationPeriod
+Index=1071
+ModifiedTime=1794279289163
 ManagerProxyEnd
 AllowStateVarsAsJavaClasses=false
 AllowScriptedRulesAsJavaClasses=false

@@ -497,3 +497,9 @@ Added WithdrawalConfigNone.csv to be able to model no additional consumptive use
 Added softMin fall flow at Fern Ridge per andy martin
 Added new wat alternative "FIRO_Test_FIROSpaceNoWithdrawals" with FIRO but no withdrawals to show how often we hit rule curve in the fall
 Added new wat alt "FIRO_Base_NoWithdrawals" to show what that looks like.
+
+# `NWP_Willamette_Master_2026_11_10_Multithread` [10 Nov 2026 07:54 / g2encjer]
+Got multithread working:
+-Use Files.readAllBytes and Files.write insteaed of open() for opening config files
+-Don't force module reload for each compute when running paralell - means ResSim has to be restarted if a script is edited - Scripts can be set to recognize multithread compute and turn off module reload, then you could run serial and that would reload script updates without restarting ResSim
+-Omit Pyhon thread metadata when using multithread with logging.logThreads = False - Scripts can be set to recognize multithread compute and turn off this specific logging for multithread only

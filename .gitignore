@@ -90,3 +90,11 @@ dummy-write-*/
 
 # Per-initialization reload decision receipts
 module-load-diagnostics/
+**/parallel-safe-io-redesign/results/
+**/shared/Ensemble_Inputs/ResSimInputsEnsemble.dss
+**/shared/stress-inputs-*.dss
+simulation.dss
+raw_rfc_csv/
+*.stress-members.json
+*.members.json
+*.zip
