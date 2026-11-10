@@ -497,11 +497,16 @@ class WorkflowMenu(JFrame):
         panel.add(JLabel('Choose archive folder'));panel.add(JButton('Browse...', actionPerformed=browse))
         panel.add(JLabel('Requested members (match native ResSim selection)'));panel.add(years)
         panel.add(JLabel('OSI source year'));panel.add(osi)
+        leap = JComboBox(['Require explicit February 29 values', 'Interpolate February 28 to March 1', 'Hold February 28 values'])
+        leap_codes = ['error','linear','feb28']
+        leap.setSelectedIndex(leap_codes.index(self.archive_settings.get('rule_curve_leap_day','linear')))
+        panel.add(JLabel('Rule-curve leap-day handling'));panel.add(leap)
         if JOptionPane.showConfirmDialog(self, panel, 'Archived RFC inputs - use selected RTS forecast dates',
                 JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION: return
         try:
             settings = {'source':'archive','archive_folder':str(folder.getText()).strip(),
-                        'members':str(years.getText()).strip(),'osi_source_member':int(str(osi.getText()).strip())}
+                        'members':str(years.getText()).strip(),'osi_source_member':int(str(osi.getText()).strip()),
+                        'rule_curve_leap_day':leap_codes[leap.getSelectedIndex()]}
             self.archive_settings = settings
             # Preferences belong to this imported watershed, not a standalone simulation.
             with codecs.open(os.path.join(EXTERNAL_PYTHON_DIR, 'rfc-archive-settings.json'), 'w', 'utf-8') as handle:

@@ -25,18 +25,26 @@ def annual_table(path):
     return schedule
 
 
-def expand(schedule, begin, end):
+def expand(schedule, begin, end, leap_day="error"):
+    if leap_day not in ('error','linear','feb28'):
+        raise ValueError('Unknown rule-curve leap-day policy: '+str(leap_day))
     # Include an extra daily point at each boundary for model interpolation.
     day = begin.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=1)
     last = end.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
     dates, values = [], {name: [] for name in RESERVOIRS}
     while day <= last:
         key = (day.month, day.day)
-        if key not in schedule:
-            raise ValueError('No supplied rule-curve value for {}; define that day explicitly (including Feb 29)'.format(day.date()))
+        row = schedule.get(key)
+        if row is None and key==(2,29) and leap_day!='error':
+            if (2,28) not in schedule or (3,1) not in schedule:
+                raise ValueError('Leap-day policy requires supplied February 28 and March 1 rows')
+            row = {name:(schedule[(2,28)][name]+schedule[(3,1)][name])/2.0
+                   if leap_day=='linear' else schedule[(2,28)][name] for name in RESERVOIRS}
+        if row is None:
+            raise ValueError('No supplied rule-curve value for {}; choose a February 29 policy in the archive dialog or supply an explicit row'.format(day.date()))
         dates.append(day)
         for name in RESERVOIRS:
-            values[name].append(schedule[key][name])
+            values[name].append(row[name])
         day += timedelta(days=1)
     return dates, values
 
@@ -46,7 +54,10 @@ def main():
     if context is None:
         raise ValueError('This loader requires explicit forecast context; standalone files are unchanged')
     schedule = annual_table(Path(__file__).with_name('CON_SEASON_RULE_CURVES.csv'))
-    dates, values = expand(schedule, context.lookback, context.end)
+    settings=context.data.get('archive_settings',context.data.get('menu_settings',{}))
+    policy=settings.get('rule_curve_leap_day','linear')
+    dates, values = expand(schedule, context.lookback, context.end, leap_day=policy)
+    print('Rule-curve February 29 policy:',policy,flush=True)
     import numpy as np
     from pydsstools.heclib.dss import HecDss
     from pydsstools.core import TimeSeriesContainer

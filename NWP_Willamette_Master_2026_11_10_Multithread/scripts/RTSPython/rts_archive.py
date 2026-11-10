@@ -48,6 +48,16 @@ def preview(data,settings):
     context=Context(data)
     folder,members,osi=validated_settings(settings)
     report=check_archive(folder,archive_window(context),members,osi,forecast_timezone=context.timezone)
+    from write_rule_curves import annual_table,expand
+    policy=settings.get('rule_curve_leap_day','linear')
+    try:
+        schedule=annual_table(Path(__file__).with_name('CON_SEASON_RULE_CURVES.csv'))
+        expand(schedule,context.lookback,context.end,leap_day=policy)
+    except ValueError as error:
+        report['errors'].append('Rule curves: '+str(error))
+    report['rule_curve_leap_day']=policy
+    report['compatible']=not report['errors']
+    report['warnings'].append('Rule-curve February 29 policy: '+policy+' (explicit table values take precedence).')
     report['forecast_name']=data['forecast_name'];report['run_name']=data['run_name']
     report['warnings'].append('Requested members must match the native RTS ResSim ensemble selection; this check does not change that selection.')
     report['warnings'].append('RTS daily aggregation converts GMT samples to the selected forecast timezone before the legacy six-hour shift.')

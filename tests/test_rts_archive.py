@@ -54,6 +54,19 @@ class RtsArchiveTests(unittest.TestCase):
             receipt=json.loads((folder/'forecast.archive.json').read_text())
             self.assertEqual(len(receipt['sources']),27)
 
+    def test_missing_leap_day_is_detected_before_download_or_staging(self):
+        with tempfile.TemporaryDirectory() as temp,contextlib.redirect_stdout(io.StringIO()):
+            root=Path(temp);live=root/'forecast.dss';live.write_bytes(b'unchanged')
+            data=self.data(live)
+            data.update(lookback=['27Feb2020','2400'],start=['28Feb2020','2400'],end=['01Mar2020','2400'],
+                        menu_settings={'rule_curve_leap_day':'error'})
+            source=root/'context.json';source.write_text(json.dumps(data))
+            with patch.object(sys,'argv',['run_extraction.py','--context',str(source),'--execute']),patch.object(run_extraction.subprocess,'Popen') as download:
+                with self.assertRaisesRegex(ValueError,'2020-02-29'):run_extraction.main()
+                download.assert_not_called()
+            self.assertEqual(live.read_bytes(),b'unchanged')
+            self.assertEqual(list(root.glob('extraction-test-*')),[])
+
     def test_rts_cwms_observation_requests_end_at_forecast_start(self):
         import ast
         import pandas as pd

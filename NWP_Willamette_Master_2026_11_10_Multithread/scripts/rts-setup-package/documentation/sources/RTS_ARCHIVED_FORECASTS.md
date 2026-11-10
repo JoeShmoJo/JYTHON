@@ -54,3 +54,13 @@ Automated checks cover context/date conversion, archive/member preview, DSS7
 routing, script selection, local installer contents and preservation of the live
 DSS during staging. An actual imported RTS forecast compute must still be tested
 in the installed Windows HEC application.
+
+## Leap-day rule curves
+
+For a missing February 29 row, the default is linear interpolation: each mapped
+reservoir's February 28 and March 1 elevations are averaged. An explicit February
+29 row takes precedence. The archive dialog exposes this policy, holding February
+28 instead, or requiring an explicit value. Missing dates other than February 29
+still stop extraction. The compatibility preview checks the entire expanded rule
+curve (including boundary days) before any CWMS download or staged DSS write.
+The chosen policy is retained in the extraction context and log.

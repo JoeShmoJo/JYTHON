@@ -24,7 +24,9 @@ def main():
     print('Existing DSS:', context.dss_path.is_file(), flush=True)
     print('Local window:', context.lookback, context.start, context.end, data['timezone'], flush=True)
     print('UTC window:', context.utc(context.lookback), context.utc(context.start), context.utc(context.end), flush=True)
-    settings=data.get('menu_settings',{})
+    settings=dict(data.get('menu_settings',{}))
+    settings.setdefault('rule_curve_leap_day','linear')
+    data['menu_settings']=settings
     archive_mode=settings.get('source')=='archive'
     if archive_mode:
         from rts_archive import preview
@@ -35,6 +37,11 @@ def main():
     else:
         print('RFC uses the currently published ensemble; requested dates cannot extend its coverage.', flush=True)
     print('RFC daily aggregation retains the legacy six-hour shift after conversion to forecast local time.', flush=True)
+    from write_rule_curves import annual_table,expand
+    policy=settings.get('rule_curve_leap_day','linear')
+    expand(annual_table(Path(__file__).with_name('CON_SEASON_RULE_CURVES.csv')),
+           context.lookback,context.end,leap_day=policy)
+    print('Rule-curve preflight passed; February 29 policy:',policy,flush=True)
     if not args.execute:
         print('PLAN ONLY: no downloads or DSS opens. Use --execute for a separate test copy.', flush=True)
         return
