@@ -88,3 +88,40 @@ Automated fixtures exercise member separation, unit conversion, missing-data
 handling, volume integration, URL selection, and a complete mocked download and
 report run. Live NOAA access was blocked by the cloud proxy; live header parsing,
 endpoint availability and actual balances must be checked on the user's machine.
+
+## Expanded checks near the disputed locations
+
+Run with `--candidate-checks` to include local comparisons and sensitivity pairs:
+
+| Location being tested | Nearby reference | Baseline versus added term |
+| --- | --- | --- |
+| SPRO3 | HARO3 natural | Exclude versus include SPRO3 natural |
+| EUGO3 | HARO3 natural | Exclude versus add EUGO3 local |
+| MCZO3 | HARO3 natural | Exclude versus add MCZO3 local |
+| MCMO3 | WLSO3 natural | Salem total + Wilsonville local, versus add MCMO3 natural |
+| AURO3 | OCUO3 natural | Wilsonville total + above-falls local, versus add AURO3 natural |
+| CANO3 | OCUO3 natural | Wilsonville total + above-falls local, versus add CANO3 natural |
+
+The upper-basin equations follow the supplied topology; lower-basin equations
+are explicitly hypotheses requiring confirmation. In particular, an OCUO3 or
+WLSO3 local product may not exist or may have different accounting semantics.
+Unavailable/invalid optional products are listed in `skipped-checks.csv`, not
+replaced with zeros. Independent valid checks still run. Required Salem inputs
+remain mandatory. A `partial_checks` manifest means some checks were skipped;
+coverage counts must also be inspected.
+
+Other checks cover Lookout Point, Jasper, Goshen, Vida, Foster, Waterloo, Mehama,
+Jefferson, Monroe, Corvallis, Albany and Salem reconstructed from nearer totals.
+Eugene and Walterville have direct component-total candidate checks as well.
+Never add AURO3, CANO3 or MCMO3 to a Salem sum: they are downstream of Salem.
+
+`hypothesis-members.csv` pairs the same member and reference window and reports
+which variant has smaller **absolute** volume bias. Positive improvement means
+adding the disputed input reduced the absolute error. `hypothesis-summary.csv`
+counts baseline wins, variant wins and ties; check member counts before comparing.
+A mixed result or many ties is not a clear inclusion/exclusion decision.
+
+`summary.csv` now also reports median absolute volume bias and MAE as a percent
+of mean absolute reference flow. These scale comparisons to the local reference
+instead of diluting the difference in a much larger downstream basin. They are
+not tolerances and do not establish routing correctness.

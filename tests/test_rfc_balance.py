@@ -104,6 +104,45 @@ class RfcBalanceTests(unittest.TestCase):
             self.assertEqual(len(list((output/'raw').glob('*.csv'))),28)
         self.assertEqual(len(urls),29)  # 28 products plus the issue-stability reread.
 
+    def test_hypothesis_winner_uses_absolute_error_and_paired_members(self):
+        frame=pd.DataFrame([
+            dict(check='Harrisburg_without_SPRO',member=1982,complete=True,start='a',end='b',volume_bias_percent=-10),
+            dict(check='Harrisburg_with_SPRO',member=1982,complete=True,start='a',end='b',volume_bias_percent=-2),
+            dict(check='Harrisburg_without_SPRO',member=1983,complete=True,start='a',end='b',volume_bias_percent=-1),
+            dict(check='Harrisburg_with_SPRO',member=1983,complete=True,start='a',end='b',volume_bias_percent=3),
+        ])
+        paired=balance.compare_hypotheses(frame).set_index('member')
+        self.assertEqual(paired.loc[1982,'winner'],'variant')
+        self.assertEqual(paired.loc[1983,'winner'],'baseline')
+        self.assertEqual(paired.loc[1982,'absolute_volume_error_improvement_pp'],8)
+
+    def test_optional_missing_product_does_not_discard_valid_checks(self):
+        class Response:
+            def __init__(self,url):
+                self.url=url
+                self.content=('Issue: 2026-11-10 12:00 UTC\nStation metadata\nUnits: KCFS\ninterval 6h\nmetadata\n'
+                    'TIME,FLOW\nUTC,1982\n2026-11-11 00:00,1\n2026-11-11 06:00,1\n').encode()
+            def raise_for_status(self):
+                if '/OCUO3N_' in self.url:
+                    raise ValueError('HTTP 404 fixture')
+        class Session:
+            headers={}
+            def get(self,url,timeout):
+                return Response(url)
+        with tempfile.TemporaryDirectory() as directory:
+            output=Path(directory)/'report'
+            argv=['validator','--output',str(output),'--members','1982','--candidate-checks']
+            with patch.object(balance.requests,'Session',Session),patch.object(balance.sys,'argv',argv),redirect_stdout(io.StringIO()):
+                balance.main()
+            manifest=json.loads((output/'manifest.json').read_text())
+            self.assertEqual(manifest['status'],'partial_checks')
+            checks=set(pd.read_csv(output/'member-metrics.csv')['check'])
+            self.assertIn('Salem_with_SPRO',checks)
+            self.assertIn('Harrisburg_with_SPRO',checks)
+            self.assertNotIn('Above_Falls_with_Aurora',checks)
+            skipped=pd.read_csv(output/'skipped-checks.csv')
+            self.assertTrue(skipped['reason'].str.contains('OCUO3N').all())
+
     def test_spro_alternative_has_exactly_one_extra_term(self):
         without=balance.CHECKS['Harrisburg_without_SPRO'][1]
         with_spro=balance.CHECKS['Harrisburg_with_SPRO'][1]

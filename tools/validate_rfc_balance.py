@@ -31,6 +31,24 @@ CANDIDATE_CHECKS = {
     'Harrisburg_expanded_with_SPRO': ('HARO3N', ['TRBO3N','BLUO3N','CGRO3N','VIDO3L','SPRO3N','HCRO3N','LOPO3L','FALO3N','JASO3L','COTO3N','DORO3N','GOSO3L','HARO3L']),
     'Harrisburg_with_SPRO_and_Eugene_local': ('HARO3N', ['VIDO3N','SPRO3N','JASO3N','GOSO3N','HARO3L','EUGO3L']),
     'Harrisburg_with_SPRO_and_Walterville_local': ('HARO3N', ['VIDO3N','SPRO3N','JASO3N','GOSO3N','HARO3L','MCZO3L']),
+    'Foster': ('FOSO3N', ['GPRO3N','FOSO3L']),
+    'Waterloo': ('WTLO3N', ['FOSO3N','WTLO3L']),
+    'Mehama': ('MEHO3N', ['DETO3N','LSMO3N','MEHO3L']),
+    'Jefferson': ('JFFO3N', ['MEHO3N','WTLO3N','JFFO3L']),
+    'Jefferson_plus_Thomas_intermediate': ('JFFO3N', ['MEHO3N','WTLO3N','JFFO3L','TRSO3N']),
+    'Monroe': ('MNRO3N', ['FRNO3N','MNRO3L']),
+    'Corvallis_with_Philomath': ('CORO3N', ['HARO3N','MNRO3N','PHIO3N','CORO3L']),
+    'Corvallis_without_Philomath': ('CORO3N', ['HARO3N','MNRO3N','CORO3L']),
+    'Albany': ('ALBO3N', ['CORO3N','ALBO3L']),
+    'Salem_from_nearest_totals': ('SLMO3N', ['ALBO3N','JFFO3N','SUVO3N','SLMO3L']),
+    # Lower-basin equations are hypotheses, not confirmed RFC connections.
+    # They deliberately require the local products; absence must not mean zero.
+    'Wilsonville_without_McMinnville': ('WLSO3N', ['SLMO3N','WLSO3L']),
+    'Wilsonville_with_McMinnville': ('WLSO3N', ['SLMO3N','WLSO3L','MCMO3N']),
+    'Above_Falls_without_Aurora_Canby': ('OCUO3N', ['WLSO3N','OCUO3L']),
+    'Above_Falls_with_Aurora': ('OCUO3N', ['WLSO3N','OCUO3L','AURO3N']),
+    'Above_Falls_with_Canby': ('OCUO3N', ['WLSO3N','OCUO3L','CANO3N']),
+    'Above_Falls_with_Aurora_Canby': ('OCUO3N', ['WLSO3N','OCUO3L','AURO3N','CANO3N']),
 }
 # These are the independent inputs in the user's requested model mapping.
 # N means the natural URL product, NOT necessarily a basin-total flow.
@@ -148,6 +166,9 @@ def compare(reference, components, members):
                    mae_cfs=float(np.mean(np.abs(residual[valid]))) if n else None,
                    rmse_cfs=float(np.sqrt(np.mean(residual[valid]**2))) if n else None,
                    max_abs_error_cfs=float(np.max(np.abs(residual[valid]))) if n else None)
+        mean_reference = float(np.mean(np.abs(actual[valid]))) if n else 0
+        row['mae_percent_mean_reference'] = (100*row['mae_cfs']/mean_reference
+                                               if mean_reference > 1e-9 else None)
         # Trapezoidal integration of instantaneous CFS on the same time grid.
         # Do not bridge missing intervals or extrapolate missing endpoints.
         if complete:
@@ -160,6 +181,40 @@ def compare(reference, components, members):
         series.append(pd.DataFrame(dict(timestamp_utc=reference.index,member=member,
                                          reference_cfs=actual,sum_cfs=predicted,residual_cfs=residual)))
     return metrics,pd.concat(series,ignore_index=True)
+
+
+HYPOTHESIS_PAIRS = {
+    'SPRO_at_Salem': ('Salem_without_SPRO','Salem_with_SPRO'),
+    'SPRO_at_Harrisburg': ('Harrisburg_without_SPRO','Harrisburg_with_SPRO'),
+    'EUGO_at_Harrisburg': ('Harrisburg_with_SPRO','Harrisburg_with_SPRO_and_Eugene_local'),
+    'MCZO_at_Harrisburg': ('Harrisburg_with_SPRO','Harrisburg_with_SPRO_and_Walterville_local'),
+    'MCMO_at_Wilsonville': ('Wilsonville_without_McMinnville','Wilsonville_with_McMinnville'),
+    'AURO_at_Above_Falls': ('Above_Falls_without_Aurora_Canby','Above_Falls_with_Aurora'),
+    'CANO_at_Above_Falls': ('Above_Falls_without_Aurora_Canby','Above_Falls_with_Canby'),
+}
+
+
+def compare_hypotheses(metrics):
+    rows = []
+    if 'volume_bias_percent' not in metrics:
+        return pd.DataFrame(columns=['hypothesis','member','winner'])
+    for name,(baseline,variant) in HYPOTHESIS_PAIRS.items():
+        left = metrics[(metrics['check']==baseline) & metrics['complete']].set_index('member')
+        right = metrics[(metrics['check']==variant) & metrics['complete']].set_index('member')
+        for member in sorted(set(left.index) & set(right.index)):
+            a,b = left.loc[member],right.loc[member]
+            if a['start'] != b['start'] or a['end'] != b['end']:
+                raise ValueError('Hypotheses use different comparison windows')
+            before,after = a['volume_bias_percent'],b['volume_bias_percent']
+            if not np.isfinite(before) or not np.isfinite(after):
+                continue
+            improvement = abs(before)-abs(after)
+            winner = 'variant' if improvement > 1e-9 else ('baseline' if improvement < -1e-9 else 'tie')
+            rows.append(dict(hypothesis=name,member=member,baseline=baseline,variant=variant,
+                baseline_volume_bias_percent=before,variant_volume_bias_percent=after,
+                absolute_volume_error_improvement_pp=improvement,winner=winner))
+    return pd.DataFrame(rows,columns=['hypothesis','member','baseline','variant',
+        'baseline_volume_bias_percent','variant_volume_bias_percent','absolute_volume_error_improvement_pp','winner'])
 
 
 def main():
@@ -189,7 +244,8 @@ def main():
     save()
     try:
         session=requests.Session(); session.headers.update({'User-Agent':'Willamette-RFC-balance-check/1.0'})
-        texts={}; problems=[]
+        texts={}; problems={}
+        required = {s for ref,inputs in SALEM_CHECKS.values() for s in [ref]+inputs}
         for source in ['SLMO3N'] + [s for s in sources if s != 'SLMO3N']:
             url=url_for(source)
             try:
@@ -210,48 +266,76 @@ def main():
                     bytes=len(content),retrieved_utc=datetime.now(timezone.utc).isoformat())
                 print('Saved',source,flush=True)
             except Exception as error:
-                problems.append(source+': '+str(error))
+                texts.pop(source,None)
+                problems[source] = str(error)
                 if source == 'SLMO3N':
                     break
             save()
-        if problems:
-            raise ValueError('Missing sources; no incomplete sums accepted:\n'+'\n'.join(problems))
+        if required - set(texts):
+            raise ValueError('Required Salem sources missing; no incomplete sums accepted: '+
+                             str({s:problems.get(s,'missing') for s in sorted(required-set(texts))}))
         if not args.raw_dir:
-            # Detect an issue update during the batch using an unchanged anchor.
             response=session.get(url_for('SLMO3N'),timeout=90);response.raise_for_status()
             if hashlib.sha256(response.content).hexdigest()!=manifest['sources']['SLMO3N']['sha256']:
                 raise ValueError('Salem reference changed during download; retry in a new output directory')
-        signatures={source:issue_signature(text) for source,text in texts.items()}
-        if len({tuple(signature) for signature in signatures.values()}) != 1:
-            manifest['issue_signatures']=signatures
-            raise ValueError('Metadata issue signatures differ; mixed issues are not accepted')
-        manifest['issue_signature']=next(iter(signatures.values()))
-        frames={source:parse_espf(text) for source,text in texts.items()}
-        members=parse_members(args.members) or sorted(frames['SLMO3N'].columns)
-        missing={source:sorted(set(members)-set(frame.columns)) for source,frame in frames.items()
-                 if set(members)-set(frame.columns)}
-        if missing:
-            raise ValueError('Requested ensemble members absent: '+str(missing))
+        anchor_issue = issue_signature(texts['SLMO3N'])
+        manifest['issue_signature'] = anchor_issue
+        frames = {}
+        for source,text in texts.items():
+            try:
+                if issue_signature(text) != anchor_issue:
+                    raise ValueError('Metadata issue differs from Salem reference')
+                frames[source] = parse_espf(text)
+            except Exception as error:
+                problems[source] = str(error)
+        members=parse_members(args.members) or sorted(frames.get('SLMO3N',pd.DataFrame()).columns)
+        for source,frame in list(frames.items()):
+            missing = sorted(set(members)-set(frame.columns))
+            if missing:
+                problems[source] = 'Requested members absent: '+str(missing)
+                del frames[source]
+        if required - set(frames):
+            raise ValueError('Required Salem sources invalid: '+str({s:problems.get(s,'missing') for s in sorted(required-set(frames))}))
+        manifest['source_errors'] = problems
         manifest['members']=members
         metrics=[]
+        skipped=[]
         for name,(ref,inputs) in checks.items():
+            unavailable = [s for s in [ref]+inputs if s not in frames]
+            if unavailable:
+                skipped.append(dict(check=name,reason="Unavailable or invalid products: "+", ".join(unavailable)))
+                continue
             rows,series=compare(frames[ref],[frames[source] for source in inputs],members)
             for row in rows:row['check']=name
             metrics.extend(rows)
             series.to_csv(args.output/(name+'-series.csv.gz'),index=False,compression='gzip')
         result=pd.DataFrame(metrics)
         result.to_csv(args.output/'member-metrics.csv',index=False)
+        pd.DataFrame(skipped,columns=['check','reason']).to_csv(args.output/'skipped-checks.csv',index=False)
+        hypotheses = compare_hypotheses(result)
+        hypotheses.to_csv(args.output/'hypothesis-members.csv',index=False)
+        wins = (hypotheses.groupby(['hypothesis','winner']).size().unstack(fill_value=0)
+                if len(hypotheses) else pd.DataFrame())
+        wins.to_csv(args.output/'hypothesis-summary.csv')
+        manifest['skipped_checks'] = skipped
         summary=[]
         for check,group in result.groupby('check'):
             complete=group[group['complete']]
             summary.append(dict(check=check,members=len(group),complete_members=len(complete),
                 median_volume_bias_percent=complete['volume_bias_percent'].median() if 'volume_bias_percent' in complete else None,
+                median_absolute_volume_bias_percent=complete['volume_bias_percent'].abs().median() if 'volume_bias_percent' in complete else None,
+                median_mae_percent=complete['mae_percent_mean_reference'].median(),
                 median_mae_cfs=complete['mae_cfs'].median(),
                 max_member_mae_cfs=complete['mae_cfs'].max()))
         pd.DataFrame(summary).to_csv(args.output/'summary.csv',index=False)
-        manifest['status']='complete' if bool(result['complete'].all()) else 'partial_coverage'
+        manifest['status']=('partial_checks' if skipped else
+                            ('complete' if bool(result['complete'].all()) else 'partial_coverage'))
         save()
         print('\nSUMMARY\n'+pd.DataFrame(summary).to_string(index=False))
+        if len(wins):
+            print('\nPAIRED HYPOTHESIS COMPARISONS (smaller absolute volume error)\n'+wins.to_string())
+        if skipped:
+            print('\nSKIPPED CHECKS\n'+pd.DataFrame(skipped).to_string(index=False))
         print('\nReports:',args.output)
         print('A close unlagged volume balance supports accounting; daily errors may reflect routing. Missing data is not zero-filled.')
     except BaseException as error:
