@@ -143,6 +143,65 @@ class RfcBalanceTests(unittest.TestCase):
             skipped=pd.read_csv(output/'skipped-checks.csv')
             self.assertTrue(skipped['reason'].str.contains('OCUO3N').all())
 
+    def test_downstream_trace_reuses_raw_and_fetches_only_missing_product(self):
+        content=('Issue: 2026-11-10 12:00 UTC\nmetadata\nUnits: KCFS\ninterval 6h\nmetadata\n'
+                 'TIME,FLOW\nUTC,1982\n2026-11-11 00:00,1\n2026-11-11 06:00,1\n').encode()
+        urls=[]
+        class Response:
+            def __init__(self):
+                self.content=content
+            def raise_for_status(self):
+                pass
+        class Session:
+            headers={}
+            def get(self,url,timeout):
+                urls.append(url)
+                return Response()
+        with tempfile.TemporaryDirectory() as directory:
+            raw=Path(directory)/'raw';raw.mkdir()
+            checks=dict(balance.SALEM_CHECKS,**balance.TRACE_CHECKS)
+            sources={s for ref,inputs in checks.values() for s in [ref]+inputs}
+            for source in sources-{'WSLO3N'}:
+                (raw/(source+'.csv')).write_bytes(content)
+            output=Path(directory)/'report'
+            argv=['validator','--output',str(output),'--raw-dir',str(raw),'--fetch-missing',
+                  '--downstream-trace','--members','1982']
+            with patch.object(balance.requests,'Session',Session),patch.object(balance.sys,'argv',argv),redirect_stdout(io.StringIO()):
+                balance.main()
+            self.assertEqual(set(urls),{balance.url_for('WSLO3N'),balance.url_for('SLMO3N')})
+            self.assertEqual(len(urls),2)
+            self.assertEqual(json.loads((output/'manifest.json').read_text())['status'],'complete')
+            trace=pd.read_csv(output/'downstream-trace-summary.csv')
+            self.assertEqual(len(trace),len(balance.TRACE_PAIRS))
+            self.assertTrue((trace['paired_members']==1).all())
+            self.assertFalse((raw/'WSLO3N.csv').exists())  # Input archive is unchanged.
+
+    def test_trace_rosters_use_raw_inputs_not_upstream_totals(self):
+        self.assertEqual(set(balance.SALEM_TRACE_INPUTS),set(balance.MODEL_INPUTS))
+        self.assertEqual(len(balance.SALEM_TRACE_INPUTS),len(set(balance.SALEM_TRACE_INPUTS)))
+        for reference,inputs in balance.TRACE_CHECKS.values():
+            self.assertNotIn('VIDO3N',inputs)
+            self.assertNotIn('HARO3N',inputs)
+            self.assertNotIn('JASO3N',inputs)
+            self.assertNotIn('GOSO3N',inputs)
+            self.assertNotIn('ALBO3N',inputs)
+            self.assertEqual(len(inputs),len(set(inputs)))
+            self.assertNotIn(reference,inputs)
+        for name,(before,after) in balance.TRACE_PAIRS.items():
+            reference,left=balance.TRACE_CHECKS[before]
+            other,right=balance.TRACE_CHECKS[after]
+            self.assertEqual(reference,other)
+            self.assertEqual(len(set(right)-set(left)),1)
+        for checkpoint in ('Harrisburg','Corvallis','Albany','Salem'):
+            self.assertIn('Trace_SPRO3N_at_'+checkpoint,balance.TRACE_PAIRS)
+            self.assertIn('Trace_EUGO3L_at_'+checkpoint,balance.TRACE_PAIRS)
+            self.assertIn('Trace_MCZO3L_at_'+checkpoint,balance.TRACE_PAIRS)
+        for checkpoint in ('Harrisburg','Corvallis','Albany','Salem'):
+            roster=balance.TRACE_ROSTERS[checkpoint][1]
+            self.assertNotIn('AURO3N',roster)
+            self.assertNotIn('CANO3N',roster)
+            self.assertNotIn('MCMO3N',roster)
+
     def test_spro_alternative_has_exactly_one_extra_term(self):
         without=balance.CHECKS['Harrisburg_without_SPRO'][1]
         with_spro=balance.CHECKS['Harrisburg_with_SPRO'][1]

@@ -125,3 +125,50 @@ A mixed result or many ties is not a clear inclusion/exclusion decision.
 of mean absolute reference flow. These scale comparisons to the local reference
 instead of diluting the difference in a much larger downstream basin. They are
 not tolerances and do not establish routing correctness.
+
+## Cumulative downstream trace (no upstream-total shortcut)
+
+Use `--downstream-trace` to trace disputed contributions through successive
+geographic checkpoints. Each sum is rebuilt from explicit project inflows and
+local products, not from upstream natural-flow totals. This avoids implicitly
+carrying a report-only local downstream inside a total reference.
+
+The trace tests:
+
+- SPRO3 at Harrisburg, Corvallis, Albany, Salem, Wilsonville and above the falls.
+- EUGO3 at Eugene and those downstream checkpoints.
+- MCZO3 at Walterville and those downstream checkpoints.
+- MCMO3 at Wilsonville and above the falls.
+- AURO3 and CANO3 above the falls.
+
+The last three lower-basin sources still lack multiple downstream checkpoints
+in this tool. A result at one point does not establish what RFC routes below it.
+The geographic rosters are hypotheses; their full lists are retained in the
+manifest. The above-falls roster includes WSLO3 natural (Tualatin/West Linn)
+and does not invent an unavailable OCUO3 local. Confirm lower-basin routing and
+product semantics before treating that roster as complete.
+
+`downstream-trace-summary.csv` reports source, checkpoint, paired-member counts,
+median volume bias without/with the source, the added source's volume as a
+percentage of the reference, and inclusion/exclusion wins. A negative added
+volume reveals a negative net product contribution, which needs examination;
+it is not automatically proof that a local should be excluded.
+`downstream-trace-members.csv` retains the member-by-member results.
+
+Evidence for a report-only local would be a coherent pattern: it is needed to
+reconstruct its own location but is not needed (or double-counts) at downstream
+locations when those downstream sums include their full local products. Check
+matching windows, source semantics and both signed/absolute residuals; errors
+can compensate. These balance tests do not directly observe native RFC routing.
+
+To reuse earlier downloads and retrieve only missing products, combine:
+
+```text
+--downstream-trace --raw-dir C:\path\to\previous-report\raw --fetch-missing
+```
+
+Cached raw files are never changed. New files go to the new output folder. If
+any HTTP fetch is required, the Salem anchor is checked against the cached
+snapshot; a changed reference aborts rather than mixing snapshots. Optional
+products with different issue metadata are skipped. If the reference changed,
+run a fresh download in another new folder instead.

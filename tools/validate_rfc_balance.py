@@ -67,6 +67,51 @@ CHECKS = dict(SALEM_CHECKS, **CANDIDATE_CHECKS)
 
 
 
+# Explicit geographic input rosters: never reconstruct a downstream checkpoint
+# from a measured/computed upstream total. Roster membership is a hypothesis
+# separate from RFC's routing membership, which these tests are investigating.
+VIDA_INPUTS = ['TRBO3N','BLUO3N','CGRO3N','VIDO3L']
+JASPER_INPUTS = ['HCRO3N','LOPO3L','FALO3N','JASO3L']
+GOSHEN_INPUTS = ['COTO3N','DORO3N','GOSO3L']
+HARRISBURG_INPUTS = VIDA_INPUTS + JASPER_INPUTS + GOSHEN_INPUTS + ['SPRO3N','HARO3L']
+CORVALLIS_INPUTS = HARRISBURG_INPUTS + ['FRNO3N','MNRO3L','PHIO3N','CORO3L']
+ALBANY_INPUTS = CORVALLIS_INPUTS + ['ALBO3L']
+SANTIAM_INPUTS = ['DETO3N','LSMO3N','MEHO3L','GPRO3N','FOSO3L','WTLO3L','JFFO3L']
+SALEM_TRACE_INPUTS = ALBANY_INPUTS + SANTIAM_INPUTS + ['SUVO3N','SLMO3L']
+TRACE_ROSTERS = {
+    'Eugene': ('EUGO3N', JASPER_INPUTS + GOSHEN_INPUTS + ['EUGO3L']),
+    'Walterville': ('MCZO3N', VIDA_INPUTS + ['MCZO3L']),
+    'Harrisburg': ('HARO3N', HARRISBURG_INPUTS),
+    'Corvallis': ('CORO3N', CORVALLIS_INPUTS),
+    'Albany': ('ALBO3N', ALBANY_INPUTS),
+    'Salem': ('SLMO3N', SALEM_TRACE_INPUTS),
+    'Wilsonville': ('WLSO3N', SALEM_TRACE_INPUTS + ['WLSO3L']),
+    # Lower basin remains a geographic/accounting hypothesis. No OCUO3 local
+    # is invented: the provided basin table shows zero local zones. This does
+    # not prove that the roster includes every lower-basin contribution.
+    'Above_Falls': ('OCUO3N', SALEM_TRACE_INPUTS + ['WLSO3L','WSLO3N']),
+}
+TRACE_LOCATIONS = {
+    'SPRO3N': ['Harrisburg','Corvallis','Albany','Salem','Wilsonville','Above_Falls'],
+    'EUGO3L': ['Eugene','Harrisburg','Corvallis','Albany','Salem','Wilsonville','Above_Falls'],
+    'MCZO3L': ['Walterville','Harrisburg','Corvallis','Albany','Salem','Wilsonville','Above_Falls'],
+    'MCMO3N': ['Wilsonville','Above_Falls'],
+    'AURO3N': ['Above_Falls'],
+    'CANO3N': ['Above_Falls'],
+}
+TRACE_CHECKS = {}
+TRACE_PAIRS = {}
+for disputed, locations in TRACE_LOCATIONS.items():
+    for location in locations:
+        reference, roster = TRACE_ROSTERS[location]
+        without = [s for s in roster if s != disputed]
+        before = 'Trace_' + location + '_without_' + disputed
+        after = 'Trace_' + location + '_with_' + disputed
+        TRACE_CHECKS[before] = (reference, without)
+        TRACE_CHECKS[after] = (reference, without + [disputed])
+        TRACE_PAIRS['Trace_' + disputed + '_at_' + location] = (before, after)
+
+
 def url_for(source):
     station, product = source[:-1], source[-1]
     if product == 'N':
@@ -198,7 +243,7 @@ def compare_hypotheses(metrics):
     rows = []
     if 'volume_bias_percent' not in metrics:
         return pd.DataFrame(columns=['hypothesis','member','winner'])
-    for name,(baseline,variant) in HYPOTHESIS_PAIRS.items():
+    for name,(baseline,variant) in dict(HYPOTHESIS_PAIRS, **TRACE_PAIRS).items():
         left = metrics[(metrics['check']==baseline) & metrics['complete']].set_index('member')
         right = metrics[(metrics['check']==variant) & metrics['complete']].set_index('member')
         for member in sorted(set(left.index) & set(right.index)):
@@ -221,13 +266,20 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output',required=True,type=Path,help='NEW directory for raw files and reports')
     parser.add_argument('--raw-dir',type=Path,help='Read previously saved raw CSVs instead of downloading')
+    parser.add_argument('--fetch-missing',action='store_true',help='With --raw-dir, download only absent products; reject a changed reference or issue mismatch')
+    parser.add_argument('--downstream-trace', action='store_true',
+                        help='Trace disputed locals through downstream checkpoints using only explicit project inflows and locals')
     parser.add_argument('--candidate-checks', action='store_true',
                         help='Also run exploratory upstream equations; their N-product total-flow interpretation is unverified')
     parser.add_argument('--members',help='Optional: 1982-2024 or 1982,1985; default all Salem reference members')
     args=parser.parse_args()
+    if args.fetch_missing and not args.raw_dir:
+        parser.error('--fetch-missing requires --raw-dir')
     checks = dict(SALEM_CHECKS)
     if args.candidate_checks:
         checks.update(CANDIDATE_CHECKS)
+    if args.downstream_trace:
+        checks.update(TRACE_CHECKS)
     sources = sorted({source for ref, inputs in checks.values() for source in [ref]+inputs})
     if args.output.exists():
         raise ValueError('Output already exists; choose a new directory')
@@ -237,6 +289,7 @@ def main():
                   assumptions='Instantaneous, unlagged sums; no native RFC routing reproduced. Metrics are diagnostic, not pass/fail tolerances.',
                   reference_interpretation='SLMO3N is the user-confirmed Salem total-unregulated check. Other N products are inputs or unverified reference candidates; N alone does not establish a total.',
                   candidate_checks_requested=args.candidate_checks,
+                  downstream_trace_requested=args.downstream_trace,
                   equations={name:dict(reference=ref,inputs=inputs) for name,(ref,inputs) in checks.items()})
     manifest_path=args.output/'manifest.json'
     def save():
@@ -245,14 +298,19 @@ def main():
     try:
         session=requests.Session(); session.headers.update({'User-Agent':'Willamette-RFC-balance-check/1.0'})
         texts={}; problems={}
+        downloaded_any = False
         required = {s for ref,inputs in SALEM_CHECKS.values() for s in [ref]+inputs}
         for source in ['SLMO3N'] + [s for s in sources if s != 'SLMO3N']:
             url=url_for(source)
             try:
-                if args.raw_dir:
-                    content=(args.raw_dir/(source+'.csv')).read_bytes()
+                cached = args.raw_dir/(source+'.csv') if args.raw_dir else None
+                if cached is not None and (cached.exists() or not args.fetch_missing):
+                    content=cached.read_bytes()
+                    source_mode = 'reused_raw'
                 else:
                     response=session.get(url,timeout=90);response.raise_for_status();content=response.content
+                    downloaded_any = True
+                    source_mode = 'http_download'
                 (raw_dir/(source+'.csv')).write_bytes(content)
                 texts[source]=content.decode('utf-8-sig')
                 if source == 'SLMO3N':
@@ -263,7 +321,7 @@ def main():
                         print('Reference CSV header (format diagnosis):\n' + '\n'.join(texts[source].splitlines()[:8]), flush=True)
                         raise
                 manifest['sources'][source]=dict(url=url,sha256=hashlib.sha256(content).hexdigest(),
-                    bytes=len(content),retrieved_utc=datetime.now(timezone.utc).isoformat())
+                    bytes=len(content),source_mode=source_mode,loaded_utc=datetime.now(timezone.utc).isoformat())
                 print('Saved',source,flush=True)
             except Exception as error:
                 texts.pop(source,None)
@@ -274,7 +332,7 @@ def main():
         if required - set(texts):
             raise ValueError('Required Salem sources missing; no incomplete sums accepted: '+
                              str({s:problems.get(s,'missing') for s in sorted(required-set(texts))}))
-        if not args.raw_dir:
+        if not args.raw_dir or downloaded_any:
             response=session.get(url_for('SLMO3N'),timeout=90);response.raise_for_status()
             if hashlib.sha256(response.content).hexdigest()!=manifest['sources']['SLMO3N']['sha256']:
                 raise ValueError('Salem reference changed during download; retry in a new output directory')
@@ -314,6 +372,25 @@ def main():
         pd.DataFrame(skipped,columns=['check','reason']).to_csv(args.output/'skipped-checks.csv',index=False)
         hypotheses = compare_hypotheses(result)
         hypotheses.to_csv(args.output/'hypothesis-members.csv',index=False)
+        trace = hypotheses[hypotheses['hypothesis'].str.startswith('Trace_')].copy()
+        if len(trace):
+            details = {name:(source,location) for source,locations in TRACE_LOCATIONS.items()
+                       for location in locations for name in ['Trace_'+source+'_at_'+location]}
+            trace['disputed_source'] = trace['hypothesis'].map(lambda name:details[name][0])
+            trace['checkpoint'] = trace['hypothesis'].map(lambda name:details[name][1])
+        trace.to_csv(args.output/'downstream-trace-members.csv',index=False)
+        trace_summary = []
+        if len(trace):
+            for (source,checkpoint), group in trace.groupby(['disputed_source','checkpoint']):
+                trace_summary.append(dict(disputed_source=source,checkpoint=checkpoint,
+                    paired_members=len(group),
+                    median_bias_without_percent=group['baseline_volume_bias_percent'].median(),
+                    median_bias_with_percent=group['variant_volume_bias_percent'].median(),
+                    median_added_volume_percent=(group['variant_volume_bias_percent']-group['baseline_volume_bias_percent']).median(),
+                    without_wins=int((group['winner']=='baseline').sum()),
+                    with_wins=int((group['winner']=='variant').sum()),
+                    ties=int((group['winner']=='tie').sum())))
+        pd.DataFrame(trace_summary).to_csv(args.output/'downstream-trace-summary.csv',index=False)
         wins = (hypotheses.groupby(['hypothesis','winner']).size().unstack(fill_value=0)
                 if len(hypotheses) else pd.DataFrame())
         wins.to_csv(args.output/'hypothesis-summary.csv')
@@ -332,6 +409,8 @@ def main():
                             ('complete' if bool(result['complete'].all()) else 'partial_coverage'))
         save()
         print('\nSUMMARY\n'+pd.DataFrame(summary).to_string(index=False))
+        if trace_summary:
+            print('\nDOWNSTREAM TRACE\n'+pd.DataFrame(trace_summary).to_string(index=False))
         if len(wins):
             print('\nPAIRED HYPOTHESIS COMPARISONS (smaller absolute volume error)\n'+wins.to_string())
         if skipped:
