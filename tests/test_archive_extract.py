@@ -139,6 +139,22 @@ class ArchiveTests(unittest.TestCase):
                 with contextlib.redirect_stdout(io.StringIO()),self.assertRaisesRegex(ValueError,'selected ensemble members unavailable'):
                     archive.load_archive(root,self.window(),2011,[1982,2024])
 
+    def test_simulation_alternative_overrides_shared_member_selection(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);local=root/'rss/Historical/rss';local.mkdir(parents=True)
+            (root/'rss/Con_Season.ralt').write_text('RssAlt Name=Con_Season\nEnsembleMembersString:1982-2024,3000-3002\n')
+            chosen=local/'Con_Season0_Con_Season.ralt'
+            chosen.write_text('RssAlt Name=Con_Season0:Con_Season\nEnsembleMembersString:1982-2019,3000-3002\n')
+            (local/'Other0_Other.ralt').write_text('RssAlt Name=Other0:Other\nEnsembleMembersString:2024\n')
+            members,source=dates.selected_ensemble_members(root,'Con_Season','Historical',return_source=True)
+            self.assertEqual(source,str(chosen));self.assertIn(2019,members);self.assertNotIn(2020,members)
+            self.assertIn(3002,members)
+            (local/'duplicate.ralt').write_text(chosen.read_text())
+            with self.assertRaisesRegex(ValueError,'Multiple simulation'):
+                dates.selected_ensemble_members(root,'Con_Season','Historical')
+            (local/'duplicate.ralt').unlink();chosen.unlink()
+            self.assertIn(2024,dates.selected_ensemble_members(root,'Con_Season','Historical'))
+
     def test_writer_replaces_old_input_members_but_preserves_outputs(self):
         from test_dummy_inputs import FakeDss
         with tempfile.TemporaryDirectory() as temp:

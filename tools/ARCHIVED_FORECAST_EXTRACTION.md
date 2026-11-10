@@ -26,7 +26,9 @@ archive names alone do not independently establish hydrologic equivalence to
 live products. Provenance retains the original metadata for review.
 
 Historical year columns remain those same DSS member IDs. The extractor checks
-the saved alternative's `EnsembleMembersString` against the actual archive years
+the simulation copy's `EnsembleMembersString` (matching `RssAlt Name` under
+`rss/<simulation>/rss/`, with the shared alternative used only if no matching
+simulation copy exists) against the actual archive years
 and checks the OSI source member. It does not silently shorten the year selection
 or relabel older years. For early forecasts, change the native ensemble selection
 if it asks for years that do not yet exist in that archive. Percentile members

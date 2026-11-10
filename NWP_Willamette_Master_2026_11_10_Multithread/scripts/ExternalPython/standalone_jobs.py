@@ -103,7 +103,10 @@ def execute(watershed,simulation,alternative,job,run_type=None):
         print('Saved simulation window:',json.dumps(values['SIMULATION_WINDOW']),flush=True)
     if job=='archive-extract':
         from standalone_dates import selected_ensemble_members
-        values['SELECTED_ENSEMBLE_MEMBERS']=selected_ensemble_members(watershed,alternative)
+        members, member_source=selected_ensemble_members(watershed,alternative,simulation,return_source=True)
+        values['SELECTED_ENSEMBLE_MEMBERS']=members
+        values['ENSEMBLE_SETTINGS_SOURCE']=member_source
+        print('Selected ensemble settings source:',member_source,flush=True)
         values['RFC_ARCHIVE_FOLDER']=settings.get('rfc_archive_folder',DEFAULTS['rfc_archive_folder'])
         if not Path(values['RFC_ARCHIVE_FOLDER']).is_dir():raise ValueError('Archive folder not found: '+values['RFC_ARCHIVE_FOLDER'])
     paths=[scripts/name for name in JOBS[job]]

@@ -48,8 +48,23 @@ def simulation_window(watershed, simulation, utc_offset=-8):
     return result
 
 
-def selected_ensemble_members(watershed, alternative):
-    filename = Path(watershed)/'rss'/(alternative.replace(' ', '_')+'.ralt')
+def selected_ensemble_members(watershed, alternative, simulation=None, return_source=False):
+    rss = Path(watershed)/'rss'
+    filename = rss/(alternative.replace(' ', '_')+'.ralt')
+    if simulation is not None:
+        directory = rss/simulation.replace(' ', '_')/'rss'
+        candidates = []
+        for path in sorted(directory.glob('*.ralt')):
+            # Simulation copies are named with a native run prefix. Match their
+            # declared alternative, rather than guessing or choosing by mtime.
+            text = path.read_text(encoding='utf-8-sig')
+            names = re.findall(r'^RssAlt Name=([^\r\n]+)',text,re.M)
+            if len(names)==1 and names[0].rsplit(':',1)[-1] == alternative:
+                candidates.append(path)
+        if len(candidates)>1:
+            raise ValueError('Multiple simulation alternatives match '+alternative+': '+', '.join(str(p) for p in candidates))
+        if candidates:
+            filename = candidates[0]
     text = filename.read_text(encoding='utf-8-sig')
     found = re.findall(r'^EnsembleMembersString:([^\r\n]+)',text,re.M)
     if len(found)!=1:raise ValueError('Cannot identify ensemble year selection in '+str(filename))
@@ -60,4 +75,4 @@ def selected_ensemble_members(watershed, alternative):
         first,last = match.groups();first=int(first);last=int(last or first)
         if first>last:raise ValueError('Reversed ensemble range')
         members.update(range(first,last+1))
-    return sorted(members)
+    return (sorted(members), str(filename)) if return_source else sorted(members)
