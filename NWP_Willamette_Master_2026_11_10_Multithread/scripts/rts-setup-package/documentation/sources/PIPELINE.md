@@ -2,20 +2,25 @@
 
 Open `scripts/START-HERE.html` after copying the complete project. All guide pages and assets are local. This guide traces the delivered implementation; native rule bindings, input coverage and a fresh RTS import still require local validation.
 
-## Four places with different responsibilities
+## Runtime and maintenance folders
 
 | Place | Purpose | Used when |
 | --- | --- | --- |
 | Watershed `scripts/` | Installed launchers, runtime rules, libraries and configuration | Normal model operation |
-| `scripts/rts-setup-package/` | Installer payloads, mode switcher and optional tools | Installation, maintenance, RTS transition and optional postprocessing |
+| `scripts/ExternalPython/` and `scripts/RTSPython/` | Pre-bundled standalone and RTS backends | Selected automatically by the shared opener |
+| `scripts/rts-setup-package/` | Maintenance sources, portable-kit tools and optional tools | Updating the delivered watershed and optional postprocessing |
 | `scripts/rts-setup-package/documentation/` | Offline HTML guides; editable Markdown is grouped under `sources/` | Reading or updating documentation |
 | Simulation or forecast directory | Applied settings, native DSS, accepted archives and reports | One selected run or forecast |
 
-The kit is an installation source, not an automatic override of installed code. Editing `rts-setup-package/ExternalPython` does not change `scripts/ExternalPython` until installation. Conversely, editing an installed file does not update its kit copy. Preserve local mappings before reinstalling. Do not overwrite `CONFIG.py` with a kit copy: the installer deliberately preserves it.
+Use `scripts/OPEN_WORKFLOW.py` in either application. The existing
+`STANDALONE_WORKFLOW_MENU.py` entry is an automatic-opener alias. Backend source
+updates must be delivered to the matching runtime folder too; changing kit files
+alone does not update a running backend. Packaging pre-bundles both backends and
+does not invoke an installer or change `workflow-mode.json`.
 
 ## Standalone call chain
 
-1. In ResSim's Simulation module, run `scripts/STANDALONE_WORKFLOW_MENU.py`. It gets the watershed from the HEC application. Choose the actual simulation folder, native alternative, and Ensemble or Single POR explicitly.
+1. In ResSim's Simulation module, run `scripts/OPEN_WORKFLOW.py`. It detects standalone and gets the watershed from the HEC application. Choose the actual simulation folder, native alternative, and Ensemble or Single POR explicitly.
 2. The menu uses Java ProcessBuilder to start `%LOCALAPPDATA%\miniconda3\envs\hydro39\python.exe`. It calls installed code in `scripts/ExternalPython`; it does not execute the duplicate menu/backend inside the kit.
 3. Configuration opens `standalone_configuration.py`, which uses the shared `baseline_configuration.py` backend and `baseline-editor.html`. The browser is served locally by Python; it is an operational editor, separate from these static guides.
 4. Save creates a reusable JSON library version under `scripts/baseline-configuration-library`. Apply writes a snapshot for the selected simulation/alternative and updates its active pointer. Saving alone does not activate settings or compute.
@@ -43,31 +48,27 @@ Read [standalone technical reference](STANDALONE_WORKFLOW_REFERENCE.md) and [sav
 
 ## Original rules are active dependencies
 
-Keep `scripts/_standalone_baseline_originals/externalRules`. The standalone runtime loads these implementations. In RTS mode, corresponding preserved sources live under `_rts_baseline_originals`. These folders are not disposable historical backups.
+Keep `scripts/_standalone_baseline_originals/externalRules`. The standalone runtime loads these implementations. RTS uses the same shipped originals, with `_rts_baseline_originals` supported in older copies when present. These folders are not disposable historical backups.
 
-Also retain `_workflow_originals` when present: it preserves standalone downloader helpers and the standalone augmentation state variable for restoration when switching back. Installer rollback directories and `rts-setup-package-previous-*` are different artifacts. Their cleanup requires checking whether rollback is still needed.
+Retain `_workflow_originals` and existing script backups when present if they are still needed for recovery. They are not mode-switch prerequisites. Keep the active rule-original folders used by applied configuration snapshots.
 
 ## Moving to RTS
 
 1. Preserve the functioning standalone project. Import the complete watershed through the normal HEC-RTS procedure into a separate writable copy; the scripts folder alone is not a watershed.
-2. Close HEC applications and finish all computes. In the imported copy, run the embedded installer with `--watershed <imported-root> --mode rts`. It validates recognized rule structures, backs up affected files, installs RTS launchers/helpers, preserves standalone originals and writes `scripts/workflow-mode.json`.
-3. Reopen RTS, validate program/model linking and select a real forecast/run. Start installed `scripts/RTS_WORKFLOW_MENU.py`. The RTS launcher derives its forecast context; do not operate that forecast with the standalone menu.
+2. Verify the imported copy retains the complete scripts tree, including `RTSPython`, runtime adapters, preserved originals and the shared opener. No installer or mode switch is required.
+3. Open RTS, validate program/model linking and select a real forecast/run. Run `scripts/OPEN_WORKFLOW.py`; it detects RTS and launches the RTS GUI.
 4. Initial extraction supplies forecast dates, timezone, mappings and the native DSS target to the extraction backend. CWMS/NOAA requests require the actual data services and existing authentication/certificates.
 5. Save and Apply baseline settings for this forecast. Compute the unaugmented case manually in HEC, then accept the completed baseline.
 6. Configure and process augmentation against that accepted baseline. Review/load prepared releases, compute manually, and accept the augmented result. Plot the accepted pair.
-7. Reopen and check that configuration, accepted archives and plots persist. Use the staged [RTS validation checklist](RTS_IMPORT_VALIDATION.md); successful file installation does not prove native compute or import succeeded.
+7. Reopen and check that configuration, accepted archives and plots persist. Use the staged [RTS validation checklist](RTS_IMPORT_VALIDATION.md); successful script copying does not prove native compute or import succeeded.
 
-One-line PowerShell, using the destination watershed root:
-
-```powershell
-$ws = Read-Host "Imported RTS watershed root"; & "$env:LOCALAPPDATA\miniconda3\envs\hydro39\python.exe" (Join-Path $ws "scripts\rts-setup-package\Install-StandaloneConfiguration.py") --watershed $ws --mode rts
-```
-
-Switch back only after closing applications, using `--mode standalone` in that copy. This restores recognized standalone scripts; it does not convert forecast results into standalone results, alter native operation sets or validate native mappings.
+Use the same opener when returning to standalone ResSim; no script restoration
+or mode flag change is needed. The two environments keep their own target-scoped
+configuration pointers and result archives.
 
 ### RTS call and storage map
 
-Let W be the imported watershed root, EP be `W/scripts/ExternalPython`, and F be the selected forecast model directory containing its native DSS.
+Let W be the imported watershed root, EP be `W/scripts/RTSPython`, and F be the selected forecast model directory containing its native DSS.
 
 | Step | Installed implementation | Writes / reads |
 | --- | --- | --- |
@@ -101,7 +102,7 @@ Use [RTS technical reference](RTS_WORKFLOW_REFERENCE.md) for exact pointer, sche
 
 ## Trace a problem
 
-1. Confirm watershed root, standalone/RTS mode, simulation or forecast, alternative and member. Check `workflow-mode.json`; it records installation mode, not automatic GUI detection.
+1. Confirm watershed root, standalone/RTS mode, simulation or forecast, alternative and member. Verify the shared opener selected the expected backend; the old workflow-mode marker is not used for dispatch.
 2. Follow the actual launcher path and its printed job/log path. Installed code and kit payloads can differ intentionally.
 3. Inspect the active pointer, its resolved configuration and hashes, then the runtime initialization receipts. Save is not Apply; Apply is not compute.
 4. Inspect the live DSS only for the current native compute. For comparisons, follow accepted archive IDs, capture metadata and the selected plot/report directory.

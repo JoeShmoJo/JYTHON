@@ -11,7 +11,7 @@ not automatically inspect or certify embedded native scripts/mappings.
 | --- | --- |
 | W | Standalone watershed root; last used `C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_05_DamagesPrevented` |
 | EP | `W\scripts\ExternalPython` |
-| K | `W\scripts\rts-setup-package`; embedded source, installers and documentation |
+| K | `W\scripts\rts-setup-package`; maintenance sources and documentation |
 | S | `W\rss\<simulation-folder>`; simulation native files and simulation.dss |
 | P | `S\baseline-configurations\sets\<configuration-id>` |
 | RTS WS | A separate imported watershed, commonly `C:\CWMS\watershed\ResSimMaster` |
@@ -40,7 +40,7 @@ The runtime also checks the native alternative name before applying overrides.
 | `scripts/externalRules/*.py` | Eleven adapted rule modules; original timestep functions retained |
 | `scripts/externalSVs/Alternative_Setup.py` | Loads legacy config plus scoped overrides |
 | `scripts/NWDJyLib`, ExternalModules and other existing libraries | Existing model support; retain with watershed |
-| `K/Install-StandaloneConfiguration.py` | External Python script installer; --mode standalone or rts |
+| `scripts/OPEN_WORKFLOW.py` | Shared opener; selects the pre-bundled backend from the running host |
 | `K/Package-Workflow.py` | Embeds kit and records local inventory; defaults to standalone installation |
 | ResSim/native model scripts | Compute, output DSS, embedded initialization/cleanup and native bindings |
 
@@ -117,7 +117,7 @@ native rule objects exist or are bound in every operation set.
 | Manifest | P/manifest.json | Apply → identity/context/hash validation |
 | Active pointer | S/standalone-baseline-config-active.json | Apply → runtime; binds configuration and model alternative |
 | Initialization receipts | P/initialization-receipts/*.json | Runtime → diagnosis of loaded module/member/settings |
-| Original source implementations | scripts/_standalone_baseline_originals/externalRules/*.py | Installer → wrapper generation and snapshots |
+| Original source implementations | scripts/_standalone_baseline_originals/externalRules/*.py | Shipped originals used by wrappers and applied snapshots |
 
 Receipts record ensemble member when recognized, otherwise null plus output F-part
 for a non-ensemble run. They prove initialization, not success or freshness of all
@@ -185,7 +185,7 @@ can remain dormant; use the correct launcher for the installed mode.
 
 | Retained item | Location / significance |
 | --- | --- |
-| Mode marker | scripts/workflow-mode.json; last installer mode only |
+| Mode marker | scripts/workflow-mode.json; legacy marker; not used for automatic dispatch |
 | RTS original rule sources | scripts/_rts_baseline_originals/externalRules/ |
 | Standalone helpers retained for return | scripts/_workflow_originals/ExternalPython/ |
 | Standalone mainstem state variable retained | scripts/_workflow_originals/MainstemFlowAugSV.py |

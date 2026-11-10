@@ -4,7 +4,7 @@
 <div class="table"><table><thead><tr><th>Symbol</th><th>Location / meaning</th></tr></thead><tbody>
 <tr><td>W</td><td>Standalone watershed root; last used <code>C:\Projects\FIRO\watershed\NWP_Willamette_Master_2026_10_05_DamagesPrevented</code></td></tr>
 <tr><td>EP</td><td><code>W\scripts\ExternalPython</code></td></tr>
-<tr><td>K</td><td><code>W\scripts\rts-setup-package</code>; embedded source, installers and documentation</td></tr>
+<tr><td>K</td><td><code>W\scripts\rts-setup-package</code>; maintenance sources and documentation</td></tr>
 <tr><td>S</td><td><code>W\rss\&lt;simulation-folder&gt;</code>; simulation native files and simulation.dss</td></tr>
 <tr><td>P</td><td><code>S\baseline-configurations\sets\&lt;configuration-id&gt;</code></td></tr>
 <tr><td>RTS WS</td><td>A separate imported watershed, commonly <code>C:\CWMS\watershed\ResSimMaster</code></td></tr>
@@ -22,7 +22,7 @@
 <tr><td><code>scripts/externalRules/*.py</code></td><td>Eleven adapted rule modules; original timestep functions retained</td></tr>
 <tr><td><code>scripts/externalSVs/Alternative_Setup.py</code></td><td>Loads legacy config plus scoped overrides</td></tr>
 <tr><td><code>scripts/NWDJyLib</code>, ExternalModules and other existing libraries</td><td>Existing model support; retain with watershed</td></tr>
-<tr><td><code>K/Install-StandaloneConfiguration.py</code></td><td>External Python script installer; --mode standalone or rts</td></tr>
+<tr><td><code>scripts/OPEN_WORKFLOW.py</code></td><td>Shared opener; selects the pre-bundled backend from the running host</td></tr>
 <tr><td><code>K/Package-Workflow.py</code></td><td>Embeds kit and records local inventory; defaults to standalone installation</td></tr>
 <tr><td>ResSim/native model scripts</td><td>Compute, output DSS, embedded initialization/cleanup and native bindings</td></tr>
 </tbody></table></div>
@@ -59,7 +59,7 @@
 <tr><td>Manifest</td><td>P/manifest.json</td><td>Apply → identity/context/hash validation</td></tr>
 <tr><td>Active pointer</td><td>S/standalone-baseline-config-active.json</td><td>Apply → runtime; binds configuration and model alternative</td></tr>
 <tr><td>Initialization receipts</td><td>P/initialization-receipts/*.json</td><td>Runtime → diagnosis of loaded module/member/settings</td></tr>
-<tr><td>Original source implementations</td><td>scripts/_standalone_baseline_originals/externalRules/*.py</td><td>Installer → wrapper generation and snapshots</td></tr>
+<tr><td>Original source implementations</td><td>scripts/_standalone_baseline_originals/externalRules/*.py</td><td>Shipped originals used by wrappers and applied snapshots</td></tr>
 </tbody></table></div>
 <p>Receipts record ensemble member when recognized, otherwise null plus output F-part for a non-ensemble run. They prove initialization, not success or freshness of all computed data. Settings are picked up on the next initialization; changing Apply during compute is invalid. Source alt_config and CSVs are not rewritten by Apply. An unsaved browser edit can be applied, but Save first if it needs to be reusable. Standalone Apply leaves augmentation method and omitted trials unchanged.</p>
 <h2 id="standalone-extraction-augmentation-and-legacy-plots">Standalone extraction, augmentation and legacy plots</h2>
@@ -83,7 +83,7 @@
 <h2 id="mode-conversion-and-installed-source-provenance">Mode conversion and installed-source provenance</h2>
 <p>RTS mode installs the maintained RTS backend/extraction helpers, RTS launchers, rts_baseline_runtime and RTS MainstemFlowAugSV. It unwraps recognized standalone rule adapters and preserves neutral original sources before adding RTS wrappers. Standalone mode performs the reverse adapter change and restores previously preserved standalone helpers/state variable. Newly added RTS-only helper files can remain dormant; use the correct launcher for the installed mode.</p>
 <div class="table"><table><thead><tr><th>Retained item</th><th>Location / significance</th></tr></thead><tbody>
-<tr><td>Mode marker</td><td>scripts/workflow-mode.json; last installer mode only</td></tr>
+<tr><td>Mode marker</td><td>scripts/workflow-mode.json; legacy marker; not used for automatic dispatch</td></tr>
 <tr><td>RTS original rule sources</td><td>scripts/_rts_baseline_originals/externalRules/</td></tr>
 <tr><td>Standalone helpers retained for return</td><td>scripts/_workflow_originals/ExternalPython/</td></tr>
 <tr><td>Standalone mainstem state variable retained</td><td>scripts/_workflow_originals/MainstemFlowAugSV.py</td></tr>

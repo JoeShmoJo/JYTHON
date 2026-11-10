@@ -6,9 +6,9 @@
 </ul>
 <p>target&#x27;s next initialization. Computing produces results. RTS acceptance archives completed results. These are four separate actions.</p>
 <ul>
-<li>Finish computes and close DSS views before file-writing jobs. Restart once after</li>
+<li>Open the shared OPEN_WORKFLOW.py GUI in either application; no installer or</li>
 </ul>
-<p>script installation/mode changes. Verify every target banner before Apply.</p>
+<p>mode switch is needed. Finish computes and close DSS views before file-writing jobs. Reopen the GUI after code updates and verify every target banner before Apply.</p>
 <ul>
 <li>Keep one native model alternative and change named settings within it. The editor</li>
 </ul>
@@ -37,10 +37,10 @@
 <p>Existing default legacy settings use AutoDetect with omitted augmentation trials <code>0,2,3</code>; do not assume a locally edited alternative retains those defaults. Native rules/trial bindings must agree with the intended comparison.</p>
 <p>For single POR plotting and checking one POR run or one ensemble member, follow <a href="STANDALONE_POR_MODEL_CHECK.html">POR and Model Check instructions</a>. OSI is not required in Single POR mode; existing POR inputs/native compute are used.</p>
 <h2 id="b-rts--cwms">B. RTS / CWMS</h2>
-<p>First import the complete watershed and activate RTS script mode in that copy, using <a href="WORKFLOW_PACKAGE.html">package/import instructions</a>. Then:</p>
+<p>Import the complete watershed into a separate RTS copy using the native HEC procedure, then use the same shared opener. No installer or mode switch is needed. See <a href="WORKFLOW_PACKAGE.html">portable workflow instructions</a>. Then:</p>
 <ol start="1">
-<li>Select the intended forecast/run. Run <code>scripts/RTS_WORKFLOW_MENU.py</code> in the RTS Script Editor. Verify forecast, run, DSS path, lookback, start/end and timezone. Refresh metadata if selection changed.</li>
-<li><strong>Initial Extract</strong> once. Wait for successful promotion and refresh/reopen the forecast as instructed. It loads inputs; it does not run ResSim.</li>
+<li>Select the intended forecast/run. Open <code>scripts/OPEN_WORKFLOW.py</code> or the separate LAUNCH_WORKFLOW_GUI shortcut in the RTS Script Editor. Verify forecast, run, DSS path, lookback, start/end and timezone. Refresh metadata if selection changed.</li>
+<li>Use <strong>Initial Extract (live RFC)</strong> or <strong>Extract archived forecast inputs</strong> once. Wait for successful promotion and refresh/reopen the forecast as instructed. It loads inputs; it does not run ResSim.</li>
 <li><strong>Baseline Configuration</strong> → open/import/edit → <strong>Save Configuration</strong> → <strong>Apply for Baseline Compute</strong>. Apply disables RTS augmentation. Finish computes and release the forecast as instructed for file changes. Reopen/refresh afterward.</li>
 <li>Confirm next compute has no augmentation; compute manually. Verify successful member completion and required coverage in current logs/results.</li>
 <li>Open <strong>Augmentation Configuration</strong>. Answer <strong>Yes</strong> to accept the just-completed baseline. Yes is your confirmation of successful compute; No uses saved results; Cancel stops. Check the accepted baseline ID.</li>

@@ -58,10 +58,12 @@ The activated scheme supplies its archived reservoir augmentation configuration
 and mainstem target tables, allowing an earlier scheme to be reloaded after
 editing the working augmentation CSVs without rewriting those working files.
 
-The installer backs up and updates the imported watershed's external SV module,
-not the maintained standalone watershed. Restart RTS after installing this
-module so the old loaded module/cache does not remain in use. The existing
-rule/state-variable pass-through scripts need no edits.
+The complete watershed already contains the state-variable adapter for both
+standalone and RTS compute. It selects its path from the native compute context;
+opening the GUI does not patch scripts or switch modes. After updating script
+files, close and reopen the workflow GUI. Restart the HEC application if it still
+holds an older native rule/state-variable module. Existing rule/state-variable
+bindings must survive import.
 
 Use `--reset` instead of `--scheme` on the loader to disable augmentation for
 the next compute. It does not erase any DSS records or archives. Use a new forecast for different dates or downloaded inputs. For operation-set
@@ -112,4 +114,4 @@ manual RTS compute. Completed outputs are accepted separately. Plot Results can
 select one or two saved runs, including two augmentation configurations; it
 uses `plot_rts_runs.py` and retains offline plots under the forecast. Reset
 Baseline only disables augmentation until completed unaugmented outputs are
-accepted. See RTS_WORKFLOW_MENU.md for the current four-action workflow.
+accepted. See RTS_WORKFLOW_MENU.md for the current workflow actions.

@@ -1,6 +1,6 @@
 # RTS baseline and augmentation: operator SOP
 
-Current workflow, 16 October 2026. Details: [process and file reference](RTS_WORKFLOW_REFERENCE.md).
+Current workflow, 10 November 2026. Details: [process and file reference](RTS_WORKFLOW_REFERENCE.md).
 Use the original ResSim application and a supported compute mode; serial is
 suitable. This workflow does not require the experimental JAR patch.
 
@@ -10,16 +10,25 @@ augmentation → compute augmented → accept → plot.**
 ## 1. Open the forecast and extract
 
 1. Open the intended forecast and select its forecast alternative in RTS.
-2. Run watershed script `scripts\RTS_WORKFLOW_MENU.py` in the RTS Script Editor.
+2. Open `scripts\OPEN_WORKFLOW.py` or the separate working LAUNCH_WORKFLOW_GUI
+   shortcut. The opener detects RTS. Do not overwrite RTS_WORKFLOW_MENU.py with a
+   launcher stub. No script installer or mode switch is needed.
 3. Verify forecast, alternative, DSS path, lookback, start, end and timezone.
    Use **Refresh forecast metadata** after changing the selected forecast/run.
-4. Verify dates fit current RFC availability and CWMS lookback coverage. To process
+4. For historical forecasts use Check archive dates / members, select the archive
+   folder, match native ensemble years and review the leap-day policy. For live
+   extraction verify current RFC availability. Both paths require CWMS lookback coverage. To process
    augmentation, the saved baseline must cover April 1, travel-time lead-in and
    the selected season end. A short October test is not a full-season baseline.
 5. If using fixed-abundant water-year mode, verify the model uses
    **ALL_ABUNDANT (4)**, not the zero dummy.
-6. Click **Initial Extract**, confirm, and wait for successful input loading.
+6. Click **Initial Extract (live RFC)** or **Extract archived forecast inputs**,
+   confirm the preview/settings, and wait for successful input loading.
    Reopen/refresh the same forecast as instructed. This does not compute ResSim.
+
+The **Use this displayed forecast after closing it in RTS** checkbox permits
+operations on the displayed forecast when it is closed to release DSS locks.
+Verify the header before enabling it; refresh metadata after switching forecasts.
 
 Extract once for this forecast. After a baseline exists, use a new forecast for
 new dates/downloads. Do not re-extract just to change operating configuration.

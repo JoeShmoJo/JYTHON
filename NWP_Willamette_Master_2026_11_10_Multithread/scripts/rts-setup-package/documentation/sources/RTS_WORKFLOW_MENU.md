@@ -15,14 +15,19 @@ main-window button.
 
 ## Current menu
 
-Run installed `scripts\RTS_WORKFLOW_MENU.py` from the RTS watershed Script Editor.
-The four main actions are:
+Open `scripts\OPEN_WORKFLOW.py` from the imported watershed, or use the separate
+working LAUNCH_WORKFLOW_GUI shortcut. The opener detects RTS; no installer or mode
+switch is required. Never paste a launcher over RTS_WORKFLOW_MENU.py itself.
+The menu actions are:
 
 | Action | Purpose |
 | --- | --- |
-| Initial Extract | Download/archive inputs and load the completed extract; compute manually afterward |
+| Initial Extract (live RFC) | Download current inputs and load the completed extract; compute manually afterward |
+| Check archive dates / members | Read-only issue-date, member and rule-curve preview across all required station ZIPs |
+| Extract archived forecast inputs | Load the selected historical issue using the displayed RTS dates; select the folder, member years, OSI source and leap-day policy |
 | Baseline Configuration | Edit/save reusable scripted-rule settings and apply a forecast-scoped set with augmentation disabled |
 | Augmentation Configuration | Accept completed results if requested, configure/process/load releases against the saved baseline |
+| Model Check | Check a selected ensemble member after compute |
 | Plot Results | Accept completed results if requested, choose one/two archived runs, plot or delete an augmented result |
 
 Greyed-out metadata identify the selected forecast. Refresh after selection/date
@@ -43,18 +48,23 @@ when those outputs match. The reference documents the input-only-change caveat,
 including water-year type. No operation-set selection/stack order is restored
 from result archives.
 
-## Related installation/development material
+## Related workflow and maintenance material
 
-- [Forecast extraction](FORECAST_EXTRACTION.md): original plan/test launcher and
-  downloader details; the operator SOP describes the menu's extract-and-load action.
-- [Baseline configuration](RTS_BASELINE_CONFIGURATION.md): adapter/editor setup and
-  historical performance diagnostics.
+- [Forecast extraction](FORECAST_EXTRACTION.md): current live/archive extraction, date/member validation, leap-day policy and staged loading.
+- [Baseline configuration](RTS_BASELINE_CONFIGURATION.md): bundled adapter/editor behavior, configuration snapshots and initialization receipts.
 - [Augmentation backend](RTS_AUGMENTATION.md): calculator/background CLI material.
 
-Installer scripts print backup locations. Updating kit files does not update
-installed watershed scripts. See the reference for installation boundaries and
-shared versus per-forecast files. This workflow does not require the experimental
-application JAR patch.
+Update a consistent GUI/backend set together and preserve local script changes.
+The runtime lives in scripts/RTSPython. Changing kit source alone does not update
+the active backend. This workflow does not require an experimental application
+JAR patch or any post-import activation command.
+
+The GUI displays its Python backend path. Mixed versions are rejected before an
+archive action starts. The **Use this displayed forecast after closing it in RTS**
+checkbox permits operations against the displayed context when the forecast is
+closed to release DSS locks. Verify the header first and refresh after switching
+forecasts. February 29 rule curves default to the midpoint of February 28 and
+March 1; explicit table values take precedence. This check runs before downloads.
 
 Optional developer Swing smoke check (not an operator step):
 

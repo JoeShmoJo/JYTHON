@@ -129,7 +129,8 @@ this RTS change does not alter the cleanup script or reduce native DSS output.
 
 ## Standalone configuration menu implemented
 
-See STANDALONE_CONFIGURATION.md and Install-StandaloneConfiguration.py. The shared
+See STANDALONE_CONFIGURATION.md and WORKFLOW_PACKAGE.md. No script installer is
+required for the pre-bundled watershed. The shared
 baseline JSON editor now supports importing alternative-named presets and applying
 a named set to one standalone simulation/alternative. Existing standalone
 augmentation/trial and plot scripts remain separate; the full RTS archive workflow

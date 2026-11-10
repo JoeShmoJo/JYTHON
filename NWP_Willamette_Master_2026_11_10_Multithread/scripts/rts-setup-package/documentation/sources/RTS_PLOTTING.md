@@ -1,7 +1,9 @@
 # Plot the completed RTS forecast
 
-Install with Install-ForecastExtraction.ps1. Run plot_rts_forecast.py with hydro39
-Python while the compute is finished. No DSS records are written. Plotly is already
+Open the shared workflow GUI and use Plot Results after compute finishes.
+The plotting backend is already bundled in `scripts/RTSPython`; no RTS script
+installer is required. Advanced CLI use runs plot_rts_forecast.py with hydro39
+Python while compute is finished. No DSS records are written. Plotly is already
 listed in the original hydro39 environment specification; install it into that
 environment if it is missing.
 
@@ -15,7 +17,7 @@ interpret the existence of an EnsembleRuns directory as proof of a successful co
 Example first test:
 
 ```powershell
-& "$env:LOCALAPPDATA\miniconda3\envs\hydro39\python.exe" -u "C:\CWMS\watershed\ResSimMaster\scripts\ExternalPython\plot_rts_forecast.py" --forecast-root "C:\CWMS\forecast\ForecastTest2\ResSimMaster" --run-code C0 --members 1981-2025 --location Detroit-Pool --start 2026-10-08 --end 2026-12-08
+& "$env:LOCALAPPDATA\miniconda3\envs\hydro39\python.exe" -u "C:\CWMS\watershed\ResSimMaster\scripts\RTSPython\plot_rts_forecast.py" --forecast-root "C:\CWMS\forecast\ForecastTest2\ResSimMaster" --run-code C0 --members 1981-2025 --location Detroit-Pool --start 2026-10-08 --end 2026-12-08
 ```
 
 Remove --location Detroit-Pool to plot all matching reservoirs and control points.

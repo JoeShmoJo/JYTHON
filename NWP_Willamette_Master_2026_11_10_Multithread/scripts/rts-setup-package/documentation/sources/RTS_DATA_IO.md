@@ -65,18 +65,18 @@ change does not assume every existing input can be regenerated from downloaders.
 - Freshness still depends on operator confirmation. Old DSS records can survive
   failed computes. No log or catalog check certifies every member's success.
 
-## Install and try in the existing test forecast
+## Update and try in the existing test forecast
 
-Finish compute and close the workflow menu; no new watershed copy is needed.
-The focused installer backs up only the affected Python workflow files. It does
-not touch the Java patch, operating-rule scripts, configurations, DSS files,
-existing archives, or the PostProcess_CSV cleanup script.
+Finish compute and close the workflow GUI and Script Editor before replacing
+script files. Update the repository and copy the complete source watershed's
+`scripts` folder over the imported watershed's `scripts` folder, replacing files
+and retaining the `RTSPython` subfolder. Use Copy, not Cut. Keep a backup of local
+script changes. No post-import installer or mode switch is needed.
 
-PowerShell one line:
-
-```powershell
-$ws = Read-Host "Watershed root"; & "$env:LOCALAPPDATA\miniconda3\envs\hydro39\python.exe" (Join-Path $ws "scripts\rts-setup-package\Install-StandaloneConfiguration.py") --watershed $ws --mode rts
-```
+Reopen the shared `OPEN_WORKFLOW.py` opener or the separate working
+`LAUNCH_WORKFLOW_GUI` shortcut. Do not paste launcher code over
+`RTS_WORKFLOW_MENU.py`: it is the GUI implementation. The GUI shows its selected
+Python backend path and rejects a backend without the archive actions.
 
 Reopen the workflow menu and accept a completed unaugmented run, then prepare/load
 augmentation and compute normally. Accept the augmented result and plot it with
@@ -89,11 +89,10 @@ Verify the new result folder has `series.npz` and `run-archive.json`, rather tha
 `forecast.dss`. Plot it again: the compact path should not print DSS zread output.
 Native Windows timing and file-lock behavior require user testing.
 
-The installer's printed backup directory contains `files.json`, including which
-files existed beforehand. To restore, close the menu, copy back those originals,
-and remove only files marked newly installed. Existing pre-change backends cannot
-read compact archives, so reinstall the new backend when viewing newly archived
-runs. Do not delete primary compact arrays to clear a cache.
+Keep the before-update scripts if rollback is needed. Restore a consistent GUI
+and backend together, never an old GUI with a new backend or the reverse. Keep
+existing DSS data and result archives; do not delete primary compact arrays to
+clear a cache.
 
 ## Validation
 

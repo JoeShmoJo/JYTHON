@@ -5,10 +5,11 @@ Put Down: **16 October 2026**
 ## Immediate next task
 
 **Import a fresh copy of this complete standalone watershed into CWMS/HEC-RTS,
-activate RTS script mode in the imported copy, and validate the complete workflow.**
-Use `scripts/workflow-kit/RTS_IMPORT_VALIDATION.md` for the staged checklist.
-This latest native import has **not** been verified. Earlier RTS operation and
-Python/package tests do not establish that a new import works.
+use the shared auto-detecting opener, and validate the complete workflow.**
+Use `scripts/rts-setup-package/documentation/RTS_IMPORT_VALIDATION.html` for the staged checklist.
+The operator confirmed archive extraction in the imported RTS copy. Native
+compute and the full baseline/augmentation sequence remain separate validation
+tasks; successful extraction does not certify model results.
 
 Keep the working standalone source separate. Begin with original HEC software and
 serial compute; do not make parallel-compute changes during the import test.
@@ -36,13 +37,13 @@ At the watershed root:
 - `WORKFLOW_README.html`: double-click for the offline documentation site.
 - `PROJECT_LOCAL_NOTES.md`: operator's actual test findings; preserved by packaging.
 
-Inside `scripts/workflow-kit`:
+Editable guide sources are under `scripts/rts-setup-package/documentation/sources`:
 
 - `PROJECT_START_HERE.md`: project map and operating limits.
 - `WORKFLOW_SOP.md`: simple standalone and RTS SOP.
 - `STANDALONE_WORKFLOW_REFERENCE.md` and `RTS_WORKFLOW_REFERENCE.md`: detailed
   inputs, outputs, producers, locations, configuration and archive behavior.
-- `WORKFLOW_PACKAGE.md`: installation, import, mode switching, backups and rollback.
+- `WORKFLOW_PACKAGE.md`: pre-bundled runtimes, import, shared opener, updates and recovery.
 - `RTS_IMPORT_VALIDATION.md`: next-session checklist and acceptance evidence.
 - `STANDALONE_SAVED_RESULTS.md`: saved results, plots and reference warnings.
 - `STANDALONE_POR_MODEL_CHECK.md`: POR/ensemble modes and exact-member Model Check.
@@ -50,7 +51,7 @@ Inside `scripts/workflow-kit`:
 - `manifest.json`: kit payload checksums, not a certificate of successful compute.
 
 Markdown is the source. The matching offline HTML is in
-`scripts/workflow-kit/documentation`. The kit supplements the complete model;
+`scripts/rts-setup-package/documentation`. The kit supplements the complete model;
 it is not a complete watershed, Python environment or HEC application installer.
 
 ## What works / intended design
@@ -66,11 +67,12 @@ Apply activates a snapshot for the selected target; native compute is manual.
 Archive completed baseline/results under descriptive names to compare later.
 Do not replace saved history with live DSS records when plotting.
 
-- Standalone menu: `scripts/STANDALONE_WORKFLOW_MENU.py`, launched in ResSim's
-  Simulation module. Explicit simulation, alternative and Ensemble/Single POR.
-- RTS menu: `scripts/RTS_WORKFLOW_MENU.py`, launched through RTS. Reads forecast
-  metadata. Do not use the standalone launcher to operate an RTS forecast.
-- Mode is recorded in `scripts/workflow-mode.json`; it is not automatic GUI detection.
+- Shared opener: `scripts/OPEN_WORKFLOW.py` in either application; the existing
+  STANDALONE_WORKFLOW_MENU entry is an alias. It detects the running host and
+  selects ExternalPython for standalone or RTSPython for RTS. A separate local
+  LAUNCH_WORKFLOW_GUI shortcut may call the opener with an explicit filename.
+- No installer or workflow-mode flag change is needed. Keep both backends with
+  the full watershed; never paste a launcher over RTS_WORKFLOW_MENU.py.
 - Shared baseline editor uses eleven rule groups and named portable JSON sets.
   Inactive/null IRRM and Deep Drawdown entries are neutral; effects still require
   native rule attachment. Adding a reservoir to JSON does not attach a native rule.
@@ -90,14 +92,14 @@ Do not replace saved history with live DSS records when plotting.
 
 ## Code and data map for investigation
 
-Operational Python files are in `scripts/ExternalPython`. The kit has maintained
-copies under `scripts/workflow-kit/ExternalPython`; install/repackage deliberately
-so these do not drift. In a reconstructed full repository, maintained copies were
-under `migration-review/ExternalPython` and the original checker under `model_check`.
+Operational code is pre-bundled in `scripts/ExternalPython` (standalone) and
+`scripts/RTSPython` (RTS), with maintained templates in `scripts/rts-setup-package`.
+Update the complete source/runtime files together so they do not drift. Opening
+the GUI does not install code or change an installation mode.
 
 | Area | Main files / locations |
 | --- | --- |
-| Package and mode transition | workflow-kit/Package-Workflow.py, Install-StandaloneConfiguration.py |
+| Shared opener and runtime packaging | scripts/OPEN_WORKFLOW.py, workflow_host.py; rts-setup-package/Package-Workflow.py |
 | Baseline editor/runtime | ExternalPython/baseline_configuration.py, standalone_configuration.py; scripts/*_baseline_runtime.py; preserved original rule implementations |
 | Standalone jobs | ExternalPython/standalone_jobs.py; native model-specific download/augmentation scripts |
 | POR augmentation reader | ExternalPython/standalone_por_augmentation.py |
@@ -164,7 +166,7 @@ warnings. No claim is made that every native output is fresh after a failed run.
    Verify selected member/time coverage and current logs. Record observed outcomes
    separately from automated tests and assumptions.
 
-Historical RFC archive loading remains paused pending missing station data. The
+Historical RFC archive loading is available in both environments, with date/member checks and an explicit leap-day policy. Native RTS compute validation remains separate. The
 optional diversion postprocessor is a separate opt-in experiment with routing and
 reservoir-barrier limitations; it is not a substitute for native operating feedback.
 

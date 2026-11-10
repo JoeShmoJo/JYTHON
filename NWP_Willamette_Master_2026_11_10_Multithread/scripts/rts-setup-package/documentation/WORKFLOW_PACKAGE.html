@@ -8,6 +8,11 @@
 <li>Check the displayed target, dates, timezone and DSS path before extraction.</li>
 </ol>
 <p>If a HEC Script Editor does not supply the script filename and the loaded watershed cannot be located through its application wrapper, the opener asks you to select the already-loaded watershed folder. This locates the bundled scripts; it does not install, copy, patch or switch any files.</p>
+<h2 id="separate-script-editor-shortcut">Separate Script Editor shortcut</h2>
+<p>If saving a short launcher in the editor, create a <strong>new script</strong> named LAUNCH_WORKFLOW_GUI. Do not edit the GUI implementation RTS_WORKFLOW_MENU.py. For the current imported test watershed the shortcut is:</p>
+<pre><code>script = r&quot;C:\CWMS\watershed\RTS_10Nov2026\scripts\OPEN_WORKFLOW.py&quot;
+execfile(script, {&quot;__name__&quot;: &quot;__main__&quot;, &quot;__file__&quot;: script})</code></pre>
+<p>Use the actual imported watershed path if it differs. The explicit namespace prevents the editor&#x27;s own filename from being inherited. A working shortcut is local to that imported path; keep it when merging later scripts-folder updates.</p>
 <h2 id="what-is-bundled">What is bundled</h2>
 <div class="table"><table><thead><tr><th>Component</th><th>Location</th><th>Selection</th></tr></thead><tbody>
 <tr><td>Shared GUI opener</td><td><code>scripts/OPEN_WORKFLOW.py</code></td><td>Detects the running application</td></tr>

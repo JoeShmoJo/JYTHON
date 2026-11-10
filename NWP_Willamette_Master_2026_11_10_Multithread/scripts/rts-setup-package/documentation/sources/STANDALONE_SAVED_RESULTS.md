@@ -121,8 +121,8 @@ Updated standalone extraction writes percentile IDs 3000–3002 and OSI ID 3003,
 matching RTS. Re-extract into a clean test simulation/output after updating, then
 select the new IDs in the native ensemble configuration. Change any explicit
 standard/OSI input mapping from C:002029| to C:003003|. Generic member-substitution
-paths need no per-record remapping. The installer changes scripts only; it does
-not change native member selections, DSS mappings, existing DSS or archives.
+paths need no per-record remapping. Updating workflow scripts does not change native member selections, DSS
+mappings, existing DSS or archives.
 Do not assume old 2026–2029 records were deleted, renamed or refreshed.
 
 Standalone augmentation now discovers actual baseline pool-outflow members for
@@ -141,11 +141,11 @@ page bound to the simulation and alternative selected in the main menu.
 
 ### Installed archive dependencies
 
-The installer includes `scripts/ExternalPython/extraction_context.py`, required
+The bundled backend includes `scripts/ExternalPython/extraction_context.py`, required
 by `write_rule_curves.py` when saved-result selection imports the shared reservoir
-list. This helper must be installed alongside the archive modules, even for
+list. Keep this helper alongside the archive modules, even for
 standalone results with no forecast extraction. A browser message “No module
-named 'extraction_context'” indicates an incomplete script installation, not
+named 'extraction_context'” indicates an incomplete script copy, not
 missing simulation records. Repackage/update the watershed and reopen its menu;
 existing native results need not be recomputed. Installed archive selection and
 capture are tested in a fresh isolated Python process without project imports.

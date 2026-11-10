@@ -9,8 +9,9 @@ use the [standalone/shared reference](STANDALONE_WORKFLOW_REFERENCE.md) and
 - Saving a configuration stores settings. Applying activates settings for the
   target's next initialization. Computing produces results. RTS acceptance archives
   completed results. These are four separate actions.
-- Finish computes and close DSS views before file-writing jobs. Restart once after
-  script installation/mode changes. Verify every target banner before Apply.
+- Open the shared OPEN_WORKFLOW.py GUI in either application; no installer or
+  mode switch is needed. Finish computes and close DSS views before file-writing
+  jobs. Reopen the GUI after code updates and verify every target banner before Apply.
 - Keep one native model alternative and change named settings within it. The editor
   does not change native operation sets, rule bindings, input mappings or dates.
 - Preserve outputs needed for comparison before recomputing. Do not accept a failed
@@ -67,13 +68,14 @@ required in Single POR mode; existing POR inputs/native compute are used.
 
 ## B. RTS / CWMS
 
-First import the complete watershed and activate RTS script mode in that copy,
-using [package/import instructions](WORKFLOW_PACKAGE.md). Then:
+Import the complete watershed into a separate RTS copy using the native HEC
+procedure, then use the same shared opener. No installer or mode switch is needed.
+See [portable workflow instructions](WORKFLOW_PACKAGE.md). Then:
 
-1. Select the intended forecast/run. Run `scripts/RTS_WORKFLOW_MENU.py` in the RTS
-   Script Editor. Verify forecast, run, DSS path, lookback, start/end and timezone.
+1. Select the intended forecast/run. Open `scripts/OPEN_WORKFLOW.py` or the separate LAUNCH_WORKFLOW_GUI
+   shortcut in the RTS Script Editor. Verify forecast, run, DSS path, lookback, start/end and timezone.
    Refresh metadata if selection changed.
-2. **Initial Extract** once. Wait for successful promotion and refresh/reopen the
+2. Use **Initial Extract (live RFC)** or **Extract archived forecast inputs** once. Wait for successful promotion and refresh/reopen the
    forecast as instructed. It loads inputs; it does not run ResSim.
 3. **Baseline Configuration** → open/import/edit → **Save Configuration** →
    **Apply for Baseline Compute**. Apply disables RTS augmentation. Finish computes

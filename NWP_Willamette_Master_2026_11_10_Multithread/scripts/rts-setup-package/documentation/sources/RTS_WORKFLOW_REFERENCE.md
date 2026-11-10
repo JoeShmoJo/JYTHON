@@ -1,6 +1,6 @@
 # RTS baseline and augmentation: process and file reference
 
-Current implementation, 16 October 2026. Start with the
+Current implementation, 10 November 2026. Start with the
 [operator SOP](RTS_OPERATOR_SOP.md). This reference describes the current four-button
 menu and compact-run backend, rather than the earlier experimental menu layouts.
 It documents the project implementation; an older installed script set may
@@ -13,7 +13,7 @@ Examples below use these roots; substitute the paths shown by your selected fore
 | Symbol | Example | Purpose |
 | --- | --- | --- |
 | `WS` | `C:\CWMS\watershed\ResSimMaster` | Imported RTS watershed and shared installed scripts |
-| `EP` | `WS\scripts\ExternalPython` | Installed external Python backend and maintained data inputs |
+| `EP` | `WS\scripts\RTSPython` | Installed external Python backend and maintained data inputs |
 | `F` | `C:\CWMS\forecast\Ensemble_Test\ResSimMaster` | One forecast's model directory; parent of its live DSS |
 | `A` | `F\augmentation-archives` | Baseline versions, schemes, results, state, history |
 | `B` | `A\baseline` or `A\baseline-0002` | One immutable accepted baseline |
@@ -39,12 +39,13 @@ accept results. “Commit” here means activating prepared releases.
 
 ## Programs and responsibility
 
-Installer payloads are under `WS\scripts\rts-setup-package`; the runtime uses installed
-copies under `WS\scripts`. Run the mode installer to activate changes.
+Both backends are pre-bundled under `WS\scripts`: ExternalPython for standalone
+and RTSPython for RTS. Open `scripts/OPEN_WORKFLOW.py`; it detects the host.
+No installer or mode switch is required after import.
 
 | Entry point or module | Where it runs/lives | Responsibility |
 | --- | --- | --- |
-| `RTS_WORKFLOW_MENU.py` | `WS\scripts`, RTS Jython/Swing | Four main actions, context display, prompts, background jobs, plot opening |
+| `RTS_WORKFLOW_MENU.py` | `WS\scripts`, RTS Jython/Swing | Workflow actions, context display, prompts, background jobs, plot opening |
 | `rts_workflow.py` | `EP`, hydro39 Python | Dispatches tasks; holds per-forecast task lock; promotes extracts |
 | `workflow_simple.py` | `EP` | Acceptance, configuration processing/loading sequence, run chooser state |
 | `run_extraction.py` | `EP` | Runs extraction steps sequentially against a staged DSS; records completion |
@@ -76,7 +77,14 @@ browser editor uses a separate saved context under `F\workflow-logs`.
 configuration/mappings in `EP\CONFIG.py` and the downloader modules, network data
 services, and any existing live inputs used to seed the staged file.
 
-`run_extraction.py` runs these installed scripts in order:
+For **Extract archived forecast inputs**, the archive reader `rts_archive.py`
+replaces the live RFC downloader below. It checks one common issue, actual member
+years, full daily coverage and the selected leap-day policy before network
+requests. The archive dialog supplies the folder, requested years and OSI source.
+Both paths use the same staged loading/promotion safeguards. See
+[archived forecast details](RTS_ARCHIVED_FORECASTS.md).
+
+`run_extraction.py` runs these bundled scripts in order:
 
 1. `RFC_Downloader_Module.py`: downloads current NWRFC ensembles, processes flows,
    and writes forecast-mode ensemble DSS records.
@@ -143,7 +151,7 @@ snapshotted when applied; a saved library set embeds the schedule values.
 | --- | --- | --- |
 | Reusable baseline library version | `WS\scripts\baseline-configuration-library\<id>.json` | Editor Save Configuration; each save gets a new ID, even with the same name |
 | Portable JSON/readable summary | User/browser-selected export destination | Editor export; inspection/sharing, not activation |
-| Preserved imported rule source | `WS\scripts\_rts_baseline_originals\externalRules\*.py` | Baseline adapter installer; source for applied script snapshots |
+| Preserved imported rule source | `WS\scripts\_standalone_baseline_originals\externalRules\*.py` (or `_rts_baseline_originals` in older copies) | Shipped rule originals; `_standalone_baseline_originals` is used when the RTS-specific folder is absent |
 | Applied configuration | `C\configuration.json` | Apply; user settings for this forecast |
 | Resolved configuration | `C\resolved.json` | Apply; generated table references and provenance hashes |
 | Generated rule tables | `C\tables\*.csv` | Apply; actual tables used by forecast overrides |
@@ -360,23 +368,18 @@ A workflow task lock prevents overlapping backend menu tasks; it does not stop
 someone starting a native compute independently. Never delete a lock until its
 recorded process has stopped and the partial task has been inspected.
 
-The main menu currently has four actions, not Reset Baseline. Older CLI/backend
+The menu includes live extraction, archive compatibility/extraction, baseline and augmentation configuration, Model Check and plots; Reset Baseline is not a normal menu action. Older CLI/backend
 reset/load commands remain for compatibility and are not required for the normal
 configuration-driven SOP. No archived operation-set file is restored by applying
 a baseline configuration. The imported alternative and rule bindings still need
 to be correct.
 
-For this portable watershed use the embedded
-`WS\scripts\rts-setup-package\Install-StandaloneConfiguration.py --mode rts` as
-explained in [package/import instructions](WORKFLOW_PACKAGE.md). It installs the
-required workflow helpers and converts recognized standalone adapters in the
-imported copy. Script backups are printed under that watershed's
-`standalone-configuration-backups`; preserve the inventory for rollback.
-Older separate project PowerShell installers remain historical maintenance
-entry points; they are not the recommended conversion procedure for this package.
-Use the embedded installer to update installed watershed scripts. Application JAR modification is not required;
-use the original HEC application. No experimental compiler patch is installed by
-the package or this SOP.
+Use the shared `OPEN_WORKFLOW.py` opener or the separate local
+`LAUNCH_WORKFLOW_GUI` shortcut. Never replace the GUI implementation
+`RTS_WORKFLOW_MENU.py` with a launcher stub. To update an imported copy, close the
+workflow GUI and copy the complete updated scripts tree, retaining RTSPython.
+The GUI displays the backend path and checks for matching archive functionality.
+No mode installer or application JAR modification is part of this procedure.
 
 ## Known limitations and troubleshooting
 

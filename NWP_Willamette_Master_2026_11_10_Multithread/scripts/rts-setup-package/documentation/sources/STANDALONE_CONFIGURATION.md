@@ -12,19 +12,13 @@ this does not port RTS scheme activation,
 change native operation sets or DSS mappings, or modify any application JAR.
 Use the original ResSim application and start native validation with serial compute.
 
-## Install into the existing standalone test watershed
+## Open the existing standalone watershed
 
-Finish computes and close standalone ResSim. No new watershed copy is needed.
-The installer backs up only files it changes and retains the old alt_config files,
-CSV schedules, CONFIG.py and simulation outputs unchanged. It unwraps recognized standalone/RTS adapters using their preserved sources and
-rejects missing originals or unknown Alternative_Setup initialization structures.
-For a portable kit and RTS import steps, see [package instructions](WORKFLOW_PACKAGE.md).
-
-PowerShell one line (paste the standalone test watershed root when prompted):
-
-```powershell
-$ws = Read-Host "Watershed root"; & "$env:LOCALAPPDATA\miniconda3\envs\hydro39\python.exe" (Join-Path $ws "scripts\rts-setup-package\Install-StandaloneConfiguration.py") --watershed $ws --mode standalone
-```
+The required adapters and both backends are already bundled. Open
+`scripts/OPEN_WORKFLOW.py` in ResSim; the existing STANDALONE_WORKFLOW_MENU entry
+is an alias for the same opener. No installation or mode switch is needed.
+Preserve the model's alt_config, CSV schedules, CONFIG.py, originals and outputs.
+See [portable workflow instructions](WORKFLOW_PACKAGE.md) for import and updates.
 
 This requires the existing eleven external rule modules, Alternative_Setup, and
 ExternalPython directory. It is intended for the current scripted Willamette model,
@@ -69,10 +63,9 @@ from hec.script import ClientAppWrapper; import os; execfile(os.path.join(str(Cl
    load/edit/save/apply a different set and recompute the affected trials using
    the same model alternative. Re-extraction is not needed for rule-setting edits.
 
-The installer preserves the original timestep functions and adds initialization
-adapters only. A changed applied set is picked up at the next initialization;
-restart once after installation so previously imported Python modules cannot
-hide the new adapters. A preset import copies baseline scripted settings only:
+The bundled adapters preserve the original timestep functions. A changed applied
+set is picked up at the next initialization. After updating script files, reopen
+the GUI and restart the application if it still holds older native modules. A preset import copies baseline scripted settings only:
 it does not reproduce a different alternative's native rule stack, operations,
 augmentation method or input mappings.
 
@@ -144,7 +137,6 @@ smoke check also exercises successive applies, non-ensemble receipts, alternativ
 isolation and defaults restoration. Cloud tests do not prove native Windows
 ResSim initialization order or model output equivalence; those remain local tests.
 
-To revert script installation, close ResSim and restore the changed paths from
-the printed backup using files.json (restore existing files; remove only newly
-installed ones). Keep library/applied sets if useful. No original alt_config or
-CSV schedule needs restoration because the installer and Apply do not rewrite them.
+For script rollback, close ResSim and restore a consistent before-update script
+set from your backup. Keep saved/applied configurations and study outputs. Applying
+settings does not rewrite the source alt_config files or CSV schedules.

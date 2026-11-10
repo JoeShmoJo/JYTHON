@@ -14,28 +14,26 @@
 <p>staging/backup behavior and the focused backend update.</p>
 <p>These supersede earlier descriptions of the larger multi-button menu, routine full-DSS result snapshots, broad baseline fingerprints, and Reset Baseline as a main-window button.</p>
 <h2 id="current-menu">Current menu</h2>
-<p>Run installed <code>scripts\RTS_WORKFLOW_MENU.py</code> from the RTS watershed Script Editor. The four main actions are:</p>
+<p>Open <code>scripts\OPEN_WORKFLOW.py</code> from the imported watershed, or use the separate working LAUNCH_WORKFLOW_GUI shortcut. The opener detects RTS; no installer or mode switch is required. Never paste a launcher over RTS_WORKFLOW_MENU.py itself. The menu actions are:</p>
 <div class="table"><table><thead><tr><th>Action</th><th>Purpose</th></tr></thead><tbody>
-<tr><td>Initial Extract</td><td>Download/archive inputs and load the completed extract; compute manually afterward</td></tr>
+<tr><td>Initial Extract (live RFC)</td><td>Download current inputs and load the completed extract; compute manually afterward</td></tr>
+<tr><td>Check archive dates / members</td><td>Read-only issue-date, member and rule-curve preview across all required station ZIPs</td></tr>
+<tr><td>Extract archived forecast inputs</td><td>Load the selected historical issue using the displayed RTS dates; select the folder, member years, OSI source and leap-day policy</td></tr>
 <tr><td>Baseline Configuration</td><td>Edit/save reusable scripted-rule settings and apply a forecast-scoped set with augmentation disabled</td></tr>
 <tr><td>Augmentation Configuration</td><td>Accept completed results if requested, configure/process/load releases against the saved baseline</td></tr>
+<tr><td>Model Check</td><td>Check a selected ensemble member after compute</td></tr>
 <tr><td>Plot Results</td><td>Accept completed results if requested, choose one/two archived runs, plot or delete an augmented result</td></tr>
 </tbody></table></div>
 <p>Greyed-out metadata identify the selected forecast. Refresh after selection/date changes. Compute remains a normal RTS/ResSim action; no menu task starts it. “Yes” in the completion question means the operator confirms successful compute and requests capture. “No” uses saved results without accepting current live outputs. “Cancel” stops. Finish compute and close DSS views before file operations.</p>
 <p>Saving configuration, applying/loading it, computing, and accepting outputs are separate steps. Use the SOP for their order. New captures retain selected full series in <code>series.npz</code> plus <code>run-archive.json</code>. These are primary data; do not remove them as disposable caches. Older full-DSS archives and their rebuildable <code>run-data-cache-C0</code> folders remain supported.</p>
 <p>Baseline equality compares pool elevation/outflow timestamps, values, units and types, not every model/configuration/input variable. It preserves the existing ID when those outputs match. The reference documents the input-only-change caveat, including water-year type. No operation-set selection/stack order is restored from result archives.</p>
-<h2 id="related-installationdevelopment-material">Related installation/development material</h2>
+<h2 id="related-workflow-and-maintenance-material">Related workflow and maintenance material</h2>
 <ul>
-<li><a href="FORECAST_EXTRACTION.html">Forecast extraction</a>: original plan/test launcher and</li>
-</ul>
-<p>downloader details; the operator SOP describes the menu&#x27;s extract-and-load action.</p>
-<ul>
-<li><a href="RTS_BASELINE_CONFIGURATION.html">Baseline configuration</a>: adapter/editor setup and</li>
-</ul>
-<p>historical performance diagnostics.</p>
-<ul>
+<li><a href="FORECAST_EXTRACTION.html">Forecast extraction</a>: current live/archive extraction, date/member validation, leap-day policy and staged loading.</li>
+<li><a href="RTS_BASELINE_CONFIGURATION.html">Baseline configuration</a>: bundled adapter/editor behavior, configuration snapshots and initialization receipts.</li>
 <li><a href="RTS_AUGMENTATION.html">Augmentation backend</a>: calculator/background CLI material.</li>
 </ul>
-<p>Installer scripts print backup locations. Updating kit files does not update installed watershed scripts. See the reference for installation boundaries and shared versus per-forecast files. This workflow does not require the experimental application JAR patch.</p>
+<p>Update a consistent GUI/backend set together and preserve local script changes. The runtime lives in scripts/RTSPython. Changing kit source alone does not update the active backend. This workflow does not require an experimental application JAR patch or any post-import activation command.</p>
+<p>The GUI displays its Python backend path. Mixed versions are rejected before an archive action starts. The <strong>Use this displayed forecast after closing it in RTS</strong> checkbox permits operations against the displayed context when the forecast is closed to release DSS locks. Verify the header first and refresh after switching forecasts. February 29 rule curves default to the midpoint of February 28 and March 1; explicit table values take precedence. This check runs before downloads.</p>
 <p>Optional developer Swing smoke check (not an operator step):</p>
 <pre><code>java -Djava.awt.headless=true -jar /path/to/jython-standalone-2.7.3.jar tests/check_swing_configuration.py</code></pre><footer>Offline watershed documentation · <a href="../documentation/sources/RTS_WORKFLOW_MENU.md">Markdown source</a> · Use browser Print to save as PDF.</footer></main></body></html>

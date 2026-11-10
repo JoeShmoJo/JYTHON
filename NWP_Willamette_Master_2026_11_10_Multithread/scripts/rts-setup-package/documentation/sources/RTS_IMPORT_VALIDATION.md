@@ -1,6 +1,6 @@
 # Next session: fresh RTS import and workflow validation
 
-Handoff: 16 October 2026. This is the next task, not a completed validation.
+Status: 10 November 2026. The operator confirmed the imported RTS archive-extraction path after script synchronization and leap-day fixes. Native compute and the complete baseline/augmentation pair still need validation.
 The standalone watershed remains the source; use a separate imported RTS copy.
 Start with original HEC software and serial compute. No experimental JAR change
 is required or installed by this workflow.

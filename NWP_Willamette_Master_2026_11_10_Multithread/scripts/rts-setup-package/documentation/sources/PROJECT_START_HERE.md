@@ -1,6 +1,6 @@
 # Start here: Willamette ResSim / RTS project handoff
 
-Documentation date: 16 October 2026. Keep this file with the watershed.
+Documentation refreshed: 10 November 2026. Keep this file with the watershed.
 
 
 Double-click **WORKFLOW_README.html** at the watershed root for the offline browser
@@ -52,14 +52,16 @@ a local edit makes behavior differ from these documents.
 - RTS supports extraction, baseline configuration/acceptance, augmentation
   preparation/loading, accepted results and plotting. The user exercised RTS;
   compact archives and later packaging changes require local verification.
-- A portable kit and script-mode installer are provided. Automated tests cover
-  packaging, checksums and standalone → RTS → standalone transitions. Native
-  import/transition validation remains an operator task.
+- Both runtime backends and a shared auto-detecting opener are pre-bundled.
+  No installer or mode switch is required after import. Native import/model
+  linking and compute validation remain operator tasks.
 - Experimental vendor JAR/compiler isolation work is retired from this workflow.
   Do not install/recreate that modification. Use original HEC software and a
   supported compute mode, initially serial. Prior restoration of every local
   experimental installation has not been independently verified by these scripts.
-- Historical RFC archive loading is paused pending missing station records.
+- Historical RFC archive extraction works in standalone and RTS, with date/member
+  preview and February 29 rule-curve handling. Verify the archive product provenance
+  and native compute separately.
   Current extraction downloads the current RFC issue, not a historical issue.
 
 Known examples, not hardcoded operating targets:
@@ -170,15 +172,15 @@ reload receipts separately; successful compute is not proof of toggle behavior.
 
 1. Back up the complete existing watershed and any study forecasts/results you
    intend to retain. Preserve this embedded kit and original-source folders.
-2. Read `scripts/workflow-mode.json`; compare it with the environment you intend
-   to use. It records installation mode, not automatic GUI detection.
+2. Verify the imported scripts tree includes both ExternalPython and RTSPython
+   plus the shared OPEN_WORKFLOW.py opener. The old mode marker is not used for GUI dispatch.
 3. Verify the original HEC application and the `hydro39` Python environment.
    Use the inventory to identify dependencies and versions. Recreate/install them
    through approved channels if the old machine/environment is gone. The kit does
    not bundle Conda, Python packages, HEC applications or authentication.
-4. If changing mode, close both applications and use the embedded installer as
-   described in WORKFLOW_PACKAGE.md. Activate RTS mode only in the imported copy.
-5. Open the environment's launcher. Verify target, dates, paths, trial convention,
+4. Import the complete watershed into a separate RTS copy through the native HEC
+   procedure. No script installer or mode activation is required.
+5. Open the shared OPEN_WORKFLOW.py launcher in either application. Verify target, dates, paths, trial convention,
    inputs and native rule bindings before changing or computing anything.
 6. Preserve existing results. Run a small serial baseline, verify initialization
    receipts and native completion, then validate outputs before a large study.

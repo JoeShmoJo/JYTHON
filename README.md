@@ -10,6 +10,18 @@ Large inputs, generated results, installers, and local credentials are
 not necessarily included. A Git checkout alone is not a complete runnable
 HEC environment.
 
+## Current workflow
+
+The repository includes the working standalone/RTS archive reader, date/member
+preview, CWMS lookback padding, simulation-scoped member selection, GUI/backend
+version checks and February 29 rule-curve interpolation. The operator confirmed
+RTS archive extraction; native model compute validation is separate.
+
+Open `scripts/OPEN_WORKFLOW.py` or your separate `LAUNCH_WORKFLOW_GUI` shortcut.
+Do not replace `RTS_WORKFLOW_MENU.py` with a launcher stub. No RTS script installer
+or manual mode switch is required. Refresh an imported copy by copying the complete
+updated `scripts` tree, retaining `RTSPython`, while the workflow GUI is closed.
+
 ## Current priorities
 
 1. Complete and validate import into HEC-RTS using a separate imported copy.

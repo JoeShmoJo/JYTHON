@@ -21,6 +21,21 @@ watershed cannot be located through its application wrapper, the opener asks you
 to select the already-loaded watershed folder. This locates the bundled scripts;
 it does not install, copy, patch or switch any files.
 
+## Separate Script Editor shortcut
+
+If saving a short launcher in the editor, create a **new script** named
+LAUNCH_WORKFLOW_GUI. Do not edit the GUI implementation RTS_WORKFLOW_MENU.py.
+For the current imported test watershed the shortcut is:
+
+```python
+script = r"C:\CWMS\watershed\RTS_10Nov2026\scripts\OPEN_WORKFLOW.py"
+execfile(script, {"__name__": "__main__", "__file__": script})
+```
+
+Use the actual imported watershed path if it differs. The explicit namespace
+prevents the editor's own filename from being inherited. A working shortcut is
+local to that imported path; keep it when merging later scripts-folder updates.
+
 ## What is bundled
 
 | Component | Location | Selection |
