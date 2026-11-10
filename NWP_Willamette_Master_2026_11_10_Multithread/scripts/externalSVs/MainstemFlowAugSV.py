@@ -28,6 +28,10 @@ DAYS_AVERAGE = 3 #Number of days to use when averaging inflows/releases to keep 
 
 DEBUG = False #If True, debug statements will be printed out
 
+import os
+import json
+from NWDJyLib.cFile import parallelSafeReadText
+
 from hec.rss.model import RssModelVariableConstants
 from hec.heclib.util import HecTime
 from hec.model import PairedValuesExt
@@ -57,6 +61,26 @@ class MainstemFlowAugSV(ExternalSV):
         '''
         altSetupSV = network.getStateVariable("Alternative_Setup")
         self.mainstemFlowAugMethod = altSetupSV.varGet("mainstemFlowAugMethod")
+        self.isRtsCompute = bool(altSetupSV.varGet("cwmsCompute"))
+        self.rtsScheme = None
+        if self.isRtsCompute:
+            # RTS has no standalone trials. Explicit activation, scoped to this
+            # forecast directory, controls the pass without changing op sets.
+            outputFile = str(altSetupSV.varGet("fileNameSimulation"))
+            marker = os.path.join(os.path.dirname(outputFile), "rts-augmentation-active.json")
+            if not os.path.isfile(marker):
+                network.printMessage("MainstemFlowAugSV: RTS baseline mode; augmentation minimum is zero")
+                self.computeSV = False
+                return True
+            self.rtsScheme = json.loads(parallelSafeReadText(marker, "UTF-8"))
+            actualFpart = str(altSetupSV.varGet("dssOutputFpart"))
+            expectedFparts = ["C:%06d|%s" % (int(member), self.rtsScheme["run_code"])
+                              for member in self.rtsScheme["members"]]
+            if actualFpart not in expectedFparts:
+                raise AssertionError("Active RTS augmentation scheme does not cover run/member: " + actualFpart)
+            self.mainstemFlowAugMethod = "ReadExternalFlowAugTS"
+            network.printMessage("MainstemFlowAugSV: RTS augmentation scheme " + self.rtsScheme["scheme"])
+
         if self.mainstemFlowAugMethod == "NoFlowAug": #Don't compute mainstem flow aug, skip everything else
             self.computeSV = False
             return True
@@ -65,7 +89,11 @@ class MainstemFlowAugSV(ExternalSV):
         self.useExternalTS = False
         #Config file that shows which reservoirs are used to support the min flow target, their storage capacity, etc.
         resvConfigCSV = altSetupSV.varGet("mainstemFlowAugReservoirConfigCSV") #e.g. "scripts/someCSV.csv"
-        self.resvConfig = loadReservoirConfig(network.makeAbsolutePathFromWatershed(resvConfigCSV))
+        if self.rtsScheme is not None:
+            resvConfigPath = os.path.join(self.rtsScheme["scheme_directory"], "MinFlowSalemAlbanyConfig.csv")
+        else:
+            resvConfigPath = network.makeAbsolutePathFromWatershed(resvConfigCSV)
+        self.resvConfig = loadReservoirConfig(resvConfigPath)
         self.resvNamesAll = list(self.resvConfig.values()[0].keys()) #all reservoirs in config file
         #list of reservoirs in config file that directly operate for mainsteam flow targets
         self.resvNamesSupporting = list(self.resvNamesAll) 
@@ -78,6 +106,10 @@ class MainstemFlowAugSV(ExternalSV):
             else:
                 self.resvNamesNonSupporting.remove(resvName)
         
+        if self.rtsScheme is not None:
+            if set(self.resvNamesSupporting) != set(self.rtsScheme["supporting_reservoirs"]):
+                raise AssertionError("RTS scheme supporting reservoirs differ from current model config; prepare a new scheme")
+
         # #If applicable, read in the external time series of min flow target that serves as an override:
         # if self.mainstemFlowAugMethod in ["AutoDetect", "ReadExternalFlowAugTS"]:
         #     fPartInput = altSetupSV.varGet("dssOutputFpart")
@@ -125,14 +157,14 @@ class MainstemFlowAugSV(ExternalSV):
                 trialDigit = int(fPartInput[-1])
 
             # If this is a trial alt and its digit is in omit list, skip flow-aug entirely
-            if trialDigit is not None and trialDigit in omitTrials:
+            if not self.isRtsCompute and trialDigit is not None and trialDigit in omitTrials:
                 network.printMessage(
                     "MainstemFlowAugSV: omitting flow-aug for trial %s (F-part=%s)" % (trialDigit, fPartInput)
                 )
                 self.computeSV = False
                 return True
 
-            if not fPartInput.endswith("0"): #If we are running a trial, read in the external TS from the original alternative
+            if not self.isRtsCompute and not fPartInput.endswith("0"): #Standalone trial reads baseline; RTS keeps its exact F-part
                 fPartInput = fPartInput[:-1] + "0" #e.g. "Default---0" instead of "Default---1"
             ePart = currentVariable.getTimeSeries().getTimeSeriesContainer().fullName.split("/")[5] #e.g. "3HOUR"
             templatePath = altSetupSV.varGet("flowAugRuleTSPathTemplate") # "//%RESV_NAME%-FLOWAUG/FLOW-MIN//%TIMESTEP%/%FPART%/"
@@ -166,8 +198,12 @@ class MainstemFlowAugSV(ExternalSV):
         minFlowTargetCSV_Salem = altSetupSV.varGet("minFlowTargetCSV_Salem") #relative path to CSV file from watershed folder
         minFlowTargetCSV_Albany = altSetupSV.varGet("minFlowTargetCSV_Albany")
         self.minFlowTableDict = {}
-        self.minFlowTableDict["Salem"] = loadMinFlowTable(network.makeAbsolutePathFromWatershed(minFlowTargetCSV_Salem))
-        self.minFlowTableDict["Albany"] = loadMinFlowTable(network.makeAbsolutePathFromWatershed(minFlowTargetCSV_Albany))
+        if self.rtsScheme is not None:
+            self.minFlowTableDict["Salem"] = loadMinFlowTable(os.path.join(self.rtsScheme["scheme_directory"], "MinFlowSalem_2008BiOp.csv"))
+            self.minFlowTableDict["Albany"] = loadMinFlowTable(os.path.join(self.rtsScheme["scheme_directory"], "MinFlowAlbany_2008BiOp.csv"))
+        else:
+            self.minFlowTableDict["Salem"] = loadMinFlowTable(network.makeAbsolutePathFromWatershed(minFlowTargetCSV_Salem))
+            self.minFlowTableDict["Albany"] = loadMinFlowTable(network.makeAbsolutePathFromWatershed(minFlowTargetCSV_Albany))
         
         #Load up the water year type time series(Abundant, Adequate, Insufficient, Deficit)
         self.wyTypeTS = getWYTypeTS(network)

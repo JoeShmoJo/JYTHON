@@ -299,6 +299,8 @@ def current_configuration(root, scripts, alternative='Con_Season', marker_name='
     # Read installed CSVs, not the example schedules. Current Con_Season defaults
     # have flat Hjson key/value lines; refuse more complex syntax rather than guess.
     result=template(scripts);result['name']='Con_Season imported settings';result['description']='Settings read from the imported RTS model.';watershed=Path(scripts).parent.parent
+    if not (watershed/'scripts'/originals).is_dir() and (watershed/'scripts/_standalone_baseline_originals').is_dir():
+        originals='_standalone_baseline_originals'
     values=legacy_values(watershed,alternative)
     result['name']=alternative+' imported settings'
     result['description']='Settings imported from '+alternative+' and watershed defaults.'
@@ -348,6 +350,8 @@ def apply_configuration(root, context, config, scripts):
         config=include(config,scripts)
         if context.get('run_type'):config['standalone_workflow']['run_type']=context['run_type']
     originals='_standalone_baseline_originals' if standalone else '_rts_baseline_originals'
+    if not (watershed/'scripts'/originals).is_dir() and (watershed/'scripts/_standalone_baseline_originals').is_dir():
+        originals='_standalone_baseline_originals'
     config=with_null_reservoirs(config)
     resolved,linked=resolve(config,scripts,watershed)
     config['operating_status']=copy.deepcopy(resolved['operating_status'])

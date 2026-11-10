@@ -82,8 +82,6 @@ def execute(watershed,simulation,alternative,job,run_type=None,report_path=None)
     from baseline_configuration import digest_file
     ctx=context(watershed,alternative,simulation);root=Path(ctx['dss_path']).parent
     scripts=Path(watershed).resolve()/'scripts/ExternalPython'
-    mode=Path(watershed)/'scripts/workflow-mode.json'
-    if mode.exists() and json.loads(mode.read_text())['mode']!='standalone':raise ValueError('Use the RTS workflow menu in RTS mode')
     marker=root/'standalone-baseline-config-active.json'
     if not marker.is_file():raise ValueError('Open Baseline Configuration and Apply settings for this simulation/alternative before running jobs')
     pointer=json.loads(marker.read_text())

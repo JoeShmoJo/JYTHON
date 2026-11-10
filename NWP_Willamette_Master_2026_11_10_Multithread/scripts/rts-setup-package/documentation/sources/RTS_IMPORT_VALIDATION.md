@@ -11,8 +11,8 @@ Standalone configuration, named archives/plots and Model Check have been exercis
 by the operator. Recent fixes include explicit POR/ensemble targeting, uppercase
 DSS record matching, installed archive dependencies and saved plot references.
 Automated checks exercise the Python/package logic; they do not certify a fresh
-native RTS import. The latest package must be installed in the source watershed
-before importing it. Updating kit files alone does not update installed watershed scripts.
+native RTS import. The current source watershed pre-bundles both runtime backends. Import the
+complete updated watershed; no post-import script installer or mode switch is needed.
 
 An open issue remains: some archived `FLOW-MINLIM` reads yielded no finite values.
 DSSVue shows these records in the catalog, but their actual tabulated values have
@@ -38,11 +38,10 @@ Keep the existing DSS, archive and logs so this can be investigated later.
    Confirm the destination root and retain the standalone source unchanged. Check
    scripts, CSV schedules, native alternatives, mappings, external modules and
    `scripts/rts-setup-package` survived. A kit alone is not a complete watershed.
-4. Close RTS/ResSim and activate RTS script mode only in the imported watershed,
-   using the embedded installer command in WORKFLOW_PACKAGE.md. Do not pass the
-   standalone source or a forecast directory to that mode-switch command.
-5. Reopen RTS and verify model/program linking. Use the RTS menu launcher, not the
-   standalone menu. Verify Python/DSS prerequisites and CWMS/network access.
+4. Verify that `scripts/RTSPython`, both native compute adapters and the shared
+   `scripts/OPEN_WORKFLOW.py` opener survived import. No activation installer is required.
+5. Open the same GUI opener in RTS; it detects CAVI and launches the RTS menu.
+   Verify model/program linking, Python/DSS prerequisites and CWMS/network access.
 
 ## 2. Validate the baseline path first
 

@@ -43,6 +43,29 @@ def inventory(watershed,destination):
     (destination/'installation-inventory.json').write_text(json.dumps(data,indent=2),encoding='utf-8')
 
 
+def bundle_runtime(source, watershed):
+    """Ship both UIs/backends ahead of import; never install/switch on GUI open."""
+    source=Path(source);scripts=Path(watershed)/'scripts'
+    destination=scripts/'RTSPython';destination.mkdir(exist_ok=True)
+    import re
+    extraction=(source/'Install-ForecastExtraction.ps1').read_text()
+    required=set(re.findall(r"'([^']+)'",extraction.split('$names = @(',1)[1].split(')',1)[0]))
+    required.add('CONFIG.py')
+    for name in sorted(required):
+        shutil.copy2(source/'ExternalPython'/name,destination/name)
+    for target,relative in [('baseline-editor.html','baseline-editor-design/editor-mockup.html'),
+                            ('baseline-configuration.example.json','baseline-editor-design/baseline-configuration.example.json')]:
+        if target.endswith('.json'):
+            value=json.loads((source/relative).read_text(encoding='utf-8'))
+            (destination/target).write_text(json.dumps(value,separators=(',',':'))+'\n',encoding='utf-8')
+        else:
+            shutil.copy2(source/relative,destination/target)
+    for name in ('OPEN_WORKFLOW.py','workflow_host.py','STANDALONE_WORKFLOW_MENU.py',
+                 'STANDALONE_WORKFLOW_UI.py','RTS_WORKFLOW_MENU.py','runtime-host-adapter.py'):
+        shutil.copy2(source/name,scripts/name)
+    shutil.copy2(source/'baseline-runtime/rts_baseline_runtime.py',scripts/'rts_baseline_runtime.py')
+
+
 def package(watershed):
     watershed=Path(watershed).resolve()
     destination=watershed/'scripts/rts-setup-package'
@@ -57,7 +80,8 @@ def package(watershed):
             shutil.copy2(model_source/name,stage/'model_check'/name)
         for name in ('Install-StandaloneConfiguration.py','Package-Workflow.py','render_documentation.py',
                      'Install-ForecastExtraction.ps1','Install-BaselineConfiguration.ps1','Install-RunArchives.ps1',
-                     'STANDALONE_WORKFLOW_MENU.py','RTS_WORKFLOW_MENU.py','RTS_FORECAST_EXTRACT.py'):
+                     'STANDALONE_WORKFLOW_MENU.py','STANDALONE_WORKFLOW_UI.py','OPEN_WORKFLOW.py','workflow_host.py',
+                     'runtime-host-adapter.py','RTS_WORKFLOW_MENU.py','RTS_FORECAST_EXTRACT.py'):
             shutil.copy2(HERE/name,stage/name)
         shutil.copytree(HERE/'documentation/sources',stage/'documentation/sources')
         renderer_spec=importlib.util.spec_from_file_location('workflow_docs',stage/'render_documentation.py')
@@ -66,9 +90,7 @@ def package(watershed):
         manifest={p.relative_to(stage).as_posix():hashlib.sha256(p.read_bytes()).hexdigest()
                   for p in sorted(stage.rglob('*')) if p.is_file() and '__pycache__' not in p.parts and p.suffix != '.pyc'}
         (stage/'manifest.json').write_text(json.dumps(manifest,indent=2))
-        spec=importlib.util.spec_from_file_location('workflow_installer',stage/'Install-StandaloneConfiguration.py')
-        installer=importlib.util.module_from_spec(spec);spec.loader.exec_module(installer)
-        installer.install(watershed,'standalone')
+        bundle_runtime(stage,watershed)
         # Preserve a previous kit without copying the large watershed or DSS outputs.
         if destination.exists():
             import uuid

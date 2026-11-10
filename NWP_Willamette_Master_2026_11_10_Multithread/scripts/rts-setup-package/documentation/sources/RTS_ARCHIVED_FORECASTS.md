@@ -1,13 +1,11 @@
 # Archived RFC forecasts in RTS
 
-After importing the watershed, run `Install-StandaloneConfiguration.py` from the
-included `scripts/rts-setup-package` with `--watershed` pointing to the imported
-watershed and `--mode rts`. This installs the RTS adapters and menu with script
-backups; it does not change application JARs or start compute. It also includes
-the archive reader in the forecast-extraction installer. Keep the archive ZIPs
-outside Git and install `pyarrow` in the hydro39 environment if it is absent.
+After importing the complete watershed, open the same GUI script used in standalone:
+`scripts/OPEN_WORKFLOW.py` (or the existing `STANDALONE_WORKFLOW_MENU.py` alias).
+It detects RTS and opens the bundled RTS backend. No installer or mode switch is
+needed. Keep the archive ZIPs outside Git and install `pyarrow` in hydro39 if absent.
 
-Open `scripts/RTS_WORKFLOW_MENU.py` in the imported RTS watershed. The new actions
+The RTS menu actions
 are **Check archive dates / members** and **Extract archived forecast inputs**.
 **Initial Extract (live RFC)** still uses the live downloader.
 
@@ -23,7 +21,7 @@ are **Check archive dates / members** and **Extract archived forecast inputs**.
 6. For extraction, finish any compute and close DSSVue views before confirming.
 7. Reopen the forecast after loading inputs, then compute manually in RTS.
 
-Archive preferences are saved locally in `scripts/ExternalPython/rfc-archive-settings.json`.
+Archive preferences are saved locally in `scripts/RTSPython/rfc-archive-settings.json`.
 They are independent of standalone Baseline Configuration and ignored by Git.
 The forecast window always comes from the selected RTS forecast/run, not a
 standalone simulation folder or today's date. The nominal daily 12Z cycle at or

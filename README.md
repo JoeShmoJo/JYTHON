@@ -16,7 +16,9 @@ HEC environment.
 2. Import archived forecast inputs and run historical forecast simulations.
 
 Preserve the standalone master while validating the imported RTS copy.
-The recorded installation mode at cleanup was standalone.
+Open `scripts/OPEN_WORKFLOW.py` (or the existing `STANDALONE_WORKFLOW_MENU.py`
+alias) in either application. It detects the host and uses the pre-bundled backend;
+no post-import installer or mode switch is required.
 
 ## Start here
 

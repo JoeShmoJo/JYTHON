@@ -9,6 +9,11 @@ import json
 import os
 import sys
 import uuid
+from NWDJyLib.cFile import (
+    parallelSafeDigest,
+    parallelSafeReadText,
+    parallelSafeWriteText,
+)
 
 RULE_KEYS = {'DeepDrawdown': 'deep_drawdown', 'SpringSpill': 'spring_spill',
     'NoDraft': 'no_draft', 'SecondaryFloodDraftLimit': 'secondary_flood_draft',
@@ -30,12 +35,10 @@ _CACHE = {}
 
 
 def digest(path):
-    value = hashlib.sha256()
-    with open(path, 'rb') as handle:
-        for block in iter(lambda: handle.read(1024 * 1024), b''):
-            value.update(block)
-    return value.hexdigest()
+    return parallelSafeDigest(path)
 
+def read_json(path):
+    return json.loads(parallelSafeReadText(path, 'UTF-8'))
 
 def active(network):
     output = str(network.getRssRun().getDSSOutputFile())
@@ -46,8 +49,9 @@ def active(network):
     for ignored in range(5):
         marker = os.path.join(directory, 'rts-baseline-config-active.json')
         if os.path.isfile(marker):
-            with open(marker) as handle:
-                pointer = json.load(handle)
+            pointer = read_json(marker)
+            if pointer.get('model_alternative') != str(network.getAlternative().getName()).split(':')[-1]:
+                return None
             source = os.path.abspath(os.path.join(directory, pointer['directory']))
             allowed = os.path.join(directory, 'baseline-configurations', 'sets') + os.sep
             if not source.startswith(allowed):
@@ -57,8 +61,7 @@ def active(network):
             if cache_key not in _CACHE:
                 if digest(filename) != pointer['resolved_sha256']:
                     raise RuntimeError('RTS baseline configuration checksum mismatch')
-                with open(filename) as handle:
-                    data = json.load(handle)
+                data = read_json(filename)
                 if data['schema_version'] != 1:
                     raise RuntimeError('Unsupported RTS baseline configuration')
                 if len(_CACHE) >= 16:
@@ -113,6 +116,8 @@ class _Namespace(object):
 def initialize_rule(module_name, rule, network, namespace=None):
     scripts = str(network.makeAbsolutePathFromWatershed('scripts'))
     path = os.path.join(scripts, '_rts_baseline_originals', 'externalRules', module_name + '.py')
+    if not os.path.isfile(path):
+        path = os.path.join(scripts, '_standalone_baseline_originals', 'externalRules', module_name + '.py')
     if namespace is not None:
         # Reset defaults at each initialization so a subsequent forecast with
         # no applied configuration cannot inherit the previous forecast's set.
@@ -167,8 +172,7 @@ def initialize_rule(module_name, rule, network, namespace=None):
         source, data, pointer = found
         import re
         match = re.search(r'C:(\d{6})\|', str(network.getRssRun().getOutputFPart()))
-        if not match:
-            raise RuntimeError('Cannot identify ensemble member for baseline initialization receipt')
+        # Non-ensemble standalone runs also receive a configuration receipt.
         directory = os.path.join(source, 'initialization-receipts')
         if not os.path.isdir(directory):
             try:
@@ -176,10 +180,20 @@ def initialize_rule(module_name, rule, network, namespace=None):
             except OSError:
                 if not os.path.isdir(directory):
                     raise
-        # Unique immutable receipts avoid concurrent reservoir writes colliding.
-        with open(os.path.join(directory, uuid.uuid4().hex + '.json'), 'w') as handle:
-            json.dump({'configuration_id': pointer['id'], 'member': int(match.group(1)),
-                       'module': module_name, 'resolved_sha256': pointer['resolved_sha256']}, handle)
+        # Unique immutable receipts avoid concurrent writes colliding.
+        # Java NIO avoids Jython PyFile close handling in native worker threads.
+        receipt = {
+            'configuration_id': pointer['id'],
+            'member': int(match.group(1)) if match else None,
+            'output_fpart': str(network.getRssRun().getOutputFPart()),
+            'module': module_name,
+            'resolved_sha256': pointer['resolved_sha256'],
+        }
+        parallelSafeWriteText(
+            os.path.join(directory, uuid.uuid4().hex + '.json'),
+            json.dumps(receipt, sort_keys=True),
+            'UTF-8'
+        )
     return outcome
 
 

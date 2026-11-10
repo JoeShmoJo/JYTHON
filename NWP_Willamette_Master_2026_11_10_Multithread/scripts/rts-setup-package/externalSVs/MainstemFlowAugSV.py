@@ -30,6 +30,7 @@ DEBUG = False #If True, debug statements will be printed out
 
 import os
 import json
+from NWDJyLib.cFile import parallelSafeReadText
 
 from hec.rss.model import RssModelVariableConstants
 from hec.heclib.util import HecTime
@@ -71,8 +72,7 @@ class MainstemFlowAugSV(ExternalSV):
                 network.printMessage("MainstemFlowAugSV: RTS baseline mode; augmentation minimum is zero")
                 self.computeSV = False
                 return True
-            with open(marker, "r") as handle:
-                self.rtsScheme = json.load(handle)
+            self.rtsScheme = json.loads(parallelSafeReadText(marker, "UTF-8"))
             actualFpart = str(altSetupSV.varGet("dssOutputFpart"))
             expectedFparts = ["C:%06d|%s" % (int(member), self.rtsScheme["run_code"])
                               for member in self.rtsScheme["members"]]

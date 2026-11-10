@@ -10,6 +10,12 @@ instructions. Browser Print can save a PDF. Markdown sources remain available.
 For a new coding session or re-upload, read [PROJECT_RESUME.md](PROJECT_RESUME.md)
 first. The complete handoff is included in the offline documentation.
 
+## Open the workflow
+
+Use `scripts/OPEN_WORKFLOW.py` in either standalone ResSim or RTS. The existing
+`STANDALONE_WORKFLOW_MENU.py` opener also auto-detects the host. Both backends are
+already bundled; no post-import installer or mode switch is required.
+
 ## Next task
 
 [Fresh RTS import and validation checklist](RTS_IMPORT_VALIDATION.md) is the next

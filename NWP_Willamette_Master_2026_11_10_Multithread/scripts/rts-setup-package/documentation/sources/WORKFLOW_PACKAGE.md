@@ -1,139 +1,65 @@
-# Standalone and RTS workflow package
+# Portable watershed workflow: one opener for ResSim and RTS
 
-This kit travels with the watershed at `scripts/rts-setup-package`. It contains both
-menus, the baseline editor/runtime, RTS extraction/augmentation/archive/plot helpers,
-script installers, and the operator/file reference documents. `manifest.json`
-contains SHA-256 checksums of the kit payload. No application JAR, Java runtime,
-Python environment, DSS output or model network is bundled by this kit.
+The watershed already contains both runtime backends. Import the complete watershed
+into RTS using the normal HEC import process, then open `scripts/OPEN_WORKFLOW.py`.
+The existing `scripts/STANDALONE_WORKFLOW_MENU.py` entry is a compatibility alias
+for the same automatic opener. No installer command or workflow-mode switch is
+part of normal use.
 
-Keep the existing watershed scripts, CSVs, alt_config, external modules, native
-alternatives and DSS mappings when transferring the watershed. The kit supplements
-those model-specific files; it is not a replacement watershed or a universal model
-installer. Keep the standalone watershed and imported RTS copy separate.
+## Open the workflow
 
+1. In standalone ResSim, load the source watershed and open the GUI script.
+2. In RTS, open the imported watershed, create/open a forecast and select its run,
+   then open the same GUI script.
+3. The opener checks for a running CAVI application frame. It launches the RTS UI
+   in RTS and the standalone UI in standalone ResSim. Having CAVI classes on the
+   classpath alone does not select RTS.
+4. Check the displayed target, dates, timezone and DSS path before extraction.
 
-## Read in a browser
+If a HEC Script Editor does not supply the script filename and the loaded
+watershed cannot be located through its application wrapper, the opener asks you
+to select the already-loaded watershed folder. This locates the bundled scripts;
+it does not install, copy, patch or switch any files.
 
-Double-click `WORKFLOW_README.html` at the watershed root. The linked HTML guides
-under `scripts/rts-setup-package/documentation` work offline with navigation, formatted
-tables and code, and browser printing/PDF export. No server, Markdown viewer or
-additional Python package is needed to read or generate them. Editable Markdown is grouped in `documentation/sources`; users read HTML. Open `scripts/START-HERE.html` or `documentation/index.html`. Rerunning the embedded packager regenerates HTML.
+## What is bundled
 
-The standalone menu also supports [Single POR / Model Check](STANDALONE_POR_MODEL_CHECK.md).
-The embedded model_check directory contains code/limits only; native results and
-old report output folders are not copied into the kit.
-
-## Standalone SOP
-
-1. Finish compute and close ResSim before installing/updating scripts.
-2. Reopen the watershed in standalone ResSim. In the Simulation module Script Editor,
-   run the launcher below. Select the actual simulation folder and alternative.
-3. Open Baseline Configuration, verify the target banner, load/import/edit settings,
-   save a named configuration, then Apply. Compute manually in ResSim.
-4. Use existing native standalone augmentation conventions, then archive/plot
-   named results using [saved-run instructions](STANDALONE_SAVED_RESULTS.md). The other
-   menu jobs use the selected target and applied **Standalone job settings** in the
-   baseline editor. Apply before extraction/calculation jobs. Plotting existing archives needs no
-   new Apply. Verify additional
-   downloader/date constants and native mappings separately. Apply does not turn
-   off standalone augmentation automatically.
-5. See [standalone instructions](STANDALONE_CONFIGURATION.md) for validation,
-   trial conventions, receipts and rollback. The user has verified standalone
-   configuration in ResSim; new environment transitions still need local testing.
-
-Standalone Script Editor launcher:
-
-```python
-from hec.script import ClientAppWrapper; import os; execfile(os.path.join(str(ClientAppWrapper.getWatershed().getWkspDir()), 'scripts', 'STANDALONE_WORKFLOW_MENU.py'))
-```
-
-## Import into RTS
-
-Use the [fresh-import validation checklist](RTS_IMPORT_VALIDATION.md) for the next
-local test. The latest end-to-end native import remains unverified.
-
-1. Import/copy the complete watershed using your normal RTS import procedure.
-   Confirm scripts, rts-setup-package, native alternatives and DSS mappings survived.
-2. Close RTS and ResSim. Activate RTS mode **in the imported watershed copy**,
-   before creating a new forecast. Run the following line and enter that copy's
-   watershed root, not a forecast root or your standalone source.
-
-```powershell
-$ws = Read-Host "Imported RTS watershed root"; & "$env:LOCALAPPDATA\miniconda3\envs\hydro39\python.exe" (Join-Path $ws "scripts\rts-setup-package\Install-StandaloneConfiguration.py") --watershed $ws --mode rts
-```
-
-3. Reopen RTS, verify imported model/program linking, create/select the forecast,
-   and run `scripts/RTS_WORKFLOW_MENU.py` in the RTS Script Editor. Check forecast,
-   run, DSS file, dates and timezone. Do not use the standalone menu in RTS.
-4. Initial Extract → configure/apply baseline → compute unaugmented → accept
-   results → configure/process/load augmentation → compute augmented → accept/plot.
-   Follow [RTS operator SOP](RTS_OPERATOR_SOP.md) for the full sequence and
-   [file reference](RTS_WORKFLOW_REFERENCE.md) for inputs, outputs and provenance.
-5. Saved baseline JSON uses the same format in both environments. Open the saved
-   set and Apply again in the new forecast. Standalone active pointers, simulation
-   outputs and initialization receipts are not RTS baseline acceptance or archives.
-   Native operation sets, mappings and standalone augmentation trials are not
-   converted by loading configuration JSON. Validate these in the imported model.
-6. First run a small serial case and verify initialization and expected output.
-   This package does not install the experimental Java/compiler modification or
-   promise native multithreaded scripted ensemble support.
-
-RTS Script Editor launcher:
-
-```python
-from hec.script import ClientAppWrapper; import os; execfile(os.path.join(str(ClientAppWrapper.getWatershed().getWkspDir()), 'scripts', 'RTS_WORKFLOW_MENU.py'))
-```
-
-The existing `hydro39` Python environment must be installed on the destination
-machine. The launchers expect `%LOCALAPPDATA%\miniconda3\envs\hydro39\python.exe`.
-Python needs the existing project dependencies including numpy, pandas, plotting
-packages and the working DSS binding. CWMS/RFC extraction also requires network
-access and CWMS access/certificates. These prerequisites are not installed by the
-kit. RTS metadata, program linking, valid forecast dates and model mappings still
-require normal RTS setup. Archived RFC loading remains outside this workflow.
-
-## Switching, backups and files
-
-The mode installer unwraps recognized adapters using preserved original sources,
-then installs the selected adapter once. It refuses missing originals/unknown
-setup code before writing. It backs up every affected existing file and rolls
-back script writes if installation fails. Restart after switching to clear cached
-Jython modules. Never switch during compute or run both environments against the
-same writable watershed.
-
-| Artifact | Location relative to watershed | Producer/purpose |
+| Component | Location | Selection |
 | --- | --- | --- |
-| Portable kit and docs | `scripts/rts-setup-package/` | Package builder; offline installer payload |
-| Active script mode | `scripts/workflow-mode.json` | Installer; records last mode, not automatic environment detection |
-| Menus | `scripts/STANDALONE_WORKFLOW_MENU.py`, RTS mode also `scripts/RTS_WORKFLOW_MENU.py` | Installer; use the environment's menu |
-| Backend scripts | `scripts/ExternalPython/` | Installer updates selected helpers; preserves existing CONFIG.py |
-| Original rule implementations | `scripts/_standalone_baseline_originals/`, `scripts/_rts_baseline_originals/` | Installer; sources for adapters and subsequent transitions |
-| Preserved standalone downloader/helpers | `scripts/_workflow_originals/ExternalPython/` | Preserved before first RTS transition; restored for standalone; RTS-only new helpers may remain dormant |
-| Original standalone augmentation state variable | `scripts/_workflow_originals/MainstemFlowAugSV.py` | Preserved before first RTS transition; restored for standalone |
-| Versioned baseline library | `scripts/baseline-configuration-library/` | Editor Save; portable JSON |
-| Standalone applied settings | `rss/<simulation>/baseline-configurations/`, `standalone-baseline-config-active.json` | Apply; scoped to selected simulation/alternative |
-| RTS applied settings/results | Forecast root; see RTS file reference | Apply, accept, process/load; not shared with standalone results |
-| Script backups | `standalone-configuration-backups/<timestamp-token>/files.json` | Both installer modes; inventory and original file contents |
-| Previous kit | `scripts/rts-setup-package-previous-<id>/` | Builder; only kit copied, no DSS/model duplication |
+| Shared GUI opener | `scripts/OPEN_WORKFLOW.py` | Detects the running application |
+| Existing opener alias | `scripts/STANDALONE_WORKFLOW_MENU.py` | Same automatic behavior |
+| Standalone UI/backend | `scripts/STANDALONE_WORKFLOW_UI.py`, `scripts/ExternalPython` | Standalone simulation context |
+| RTS UI/backend | `scripts/RTS_WORKFLOW_MENU.py`, `scripts/RTSPython` | Selected RTS forecast/run context |
+| Native rule adapters | `scripts/standalone_baseline_runtime.py`, `scripts/rts_baseline_runtime.py` | Native compute context and forecast-scoped markers |
+| Mainstem augmentation | `scripts/externalSVs/MainstemFlowAugSV.py` | Native standalone/RTS compute context |
+| Maintenance sources and offline guides | `scripts/rts-setup-package` | Not an activation prerequisite |
 
-To switch a copy back to standalone, close applications and run the embedded
-installer with `--mode standalone` instead of `--mode rts`. CONFIG.py and all native
-model settings remain as they were; verify them before computing. To roll back a
-particular installation, use its printed backup and files.json: restore entries
-that existed and remove only newly installed entries. Mode switching retains
-both environments' saved/applied configurations; it does not migrate result data.
+The GUI opener does not modify `workflow-mode.json`, native alternatives, scripts,
+application JARs or data. The old mode marker is not used for automatic dispatch.
+Each environment keeps its own baseline pointers and initialization receipts.
+RTS uses the preserved native rule originals already shipped with the watershed.
 
-No CONFIG.py, alt_config file, user CSV schedule, native network, simulation DSS,
-forecast DSS or application JAR is rewritten by packaging/mode installation.
-RTS mode deliberately installs the maintained MainstemFlowAugSV implementation;
-standalone mode restores the preserved standalone implementation.
+## Import and validate
 
-## Refresh the portable package
+Keep the standalone master and import a separate complete copy into RTS. Retain
+both `ExternalPython` and `RTSPython`, native modules, preserved originals, CSVs,
+model files and mappings. Importing only the maintenance kit is insufficient.
+Use the archive date/member check before extracting historical forecasts; native
+ResSim ensemble selection must match the requested years. Finish computes and
+close DSS views before confirming an extraction. Compute remains a manual HEC
+application action.
 
-Close applications and preserve local mappings before running this command in the standalone source. Packaging installs standalone mode; do not use it to refresh an active RTS copy. It preserves the previous kit and records a fresh inventory. It does not install HEC or Python.
+Python hydro39, its dependencies (including pyarrow for archives), HEC libraries
+and data-service access are still machine prerequisites. Automatic application
+routing does not install Python packages or validate a native RTS import.
+See [RTS archived forecasts](RTS_ARCHIVED_FORECASTS.md) and
+[fresh-import validation](RTS_IMPORT_VALIDATION.md).
 
-```powershell
-$ws = Read-Host "Standalone watershed root"; & "$env:LOCALAPPDATA\miniconda3\envs\hydro39\python.exe" (Join-Path $ws "scripts\rts-setup-package\Package-Workflow.py") --watershed $ws
-```
+## Maintenance and older copies
 
-For a documentation-only refresh, run `python scripts/rts-setup-package/render_documentation.py` from the watershed root. Packaging refreshes `WORKFLOW_README.html` at the watershed root and `START-HERE.html` in scripts. Existing operator Markdown notes are preserved, not overwritten.
+`Package-Workflow.py` can refresh the portable kit and pre-bundled RTS backend in
+a source watershed before distribution. Packaging no longer runs a mode-switch
+installer or rewrites model rule adapters. Ship the updated whole watershed.
+
+The older `Install-StandaloneConfiguration.py` and PowerShell installers remain
+available for explicit repair/migration of older installations. They are not run
+by the opener and are not required after importing this bundled watershed.

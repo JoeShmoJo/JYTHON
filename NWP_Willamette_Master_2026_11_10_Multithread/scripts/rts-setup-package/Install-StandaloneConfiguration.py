@@ -22,14 +22,7 @@ def runtime_source():
     code=code.replace('rts-baseline-config-active.json','standalone-baseline-config-active.json')
     code=code.replace('_rts_baseline_originals','_standalone_baseline_originals')
     code=code.replace('RTS baseline','Standalone baseline')
-    needle="            source = os.path.abspath(os.path.join(directory, pointer['directory']))"
-    assert code.count(needle)==1
-    code=code.replace(needle,"            if pointer.get('model_alternative') != str(network.getAlternative().getName()).split(':')[-1]:\n                return None\n"+needle)
-    needle="        if not match:\n            raise RuntimeError('Cannot identify ensemble member for baseline initialization receipt')"
-    assert code.count(needle)==1
-    code=code.replace(needle,"        # Non-ensemble standalone runs also receive a configuration receipt.")
-    code=code.replace("'member': int(match.group(1)),", "'member': int(match.group(1)) if match else None,\n                       'output_fpart': str(network.getRssRun().getOutputFPart()),")
-    return code.encode('utf-8')
+    return (code+'\n'+(HERE/'runtime-host-adapter.py').read_text()).encode('utf-8')
 
 
 def install(watershed, mode="standalone"):
@@ -67,6 +60,9 @@ def install(watershed, mode="standalone"):
     for name,sourcefile in [('baseline-editor.html','editor-mockup.html'),('baseline-configuration.example.json','baseline-configuration.example.json')]:
         writes[scripts/'ExternalPython'/name]=(HERE/'baseline-editor-design'/sourcefile).read_bytes()
     writes[scripts/'STANDALONE_WORKFLOW_MENU.py']=(HERE/'STANDALONE_WORKFLOW_MENU.py').read_bytes()
+    for name in ('OPEN_WORKFLOW.py','workflow_host.py','STANDALONE_WORKFLOW_UI.py','runtime-host-adapter.py'):
+        writes[scripts/name]=(HERE/name).read_bytes()
+    writes[scripts/'rts_baseline_runtime.py']=(HERE/'baseline-runtime/rts_baseline_runtime.py').read_bytes()
     mainstem=scripts/'externalSVs/MainstemFlowAugSV.py'
     preserved_mainstem=scripts/'_workflow_originals/MainstemFlowAugSV.py'
     if mode=='rts':

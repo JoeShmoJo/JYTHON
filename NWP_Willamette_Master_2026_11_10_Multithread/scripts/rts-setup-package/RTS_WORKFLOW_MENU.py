@@ -22,9 +22,11 @@ from usace.cavi.client import CAVI
 EXTERNAL_PYTHON_DIR = r'C:\CWMS\watershed\ResSimMaster\scripts\ExternalPython'
 script_file = globals().get('__file__')
 if script_file and os.path.isfile(script_file):
-    sibling = os.path.join(os.path.dirname(os.path.abspath(script_file)), 'ExternalPython')
-    if os.path.isfile(os.path.join(sibling, 'rts_workflow.py')):
-        EXTERNAL_PYTHON_DIR = sibling
+    for backend in ('RTSPython', 'ExternalPython'):
+        sibling = os.path.join(os.path.dirname(os.path.abspath(script_file)), backend)
+        if os.path.isfile(os.path.join(sibling, 'rts_workflow.py')):
+            EXTERNAL_PYTHON_DIR = sibling
+            break
 
 
 class NoForecastError(RuntimeError):
@@ -515,7 +517,7 @@ class WorkflowMenu(JFrame):
                 raise RuntimeError('Forecast changed. Refresh metadata first.')
             filename = os.path.join(EXTERNAL_PYTHON_DIR, 'baseline_configuration.py')
             if not os.path.isfile(filename) or not os.path.isfile(os.path.join(os.path.dirname(EXTERNAL_PYTHON_DIR), 'rts_baseline_runtime.py')):
-                raise RuntimeError('Run Install-BaselineConfiguration.ps1 to install the baseline adapters first.')
+                raise RuntimeError('Bundled RTS baseline adapter is missing; update the watershed workflow files.')
             folder = os.path.join(os.path.dirname(self.context['dss_path']), 'workflow-logs')
             if not os.path.isdir(folder):
                 os.makedirs(folder)
