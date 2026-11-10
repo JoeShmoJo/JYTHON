@@ -19,14 +19,25 @@ from java.lang import Exception as JavaException
 from java.io import File, BufferedReader, InputStreamReader
 from usace.cavi.client import CAVI
 
-EXTERNAL_PYTHON_DIR = r'C:\CWMS\watershed\ResSimMaster\scripts\ExternalPython'
+EXTERNAL_PYTHON_DIR = None
 script_file = globals().get('__file__')
-if script_file and os.path.isfile(script_file):
+
+
+def workflow_backend(filename):
+    if not filename or not os.path.isfile(filename):
+        raise RuntimeError('Open this GUI through scripts/OPEN_WORKFLOW.py so the imported watershed path is explicit.')
+    directory = os.path.dirname(os.path.abspath(filename))
     for backend in ('RTSPython', 'ExternalPython'):
-        sibling = os.path.join(os.path.dirname(os.path.abspath(script_file)), backend)
-        if os.path.isfile(os.path.join(sibling, 'rts_workflow.py')):
-            EXTERNAL_PYTHON_DIR = sibling
-            break
+        candidate = os.path.join(directory,backend)
+        runner = os.path.join(candidate,'rts_workflow.py')
+        if os.path.isfile(runner):
+            with codecs.open(runner,'r','utf-8-sig') as handle:
+                lines = handle.read().splitlines()
+            if 'ARCHIVE_WORKFLOW_API = 1' not in lines:
+                raise RuntimeError('Mixed workflow versions: this GUI needs the archive-capable backend.\n'
+                    'Outdated backend: '+runner+'\nCopy the complete updated scripts/RTSPython folder into this imported watershed, close this GUI, and reopen OPEN_WORKFLOW.py.')
+            return candidate
+    raise RuntimeError('Bundled RTS backend missing under '+directory+'\nCopy the complete updated scripts folder, including RTSPython, into this imported watershed.')
 
 
 class NoForecastError(RuntimeError):
@@ -335,6 +346,8 @@ class ResultsWindow(JDialog):
 class WorkflowMenu(JFrame):
     def __init__(self):
         JFrame.__init__(self, 'RTS ensemble workflow')
+        global EXTERNAL_PYTHON_DIR
+        EXTERNAL_PYTHON_DIR = workflow_backend(script_file)
         self.context, self.executable = forecast_context(), python_executable()
         self.busy, self.last_html, self.after_task = False, None, None
         self.controls, self.dialogs = [], []
@@ -346,7 +359,7 @@ class WorkflowMenu(JFrame):
         except IOError:
             pass
         if not os.path.isfile(os.path.join(EXTERNAL_PYTHON_DIR, 'workflow_simple.py')):
-            raise IOError('Install the updated RTS workflow files first.')
+            raise IOError('The bundled RTS backend is incomplete. Copy the complete updated scripts/RTSPython folder.')
         pane = JPanel(BorderLayout(8, 8))
         pane.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12))
         top = JPanel(BorderLayout(5, 5))
@@ -396,6 +409,7 @@ class WorkflowMenu(JFrame):
         pane.add(self.progress, BorderLayout.SOUTH)
         self.setContentPane(pane)
         self.update_metadata()
+        self.append('Python backend: ' + EXTERNAL_PYTHON_DIR)
         self.append('Initial Extract archives and loads inputs. Modify the base alternative if needed, then compute in RTS.')
         self.append('After compute, Augmentation Configuration or Plot Results can accept and archive completed results.')
         self.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE)

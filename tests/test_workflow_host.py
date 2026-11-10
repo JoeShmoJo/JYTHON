@@ -68,6 +68,23 @@ with tempfile.TemporaryDirectory() as folder:
         result=subprocess.run([sys.executable,'-c',code,str(SCRIPTS/'RTSPython')],capture_output=True,text=True)
         self.assertEqual(result.returncode,0,result.stdout+result.stderr)
 
+    def test_rts_menu_rejects_stale_backend_and_identifies_its_path(self):
+        import ast,os,codecs
+        tree=ast.parse((SCRIPTS/'RTS_WORKFLOW_MENU.py').read_text())
+        function=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='workflow_backend')
+        env={'os':os,'codecs':codecs}
+        exec(compile(ast.Module(body=[function],type_ignores=[]),'<RTS backend selection>','exec'),env)
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);entry=root/'RTS_WORKFLOW_MENU.py';entry.write_text('')
+            backend=root/'RTSPython';backend.mkdir();runner=backend/'rts_workflow.py'
+            runner.write_text('old backend without archived actions')
+            with self.assertRaisesRegex(RuntimeError,'Outdated backend: '+str(runner)):
+                env['workflow_backend'](str(entry))
+            runner.write_text('ARCHIVE_WORKFLOW_API = 1\n')
+            self.assertEqual(env['workflow_backend'](str(entry)),str(backend))
+            with self.assertRaisesRegex(RuntimeError,'OPEN_WORKFLOW'):
+                env['workflow_backend'](None)
+
     def test_mainstem_no_flow_standalone_and_unaugmented_rts_paths(self):
         import ast,os,json
         source=(SCRIPTS/'externalSVs/MainstemFlowAugSV.py').read_text()

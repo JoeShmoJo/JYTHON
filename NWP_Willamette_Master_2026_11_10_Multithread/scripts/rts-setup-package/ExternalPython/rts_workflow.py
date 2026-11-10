@@ -1,4 +1,6 @@
 """CLI backend for the RTS Swing workflow menu. Never launches model compute."""
+ARCHIVE_WORKFLOW_API = 1
+
 from run_archive import archive_digest
 import argparse
 from contextlib import contextmanager
