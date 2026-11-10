@@ -53,7 +53,7 @@ def parse_table(table):
     return frame*1000.0, attrs
 
 
-def load_archive(folder, window, osi_member, selected_members=None):
+def load_archive(folder, window, osi_member, selected_members=None, forecast_timezone=None):
     try:
         import pyarrow.parquet as pq
     except ImportError as error:
@@ -90,7 +90,10 @@ def load_archive(folder, window, osi_member, selected_members=None):
         if time_index is not None and not frame.index.equals(time_index):
             raise ValueError(station+': forecast valid times differ between stations')
         member_set = set(frame.columns); time_index = frame.index
-        shifted = frame.copy(); shifted.index -= pd.Timedelta(hours=6)
+        shifted = frame.copy()
+        if forecast_timezone is not None:
+            shifted.index=shifted.index.tz_localize('UTC').tz_convert(forecast_timezone).tz_localize(None)
+        shifted.index -= pd.Timedelta(hours=6)
         daily = shifted.resample('1D').mean()
         counts = shifted.resample('1D').count()
         # Require complete bins throughout compute; retain available lookback separately.
@@ -123,7 +126,7 @@ def member_ranges(members):
     return ','.join(str(a) if a==b else str(a)+'-'+str(b) for a,b in groups) or '(none)'
 
 
-def check_archive(folder, window, selected_members, osi_member):
+def check_archive(folder, window, selected_members, osi_member, forecast_timezone=None):
     """Read-only preview across every station; never imports DSS or contacts CWMS."""
     report=dict(folder=str(folder),window=window,selected_members=sorted(selected_members),
                 osi_member=osi_member,errors=[],warnings=[],stations=[])
@@ -157,7 +160,10 @@ def check_archive(folder, window, selected_members, osi_member):
             if issued>pd.Timestamp(window['start_utc']):raise ValueError('forecast was issued after simulation start')
             if frame.index[0]!=nominal.tz_localize(None)+pd.Timedelta(hours=6):
                 raise ValueError('unexpected forecast valid-time origin')
-            shifted=frame.copy();shifted.index-=pd.Timedelta(hours=6)
+            shifted=frame.copy()
+            if forecast_timezone is not None:
+                shifted.index=shifted.index.tz_localize('UTC').tz_convert(forecast_timezone).tz_localize(None)
+            shifted.index-=pd.Timedelta(hours=6)
             counts=shifted.resample('1D').count()
             complete=counts.index[(counts==4).all(axis=1)]
             if not len(complete):raise ValueError('no complete daily forecast bins')
@@ -214,10 +220,10 @@ def format_archive_check(report):
     return '\n'.join(lines)
 
 
-def write_archive(frames, target):
+def write_archive(frames, target, version=6):
     from pydsstools.heclib.dss import HecDss
     from pydsstools.core import TimeSeriesContainer
-    with HecDss.Open(str(target), version=6) as dss:
+    with HecDss.Open(str(target), version=version) as dss:
         # Remove old input members/blocks for these station-products on the staged
         # copy. Preserve computed output F-parts, observations and other records.
         for record in dss.getPathnameList('/*/*/*/*/*/*/'):

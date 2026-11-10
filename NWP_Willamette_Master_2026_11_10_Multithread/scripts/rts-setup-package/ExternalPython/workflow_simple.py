@@ -293,9 +293,13 @@ def execute_simple(action, args, context, scripts):
     settings = context.get('menu_settings', {})
     clean = {key: value for key, value in context.items() if key != 'menu_settings'}
     root = Context(clean).dss_path.parent
-    if action == 'initial-extract':
+    if action in ('initial-extract','archive-extract'):
         if registry(root)['current']:
             raise ValueError('Initial extract is already complete for this forecast. Use Reset Baseline for model changes, or create a new forecast for new dates/downloads.')
+        if action=='archive-extract' and settings.get('source')!='archive':
+            raise ValueError('Choose an archive folder and member settings before archived extraction')
+        if action=='initial-extract' and settings.get('source')=='archive':
+            raise ValueError('Use the archived extraction action for archived sources')
         existing = set(root.glob('extraction-test-*/extraction-complete.json'))
         subprocess.run([sys.executable, '-u', str(Path(scripts) / 'run_extraction.py'), '--context', args.context, '--execute'], check=True)
         # Load only the verified completed archive from this invocation/context.

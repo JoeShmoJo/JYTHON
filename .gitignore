@@ -102,3 +102,6 @@ raw_rfc_csv/
 # Archived forecast extraction staging and original-input backups
 archive-extract-*/
 archive-input-backups/
+
+# Local RTS archive-folder and requested-member preferences
+rfc-archive-settings.json

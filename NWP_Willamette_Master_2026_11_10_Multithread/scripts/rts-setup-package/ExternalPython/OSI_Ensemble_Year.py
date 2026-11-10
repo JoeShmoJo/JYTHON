@@ -35,6 +35,8 @@ from extraction_context import load_context
 CONTEXT = load_context()
 if CONTEXT is not None:
     DSS_PATH = CONTEXT.dss_path
+    if CONTEXT.data.get('archive_settings'):
+        SOURCE_ENSEMBLE_YEAR = int(CONTEXT.data['archive_settings']['osi_source_member'])
     from ensemble_ids import FORECAST_OSI_MEMBER
     TARGET_ENSEMBLE_YEAR = FORECAST_OSI_MEMBER
 

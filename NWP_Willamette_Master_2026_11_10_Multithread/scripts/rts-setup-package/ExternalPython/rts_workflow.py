@@ -99,11 +99,20 @@ def execute(args, context):
     settings = context['menu_settings']
     scripts = Path(__file__).resolve().parent
     print('Forecast:', context['forecast_name'], 'Run:', context['run_name'], flush=True)
+    if args.action == 'archive-check':
+        from rts_archive import preview
+        report=preview(context,settings)
+        folder=root/'workflow-logs';folder.mkdir(exist_ok=True)
+        filename=folder/('archive-check-'+uuid.uuid4().hex+'.json')
+        filename.write_text(json.dumps(report,indent=2),encoding='utf-8')
+        print(report['summary'],flush=True)
+        print('MENU_STATE:',filename,flush=True)
+        return
     if args.action == 'model-check':
         subprocess.run([sys.executable, '-u', str(scripts / 'rts_model_check.py'),
                         '--context', args.context], check=True)
         return
-    if args.action in ('initial-extract', 'begin-config', 'results', 'save-config', 'process-config', 'reset-baseline', 'plot-selected'):
+    if args.action in ('initial-extract', 'archive-extract', 'begin-config', 'results', 'save-config', 'process-config', 'reset-baseline', 'plot-selected'):
         from workflow_simple import execute_simple
         execute_simple(args.action, args, context, scripts)
         return
@@ -176,7 +185,7 @@ def execute(args, context):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--context', required=True)
-    parser.add_argument('--action', required=True, choices=('extract', 'load-extract', 'prepare', 'load-scheme', 'reset', 'plots', 'compare', 'link-baseline', 'load-baseline', 'save-baseline', 'list-results', 'plot-archive', 'delete-result', 'initial-extract', 'begin-config', 'results', 'save-config', 'process-config', 'reset-baseline', 'plot-selected', 'model-check'))
+    parser.add_argument('--action', required=True, choices=('extract', 'load-extract', 'prepare', 'load-scheme', 'reset', 'plots', 'compare', 'link-baseline', 'load-baseline', 'save-baseline', 'list-results', 'plot-archive', 'delete-result', 'archive-check', 'archive-extract', 'initial-extract', 'begin-config', 'results', 'save-config', 'process-config', 'reset-baseline', 'plot-selected', 'model-check'))
     args = parser.parse_args()
     context = json.loads(Path(args.context).read_text(encoding='utf-8-sig'))
     root = Context(context).dss_path.parent

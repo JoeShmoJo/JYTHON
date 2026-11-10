@@ -363,7 +363,8 @@ if __name__ == "__main__":
     from windows_ca import configure_ca_bundle
     configure_ca_bundle()
     window = getattr(cfg, 'SIMULATION_WINDOW', None)
-    now_utc = pd.Timestamp(window['start_utc']) if window and not CONTEXT else pd.Timestamp.now(tz="UTC")
+    now_utc = (pd.Timestamp(CONTEXT.utc(CONTEXT.start)) if CONTEXT else
+               pd.Timestamp(window['start_utc']) if window else pd.Timestamp.now(tz="UTC"))
     first_of_year_utc = now_utc.normalize().replace(month=1, day=1)
     if window and not CONTEXT:
         first_of_year_utc = min(first_of_year_utc, pd.Timestamp(window['lookback_utc']))

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Run from the RTS watershed Script Editor. Jython 2.7 compatible.
 # No model compute is launched by this menu.
 import codecs
@@ -335,6 +336,13 @@ class WorkflowMenu(JFrame):
         self.context, self.executable = forecast_context(), python_executable()
         self.busy, self.last_html, self.after_task = False, None, None
         self.controls, self.dialogs = [], []
+        self.archive_settings = {'source':'archive', 'archive_folder':r'C:\Projects\FIRO\Historic_Forecasts_ESPFM',
+                                 'members':'1982-2019,3000-3002', 'osi_source_member':2011}
+        try:
+            with codecs.open(os.path.join(EXTERNAL_PYTHON_DIR, 'rfc-archive-settings.json'), 'r', 'utf-8') as handle:
+                self.archive_settings.update(json.load(handle))
+        except IOError:
+            pass
         if not os.path.isfile(os.path.join(EXTERNAL_PYTHON_DIR, 'workflow_simple.py')):
             raise IOError('Install the updated RTS workflow files first.')
         pane = JPanel(BorderLayout(8, 8))
@@ -365,7 +373,9 @@ class WorkflowMenu(JFrame):
         pane.add(top, BorderLayout.NORTH)
         center = JPanel(BorderLayout(6, 6))
         buttons = JPanel(GridLayout(0, 2, 8, 8))
-        for title, handler in [('Initial Extract', self.extract),
+        for title, handler in [('Initial Extract (live RFC)', self.extract),
+                               ('Check archive dates / members', lambda e: self.archive_extract(e, False)),
+                               ('Extract archived forecast inputs', lambda e: self.archive_extract(e, True)),
                                ('Baseline Configuration', self.baseline_configuration),
                                ('Augmentation Configuration', self.configuration),
                                ('Model Check — One Ensemble Member', self.model_check),
@@ -456,6 +466,46 @@ class WorkflowMenu(JFrame):
         message = 'Download, archive and load initial inputs for the displayed forecast?\nAfterwards, modify the base alternative if needed and compute in RTS.'
         if JOptionPane.showConfirmDialog(self, message, 'Initial Extract', JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION:
             self.start('initial-extract', {}, self.extracted)
+    def archive_extract(self, event, extract):
+        if self.busy: return
+        panel = JPanel(GridLayout(0, 2, 6, 6))
+        folder = JTextField(self.archive_settings['archive_folder'])
+        years = JTextField(self.archive_settings['members'])
+        osi = JTextField(str(self.archive_settings['osi_source_member']))
+        panel.add(JLabel('Folder containing individual station ZIPs'));panel.add(folder)
+        def browse(event):
+            chooser = JFileChooser(folder.getText())
+            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY)
+            if chooser.showOpenDialog(self) == JFileChooser.APPROVE_OPTION:
+                folder.setText(str(chooser.getSelectedFile().getAbsolutePath()))
+        panel.add(JLabel('Choose archive folder'));panel.add(JButton('Browse...', actionPerformed=browse))
+        panel.add(JLabel('Requested members (match native ResSim selection)'));panel.add(years)
+        panel.add(JLabel('OSI source year'));panel.add(osi)
+        if JOptionPane.showConfirmDialog(self, panel, 'Archived RFC inputs - use selected RTS forecast dates',
+                JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION: return
+        try:
+            settings = {'source':'archive','archive_folder':str(folder.getText()).strip(),
+                        'members':str(years.getText()).strip(),'osi_source_member':int(str(osi.getText()).strip())}
+            self.archive_settings = settings
+            # Preferences belong to this imported watershed, not a standalone simulation.
+            with codecs.open(os.path.join(EXTERNAL_PYTHON_DIR, 'rfc-archive-settings.json'), 'w', 'utf-8') as handle:
+                handle.write(unicode(json.dumps(settings, indent=2)))
+            self.start('archive-check', settings, lambda state: self.archive_checked(state, settings, extract))
+        except (Exception, JavaException) as exc:
+            JOptionPane.showMessageDialog(self, str(exc), 'Archive settings', JOptionPane.ERROR_MESSAGE)
+    def archive_checked(self, state, settings, extract):
+        if not state: raise RuntimeError('No archive compatibility report returned')
+        area = JTextArea(state['summary'], 25, 95)
+        area.setEditable(False);area.setLineWrap(True);area.setWrapStyleWord(True)
+        view = JScrollPane(area)
+        if extract and state['compatible']:
+            if JOptionPane.showConfirmDialog(self, view,
+                    'Archive ready - finish compute and close DSS views before loading',
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION:
+                self.start('archive-extract', settings, self.extracted)
+        else:
+            JOptionPane.showMessageDialog(self, view, 'Archived RFC dates / members',
+                JOptionPane.INFORMATION_MESSAGE if state['compatible'] else JOptionPane.WARNING_MESSAGE)
     def extracted(self, state):
         JOptionPane.showMessageDialog(self, 'Initial inputs are loaded and archived.\nReopen the forecast, modify the base alternative if needed, and run the model in RTS.')
     def baseline_configuration(self, event):
