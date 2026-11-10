@@ -1,0 +1,68 @@
+﻿TRSO_Thomas Creek nr Scio,Known Flow,shared/Zero Flow record.dss,ZERO,ZERO,FLOW,1DAY,DUMMY
+Coburg_HMSsub_McKenzieRv_S10,Known Flow,shared/Zero Flow record.dss,ZERO,ZERO,FLOW,1DAY,DUMMY
+HMSsub_NFMFWillametteRv_S10,Known Flow,shared/Zero Flow record.dss,ZERO,ZERO,FLOW,1DAY,DUMMY
+HMSsub_MFWillametteRv_S40,Known Flow,shared/Zero Flow record.dss,ZERO,ZERO,FLOW,1DAY,DUMMY
+ALBO_ Albany_HMSsub_WillametteRv_S60,Known Flow,rss/2026.02.24-2400/simulation.dss, ,ALBO3,FLOW-LOC,1DAY,C:003002|
+OCUO_Oregon City_HMSsub_WillametteRv_S30,Known Flow,shared/Zero Flow record.dss,ZERO,ZERO,FLOW,1DAY,DUMMY
+Willamette_at Wilsonville,Known Flow,shared/Zero Flow record.dss,ZERO,ZERO,FLOW,1DAY,DUMMY
+NBGO_Newberg_HMSsub_WillametteRv_S40,Known Flow,shared/Zero Flow record.dss,ZERO,ZERO,FLOW,1DAY,DUMMY
+SLMO_Salem_HMSsub_WillametteRv_S50,Known Flow,rss/2026.02.24-2400/simulation.dss, ,SLMO3,FLOW-LOC,1DAY,C:003002|
+WTLO_Waterloo_HMSsub_SSantiamRv_S15,Known Flow,rss/2026.02.24-2400/simulation.dss, ,WTLO3,FLOW-LOC,1DAY,C:003002|
+MEHO_Mehama_HMSsub_NSantiamRv_S10,Known Flow,rss/2026.02.24-2400/simulation.dss, ,MEHO3,FLOW-LOC,1DAY,C:003002|
+LSMO_Little North Santiam at Mehama,Known Flow,rss/2026.02.24-2400/simulation.dss, ,LSMO3,FLOW-UNREG,1DAY,C:003002|
+NSJO_Greens Bridge_HMSsub_NSantiamRv_S05,Known Flow,shared/Zero Flow record.dss,ZERO,ZERO,FLOW,1DAY,DUMMY
+No Santiam+So Santiam_Local_NSR_S07,Known Flow,shared/Zero Flow record.dss,ZERO,ZERO,FLOW,1DAY,DUMMY
+No Santiam+So Santiam_Local_SSR_S08,Known Flow,shared/Zero Flow record.dss,ZERO,ZERO,FLOW,1DAY,DUMMY
+JFFO Santiam_at Jefferson loc,Known Flow,rss/2026.02.24-2400/simulation.dss, ,JFFO3,FLOW-LOC,1DAY,C:003002|
+MNRO_Monroe_HMSsub_LongTomRv_S10,Known Flow,rss/2026.02.24-2400/simulation.dss, ,MNRO3,FLOW-LOC,1DAY,C:003002|
+HARO_Harrisburg_HMSsub_WillametteRv_S80,Known Flow,rss/2026.02.24-2400/simulation.dss, ,HARO3,FLOW-LOC,1DAY,C:003002|
+McKenzie+SF McKenzie_HMSsub_McKenzieRV_S20,Known Flow,shared/Zero Flow record.dss,ZERO,ZERO,FLOW,1DAY,DUMMY
+VIDO_Vida_HMSsub_McKenzieRv_S18,Known Flow,rss/2026.02.24-2400/simulation.dss, ,VIDO3,FLOW-LOC,1DAY,C:003002|
+MCZO_McKenzie nr Walterville_HMSsub_McKenzieRv_S15,Known Flow,rss/2026.02.24-2400/simulation.dss, ,MCZO3,FLOW-LOC,1DAY,C:003002|
+EUGO_Willamette at Eugene,Known Flow,rss/2026.02.24-2400/simulation.dss, ,EUGO3,FLOW-LOC,1DAY,C:003002|
+GOSO_Goshen_HMSsub_CFWillametteRv_S10,Known Flow,rss/2026.02.24-2400/simulation.dss, ,GOSO3,FLOW-LOC,1DAY,C:003002|
+JASO_Jasper_HMSsub_MFWillametteRv_S10,Known Flow,rss/2026.02.24-2400/simulation.dss, ,JASO3,FLOW-LOC,1DAY,C:003002|
+Big Cliff Local Inflow_HMSsub_NSantiamRv_S15,Known Flow,shared/Zero Flow record.dss,ZERO,ZERO,FLOW,1DAY,DUMMY
+Detroit Inflow,Known Flow,rss/2026.02.24-2400/simulation.dss, ,DETO3,FLOW-UNREG,1DAY,C:003002|
+Foster Local Inflow_HMSsub_SSantiamRv_S20,Known Flow,rss/2026.02.24-2400/simulation.dss, ,FOSO3,FLOW-LOC,1DAY,C:003002|
+Green Peter Inflow_HMSsub_SSantiamRv_S30,Known Flow,rss/2026.02.24-2400/simulation.dss, ,GPRO3,FLOW-UNREG,1DAY,C:003002|
+Fern Ridge Inflow_HMSsub_LongTomRv_S20,Known Flow,rss/2026.02.24-2400/simulation.dss, ,FRNO3,FLOW-UNREG,1DAY,C:003002|
+Blue River Inflow_HMSsub_BlueRv_S10,Known Flow,rss/2026.02.24-2400/simulation.dss, ,BLUO3,FLOW-UNREG,1DAY,C:003002|
+Cougar Inflow_HMSsub_SFMcKenzieRv_S10,Known Flow,rss/2026.02.24-2400/simulation.dss, ,CGRO3,FLOW-UNREG,1DAY,C:003002|
+Cottage Grove Inflow_HMSsub_CFWillametteRV_S20,Known Flow,rss/2026.02.24-2400/simulation.dss, ,COTO3,FLOW-UNREG,1DAY,C:003002|
+Dorena Inflow_HMSsub_RowRv_S10,Known Flow,rss/2026.02.24-2400/simulation.dss, ,DORO3,FLOW-UNREG,1DAY,C:003002|
+Fall Creek Inflow_HMSsub_FallCk_S10,Known Flow,rss/2026.02.24-2400/simulation.dss, ,FALO3,FLOW-UNREG,1DAY,C:003002|
+Dexter Local Inflow_HMSsub_MFWillametteRVS20,Known Flow,shared/Zero Flow record.dss,ZERO,ZERO,FLOW,1DAY,DUMMY
+Lookout Point Local Inflow_HMSsub_MFWillametteRV_S60,Known Flow,rss/2026.02.24-2400/simulation.dss, ,LOPO3,FLOW-LOC,1DAY,C:003002|
+Hills Creek Inflow_HMSsub_ MFWillametteRv_S60,Known Flow,rss/2026.02.24-2400/simulation.dss, ,HCRO3,FLOW-UNREG,1DAY,C:003002|
+TRBO_Trail Bridge Inflow,Known Flow,rss/2026.02.24-2400/simulation.dss, ,TRBO3,FLOW-UNREG,1DAY,C:003002|
+CANO_Molalla River at Canby_Local_JMolaR_S06,Known Flow,rss/2026.02.24-2400/simulation.dss, ,CANO3,FLOW-UNREG,1DAY,C:003002|
+SUVO_Suver_HMSsub_LuckiamuteRv_S10,Known Flow,rss/2026.02.24-2400/simulation.dss, ,SUVO3,FLOW-UNREG,1DAY,C:003002|
+AURO_Pudding River nr Aurora,Known Flow,rss/2026.02.24-2400/simulation.dss, ,AURO3,FLOW-UNREG,1DAY,C:003002|
+MCMO_McMinnville_Local_JYamhR_S01,Known Flow,rss/2026.02.24-2400/simulation.dss, ,MCMO3,FLOW-LOC,1DAY,C:003002|
+WSLO_West Linn_HMSsub_TualatinRv_S10,Known Flow,shared/Zero Flow record.dss,ZERO,ZERO,FLOW,1DAY,DUMMY
+CORO_Corvallis_HMSsub_WillametteRv_S70,Known Flow,rss/2026.02.24-2400/simulation.dss, ,CORO3,FLOW-LOC,1DAY,C:003002|
+PHIO_ Philomath_HMSsub_MarysRV_S70,Known Flow,rss/2026.02.24-2400/simulation.dss, ,PHIO3,FLOW-UNREG,1DAY,C:003002|
+Water Year Type,Input Time Series,shared/WY_Classification.dss,ALL_ABUNDANT, ,STOR,1DAY,WY_TYPE
+Detroit-Pool,Lookback Elevation,rss/2026.03.10-2400/simulation.dss, ,DET,ELEV-FOREBAY,6HOUR,RFC-FCST
+Detroit - Rule Curve,Input Time Series,shared/Willamette_Rule_Curves.dss, ,DETROIT,ELEV,1DAY,RULE CURVE
+Foster-Pool,Lookback Elevation,rss/2026.03.10-2400/simulation.dss, ,FOS,ELEV-FOREBAY,6HOUR,RFC-FCST
+Foster - Rule Curve,Input Time Series,shared/Willamette_Rule_Curves.dss, ,FOSTER,ELEV,1DAY,RULE CURVE
+Green Peter-Pool,Lookback Elevation,rss/2026.03.10-2400/simulation.dss, ,GPR,ELEV-FOREBAY,6HOUR,RFC-FCST
+Green Peter - Rule Curve,Input Time Series,shared/Willamette_Rule_Curves.dss, ,GREEN PETER,ELEV,1DAY,RULE CURVE
+Fern Ridge-Pool,Lookback Elevation,rss/2026.03.10-2400/simulation.dss, ,FRN,ELEV-FOREBAY,6HOUR,RFC-FCST
+Fern Ridge - Rule Curve,Input Time Series,shared/Willamette_Rule_Curves.dss, ,FERN RIDGE,ELEV,1DAY,RULE CURVE
+Blue River-Pool,Lookback Elevation,rss/2026.03.10-2400/simulation.dss, ,BLU,ELEV-FOREBAY,6HOUR,RFC-FCST
+Blue River - Rule Curve,Input Time Series,shared/Willamette_Rule_Curves.dss, ,BLUE RIVER,ELEV,1DAY,RULE CURVE
+Cougar-Pool,Lookback Elevation,rss/2026.03.10-2400/simulation.dss, ,CGR,ELEV-FOREBAY,6HOUR,RFC-FCST
+Cougar - Rule Curve,Input Time Series,shared/Willamette_Rule_Curves.dss, ,COUGAR,ELEV,1DAY,RULE CURVE
+Cottage Grove-Pool,Lookback Elevation,rss/2026.03.10-2400/simulation.dss, ,COT,ELEV-FOREBAY,6HOUR,RFC-FCST
+Cottage Grove - Rule Curve,Input Time Series,shared/Willamette_Rule_Curves.dss, ,COTTAGE GROVE,ELEV,1DAY,RULE CURVE
+Dorena-Pool,Lookback Elevation,rss/2026.03.10-2400/simulation.dss, ,DOR,ELEV-FOREBAY,6HOUR,RFC-FCST
+Dorena - Rule Curve,Input Time Series,shared/Willamette_Rule_Curves.dss, ,DORENA,ELEV,1DAY,RULE CURVE
+Fall Creek-Pool,Lookback Elevation,rss/2026.03.10-2400/simulation.dss, ,FAL,ELEV-FOREBAY,6HOUR,RFC-FCST
+Fall Creek - Rule Curve,Input Time Series,shared/Willamette_Rule_Curves.dss, ,FALL CREEK,ELEV,1DAY,RULE CURVE
+Lookout Point-Pool,Lookback Elevation,rss/2026.03.10-2400/simulation.dss, ,LOP,ELEV-FOREBAY,6HOUR,RFC-FCST
+Lookout Point - Rule Curve,Input Time Series,shared/Willamette_Rule_Curves.dss, ,LOOKOUT POINT,ELEV,1DAY,RULE CURVE
+Hills Creek-Pool,Lookback Elevation,rss/2026.03.10-2400/simulation.dss, ,HCR,ELEV-FOREBAY,6HOUR,RFC-FCST
+Hills Creek - Rule Curve,Input Time Series,shared/Willamette_Rule_Curves.dss, ,HILLS CREEK,ELEV,1DAY,RULE CURVE
