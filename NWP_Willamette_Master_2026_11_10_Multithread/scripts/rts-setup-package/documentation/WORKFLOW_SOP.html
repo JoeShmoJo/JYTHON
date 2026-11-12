@@ -12,21 +12,23 @@
 <p>Details: <a href="STANDALONE_WORKFLOW_REFERENCE.html">standalone reference</a>, <a href="STANDALONE_SAVED_RESULTS.html">saved results</a>.</p>
 <h2 id="rts-live-forecast">RTS: live forecast</h2>
 <ol start="1">
-<li>Open the forecast and select its run. Open the workflow and confirm the displayed dates, timezone, and DSS path.</li>
+<li>Create/open the forecast. For a current issue, set <strong>Forecast time</strong> to two days after today at <strong>0000</strong>, and both <strong>Extract start</strong> and simulation <strong>Start time</strong> to one day after today at <strong>0000</strong>. Set End time up to one year after Start time. Select the run, open the workflow, and confirm its displayed dates, timezone, and DSS path.</li>
 <li>Use <strong>Initial Extract (live RFC)</strong>. After successful loading, reopen the forecast as instructed and verify the native ensemble selection.</li>
 <li>Open <strong>Baseline Configuration</strong>, save your settings, and apply them for baseline compute.</li>
-<li>Compute the unaugmented ensemble in RTS and confirm it finished successfully.</li>
+<li>Click the <strong>ResSim icon on the top toolbar</strong> to open the ResSim module. Run the unaugmented ensemble from that module so multithreaded compute can be used. Confirm it finished successfully.</li>
 <li>Open <strong>Augmentation Configuration</strong> and accept the completed baseline. Review the configuration and covered conservation season.</li>
 <li>Close the forecast and DSSVue/result windows while leaving RTS and the workflow GUI running. Select <strong>Use this displayed forecast after closing it in RTS</strong>. Use <strong>Process and Load Releases</strong>; when asked about another completed compute, use the saved baseline if it has already been accepted.</li>
-<li>After releases load successfully, reopen the forecast and compute the augmented ensemble. Use <strong>Plot Results</strong> to accept and save completed results, then select saved runs to plot. <strong>Model Check — One Ensemble Member</strong> checks a selected member.</li>
+<li>After releases load successfully, reopen the forecast, open the ResSim module using the top-toolbar icon, and compute the augmented ensemble there. Use <strong>Plot Results</strong> to accept and save completed results, then select saved runs to plot. <strong>Model Check — One Ensemble Member</strong> checks a selected member.</li>
 </ol>
 <p>Augmentation processing is enabled only when baseline results start by March 30 and reach at least April 1 of the selected year. The current calculator needs April 1 starting storage; forecasts starting later in the season are not currently offered. The calculation ends at October 31 or the available end date, whichever is earlier.</p>
 <p>Details: <a href="RTS_WORKFLOW_REFERENCE.html">RTS reference</a>, <a href="RTS_AUGMENTATION.html">augmentation</a>.</p>
+<p>The one-year limit is relative to simulation Start time. Input coverage still has to reach the requested End time; extending the simulation does not extend the forecast data.</p>
 <h2 id="rts-archived-forecast">RTS: archived forecast</h2>
 <ol start="1">
-<li>Create/open the forecast for the historical dates, select its run, and confirm the workflow metadata.</li>
+<li>Create/open the forecast for the historical issue. Set <strong>Extract start</strong> and simulation <strong>Start time</strong> to <strong>0000 one day before Forecast time</strong>, also at <strong>0000</strong>. End time is at most one year after Start time. Select the run and confirm the displayed metadata.</li>
 <li>Use <strong>Extract archived forecast</strong>. Choose the station-ZIP folder and OSI source year. The workflow checks the selected issue and coverage and extracts all available ensemble years.</li>
-<li>After successful loading, use <strong>Copy</strong> beside <strong>Complete ensemble selection</strong>. Enter that selection in ResSim&#x27;s native ensemble settings.</li>
+<li>After successful loading, use <strong>Copy</strong> beside <strong>Complete ensemble selection</strong>. Click the <strong>ResSim icon on the top toolbar</strong>, open the <strong>Alternative Editor</strong>, choose the <strong>Ensemble tab</strong>, and paste the member spans there. Available ensemble counts vary between forecast issues; use the spans provided by this extraction.</li>
+<li>Run computes from the opened ResSim module to use multithreaded compute.</li>
 <li>Continue with steps 3–7 of the live-forecast SOP above.</li>
 </ol>
 <p>Details: <a href="RTS_ARCHIVED_FORECASTS.html">archived forecast inputs</a>.</p><footer>Offline watershed documentation · <a href="../documentation/sources/WORKFLOW_SOP.md">Markdown source</a> · Use browser Print to save as PDF.</footer></main></body></html>

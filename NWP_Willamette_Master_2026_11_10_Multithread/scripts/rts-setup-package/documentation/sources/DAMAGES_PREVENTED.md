@@ -1,11 +1,5 @@
 # Damages Prevented (Willamette, ResSim 4.1)
 
-Mini-simulations that credit each Willamette reservoir with the flow reduction
-it produced at each control point. A port of the AFDR damages prevented
-scripts (Ryan Cahill) to ResSim 4.1 and the Willamette-only watershed. The
-algorithms are unchanged; the Columbia, RAS export, Chart 80, plotting and
-Excel parts are gone.
-
 Everything Damages Prevented reads and writes is inside this folder, so the
 whole process moves with it.
 
@@ -106,26 +100,3 @@ both alternatives.
 
 Supported reach routing: SSARR, Muskingum, Modified Puls, Null. Both steps
 that route check every reach first and name any they can't reproduce.
-
-## Testing
-
-`_offline_tests/test_DamagesPrevented.py` runs all three steps on a toy
-network (two reservoirs, one with a re-reg, a confluence and a transformed
-local) under Jython 2.7.3 with the HEC classes stubbed (`fake_hec.py`), and
-checks the results against values worked out by hand. From the scripts folder:
-
-    java -jar jython-standalone-2.7.3.jar DamagesPrevented/_offline_tests/test_DamagesPrevented.py
-
-This proves the Python logic. It does not prove that the ResSim 4.1 Java
-methods behave like the stubs; only running in ResSim does that.
-
-## Differences from the AFDR version
-
-- CSV output instead of `.xls` (`jxl` is not in ResSim 4.1).
-- Transformed and water-balance locals share `DPcalc.dss`. The water-balance
-  step loads the inputs already in that file (Willamette Falls) instead of
-  skipping the whole file.
-- The water-balance step no longer empties its loaded time series when it
-  warns about a short or missing record. The original did, and then failed on
-  the next local it needed.
-- Natural-lake (Columbia) logic removed.

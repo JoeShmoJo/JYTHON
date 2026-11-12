@@ -57,7 +57,7 @@ def load_archive(folder, window, osi_member, selected_members=None, forecast_tim
     try:
         import pyarrow.parquet as pq
     except ImportError as error:
-        raise RuntimeError('Archive extraction requires pyarrow in hydro39') from error
+        raise RuntimeError('Archive extraction requires pyarrow in the workflow Python environment') from error
     cycle = window['archive_cycle']
     frames = {}; receipts = []; member_set = None; time_index = None
     for station, archive_name, parameter, flow in archive_specs():
@@ -134,7 +134,7 @@ def check_archive(folder, window, selected_members, osi_member, forecast_timezon
     try:
         import pyarrow.parquet as pq
     except ImportError:
-        errors.append('Install pyarrow in hydro39 to inspect archived forecasts.')
+        errors.append('Install pyarrow in the workflow Python environment to inspect archived forecasts.')
         report.update(compatible=False,available_years=[],common_cycles=[])
         return report
     cycle=window['archive_cycle'];cycles=[];year_sets=[];indices=[];first_days=[];last_days=[]

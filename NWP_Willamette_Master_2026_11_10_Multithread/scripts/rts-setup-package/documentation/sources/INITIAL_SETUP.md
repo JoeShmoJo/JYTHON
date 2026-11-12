@@ -2,33 +2,43 @@
 
 ## Load the Python environment
 
-The workflow uses the HEC application's Jython for the menu and a separate Windows Python environment named `hydro39` for downloads, calculations, checks, and plots.
+The HEC menu runs in Jython. Downloads, calculations, checks, and plots use the Windows 64-bit desktop Python environment **ResSim12Nov2026**.
 
-Install Miniconda or Anaconda if needed. In Anaconda Prompt, change to the watershed's `scripts/ExternalPython/PythonSetup1stTime` folder and run:
+Install 64-bit Miniconda or Anaconda once. Open PowerShell, change to the watershed's `scripts/ExternalPython/PythonSetup1stTime` folder, and run:
 
-```text
-conda env create -f hydro39.yml
-conda activate hydro39
-python -c "import pandas, numpy, plotly; from pydsstools.heclib.dss import HecDss; print('Workflow imports OK')"
+```powershell
+.\Install-WorkflowEnvironment.ps1
 ```
 
-Archived forecast extraction also requires `pyarrow` in that environment:
+The installer searches common Conda locations, creates the environment from `ResSim12Nov2026.yml`, and verifies imports, archive/Parquet reading, and a temporary DSS7 write/read round trip. All workflow dependencies, including `pyarrow`, are in the YAML. The test uses a temporary file, not your model DSS.
 
-```text
-conda activate hydro39
-python -m pip install pyarrow
-python -c "import pyarrow; print('Archive reader OK')"
+For a custom Conda installation, supply its executable:
+
+```powershell
+.\Install-WorkflowEnvironment.ps1 -CondaPath 'D:\Miniconda3\Scripts\conda.exe'
 ```
 
-The supplied environment file includes native DSS dependencies. Allow installation to complete and resolve any reported package errors before opening the workflow. The menu searches common Miniconda/Anaconda locations for `envs/hydro39/python.exe`. Keep the environment installed at one of those locations. Data downloads require access to the RFC and CWMS data services.
+The menus prefer ResSim12Nov2026 and retain hydro39 as a fallback while an existing installation is being updated. For a custom location, launch the HEC application from a shell with `CONDA_EXE` pointing to that installation's `Scripts/conda.exe`, so the menu can locate it too.
+
+If ResSim12Nov2026 already exists, the installer checks it without changing packages. To refresh it, close applications using that environment and run the installer with `-Update`. The previous environment specification is exported before updating; it is a recovery aid rather than a complete package backup.
+
+This environment uses Python 3.12, NumPy 1.26.4, and pandas 2.3.3. The workflow currently needs pydsstools 2.4.0's API. Version 3.x changes time-series and catalog APIs and requires a separate application migration. A newer NumPy major version alone would not make that API compatible.
 
 ## Add Open Workflow to the Script Editor
 
-In standalone ResSim, switch to the **Simulation module**, open the **Script Editor**, and create a script named **Open Workflow**. Set its scope to **all watersheds** so the saved editor entry persists when a watershed is renamed or replaced.
+### Standalone ResSim
 
-Paste the contents of the current watershed's `scripts/OPEN_WORKFLOW.py` into that editor entry and run it. The launcher discovers the loaded watershed and opens the matching workflow menu. In RTS, use the same launcher in its Script Editor with the intended watershed loaded and forecast selected. Use the editor's application-wide scope where available.
+Switch to the **Simulation module**, open the **Script Editor**, and create **Open Workflow**. Set its scope to **all watersheds**, so it persists when a watershed is renamed or replaced. Paste the current watershed's `scripts/OPEN_WORKFLOW.py` into the editor entry and run it.
 
-On later visits, run the saved **Open Workflow** entry. Confirm the simulation/alternative or forecast/run shown in the workflow before operating it.
+For easy access, use the Scripts pane at the **bottom right of the Simulation window**. Right-click in that pane and add a button for your saved Open Workflow script.
+
+### RTS
+
+Open a forecast first, then open its **Script Editor** and add **Open Workflow**, pasting the same launcher script. Save it with application-wide/all-forecasts scope so the entry is available in other forecasts.
+
+Click the **Scripts tab at the bottom left of the forecast window**. Right-click in the Scripts pane and add a button for the saved Open Workflow script.
+
+On later visits, use that button. The launcher discovers the loaded watershed; confirm the forecast/run or simulation/alternative shown in the workflow before operating it.
 
 ## Source watershed and imported RTS copy
 

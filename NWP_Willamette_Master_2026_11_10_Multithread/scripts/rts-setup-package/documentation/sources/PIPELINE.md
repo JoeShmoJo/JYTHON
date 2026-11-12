@@ -5,7 +5,7 @@ Start with the [SOP](WORKFLOW_SOP.md). This page explains how the main pieces co
 ## From the menu to a compute
 
 1. The Script Editor runs `OPEN_WORKFLOW.py`. `workflow_host.py` discovers the loaded application and selects the standalone or RTS menu.
-2. The menu launches desktop Python in `hydro39`: `ExternalPython` for standalone or `RTSPython` for RTS.
+2. The menu launches desktop Python in `ResSim12Nov2026`: `ExternalPython` for standalone or `RTSPython` for RTS.
 3. Extraction prepares inputs for the selected simulation/forecast. Baseline Configuration applies a snapshot of rule settings.
 4. ResSim or RTS performs native compute. Watershed Jython adapters read the applied settings during initialization.
 5. Completed baseline outputs are accepted and saved. Augmentation uses them to prepare release requirements, which are loaded for the next compute.

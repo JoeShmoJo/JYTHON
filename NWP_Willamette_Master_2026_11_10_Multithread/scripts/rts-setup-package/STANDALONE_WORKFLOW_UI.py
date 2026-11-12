@@ -1,5 +1,6 @@
 # Paste into the standalone ResSim Script Editor (Jython).
 import os
+import sys
 import json
 from java.lang import Thread, Runnable, System, ProcessBuilder
 from java.io import File
@@ -11,10 +12,11 @@ from hec.script import ClientAppWrapper
 
 root = str(ClientAppWrapper.getWatershed().getWkspDir())
 scripts = os.path.join(root, 'scripts', 'ExternalPython')
-python = os.path.join(str(System.getenv('LOCALAPPDATA')),
-                      'miniconda3', 'envs', 'hydro39', 'python.exe')
-if not os.path.isfile(python):
-    raise RuntimeError('Python not found: ' + python)
+script_root = os.path.join(root, 'scripts')
+if script_root not in sys.path:
+    sys.path.insert(0, script_root)
+from workflow_python import python_executable
+python = python_executable()
 
 class Call(Runnable):
     def __init__(self, fn): self.fn = fn

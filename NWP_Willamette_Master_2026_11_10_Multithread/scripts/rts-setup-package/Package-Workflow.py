@@ -60,7 +60,7 @@ def bundle_runtime(source, watershed):
             (destination/target).write_text(json.dumps(value,separators=(',',':'))+'\n',encoding='utf-8')
         else:
             shutil.copy2(source/relative,destination/target)
-    for name in ('OPEN_WORKFLOW.py','workflow_host.py','STANDALONE_WORKFLOW_MENU.py',
+    for name in ('OPEN_WORKFLOW.py','workflow_host.py','workflow_python.py','STANDALONE_WORKFLOW_MENU.py',
                  'STANDALONE_WORKFLOW_UI.py','RTS_WORKFLOW_MENU.py','runtime-host-adapter.py'):
         shutil.copy2(source/name,scripts/name)
     shutil.copy2(source/'baseline-runtime/rts_baseline_runtime.py',scripts/'rts_baseline_runtime.py')
@@ -80,7 +80,7 @@ def package(watershed):
             shutil.copy2(model_source/name,stage/'model_check'/name)
         for name in ('Install-StandaloneConfiguration.py','Package-Workflow.py','render_documentation.py',
                      'Install-ForecastExtraction.ps1','Install-BaselineConfiguration.ps1','Install-RunArchives.ps1',
-                     'STANDALONE_WORKFLOW_MENU.py','STANDALONE_WORKFLOW_UI.py','OPEN_WORKFLOW.py','workflow_host.py',
+                     'STANDALONE_WORKFLOW_MENU.py','STANDALONE_WORKFLOW_UI.py','OPEN_WORKFLOW.py','workflow_host.py','workflow_python.py',
                      'runtime-host-adapter.py','RTS_WORKFLOW_MENU.py','RTS_FORECAST_EXTRACT.py'):
             shutil.copy2(HERE/name,stage/name)
         shutil.copytree(HERE/'documentation/sources',stage/'documentation/sources')

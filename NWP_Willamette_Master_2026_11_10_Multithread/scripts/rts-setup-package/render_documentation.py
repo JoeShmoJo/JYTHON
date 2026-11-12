@@ -97,7 +97,6 @@ def build(directory):
         ('RTS_DATA_IO', 'Data and compact result archives'),
         ('WORKFLOW_PACKAGE', 'Importing and updating scripts'),
         ('PIPELINE', 'Workflow and file map'),
-        ('RTS_IMPORT_VALIDATION', 'Checking a new RTS import'),
         ('DAMAGES_PREVENTED', 'Damages prevented'))
     body = '<h1>Workflow guide</h1><p>Begin with <a href="PROJECT_START_HERE.html">Start here</a>, then follow <a href="INITIAL_SETUP.html">Initial setup</a> and the <a href="WORKFLOW_SOP.html">Operator SOP</a>. The <a href="WORKFLOW_BUTTONS.html">button guide</a> explains each control.</p><h2>More detail</h2><p>Use these pages when you want to understand the inputs, calculations, and saved results.</p><ul>'
     body += ''.join('<li><a href="'+name+'.html">'+label+'</a></li>' for name,label in detail_pages)

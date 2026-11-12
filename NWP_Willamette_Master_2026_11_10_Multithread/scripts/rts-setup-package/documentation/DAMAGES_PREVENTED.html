@@ -1,5 +1,4 @@
 <!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Damages Prevented (Willamette, ResSim 4.1)</title><style>body{font:17px/1.6 system-ui,sans-serif;color:#213346;margin:0;background:#f3f6fa}nav{background:#173d56;padding:14px;position:sticky;top:0}nav a{color:white;display:inline-block;margin:4px 12px}main{max-width:1100px;margin:auto;padding:28px;background:white}a{color:#0063a5}h1,h2,h3{line-height:1.25;scroll-margin-top:90px}h2{margin-top:2em;border-bottom:1px solid #cbd5df;padding-bottom:8px}pre{overflow:auto;padding:16px;background:#eef2f6;white-space:pre-wrap;overflow-wrap:anywhere}code{font-family:Consolas,monospace;font-size:.9em;background:#eef2f6}table{border-collapse:collapse;width:100%;font-size:.92em}th,td{border:1px solid #cad3dc;padding:9px;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#e5edf3}.table{overflow:auto}footer{margin-top:3em;color:#546579}@media print{nav{display:none}main{max-width:none;padding:0}body{background:white}pre{white-space:pre-wrap}a{color:inherit}}</style><body><nav><a href="PROJECT_START_HERE.html">Start here</a><a href="INITIAL_SETUP.html">Initial setup</a><a href="WORKFLOW_SOP.html">Operator SOP</a><a href="WORKFLOW_BUTTONS.html">Workflow buttons</a><a href="index.html">More detail</a><a href="PROJECT_RESUME.html">Project reference</a></nav><main><h1 id="damages-prevented-willamette-ressim-41">Damages Prevented (Willamette, ResSim 4.1)</h1>
-<p>Mini-simulations that credit each Willamette reservoir with the flow reduction it produced at each control point. A port of the AFDR damages prevented scripts (Ryan Cahill) to ResSim 4.1 and the Willamette-only watershed. The algorithms are unchanged; the Columbia, RAS export, Chart 80, plotting and Excel parts are gone.</p>
 <p>Everything Damages Prevented reads and writes is inside this folder, so the whole process moves with it.</p>
 <pre><code>DamagesPrevented/
   DP_Menu entry point is scripts/DP_Menu.py (one level up); paste scripts/DamagesPrevented_PasteIntoResSim.txt into the Scripts-pane entry
@@ -60,21 +59,4 @@
 <p>Reduction credited to R at a control point = average of (unregulated peak - WITH ONLY R peak) and (WITHOUT R peak - observed peak), peaks rounded to the nearest 100 cfs.</p>
 <p>Willamette+Clackamas is beyond the network (it ends at Willamette Falls). It is an added-flow point (<code>config/AddedFlowPoints.csv</code>): every series at Willamette_abv Falls at Oregon City plus the Clackamas gage 14211010 from obsData.dss, hour by hour, not routed. The Clackamas has no Corps projects, so it raises the peaks there without being credited to any reservoir.</p>
 <p>Diversions are ignored (<code>INCLUDE_DIVERSIONS = False</code>); keep them inactive in both alternatives.</p>
-<p>Supported reach routing: SSARR, Muskingum, Modified Puls, Null. Both steps that route check every reach first and name any they can&#x27;t reproduce.</p>
-<h2 id="testing">Testing</h2>
-<p><code>_offline_tests/test_DamagesPrevented.py</code> runs all three steps on a toy network (two reservoirs, one with a re-reg, a confluence and a transformed local) under Jython 2.7.3 with the HEC classes stubbed (<code>fake_hec.py</code>), and checks the results against values worked out by hand. From the scripts folder:</p>
-<p>java -jar jython-standalone-2.7.3.jar DamagesPrevented/_offline_tests/test_DamagesPrevented.py</p>
-<p>This proves the Python logic. It does not prove that the ResSim 4.1 Java methods behave like the stubs; only running in ResSim does that.</p>
-<h2 id="differences-from-the-afdr-version">Differences from the AFDR version</h2>
-<ul>
-<li>CSV output instead of <code>.xls</code> (<code>jxl</code> is not in ResSim 4.1).</li>
-<li>Transformed and water-balance locals share <code>DPcalc.dss</code>. The water-balance</li>
-</ul>
-<p>step loads the inputs already in that file (Willamette Falls) instead of skipping the whole file.</p>
-<ul>
-<li>The water-balance step no longer empties its loaded time series when it</li>
-</ul>
-<p>warns about a short or missing record. The original did, and then failed on the next local it needed.</p>
-<ul>
-<li>Natural-lake (Columbia) logic removed.</li>
-</ul><footer>Offline watershed documentation · <a href="../documentation/sources/DAMAGES_PREVENTED.md">Markdown source</a> · Use browser Print to save as PDF.</footer></main></body></html>
+<p>Supported reach routing: SSARR, Muskingum, Modified Puls, Null. Both steps that route check every reach first and name any they can&#x27;t reproduce.</p><footer>Offline watershed documentation · <a href="../documentation/sources/DAMAGES_PREVENTED.md">Markdown source</a> · Use browser Print to save as PDF.</footer></main></body></html>

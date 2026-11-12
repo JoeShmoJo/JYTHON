@@ -62,16 +62,8 @@ def forecast_context():
 
 
 def python_executable():
-    roots = [os.path.join(os.environ.get(base, ''), name)
-             for base in ('LOCALAPPDATA', 'USERPROFILE')
-             for name in ('miniconda3', 'anaconda3')]
-    roots += [r'C:\ProgramData\miniconda3', r'C:\ProgramData\anaconda3',
-              r'C:\Miniconda3', r'C:\Anaconda3', r'C:\Programs\Miniconda3', r'C:\Programs\Anaconda3']
-    for root in roots:
-        candidate = os.path.join(root, 'envs', 'hydro39', 'python.exe')
-        if os.path.isfile(candidate):
-            return candidate
-    raise IOError('Could not find the hydro39 Python environment.')
+    from workflow_python import python_executable as find_python
+    return find_python()
 
 
 class OnUI(Runnable):

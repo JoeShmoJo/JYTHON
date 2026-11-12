@@ -1,0 +1,20 @@
+# Windows 64-bit workflow environment. Environment name matches the workflow launchers.
+# pydsstools 3.x requires an application API migration; use the supported 2.x API.
+name: ResSim12Nov2026
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip>=24,<27
+  - pip:
+      - --only-binary=pydsstools,numpy,pandas,pyarrow
+      - pydsstools==2.4.0
+      - numpy==1.26.4
+      - pandas==2.3.3
+      - plotly>=6,<7
+      - pyarrow==18.1.0
+      - cwms-python==0.8.0
+      - requests>=2.32,<3
+      - requests-toolbelt>=1,<2
+      - certifi
+      - urllib3>=2,<3
