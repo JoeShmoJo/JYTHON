@@ -1,17 +1,17 @@
-Workflow Python setup (Windows 64-bit)
+Workflow environment install (Windows 64-bit)
 
-Install Miniconda or Anaconda once. In PowerShell, run Install-WorkflowEnvironment.ps1 from this folder.
-The installer finds common Conda installations, creates ResSim12Nov2026, and checks imports, Parquet, and DSS7 reads/writes.
-If ResSim12Nov2026 exists and passes its checks, no packages change. Incomplete environments are repaired automatically.
-Close applications using ResSim12Nov2026 before running. Use -Update to refresh an already healthy environment.
-The installer uses the classic Conda solver, bounded download/install retries, and saves/copies a log automatically.
-Use -CondaPath 'C:\your-conda\Scripts\conda.exe' for a custom installation.
-The update saves the previous environment specification under LocalAppData/WillametteWorkflow/environment-backups.
-An exported specification is a recovery aid, not a complete copy of installed packages.
+ResSim12Nov2026.yml preserves package versions exported from the working hydro39 environment.
+Only the environment name changes. Core versions: Python 3.9.23, NumPy 1.22.4,
+pandas 2.3.2, pydsstools 2.4.0, PyArrow 21.0.0, Plotly 5.24.1.
+working-environment-packages.json records the accompanying actual installed-package listing.
 
-ResSim12Nov2026 uses Python 3.12,
-NumPy 1.26.4 and pandas 2.3.3. pydsstools remains 2.4.0 because 3.x changes APIs used by this workflow.
+Run Install-WorkflowEnvironment.ps1 in Windows PowerShell. It finds Conda, uses the classic solver,
+and creates/repairs ResSim12Nov2026 without changing hydro39. Close jobs using the test environment first.
+The pydsstools wheel is downloaded with Windows networking, using the YAML Python version,
+and verified against its PyPI SHA256 before installation. Dependencies are then installed from the full YAML.
+Checks include exact core versions, Parquet write/read and DSS7 write/catalog/read.
+
+The installer retains normal download caches, saves a log and copies it to the clipboard.
+Existing healthy environments are checked without changes; -Update refreshes an existing environment.
+A version conflict or missing package must be diagnosed rather than silently changing the exported versions.
 Full instructions: scripts/rts-setup-package/documentation/INITIAL_SETUP.html.
-
-The installer downloads the pydsstools wheel using Windows networking and verifies its published PyPI SHA256.
-Pip uses that verified local wheel instead of its interrupted-download path.

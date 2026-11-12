@@ -16,10 +16,12 @@ def main():
     import certifi
     from pydsstools.heclib.dss import HecDss
     from pydsstools.core import TimeSeriesContainer
-    assert sys.version_info[:2] == (3, 12), 'Use the supplied Python 3.12 environment'
+    assert sys.version_info[:2] == (3, 9), 'Use the supplied Python 3.9 environment'
     assert version('pydsstools') == '2.4.0', 'The workflow currently requires the pydsstools 2.4 API'
-    assert np.__version__ == '1.26.4', 'Update NumPy using the supplied YAML'
-    assert pd.__version__ == '2.3.3', 'Update pandas using the supplied YAML'
+    assert np.__version__ == '1.22.4', 'Update NumPy using the supplied YAML'
+    assert pd.__version__ == '2.3.2', 'Update pandas using the supplied YAML'
+    assert pa.__version__ == '21.0.0', 'Use PyArrow from the working environment specification'
+    assert plotly.__version__ == '5.24.1', 'Use Plotly from the working environment specification'
     with tempfile.TemporaryDirectory(prefix='workflow-environment-') as temp:
         directory = Path(temp)
         table = pd.DataFrame({'value': [1.25, 2.5, 3.75]})

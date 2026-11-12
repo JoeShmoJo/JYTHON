@@ -24,7 +24,7 @@ Close applications using ResSim12Nov2026 before running the installer. An existi
 
 The installer uses Conda’s classic solver with plugins disabled only for its own commands, retries interrupted installs up to three times, and restores its process settings afterward. The pydsstools Windows wheel is downloaded with Windows networking and verified against the published PyPI SHA256 before pip uses the local file. Each run saves a log under LocalAppData/WillametteWorkflow/setup-logs and copies it to the clipboard when available. If Conda itself crashes even with the classic solver, the log identifies that failure; repair of the local Conda installation may be required.
 
-This environment uses Python 3.12, NumPy 1.26.4, and pandas 2.3.3. The workflow currently needs pydsstools 2.4.0's API. Version 3.x changes time-series and catalog APIs and requires a separate application migration. A newer NumPy major version alone would not make that API compatible.
+This specification preserves the working hydro39 package versions under a new name: Python 3.9.23, NumPy 1.22.4, pandas 2.3.2, PyArrow 21.0.0, and Plotly 5.24.1. The accompanying `working-environment-packages.json` records the actual installed-package listing supplied with the export. The workflow currently needs pydsstools 2.4.0's API. Version 3.x changes time-series and catalog APIs and requires a separate application migration. A newer NumPy major version alone would not make that API compatible.
 
 ## Add Open Workflow to the Script Editor
 

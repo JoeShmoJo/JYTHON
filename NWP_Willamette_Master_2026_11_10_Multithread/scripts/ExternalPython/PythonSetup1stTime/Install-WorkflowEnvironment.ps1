@@ -19,11 +19,12 @@ function Invoke-Conda {
 }
 
 function Get-VerifiedDssWheel {
-    param([string]$Directory)
+    param([string]$Directory, [string]$PythonTag)
     New-Item -ItemType Directory -Path $Directory -Force | Out-Null
     $metadata = (Invoke-WebRequest -UseBasicParsing -TimeoutSec 120 -Uri 'https://pypi.org/pypi/pydsstools/2.4.0/json').Content | ConvertFrom-Json
-    $packages = @($metadata.urls | Where-Object { $_.filename -eq 'pydsstools-2.4.0-cp312-cp312-win_amd64.whl' })
-    if ($packages.Count -ne 1) { throw 'Expected pydsstools Windows/Python 3.12 wheel was not found on PyPI.' }
+    $filename = 'pydsstools-2.4.0-' + $PythonTag + '-' + $PythonTag + '-win_amd64.whl'
+    $packages = @($metadata.urls | Where-Object { $_.filename -eq $filename })
+    if ($packages.Count -ne 1) { throw 'Expected pydsstools wheel for the YAML Python version was not found on PyPI.' }
     $package = $packages[0]
     $wheel = Join-Path $Directory $package.filename
     if (Test-Path -LiteralPath $wheel) {
@@ -139,8 +140,12 @@ try {
     # Bootstrap Conda/Python first, install the verified wheel directly, then
     # install the full YAML. Merely advertising --find-links still lets pip
     # prefer the remote wheel for an equal version.
-    Get-VerifiedDssWheel -Directory $wheelRoot
-    $wheel = Join-Path $wheelRoot 'pydsstools-2.4.0-cp312-cp312-win_amd64.whl'
+    $yamlText = Get-Content -LiteralPath $yaml -Raw
+    $pythonMatch = [regex]::Match($yamlText, '(?m)^  - python=(\d+)\.(\d+)(?:\.\d+)?\s*\r?$')
+    if (-not $pythonMatch.Success) { throw 'Expected a pinned Python version in the environment YAML.' }
+    $pythonTag = 'cp' + $pythonMatch.Groups[1].Value + $pythonMatch.Groups[2].Value
+    Get-VerifiedDssWheel -Directory $wheelRoot -PythonTag $pythonTag
+    $wheel = Join-Path $wheelRoot ('pydsstools-2.4.0-' + $pythonTag + '-' + $pythonTag + '-win_amd64.whl')
     $bootstrapYaml = Join-Path $logRoot ('bootstrap-' + [guid]::NewGuid().ToString('N') + '.yml')
     $yamlText = Get-Content -LiteralPath $yaml -Raw
     $sections = [regex]::Split($yamlText, '(?m)^  - pip:\s*\r?$')

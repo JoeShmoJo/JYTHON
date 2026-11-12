@@ -1,0 +1,482 @@
+[
+  {
+    "name": "affine",
+    "version": "2.4.0"
+  },
+  {
+    "name": "altgraph",
+    "version": "0.17.4"
+  },
+  {
+    "name": "asttokens",
+    "version": "3.0.0"
+  },
+  {
+    "name": "attrs",
+    "version": "25.3.0"
+  },
+  {
+    "name": "Brotli",
+    "version": "1.0.9"
+  },
+  {
+    "name": "certifi",
+    "version": "2025.8.3"
+  },
+  {
+    "name": "cffi",
+    "version": "1.17.1"
+  },
+  {
+    "name": "charset-normalizer",
+    "version": "3.4.3"
+  },
+  {
+    "name": "choreographer",
+    "version": "1.2.1"
+  },
+  {
+    "name": "click",
+    "version": "8.1.8"
+  },
+  {
+    "name": "click-plugins",
+    "version": "1.1.1.2"
+  },
+  {
+    "name": "cligj",
+    "version": "0.7.2"
+  },
+  {
+    "name": "colorama",
+    "version": "0.4.6"
+  },
+  {
+    "name": "comm",
+    "version": "0.2.3"
+  },
+  {
+    "name": "conda-pack",
+    "version": "0.8.1"
+  },
+  {
+    "name": "contextily",
+    "version": "1.6.2"
+  },
+  {
+    "name": "contourpy",
+    "version": "1.2.1"
+  },
+  {
+    "name": "cwms-python",
+    "version": "0.8.0"
+  },
+  {
+    "name": "cycler",
+    "version": "0.12.1"
+  },
+  {
+    "name": "dataretrieval",
+    "version": "1.1.5"
+  },
+  {
+    "name": "debugpy",
+    "version": "1.8.16"
+  },
+  {
+    "name": "decorator",
+    "version": "5.2.1"
+  },
+  {
+    "name": "docx",
+    "version": "0.2.4"
+  },
+  {
+    "name": "et_xmlfile",
+    "version": "2.0.0"
+  },
+  {
+    "name": "exceptiongroup",
+    "version": "1.3.0"
+  },
+  {
+    "name": "executing",
+    "version": "2.2.0"
+  },
+  {
+    "name": "fonttools",
+    "version": "4.59.1"
+  },
+  {
+    "name": "geographiclib",
+    "version": "2.0"
+  },
+  {
+    "name": "geopandas",
+    "version": "1.0.1"
+  },
+  {
+    "name": "geopy",
+    "version": "2.4.1"
+  },
+  {
+    "name": "h2",
+    "version": "4.2.0"
+  },
+  {
+    "name": "hecdss",
+    "version": "0.1.29"
+  },
+  {
+    "name": "hpack",
+    "version": "4.1.0"
+  },
+  {
+    "name": "hyperframe",
+    "version": "6.1.0"
+  },
+  {
+    "name": "idna",
+    "version": "3.10"
+  },
+  {
+    "name": "importlib_metadata",
+    "version": "8.7.0"
+  },
+  {
+    "name": "importlib_resources",
+    "version": "6.5.2"
+  },
+  {
+    "name": "iniconfig",
+    "version": "2.1.0"
+  },
+  {
+    "name": "ipykernel",
+    "version": "6.30.1"
+  },
+  {
+    "name": "ipython",
+    "version": "8.18.1"
+  },
+  {
+    "name": "jedi",
+    "version": "0.19.2"
+  },
+  {
+    "name": "joblib",
+    "version": "1.5.1"
+  },
+  {
+    "name": "jupyter_client",
+    "version": "8.6.3"
+  },
+  {
+    "name": "jupyter_core",
+    "version": "5.8.1"
+  },
+  {
+    "name": "kaleido",
+    "version": "0.2.1"
+  },
+  {
+    "name": "kiwisolver",
+    "version": "1.4.7"
+  },
+  {
+    "name": "logistro",
+    "version": "2.0.1"
+  },
+  {
+    "name": "lxml",
+    "version": "6.0.1"
+  },
+  {
+    "name": "matplotlib",
+    "version": "3.8.4"
+  },
+  {
+    "name": "matplotlib-inline",
+    "version": "0.1.7"
+  },
+  {
+    "name": "mercantile",
+    "version": "1.2.1"
+  },
+  {
+    "name": "mkl-service",
+    "version": "2.5.2"
+  },
+  {
+    "name": "munkres",
+    "version": "1.1.4"
+  },
+  {
+    "name": "nest_asyncio",
+    "version": "1.6.0"
+  },
+  {
+    "name": "numpy",
+    "version": "1.22.4"
+  },
+  {
+    "name": "openpyxl",
+    "version": "3.1.5"
+  },
+  {
+    "name": "orjson",
+    "version": "3.11.4"
+  },
+  {
+    "name": "packaging",
+    "version": "25.0"
+  },
+  {
+    "name": "pandas",
+    "version": "2.3.2"
+  },
+  {
+    "name": "parso",
+    "version": "0.8.4"
+  },
+  {
+    "name": "pefile",
+    "version": "2023.2.7"
+  },
+  {
+    "name": "pickleshare",
+    "version": "0.7.5"
+  },
+  {
+    "name": "pillow",
+    "version": "11.3.0"
+  },
+  {
+    "name": "pip",
+    "version": "25.2"
+  },
+  {
+    "name": "platformdirs",
+    "version": "4.3.8"
+  },
+  {
+    "name": "plotly",
+    "version": "5.24.1"
+  },
+  {
+    "name": "pluggy",
+    "version": "1.6.0"
+  },
+  {
+    "name": "ply",
+    "version": "3.11"
+  },
+  {
+    "name": "prompt_toolkit",
+    "version": "3.0.51"
+  },
+  {
+    "name": "psutil",
+    "version": "7.0.0"
+  },
+  {
+    "name": "pure_eval",
+    "version": "0.2.3"
+  },
+  {
+    "name": "pyarrow",
+    "version": "21.0.0"
+  },
+  {
+    "name": "pycparser",
+    "version": "2.22"
+  },
+  {
+    "name": "pydsstools",
+    "version": "2.4.0"
+  },
+  {
+    "name": "Pygments",
+    "version": "2.19.2"
+  },
+  {
+    "name": "pyinstaller",
+    "version": "6.16.0"
+  },
+  {
+    "name": "pyinstaller-hooks-contrib",
+    "version": "2025.9"
+  },
+  {
+    "name": "pyogrio",
+    "version": "0.11.1"
+  },
+  {
+    "name": "pyparsing",
+    "version": "3.2.3"
+  },
+  {
+    "name": "pyproj",
+    "version": "3.6.1"
+  },
+  {
+    "name": "PyQt5",
+    "version": "5.15.11"
+  },
+  {
+    "name": "PyQt5_sip",
+    "version": "12.17.0"
+  },
+  {
+    "name": "PySocks",
+    "version": "1.7.1"
+  },
+  {
+    "name": "pytest",
+    "version": "8.4.2"
+  },
+  {
+    "name": "pytest-timeout",
+    "version": "2.4.0"
+  },
+  {
+    "name": "python-dateutil",
+    "version": "2.9.0.post0"
+  },
+  {
+    "name": "python-docx",
+    "version": "1.2.0"
+  },
+  {
+    "name": "pytz",
+    "version": "2025.2"
+  },
+  {
+    "name": "pywin32",
+    "version": "311"
+  },
+  {
+    "name": "pywin32-ctypes",
+    "version": "0.2.3"
+  },
+  {
+    "name": "pyzmq",
+    "version": "27.0.2"
+  },
+  {
+    "name": "rasterio",
+    "version": "1.4.3"
+  },
+  {
+    "name": "requests",
+    "version": "2.32.5"
+  },
+  {
+    "name": "requests-toolbelt",
+    "version": "1.0.0"
+  },
+  {
+    "name": "scikit-learn",
+    "version": "1.6.1"
+  },
+  {
+    "name": "scipy",
+    "version": "1.13.1"
+  },
+  {
+    "name": "setuptools",
+    "version": "80.9.0"
+  },
+  {
+    "name": "shapely",
+    "version": "2.0.7"
+  },
+  {
+    "name": "simplejson",
+    "version": "3.20.2"
+  },
+  {
+    "name": "sip",
+    "version": "6.10.0"
+  },
+  {
+    "name": "six",
+    "version": "1.17.0"
+  },
+  {
+    "name": "snuggs",
+    "version": "1.4.7"
+  },
+  {
+    "name": "stack_data",
+    "version": "0.6.3"
+  },
+  {
+    "name": "tenacity",
+    "version": "9.1.2"
+  },
+  {
+    "name": "threadpoolctl",
+    "version": "3.6.0"
+  },
+  {
+    "name": "toml",
+    "version": "0.10.2"
+  },
+  {
+    "name": "tomli",
+    "version": "2.2.1"
+  },
+  {
+    "name": "tornado",
+    "version": "6.5.2"
+  },
+  {
+    "name": "traitlets",
+    "version": "5.14.3"
+  },
+  {
+    "name": "typing_extensions",
+    "version": "4.14.1"
+  },
+  {
+    "name": "tzdata",
+    "version": "2025.2"
+  },
+  {
+    "name": "unicodedata2",
+    "version": "16.0.0"
+  },
+  {
+    "name": "urllib3",
+    "version": "2.5.0"
+  },
+  {
+    "name": "wcwidth",
+    "version": "0.2.13"
+  },
+  {
+    "name": "wheel",
+    "version": "0.45.1"
+  },
+  {
+    "name": "win_inet_pton",
+    "version": "1.1.0"
+  },
+  {
+    "name": "xlsxwriter",
+    "version": "3.2.9"
+  },
+  {
+    "name": "xyzservices",
+    "version": "2026.3.0"
+  },
+  {
+    "name": "zipp",
+    "version": "3.23.0"
+  },
+  {
+    "name": "zstandard",
+    "version": "0.23.0"
+  }
+]

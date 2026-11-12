@@ -36,7 +36,18 @@ class EnvironmentTests(unittest.TestCase):
             self.assertEqual((SCRIPTS/name).read_bytes(),(SCRIPTS/'rts-setup-package'/name).read_bytes())
         source=SCRIPTS/'ExternalPython/PythonSetup1stTime'
         kit=SCRIPTS/'rts-setup-package/ExternalPython/PythonSetup1stTime'
-        for name in ('ResSim12Nov2026.yml','Install-WorkflowEnvironment.ps1','verify_environment.py','READ_ME.txt'):
+        for name in ('ResSim12Nov2026.yml','Install-WorkflowEnvironment.ps1','verify_environment.py','READ_ME.txt','working-environment-packages.json'):
             self.assertEqual((source/name).read_bytes(),(kit/name).read_bytes())
+
+    def test_exported_core_versions_match_recorded_working_packages(self):
+        import json
+        import re
+        setup=SCRIPTS/'ExternalPython/PythonSetup1stTime'
+        text=(setup/'ResSim12Nov2026.yml').read_text()
+        packages={p['name'].lower():p['version'] for p in json.loads((setup/'working-environment-packages.json').read_text())}
+        self.assertIn('name: ResSim12Nov2026',text)
+        self.assertRegex(text,r'(?m)^  - python=3\.9\.23$')
+        for name in ('numpy','pandas','pydsstools','pyarrow','plotly'):
+            self.assertRegex(text,r'(?m)^\s+- '+name+r'={1,2}'+re.escape(packages[name])+r'$')
 
 if __name__=='__main__':unittest.main()
