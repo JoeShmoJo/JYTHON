@@ -229,6 +229,8 @@ def state(root, context, scripts, include_config=False):
 
 
 def process_configuration(root, context, settings, scripts):
+    from dss_access import check_forecast_access
+    check_forecast_access(Path(root) / 'forecast.dss')
     if settings.get('confirm_completed'):
         accept_completed(root, context)
     data = registry(root)

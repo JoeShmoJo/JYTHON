@@ -86,6 +86,7 @@ class BackgroundTask(SwingWorker):
         SwingWorker.__init__(self)
         self.workflow_menu, self.action, self.context, self.executable = owner, action, context, executable
         self.extraction, self.html_path, self.state_path = None, None, None
+        self.error_message = None
     def doInBackground(self):
         descriptor, context_path = tempfile.mkstemp(prefix='rts-menu-', suffix='.json')
         os.close(descriptor)
@@ -117,6 +118,8 @@ class BackgroundTask(SwingWorker):
                         SwingUtilities.invokeLater(OnUI(self.workflow_menu.append, line))
                         if line.startswith('MENU_EXTRACT: '):
                             self.extraction = line[len('MENU_EXTRACT: '):].strip()
+                        if line.startswith('WORKFLOW_ERROR: '):
+                            self.error_message = line[len('WORKFLOW_ERROR: '):].strip()
                         if line.startswith('MENU_STATE: '):
                             self.state_path = line[len('MENU_STATE: '):].strip()
                         if line.startswith('Open: '):
@@ -134,7 +137,7 @@ class BackgroundTask(SwingWorker):
         try:
             status = self.get()
             if status != 0:
-                raise RuntimeError('Task failed (exit %s). See output and log.' % status)
+                raise RuntimeError(self.error_message or ('Task failed (exit %s). See output and log.' % status))
             if self.html_path:
                 self.workflow_menu.last_html = self.html_path
                 Desktop.getDesktop().browse(File(self.html_path).toURI())
