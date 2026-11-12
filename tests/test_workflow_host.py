@@ -73,7 +73,7 @@ class HostTests(unittest.TestCase):
 
     def test_backend_is_already_bundled_and_uses_actual_watershed_root(self):
         backend=SCRIPTS/'RTSPython';kit=SCRIPTS/'rts-setup-package'
-        for name in ('rts_workflow.py','rts_archive.py','run_extraction.py','extraction_context.py','CWMS_Downloader_Module.py','baseline_configuration.py','median_remaining_by_day.pkl'):
+        for name in ('rts_workflow.py','rts_archive.py','run_extraction.py','extraction_context.py','CWMS_Downloader_Module.py','baseline_configuration.py','median_remaining_by_day.pkl','MainstemAugmentation.py'):
             self.assertEqual((backend/name).read_bytes(),(kit/'ExternalPython'/name).read_bytes(),name)
             self.assertEqual((backend/name).parent.parent.parent,ROOT)
         for name in ('baseline-editor.html','baseline-configuration.example.json','CONFIG.py'):
@@ -81,6 +81,24 @@ class HostTests(unittest.TestCase):
         self.assertTrue((SCRIPTS/'rts_baseline_runtime.py').is_file())
         self.assertEqual((SCRIPTS/'STANDALONE_WORKFLOW_MENU.py').read_bytes(),(SCRIPTS/'OPEN_WORKFLOW.py').read_bytes())
         self.assertNotIn('workflow-mode.json',(SCRIPTS/'workflow_host.py').read_text())
+
+    def test_augmentation_preparation_dependencies_are_bundled(self):
+        import ast
+        import types
+        backend=SCRIPTS/'RTSPython'
+        for name in ('MinFlowSalemAlbanyConfig.csv','MinFlowSalem_2008BiOp.csv','MinFlowAlbany_2008BiOp.csv'):
+            self.assertTrue((SCRIPTS/'externalSVs'/name).is_file(),name)
+        for name in ('MainstemAugmentation.py','median_remaining_by_day.pkl'):
+            self.assertTrue((backend/name).is_file(),name)
+        # Exercise the same function-only loader used by RTS without importing
+        # the standalone script, whose top-level code would run a simulation.
+        tree=ast.parse((backend/'prepare_rts_augmentation.py').read_text())
+        loader=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='load_functions')
+        env={'ast':ast,'types':types}
+        exec(compile(ast.Module(body=[loader],type_ignores=[]),'<RTS calculator loader>','exec'),env)
+        calc=env['load_functions'](backend/'MainstemAugmentation.py',{})
+        self.assertTrue(callable(calc.create_total_available_volume_pivot_tables))
+        self.assertTrue(callable(calc.load_wy_type_flow_dict))
 
     def test_rts_baseline_configuration_works_from_bundled_backend_without_installer(self):
         import subprocess
