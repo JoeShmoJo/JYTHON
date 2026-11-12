@@ -311,8 +311,17 @@ def execute_simple(action, args, context, scripts):
                 candidates.append(path)
         if len(candidates) != 1:
             raise ValueError('Expected one newly completed extraction for this invocation; nothing loaded')
+        # Capture selection from the extraction that just finished, never a preview
+        # or an older run. Publish it to the GUI only after promotion succeeds.
+        selection = candidates[0].parent / 'forecast.archive.json'
+        if action=='archive-extract':
+            report = json.loads(selection.read_text(encoding='utf-8'))
+            if not report.get('selection_message'):
+                raise ValueError('Completed extraction has no ResSim ensemble selection; nothing loaded')
         promote_extract(clean, candidates[0].parent)
         atomic_json(root / 'augmentation-archives/workflow-pending.json', {'mode': 'baseline'})
+        if action=='archive-extract':
+            print('MENU_STATE:', selection, flush=True)
     elif action in ('begin-config', 'results'):
         if settings.get('confirm_completed'):
             accept_completed(root, clean)

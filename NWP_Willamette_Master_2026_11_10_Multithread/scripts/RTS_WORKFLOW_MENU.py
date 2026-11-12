@@ -508,19 +508,9 @@ class WorkflowMenu(JFrame):
             # Preferences belong to this imported watershed, not a standalone simulation.
             with codecs.open(os.path.join(EXTERNAL_PYTHON_DIR, 'rfc-archive-settings.json'), 'w', 'utf-8') as handle:
                 handle.write(unicode(json.dumps(settings, indent=2)))
-            self.start('archive-check', settings, lambda state: self.archive_checked(state, settings))
+            self.start('archive-extract', settings, self.archive_extracted)
         except (Exception, JavaException) as exc:
             JOptionPane.showMessageDialog(self, str(exc), 'Archive settings', JOptionPane.ERROR_MESSAGE)
-    def archive_checked(self, state, settings):
-        if not state: raise RuntimeError('No archive availability report returned')
-        if not state['compatible']:
-            message = ('No complete archived data can be loaded for the selected forecast.\n' +
-                       '\n'.join(state['errors'][:3]) + '\nDetails are in the workflow log.')
-            JOptionPane.showMessageDialog(self, message, 'Archived forecast unavailable', JOptionPane.ERROR_MESSAGE)
-            return
-        # Pin the checked selection so extraction and the final instructions agree.
-        settings = dict(settings, auto_members=False, members=state['ressim_members'])
-        self.start('archive-extract', settings, lambda result: self.archive_extracted(state))
     def archive_extracted(self, report):
         message = ('Archived forecast inputs are loaded.\n\n' + report['selection_message'] +
                    '\n\nReopen the forecast, set this ensemble selection, and compute in RTS.')

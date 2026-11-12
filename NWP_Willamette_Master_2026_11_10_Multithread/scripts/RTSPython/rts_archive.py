@@ -67,27 +67,35 @@ def preview(data,settings):
     report['warnings'].append('Requested members must match the native RTS ResSim ensemble selection; this check does not change that selection.')
     report['warnings'].append('RTS daily aggregation converts GMT samples to the selected forecast timezone before the legacy six-hour shift.')
     report['summary']='RTS forecast: '+data['forecast_name']+' / '+data['run_name']+'\n'+format_archive_check(report).replace('ResSim selected members:', 'Requested RFC members (verify native ResSim selection):')
-    report['ressim_members']=member_ranges(report['selected_members'])
-    report['selection_message']=('In ResSim, set historical ensemble years to: '+member_ranges(report.get('available_years',[]))+
-        '\nSynthetic members: 3000-3002 (percentiles), 3003 (OSI).'+
-        '\nComplete ensemble selection: '+report['ressim_members']+
-        '\nUse exactly these years/ranges; do not include years in any gaps.')
+    report.update(selection_report(report.get('available_years',[]),report['selected_members']))
     return report
+
+
+def selection_report(years,members):
+    return dict(ressim_members=member_ranges(members),
+        selection_message=('In ResSim, set historical ensemble years to: '+member_ranges(years)+
+        '\nSynthetic members: 3000-3002 (percentiles), 3003 (OSI).'+
+        '\nComplete ensemble selection: '+member_ranges(members)+
+        '\nUse exactly these years/ranges; do not include years in any gaps.'))
 
 
 def extract(context):
     settings=context.data.get('archive_settings',{})
     folder,members,osi=validated_settings(settings)
+    # load_archive validates every station before returning any data to write.
+    # Discover members from these same decoded frames, rather than rereading ZIPs.
+    try:
+        frames,receipts=load_archive(folder,archive_window(context),osi,members,
+                                     forecast_timezone=context.timezone)
+    except ValueError as error:
+        raise ValueError('Archived forecast unavailable or incomplete: '+str(error)) from error
+    years=receipts[0]['members']
     if settings.get('auto_members'):
-        report=preview(context.data,settings)
-        if not report['compatible']:
-            raise ValueError('Archived forecast unavailable or incomplete: '+'; '.join(report['errors']))
-        members=report['selected_members']
-    frames,receipts=load_archive(folder,archive_window(context),osi,members,
-                                 forecast_timezone=context.timezone)
+        members=years+[3000,3001,3002,3003]
+    report=selection_report(years,members)
     write_archive(frames,context.dss_path,version=7)
     context.dss_path.with_suffix('.archive.json').write_text(json.dumps(dict(
-        context=context.data,sources=receipts,selected_members=members,
+        context=context.data,sources=receipts,selected_members=members,**report,
         aggregation='Convert GMT to RTS forecast timezone, then legacy six-hour daily-bin shift'),indent=2),encoding='utf-8')
     print('Archived RFC inputs written to staged RTS DSS:',context.dss_path,flush=True)
 

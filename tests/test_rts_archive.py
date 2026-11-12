@@ -18,31 +18,58 @@ from extraction_context import Context
 
 
 class ArchiveMenuTests(unittest.TestCase):
-    def test_check_automatically_extracts_and_only_shows_years_after_success(self):
+    def test_gui_extracts_directly_and_displays_completed_receipt(self):
         import ast
         from unittest.mock import Mock
         source=(SCRIPTS/'RTS_WORKFLOW_MENU.py').read_text()
-        tree=ast.parse(source)
-        methods=[node for node in ast.walk(tree) if isinstance(node,ast.FunctionDef)
-                 and node.name in ('archive_checked','archive_extracted')]
+        methods=[node for node in ast.walk(ast.parse(source)) if isinstance(node,ast.FunctionDef)
+                 and node.name=='archive_extracted']
         dialog=Mock();env={'JOptionPane':dialog}
         exec(compile(ast.Module(body=methods,type_ignores=[]),'<archive menu>','exec'),env)
-        menu=Mock();menu.archive_extracted=lambda report:env['archive_extracted'](menu,report)
-        report={'compatible':True,'ressim_members':'1982,2011,3000-3003',
-                'selection_message':'Historical years: 1982,2011'}
-        env['archive_checked'](menu,report,{'auto_members':True,'members':'stale'})
-        dialog.showMessageDialog.assert_not_called()
-        action,settings,callback=menu.start.call_args.args
-        self.assertEqual(action,'archive-extract')
-        self.assertFalse(settings['auto_members'])
-        self.assertEqual(settings['members'],report['ressim_members'])
-        callback({})
+        menu=Mock();report={'selection_message':'Historical years: 1982,2011'}
+        env['archive_extracted'](menu,report)
         self.assertIn(report['selection_message'],dialog.showMessageDialog.call_args.args[1])
-        menu.start.reset_mock();dialog.reset_mock()
-        env['archive_checked'](menu,{'compatible':False,'errors':['Forecast is absent']},{})
-        menu.start.assert_not_called()
-        self.assertIn('Forecast is absent',dialog.showMessageDialog.call_args.args[1])
-        self.assertNotIn('Check archive dates / members',source)
+        self.assertIn("self.start('archive-extract', settings, self.archive_extracted)",source)
+        self.assertNotIn("self.start('archive-check'",source)
+
+    def test_completed_selection_is_returned_only_after_successful_promotion(self):
+        import ast
+        from unittest.mock import Mock
+        source=(SCRIPTS/'RTSPython/workflow_simple.py').read_text()
+        method=next(node for node in ast.parse(source).body
+                    if isinstance(node,ast.FunctionDef) and node.name=='execute_simple')
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp)
+            data=dict(forecast_name='test',run_name='Con_Season',dss_path=str(root/'forecast.dss'),
+                      timezone='GMT-08:00',lookback=['31Dec2019','2400'],
+                      start=['01Jan2020','2400'],end=['02Jan2020','2400'],
+                      menu_settings={'source':'archive','auto_members':True})
+            stage=root/'extraction-test-current'
+            def extraction(*args,**kwargs):
+                stage.mkdir()
+                (stage/'extraction-complete.json').write_text(json.dumps({'context':data}))
+                (stage/'forecast.archive.json').write_text(json.dumps({'selection_message':'1982,2011'}))
+            route=types.ModuleType('rts_workflow')
+            route.same_forecast=lambda *args:True
+            route.promote_extract=Mock()
+            output=Mock()
+            env=dict(Context=Context,Path=Path,sys=sys,json=json,
+                     registry=lambda root:{'current':None},subprocess=types.SimpleNamespace(run=extraction),
+                     atomic_json=Mock(),print=output)
+            exec(compile(ast.Module(body=[method],type_ignores=[]),'<extraction lifecycle>','exec'),env)
+            args=types.SimpleNamespace(context='request.json')
+            with patch.dict(sys.modules,{'rts_workflow':route}):
+                env['execute_simple']('archive-extract',args,data,SCRIPTS/'RTSPython')
+            route.promote_extract.assert_called_once()
+            output.assert_called_once_with('MENU_STATE:',stage/'forecast.archive.json',flush=True)
+            output.reset_mock()
+            for path in stage.iterdir():path.unlink()
+            stage.rmdir()
+            route.promote_extract.side_effect=ValueError('Promotion failed')
+            with patch.dict(sys.modules,{'rts_workflow':route}):
+                with self.assertRaisesRegex(ValueError,'Promotion failed'):
+                    env['execute_simple']('archive-extract',args,data,SCRIPTS/'RTSPython')
+            output.assert_not_called()
 
 
 @unittest.skipUnless(pa,'pyarrow required for archive fixtures')
@@ -93,9 +120,18 @@ class RtsArchiveTests(unittest.TestCase):
             self.assertEqual(report['ressim_members'],'1982,2011,3000-3003')
             self.assertIn('historical ensemble years to: 1982,2011',report['selection_message'])
             data['archive_settings']=settings
-            with patch.object(rts_archive,'write_archive') as writer:
+            from zipfile import ZipFile
+            original_read=ZipFile.read
+            reads=[]
+            def read_once(archive,*args,**kwargs):
+                reads.append((archive.filename,args[0].filename))
+                return original_read(archive,*args,**kwargs)
+            with patch.object(rts_archive,'preview',side_effect=AssertionError('No repeated preview')), \
+                 patch.object(ZipFile,'read',read_once),patch.object(rts_archive,'write_archive') as writer:
                 rts_archive.extract(Context(data))
             self.assertTrue(writer.called)
+            self.assertEqual(len(reads),27)
+            self.assertEqual(len(set(reads)),27)
             receipt=json.loads((folder/'forecast.archive.json').read_text())
             self.assertEqual(receipt['selected_members'],report['selected_members'])
 
@@ -159,7 +195,7 @@ class RtsArchiveTests(unittest.TestCase):
                     commands.append((command,kwargs));self.stdout=io.StringIO('')
                 def wait(self):return 0
             fakeca=types.ModuleType('windows_ca');fakeca.configure_ca_bundle=lambda:None
-            with patch.object(sys,'argv',['run_extraction.py','--context',str(source),'--execute']),patch.dict(sys.modules,{'windows_ca':fakeca}),patch.object(run_extraction.subprocess,'Popen',Process):
+            with patch.object(sys,'argv',['run_extraction.py','--context',str(source),'--execute']),patch.dict(sys.modules,{'windows_ca':fakeca}),patch.object(run_extraction.subprocess,'Popen',Process),patch.object(rts_archive,'preview',side_effect=AssertionError('Execution must not preview')):
                 run_extraction.main()
             self.assertEqual(Path(commands[0][0][-1]).name,'rts_archive.py')
             self.assertEqual([Path(c[0][-1]).name for c in commands][1:],['CWMS_Downloader_Module.py','Dummy_0_and_WY_Abundant_Module.py','OSI_Ensemble_Year.py','write_rule_curves.py','write_ensemble_shared_inputs.py'])

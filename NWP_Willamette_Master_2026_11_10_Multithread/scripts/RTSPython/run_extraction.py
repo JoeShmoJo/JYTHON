@@ -29,10 +29,13 @@ def main():
     data['menu_settings']=settings
     archive_mode=settings.get('source')=='archive'
     if archive_mode:
-        from rts_archive import preview
-        report=preview(data,settings)
-        print(report['summary'],flush=True)
-        if not report['compatible']:raise ValueError('Archived RFC dates/member settings are incompatible; correct the preview errors first')
+        from rts_archive import preview,validated_settings
+        validated_settings(settings)
+        if not args.execute:
+            report=preview(data,settings)
+            print(report['summary'],flush=True)
+            if not report['compatible']:
+                raise ValueError('Archived RFC dates/member settings are incompatible; correct the preview errors first')
         data['archive_settings']=settings
     else:
         print('RFC uses the currently published ensemble; requested dates cannot extend its coverage.', flush=True)
