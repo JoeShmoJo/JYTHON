@@ -189,5 +189,5 @@ combined-minimum traces remain separately labeled.
 
 Open diagnostic at the 16 October 2026 handoff: FLOW-MINLIM catalog records exist,
 but it is not yet established whether their native values are missing or the
-archive reader failed to retrieve them. See [next-session validation](RTS_IMPORT_VALIDATION.md).
+archive reader failed to retrieve them. Use the plot read report and native DSS values to investigate a missing reference.
 Warning grouping improves reporting; it does not resolve that data-read question.

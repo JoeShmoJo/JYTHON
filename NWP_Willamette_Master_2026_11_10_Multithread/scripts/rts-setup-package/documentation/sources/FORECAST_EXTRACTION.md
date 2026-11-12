@@ -1,10 +1,6 @@
 # Forecast extraction in the bundled watershed
 
-Open `scripts/OPEN_WORKFLOW.py` in standalone ResSim or RTS. The existing
-`STANDALONE_WORKFLOW_MENU.py` entry also auto-detects the application. A separate
-local `LAUNCH_WORKFLOW_GUI` shortcut can call the opener with an explicit path.
-Do not paste a launcher over the implementation file `RTS_WORKFLOW_MENU.py`.
-No post-import installer, script-mode transition or CONFIG.py edit is required.
+Use the [Initial setup](INITIAL_SETUP.md) instructions to add the launcher, then follow the [SOP](WORKFLOW_SOP.md).
 
 ## Source and target
 
@@ -15,16 +11,9 @@ when changing the RTS forecast/run or its dates. The checkbox **Use this display
 forecast after closing it in RTS** permits using the displayed context when no
 forecast is open; verify the header before enabling it.
 
-Choose **Initial Extract (live RFC)** for the currently published RFC inputs.
-Choose **Check archive dates / members** or **Extract archived forecast inputs**
-for local station ZIPs. The archived path reads one common nominal daily 12Z
-cycle at or before forecast start, never substituting older issues for missing
-stations. The preview shows actual available years, selected years, OSI source,
-issue coverage, complete daily coverage and incompatible settings. Match the
-native model ensemble selection to those years. An ensemble member labeled 2016
-is not a forecast issued in 2016. The current inspected collection begins in
-October 2019; the reader checks the actual ZIP contents rather than hardcoding
-that range. The collection's HEFS/ESP product provenance remains unconfirmed.
+In RTS, choose **Initial Extract (live RFC)** for the currently published issue or **Extract archived forecast** for local station ZIPs. Archived extraction checks the selected issue, reads all available member years, and gives a copyable native ensemble selection after successful loading.
+
+Standalone retains separate **Check archive dates / members** and **Extract archived ensemble inputs** actions using its applied job settings. Both applications require coverage for the selected time window. See [archived forecasts](RTS_ARCHIVED_FORECASTS.md) for issue selection, time conversion, and saved extraction evidence.
 
 ## Staging and required data
 

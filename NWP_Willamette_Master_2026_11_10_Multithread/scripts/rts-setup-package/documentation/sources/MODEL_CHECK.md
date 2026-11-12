@@ -1,28 +1,14 @@
-# model_check
+# Model Check
 
-Checks a ResSim run against the config files its scripted rules read. Runs on
-desktop Python 3 in the `hydro39` conda environment (pydsstools, pandas,
-plotly), not inside ResSim.
+Use **Model Check** in standalone or **Model Check — One Ensemble Member** in RTS after native compute finishes. Standalone supports the selected Single POR result or one ensemble member. RTS asks for one computed member ID. The menu locates the target DSS and writes a separate report directory.
 
-## Steps
+The report compares selected outputs with configured rule expectations and presents reservoir/control-point plots and summaries. It is an inspection tool; review reported exceptions against rule priorities and native compute logs.
 
-Set the path to the simulation's DSS file, the alternative and the steps to run in
-`model_check_config.txt`, then:
+The checker requires the source DSS to stay stable during extraction/reporting. If it reports “Simulation results changed during check,” finish writes, close data views, and rerun against an idle file. Reports from an interrupted check are not marked complete.
 
-```powershell
-conda activate hydro39
-python model_check\run_model_check.py
-```
+Outputs are under the simulation/forecast model directory's `model-check-runs`. The menu opens the completed report. Applied baseline configuration snapshots are used for matching configured expectations where available.
 
-Or open `run_model_check.py` in Jupyter or VS Code and run it. The steps:
-
-| Step | Does | Run it when |
-|---|---|---|
-| `run_catalog` | lists every record in `simulation.dss` | looking for records to add to the extract |
-| `run_extract` | pulls the alternative's results into CSVs | after every model run |
-| `run_check` | compares with the configs; writes the report and plots | always. With extract off, it checks the newest extract of that simulation and alternative, e.g. after changing a config file |
-
-Each script also still runs on its own (`DSS_PATH` / `RUN_DIR` at the top).
+## Detailed report contents
 
 ## Control point limits
 

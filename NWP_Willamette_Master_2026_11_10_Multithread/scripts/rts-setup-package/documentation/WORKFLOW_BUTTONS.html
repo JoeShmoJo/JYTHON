@@ -1,0 +1,31 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Workflow buttons</title><style>body{font:17px/1.6 system-ui,sans-serif;color:#213346;margin:0;background:#f3f6fa}nav{background:#173d56;padding:14px;position:sticky;top:0}nav a{color:white;display:inline-block;margin:4px 12px}main{max-width:1100px;margin:auto;padding:28px;background:white}a{color:#0063a5}h1,h2,h3{line-height:1.25;scroll-margin-top:90px}h2{margin-top:2em;border-bottom:1px solid #cbd5df;padding-bottom:8px}pre{overflow:auto;padding:16px;background:#eef2f6;white-space:pre-wrap;overflow-wrap:anywhere}code{font-family:Consolas,monospace;font-size:.9em;background:#eef2f6}table{border-collapse:collapse;width:100%;font-size:.92em}th,td{border:1px solid #cad3dc;padding:9px;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#e5edf3}.table{overflow:auto}footer{margin-top:3em;color:#546579}@media print{nav{display:none}main{max-width:none;padding:0}body{background:white}pre{white-space:pre-wrap}a{color:inherit}}</style><body><nav><a href="PROJECT_START_HERE.html">Start here</a><a href="INITIAL_SETUP.html">Initial setup</a><a href="WORKFLOW_SOP.html">Operator SOP</a><a href="WORKFLOW_BUTTONS.html">Workflow buttons</a><a href="index.html">More detail</a><a href="PROJECT_RESUME.html">Project reference</a></nav><main><h1 id="workflow-buttons">Workflow buttons</h1>
+<p>Follow the <a href="WORKFLOW_SOP.html">Operator SOP</a> for the normal sequence. Compute runs in ResSim or RTS after the workflow loads inputs or settings.</p>
+<h2 id="standalone-ressim">Standalone ResSim</h2>
+<div class="table"><table><thead><tr><th>Control</th><th>Use it for</th></tr></thead><tbody>
+<tr><td>Simulation, alternative, Simulation type</td><td>Select the actual target and Ensemble or Single POR.</td></tr>
+<tr><td>Baseline Configuration</td><td>Edit operating rules and job settings, save named configurations, and apply a configuration to the selected alternative. Save stores a reusable set; Apply activates it for the next compute.</td></tr>
+<tr><td>Extract ensemble inputs</td><td>Download the live RFC inputs and supporting data for the selected simulation.</td></tr>
+<tr><td>Check archive dates / members</td><td>Inspect historical archive coverage against standalone job settings before extraction.</td></tr>
+<tr><td>Extract archived ensemble inputs</td><td>Load historical RFC inputs using the standalone archive settings and selected simulation dates.</td></tr>
+<tr><td>Calculate augmentation</td><td>Calculate release requirements from the baseline results and augmentation settings, ready for the next native compute.</td></tr>
+<tr><td>Archive / Plot Results</td><td>Save a completed baseline or augmented result, then plot selected saved runs.</td></tr>
+<tr><td>Model Check</td><td>Check the selected POR output or exactly one ensemble member. Produces a report without starting compute.</td></tr>
+</tbody></table></div>
+<p>Single POR uses the study&#x27;s existing inputs. The ensemble-extraction controls are disabled in that mode. See <a href="STANDALONE_POR_MODEL_CHECK.html">POR and Model Check</a>.</p>
+<h2 id="rts">RTS</h2>
+<div class="table"><table><thead><tr><th>Control</th><th>Use it for</th></tr></thead><tbody>
+<tr><td>Refresh forecast metadata</td><td>Refresh the displayed target after selecting another forecast or run.</td></tr>
+<tr><td>Use this displayed forecast after closing it in RTS</td><td>Retain the displayed target while closing the forecast to release DSS file access.</td></tr>
+<tr><td>Initial Extract (live RFC)</td><td>Download and load the currently published forecast and supporting inputs.</td></tr>
+<tr><td>Extract archived forecast</td><td>Check and extract one historical forecast issue. The completion dialog gives a selectable, copyable ensemble selection for the native model.</td></tr>
+<tr><td>Baseline Configuration</td><td>Save and apply operating settings for an unaugmented baseline compute. Applying disables augmentation for that compute.</td></tr>
+<tr><td>Augmentation Configuration</td><td>Accept a completed baseline, edit participating reservoirs and calculation settings, and process/load releases for the next compute.</td></tr>
+<tr><td>Model Check — One Ensemble Member</td><td>Enter one computed member ID and generate a report of the current results against configured expectations.</td></tr>
+<tr><td>Plot Results</td><td>Accept completed results, choose saved baseline/augmented runs, and plot one or two runs. Members are discovered from computed outputs.</td></tr>
+<tr><td>Open Last Plots</td><td>Reopen existing generated plots. Regenerate plots to incorporate plotting-code changes.</td></tr>
+</tbody></table></div>
+<h2 id="inside-augmentation-configuration">Inside Augmentation Configuration</h2>
+<p><strong>Open Configuration</strong> loads a reusable set. <strong>Save Configuration</strong> saves it. <strong>Process and Load Releases</strong> calculates requirements and loads them into the forecast DSS. That button is disabled when baseline coverage does not include a usable conservation season (starting by March 30 and extending through April 1). The season list comes from baseline output coverage.</p>
+<p>Short forecast days is the number of days of member-specific inflows used before switching to the saved historical median remaining-runoff estimate. Supporting-reservoir selections and limits control allocation. See <a href="RTS_AUGMENTATION.html">augmentation calculation</a>.</p>
+<h2 id="understanding-results">Understanding results</h2>
+<p><a href="MODEL_CHECK.html">Model Check</a> explains reports and coverage. <a href="RTS_PLOTTING.html">Plotting</a> explains historical bands, synthetic members, and reference lines. <a href="RTS_BASELINE_CONFIGURATION.html">Baseline configuration</a> explains applied snapshots and initialization receipts.</p><footer>Offline watershed documentation · <a href="../documentation/sources/WORKFLOW_BUTTONS.md">Markdown source</a> · Use browser Print to save as PDF.</footer></main></body></html>

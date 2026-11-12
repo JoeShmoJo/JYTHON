@@ -1,117 +1,25 @@
-# RTS two-step augmentation
+# Augmentation calculation and loading
 
-The standalone `ExternalPython/MainstemAugmentation.py` is unchanged. The RTS
-preparer loads only its function definitions, avoiding its top-level standalone
-compute, and supplies RTS records and configuration explicitly.
+Use the [Operator SOP](WORKFLOW_SOP.md) for the steps and [Workflow buttons](WORKFLOW_BUTTONS.md) for controls.
 
-## Prepare
+Augmentation starts with a completed, accepted unaugmented baseline. The configuration selects supporting reservoirs, storage floors, release limits, travel times, short forecast days, and water-year interpretation. The calculator reads each baseline ensemble member and produces reservoir release requirements for Salem and Albany targets.
 
-Finish the baseline compute and close the forecast and DSSVue before taking a
-snapshot. Run `prepare_rts_augmentation.py` with `--forecast-root`, a unique
-`--scheme` name, `--members`, `--run-code`, `--season-year`, and an explicit
-`--season-end` ISO date. The first preparation preserves a whole DSS baseline
-under `augmentation-archives/baseline`; later schemes use the current saved
-baseline version, never the latest live augmented outputs. Explicit baseline
-edits create new immutable versions; each scheme keeps its original pairing. Do not edit the archived baseline.
+## Seasonal coverage
 
-Each scheme contains configuration snapshots, a source calculation snapshot,
-CSV calculation data for every member, targets and releases in
-`augmentation.dss`, and a checksummed `manifest.json`. Failures leave a marked
-partial scheme without a loadable manifest. Use a new name on retry.
+The current calculator uses April 1 storage. Baseline coverage must begin by March 30 and extend through at least April 1. The offered season ends at October 31 or the available baseline end date. If no year meets those requirements, the season list is empty and **Process and Load Releases** is disabled. A forecast beginning within conservation season currently does not meet the starting-storage requirement.
 
-For ForecastTest_1055 use 2027-09-30 as the explicit test season end: that is the
-coverage validated in the current baseline. This is a partial-season test,
-not the full April-October operation. The preparer does not invent October
-inflows. Travel times shift releases earlier than the target dates, including
-the last declared target date. Releases are zero outside that shifted window.
+## Forecast and median estimate
 
-The RTS calculation subtracts the minimum storage floor once, combines Hills
-Creek with Lookout Point, and uses saved Combined Min Trib release requirements.
-Green Peter's rule value already converts the Foster target into a Green Peter
-release. Release caps are enforced. The legacy signed-deficit and May 16
-water-year classification behavior are retained; they are not a new optimization
-method. SummerBufferElev is used by the legacy one-step method, not added as a
-new constraint to this two-step external calculation.
+Short forecast days controls the member-specific inflow window. Beyond that window, the calculation uses the saved `median_remaining_by_day.pkl` reference: historical median remaining runoff through October. Repository notes describe a 1935–2019 POR calculated in December 2025; they do not identify the original dataset explicitly as EIS. The median is retained across forecasts rather than recalculated from forecast members.
 
-The current forecast uses the extraction's ALL_ABUNDANT constant 4 input.
-Its WaterYearTypeVariable output is labeled AC-FT despite being that constant.
-Use `--wy-type-mode fixed-abundant` for this explicit setup. Every loaded value
-must equal 4; it is not divided by a million. The legacy target selection treats
-4 as abundant and selects the 1.48 target-table row. The default storage-maf
-mode continues to require MAF units and rejects the misleading AC-FT label.
+The data file and `MainstemAugmentation.py` calculator are bundled in `scripts/RTSPython`. Configuration snapshots retain the calculator/data files and hashes used for a scheme.
 
-## Load and compute
+## DSS access
 
-After reviewing preparation, run `load_rts_augmentation.py --forecast-root ...
---scheme ...`. Close the forecast and DSSVue first. This backs up the live DSS,
-writes the complete scheme records into a candidate copy, and replaces the
-live DSS only after candidate writes finish. Activation is explicit through
-`rts-augmentation-active.json` beside the forecast DSS. No compute is launched.
+Before processing, the workflow checks whether it can obtain the access required to replace `forecast.dss`. If blocked, finish compute, close DSSVue/results windows, and close the forecast in RTS. Leave RTS and the workflow GUI running, select **Use this displayed forecast after closing it in RTS**, and retry with the saved baseline.
 
-Reopen the forecast and compute manually. The installed MainstemFlowAugSV
-module uses that marker only for RTS. Without a marker it returns zero for the
-augmentation rule, irrespective of retained scheme records. With a marker it
-requires matching run/member and supporting reservoirs and reads the exact
-current RTS F-part without standalone trial substitution. Standalone retains
-its existing configured method, omitted trials, and baseline-trial lookup.
-The activated scheme supplies its archived reservoir augmentation configuration
-and mainstem target tables, allowing an earlier scheme to be reloaded after
-editing the working augmentation CSVs without rewriting those working files.
+The access check is a preflight: another process can reopen the file afterward. Preparation and loading remain separate stages. Loading stages a candidate and backs up live data before replacement. Only after a successful load should you reopen the forecast and compute the augmented case.
 
-The complete watershed already contains the state-variable adapter for both
-standalone and RTS compute. It selects its path from the native compute context;
-opening the GUI does not patch scripts or switch modes. After updating script
-files, close and reopen the workflow GUI. Restart the HEC application if it still
-holds an older native rule/state-variable module. Existing rule/state-variable
-bindings must survive import.
+## Saved results
 
-Use `--reset` instead of `--scheme` on the loader to disable augmentation for
-the next compute. It does not erase any DSS records or archives. Use a new forecast for different dates or downloaded inputs. For operation-set
-edits, use the menu sequence Load baseline, edit/compute unaugmented in RTS,
-then Save as baseline. Logical time-series comparison keeps the version if
-results match, or creates a new version and labels older augmented results
-Previous baseline. Older schemes remain plottable with their original baseline;
-prepare a new named scheme before computing against a changed baseline.
-Hashes verify archived files; the explicit save is what accepts model changes.
-
-After the augmented compute finishes, close the forecast and DSSVue and run
-`plot_rts_augmentation.py --forecast-root ... --scheme ... --members 1981-1991`.
-Synthetic members default to 3000-3002 and are excluded from historical bands.
-The command checks that the selected scheme is active, preserves a whole live
-DSS snapshot under a unique `results-*` directory inside the scheme archive,
-then creates offline comparison plots, CSV differences, and a read report.
-Each normal invocation captures a new snapshot. With `--result-dir` pointing
-to an existing scheme `results-*` directory, it plots that archived pairing
-instead, without requiring an active scheme or reading live outputs. New plots
-folders preserve earlier plots. See RTS_WORKFLOW_MENU.md for catalog/deletion
-actions and the retained action trail.
-
-Historical baseline/augmented bands compare paired valid member values. Click
-a historical member in the legend to show both individual traces. Mainstem
-flow plots show prepared targets; participating reservoir outflow plots expose
-the prepared minimum-release traces by member. Identical requirements are shown
-once, differing requirements as exact individual traces initially hidden in
-the legend. A median is not labeled as an applied requirement.
-
-Captured records do not certify compute success: old output can survive a
-failed recompute. Capture metadata explicitly records unverified compute
-status. Check the RTS status/logs and read report before using the comparison
-as evidence of successful augmented results. The preparation manifest remains
-prepared-not-computed because plotting cannot certify that status.
-
-## Current verification
-
-Cloud unit tests exercise the actual legacy calculation functions, single
-storage-floor subtraction, travel-time boundaries, missing-input rejection,
-archive checksum validation, and baseline initializer behavior. Actual HEC-DSS
-writes and the active RTS compute path require the user's Windows validation.
-
-The simplified menu no longer exposes saved-scheme loading as a user workflow.
-Reusable configuration JSON is passed to the RTS preparer through `--config-csv`
-as a temporary `MinFlowSalemAlbanyConfig.csv`; the original working CSV is not
-changed. The menu prepares and loads releases as one action, then prompts for
-manual RTS compute. Completed outputs are accepted separately. Plot Results can
-select one or two saved runs, including two augmentation configurations; it
-uses `plot_rts_runs.py` and retains offline plots under the forecast. Reset
-Baseline only disables augmentation until completed unaugmented outputs are
-accepted. See RTS_WORKFLOW_MENU.md for the current workflow actions.
+The accepted baseline remains available for comparison. After augmented compute finishes, use **Plot Results** to accept the completed result and compare saved runs. Plotting reads computed member coverage. See [plots](RTS_PLOTTING.md).

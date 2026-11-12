@@ -7,10 +7,9 @@ import html
 from pathlib import Path
 import re
 
-NAV=(('index','Overview'),('PIPELINE','Pipeline / file map'),('PROJECT_START_HERE','Start here'),('PROJECT_RESUME','Resume project'),('WORKFLOW_SOP','Operator SOP'),
-     ('STANDALONE_WORKFLOW_REFERENCE','Standalone reference'),
-     ('RTS_WORKFLOW_REFERENCE','RTS reference'),('STANDALONE_SAVED_RESULTS','Standalone saved runs'),('STANDALONE_POR_MODEL_CHECK','POR / Model Check'),('WORKFLOW_PACKAGE','Import / packaging'),('RTS_IMPORT_VALIDATION','Next: RTS validation'),
-     ('RTS_DATA_IO','Data / archives'),('DIVERSION_POSTPROCESS','Diversions (optional)'))
+NAV=(('PROJECT_START_HERE','Start here'),('INITIAL_SETUP','Initial setup'),
+     ('WORKFLOW_SOP','Operator SOP'),('WORKFLOW_BUTTONS','Workflow buttons'),
+     ('index','More detail'),('PROJECT_RESUME','Project reference'))
 STYLE='''body{font:17px/1.6 system-ui,sans-serif;color:#213346;margin:0;background:#f3f6fa}nav{background:#173d56;padding:14px;position:sticky;top:0}nav a{color:white;display:inline-block;margin:4px 12px}main{max-width:1100px;margin:auto;padding:28px;background:white}a{color:#0063a5}h1,h2,h3{line-height:1.25;scroll-margin-top:90px}h2{margin-top:2em;border-bottom:1px solid #cbd5df;padding-bottom:8px}pre{overflow:auto;padding:16px;background:#eef2f6;white-space:pre-wrap;overflow-wrap:anywhere}code{font-family:Consolas,monospace;font-size:.9em;background:#eef2f6}table{border-collapse:collapse;width:100%;font-size:.92em}th,td{border:1px solid #cad3dc;padding:9px;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#e5edf3}.table{overflow:auto}footer{margin-top:3em;color:#546579}@media print{nav{display:none}main{max-width:none;padding:0}body{background:white}pre{white-space:pre-wrap}a{color:inherit}}'''
 
 
@@ -78,17 +77,32 @@ def build(directory):
     directory=Path(directory);output=directory/'documentation';output.mkdir(exist_ok=True)
     source = directory/'documentation/sources'
     docs = sorted(source.glob('*.md')) if source.is_dir() else sorted(directory.glob('*.md'))
-    optional=directory/'optional-diversion-postprocess/README.md'
-    if optional.is_file():docs.append(optional)
     sources={p.name:p.stem+'.html' for p in docs}
-    if optional.is_file():
-        sources['optional-diversion-postprocess/README.md']='optional-diversion-postprocess-README.html'
     navigation='<nav>'+''.join('<a href="'+name+'.html">'+label+'</a>' for name,label in NAV)+'</nav>'
     for doc in docs:
         text=doc.read_text(encoding='utf-8');title=next((line.lstrip('# ') for line in text.splitlines() if line.startswith('# ')),doc.stem)
         page='<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+html.escape(title)+'</title><style>'+STYLE+'</style><body>'+navigation+'<main>'+render(text,sources)+'<footer>Offline watershed documentation · <a href="../'+doc.relative_to(directory).as_posix()+'">Markdown source</a> · Use browser Print to save as PDF.</footer></main></body></html>'
-        (output/(sources['optional-diversion-postprocess/README.md'] if doc==optional else sources[doc.name])).write_text(page,encoding='utf-8')
-    (output/'index.html').write_text('<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Willamette workflow guide</title><style>'+STYLE+'</style><body>'+navigation+'<main><h1>Willamette workflow guide</h1><p>Start with the pipeline map to trace each launcher, input, processing step and saved result. All guides are included in this project.</p><ul><li><a href="PIPELINE.html">Pipeline and folder map</a></li><li><a href="WORKFLOW_SOP.html">Operate standalone ResSim or RTS</a></li><li><a href="WORKFLOW_PACKAGE.html">Install, update and switch modes</a></li><li><a href="RTS_IMPORT_VALIDATION.html">Validate a fresh RTS import</a></li><li><a href="MODEL_CHECK.html">Model Check</a></li><li><a href="DAMAGES_PREVENTED.html">Damages Prevented</a></li></ul><h2>All guides</h2><ul>'+''.join('<li><a href="'+(sources['optional-diversion-postprocess/README.md'] if doc==optional else sources[doc.name])+'">'+html.escape(doc.stem.replace('_',' ').title())+'</a></li>' for doc in docs)+'</ul><p>Guides work offline. Downloads require their data services; model compute requires the installed HEC application and Python environment.</p></main></body></html>',encoding='utf-8')
+        (output/sources[doc.name]).write_text(page,encoding='utf-8')
+    detail_pages = (
+        ('RTS_BASELINE_CONFIGURATION', 'Baseline operating settings'),
+        ('STANDALONE_CONFIGURATION', 'Standalone configuration'),
+        ('RTS_ARCHIVED_FORECASTS', 'Archived forecast inputs'),
+        ('RTS_AUGMENTATION', 'Augmentation calculation and DSS loading'),
+        ('RTS_PLOTTING', 'Plots and ensemble members'),
+        ('MODEL_CHECK', 'Model Check reports'),
+        ('STANDALONE_POR_MODEL_CHECK', 'Single POR and ensemble checks'),
+        ('STANDALONE_SAVED_RESULTS', 'Saved standalone results'),
+        ('STANDALONE_WORKFLOW_REFERENCE', 'Standalone files and settings'),
+        ('RTS_WORKFLOW_REFERENCE', 'RTS files and settings'),
+        ('RTS_DATA_IO', 'Data and compact result archives'),
+        ('WORKFLOW_PACKAGE', 'Importing and updating scripts'),
+        ('PIPELINE', 'Workflow and file map'),
+        ('RTS_IMPORT_VALIDATION', 'Checking a new RTS import'),
+        ('DAMAGES_PREVENTED', 'Damages prevented'))
+    body = '<h1>Workflow guide</h1><p>Begin with <a href="PROJECT_START_HERE.html">Start here</a>, then follow <a href="INITIAL_SETUP.html">Initial setup</a> and the <a href="WORKFLOW_SOP.html">Operator SOP</a>. The <a href="WORKFLOW_BUTTONS.html">button guide</a> explains each control.</p><h2>More detail</h2><p>Use these pages when you want to understand the inputs, calculations, and saved results.</p><ul>'
+    body += ''.join('<li><a href="'+name+'.html">'+label+'</a></li>' for name,label in detail_pages)
+    body += '</ul><p>These pages work offline. Python installation and data downloads require network access.</p>'
+    (output/'index.html').write_text('<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Workflow guide</title><style>'+STYLE+'</style><body>'+navigation+'<main>'+body+'</main></body></html>',encoding='utf-8')
     return output
 
 

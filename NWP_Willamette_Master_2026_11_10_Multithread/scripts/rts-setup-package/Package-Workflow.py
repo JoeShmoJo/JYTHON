@@ -97,9 +97,9 @@ def package(watershed):
             destination.rename(destination.with_name('rts-setup-package-previous-'+uuid.uuid4().hex[:8]))
         shutil.copytree(stage,destination)
         inventory(watershed,destination)
-        for entry, target in ((watershed/'WORKFLOW_README.html','scripts/rts-setup-package/documentation/index.html'),
-                              (watershed/'scripts/START-HERE.html','rts-setup-package/documentation/index.html')):
-            entry.write_text('<!doctype html><html lang="en"><meta charset="utf-8"><title>Willamette workflow guide</title><meta http-equiv="refresh" content="0;url='+target+'"><p><a href="'+target+'">Open workflow documentation and pipeline map</a></p></html>',encoding='utf-8')
+        for entry, target in ((watershed/'WORKFLOW_README.html','scripts/rts-setup-package/documentation/PROJECT_START_HERE.html'),
+                              (watershed/'scripts/START-HERE.html','rts-setup-package/documentation/PROJECT_START_HERE.html')):
+            entry.write_text('<!doctype html><html lang="en"><meta charset="utf-8"><title>Willamette workflow guide</title><meta http-equiv="refresh" content="0;url='+target+'"><p><a href="'+target+'">Start here: workflow guide</a></p></html>',encoding='utf-8')
         # Operator notes are user-owned. Never overwrite or remove existing notes.
         for relative,digest in manifest.items():
             if hashlib.sha256((destination/relative).read_bytes()).hexdigest()!=digest:
