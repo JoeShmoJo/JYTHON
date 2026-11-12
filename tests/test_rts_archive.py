@@ -17,6 +17,34 @@ import run_extraction
 from extraction_context import Context
 
 
+class ArchiveMenuTests(unittest.TestCase):
+    def test_check_automatically_extracts_and_only_shows_years_after_success(self):
+        import ast
+        from unittest.mock import Mock
+        source=(SCRIPTS/'RTS_WORKFLOW_MENU.py').read_text()
+        tree=ast.parse(source)
+        methods=[node for node in ast.walk(tree) if isinstance(node,ast.FunctionDef)
+                 and node.name in ('archive_checked','archive_extracted')]
+        dialog=Mock();env={'JOptionPane':dialog}
+        exec(compile(ast.Module(body=methods,type_ignores=[]),'<archive menu>','exec'),env)
+        menu=Mock();menu.archive_extracted=lambda report:env['archive_extracted'](menu,report)
+        report={'compatible':True,'ressim_members':'1982,2011,3000-3003',
+                'selection_message':'Historical years: 1982,2011'}
+        env['archive_checked'](menu,report,{'auto_members':True,'members':'stale'})
+        dialog.showMessageDialog.assert_not_called()
+        action,settings,callback=menu.start.call_args.args
+        self.assertEqual(action,'archive-extract')
+        self.assertFalse(settings['auto_members'])
+        self.assertEqual(settings['members'],report['ressim_members'])
+        callback({})
+        self.assertIn(report['selection_message'],dialog.showMessageDialog.call_args.args[1])
+        menu.start.reset_mock();dialog.reset_mock()
+        env['archive_checked'](menu,{'compatible':False,'errors':['Forecast is absent']},{})
+        menu.start.assert_not_called()
+        self.assertIn('Forecast is absent',dialog.showMessageDialog.call_args.args[1])
+        self.assertNotIn('Check archive dates / members',source)
+
+
 @unittest.skipUnless(pa,'pyarrow required for archive fixtures')
 class RtsArchiveTests(unittest.TestCase):
     def data(self,path):
@@ -53,6 +81,39 @@ class RtsArchiveTests(unittest.TestCase):
             self.assertEqual(frames[('ALBO3','FLOW-LOC')].loc['2020-01-02',1982],5500)
             receipt=json.loads((folder/'forecast.archive.json').read_text())
             self.assertEqual(len(receipt['sources']),27)
+
+    def test_automatic_selection_uses_all_available_years_and_preserves_gaps(self):
+        with tempfile.TemporaryDirectory() as temp:
+            folder=Path(temp);fixtures.ArchiveTests().zips(folder)
+            data=self.data(folder/'forecast.dss')
+            settings=dict(self.settings(folder),auto_members=True,members='2024')
+            report=rts_archive.preview(data,settings)
+            self.assertTrue(report['compatible'],report['errors'])
+            self.assertEqual(report['selected_members'],[1982,2011,3000,3001,3002,3003])
+            self.assertEqual(report['ressim_members'],'1982,2011,3000-3003')
+            self.assertIn('historical ensemble years to: 1982,2011',report['selection_message'])
+            data['archive_settings']=settings
+            with patch.object(rts_archive,'write_archive') as writer:
+                rts_archive.extract(Context(data))
+            self.assertTrue(writer.called)
+            receipt=json.loads((folder/'forecast.archive.json').read_text())
+            self.assertEqual(receipt['selected_members'],report['selected_members'])
+
+    def test_automatic_selection_rejects_missing_forecast_before_writing(self):
+        with tempfile.TemporaryDirectory() as temp:
+            folder=Path(temp);fixtures.ArchiveTests().zips(folder)
+            data=self.data(folder/'forecast.dss')
+            data.update(lookback=['31Dec2020','2400'],start=['01Jan2021','2400'],end=['02Jan2021','2400'])
+            settings=dict(self.settings(folder),auto_members=True)
+            report=rts_archive.preview(data,settings)
+            self.assertFalse(report['compatible'])
+            self.assertEqual(report['selected_members'],[])
+            data['archive_settings']=settings
+            with patch.object(rts_archive,'write_archive') as writer:
+                with self.assertRaisesRegex(ValueError,'unavailable or incomplete'):
+                    rts_archive.extract(Context(data))
+                writer.assert_not_called()
+            self.assertFalse((folder/'forecast.archive.json').exists())
 
     def test_missing_leap_day_is_detected_before_download_or_staging(self):
         with tempfile.TemporaryDirectory() as temp,contextlib.redirect_stdout(io.StringIO()):

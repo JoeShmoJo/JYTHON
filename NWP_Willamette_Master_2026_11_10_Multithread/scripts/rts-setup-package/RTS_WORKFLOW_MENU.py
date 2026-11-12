@@ -389,8 +389,7 @@ class WorkflowMenu(JFrame):
         center = JPanel(BorderLayout(6, 6))
         buttons = JPanel(GridLayout(0, 2, 8, 8))
         for title, handler in [('Initial Extract (live RFC)', self.extract),
-                               ('Check archive dates / members', lambda e: self.archive_extract(e, False)),
-                               ('Extract archived forecast inputs', lambda e: self.archive_extract(e, True)),
+                               ('Extract archived forecast', self.archive_extract),
                                ('Baseline Configuration', self.baseline_configuration),
                                ('Augmentation Configuration', self.configuration),
                                ('Model Check — One Ensemble Member', self.model_check),
@@ -482,11 +481,10 @@ class WorkflowMenu(JFrame):
         message = 'Download, archive and load initial inputs for the displayed forecast?\nAfterwards, modify the base alternative if needed and compute in RTS.'
         if JOptionPane.showConfirmDialog(self, message, 'Initial Extract', JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION:
             self.start('initial-extract', {}, self.extracted)
-    def archive_extract(self, event, extract):
+    def archive_extract(self, event):
         if self.busy: return
         panel = JPanel(GridLayout(0, 2, 6, 6))
         folder = JTextField(self.archive_settings['archive_folder'])
-        years = JTextField(self.archive_settings['members'])
         osi = JTextField(str(self.archive_settings['osi_source_member']))
         panel.add(JLabel('Folder containing individual station ZIPs'));panel.add(folder)
         def browse(event):
@@ -495,38 +493,39 @@ class WorkflowMenu(JFrame):
             if chooser.showOpenDialog(self) == JFileChooser.APPROVE_OPTION:
                 folder.setText(str(chooser.getSelectedFile().getAbsolutePath()))
         panel.add(JLabel('Choose archive folder'));panel.add(JButton('Browse...', actionPerformed=browse))
-        panel.add(JLabel('Requested members (match native ResSim selection)'));panel.add(years)
         panel.add(JLabel('OSI source year'));panel.add(osi)
         leap = JComboBox(['Require explicit February 29 values', 'Interpolate February 28 to March 1', 'Hold February 28 values'])
         leap_codes = ['error','linear','feb28']
         leap.setSelectedIndex(leap_codes.index(self.archive_settings.get('rule_curve_leap_day','linear')))
         panel.add(JLabel('Rule-curve leap-day handling'));panel.add(leap)
-        if JOptionPane.showConfirmDialog(self, panel, 'Archived RFC inputs - use selected RTS forecast dates',
+        if JOptionPane.showConfirmDialog(self, panel, 'Extract archived forecast - finish compute and close DSS views first',
                 JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION: return
         try:
             settings = {'source':'archive','archive_folder':str(folder.getText()).strip(),
-                        'members':str(years.getText()).strip(),'osi_source_member':int(str(osi.getText()).strip()),
+                        'auto_members':True,'osi_source_member':int(str(osi.getText()).strip()),
                         'rule_curve_leap_day':leap_codes[leap.getSelectedIndex()]}
             self.archive_settings = settings
             # Preferences belong to this imported watershed, not a standalone simulation.
             with codecs.open(os.path.join(EXTERNAL_PYTHON_DIR, 'rfc-archive-settings.json'), 'w', 'utf-8') as handle:
                 handle.write(unicode(json.dumps(settings, indent=2)))
-            self.start('archive-check', settings, lambda state: self.archive_checked(state, settings, extract))
+            self.start('archive-check', settings, lambda state: self.archive_checked(state, settings))
         except (Exception, JavaException) as exc:
             JOptionPane.showMessageDialog(self, str(exc), 'Archive settings', JOptionPane.ERROR_MESSAGE)
-    def archive_checked(self, state, settings, extract):
-        if not state: raise RuntimeError('No archive compatibility report returned')
-        area = JTextArea(state['summary'], 25, 95)
-        area.setEditable(False);area.setLineWrap(True);area.setWrapStyleWord(True)
-        view = JScrollPane(area)
-        if extract and state['compatible']:
-            if JOptionPane.showConfirmDialog(self, view,
-                    'Archive ready - finish compute and close DSS views before loading',
-                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION:
-                self.start('archive-extract', settings, self.extracted)
-        else:
-            JOptionPane.showMessageDialog(self, view, 'Archived RFC dates / members',
-                JOptionPane.INFORMATION_MESSAGE if state['compatible'] else JOptionPane.WARNING_MESSAGE)
+    def archive_checked(self, state, settings):
+        if not state: raise RuntimeError('No archive availability report returned')
+        if not state['compatible']:
+            message = ('No complete archived data can be loaded for the selected forecast.\n' +
+                       '\n'.join(state['errors'][:3]) + '\nDetails are in the workflow log.')
+            JOptionPane.showMessageDialog(self, message, 'Archived forecast unavailable', JOptionPane.ERROR_MESSAGE)
+            return
+        # Pin the checked selection so extraction and the final instructions agree.
+        settings = dict(settings, auto_members=False, members=state['ressim_members'])
+        self.start('archive-extract', settings, lambda result: self.archive_extracted(state))
+    def archive_extracted(self, report):
+        message = ('Archived forecast inputs are loaded.\n\n' + report['selection_message'] +
+                   '\n\nReopen the forecast, set this ensemble selection, and compute in RTS.')
+        self.append(message)
+        JOptionPane.showMessageDialog(self, message, 'ResSim ensemble years to run', JOptionPane.INFORMATION_MESSAGE)
     def extracted(self, state):
         JOptionPane.showMessageDialog(self, 'Initial inputs are loaded and archived.\nReopen the forecast, modify the base alternative if needed, and run the model in RTS.')
     def baseline_configuration(self, event):

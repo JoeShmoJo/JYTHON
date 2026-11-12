@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from extraction_context import Context, load_context
-from RFC_Archive_Module import check_archive, format_archive_check, load_archive, write_archive
+from RFC_Archive_Module import check_archive, format_archive_check, load_archive, write_archive, member_ranges
 
 
 def archive_window(context):
@@ -36,7 +36,7 @@ def validated_settings(settings):
     if settings.get('source')!='archive':raise ValueError('Archived RFC source was not selected')
     folder=settings.get('archive_folder','').strip()
     if not folder or not Path(folder).is_dir():raise ValueError('Archive folder does not exist: '+folder)
-    members=parse_members(settings.get('members',''))
+    members=[] if settings.get('auto_members') else parse_members(settings.get('members',''))
     value=settings.get('osi_source_member')
     if isinstance(value,bool):raise ValueError('OSI source must be a historical member year')
     osi=int(value)
@@ -55,6 +55,11 @@ def preview(data,settings):
         expand(schedule,context.lookback,context.end,leap_day=policy)
     except ValueError as error:
         report['errors'].append('Rule curves: '+str(error))
+    if settings.get('auto_members'):
+        years=report.get('available_years',[])
+        if not years and not report['errors']:
+            report['errors'].append('No ensemble years are available for this forecast at all required stations.')
+        report['selected_members']=years+[3000,3001,3002,3003] if years else []
     report['rule_curve_leap_day']=policy
     report['compatible']=not report['errors']
     report['warnings'].append('Rule-curve February 29 policy: '+policy+' (explicit table values take precedence).')
@@ -62,12 +67,22 @@ def preview(data,settings):
     report['warnings'].append('Requested members must match the native RTS ResSim ensemble selection; this check does not change that selection.')
     report['warnings'].append('RTS daily aggregation converts GMT samples to the selected forecast timezone before the legacy six-hour shift.')
     report['summary']='RTS forecast: '+data['forecast_name']+' / '+data['run_name']+'\n'+format_archive_check(report).replace('ResSim selected members:', 'Requested RFC members (verify native ResSim selection):')
+    report['ressim_members']=member_ranges(report['selected_members'])
+    report['selection_message']=('In ResSim, set historical ensemble years to: '+member_ranges(report.get('available_years',[]))+
+        '\nSynthetic members: 3000-3002 (percentiles), 3003 (OSI).'+
+        '\nComplete ensemble selection: '+report['ressim_members']+
+        '\nUse exactly these years/ranges; do not include years in any gaps.')
     return report
 
 
 def extract(context):
     settings=context.data.get('archive_settings',{})
     folder,members,osi=validated_settings(settings)
+    if settings.get('auto_members'):
+        report=preview(context.data,settings)
+        if not report['compatible']:
+            raise ValueError('Archived forecast unavailable or incomplete: '+'; '.join(report['errors']))
+        members=report['selected_members']
     frames,receipts=load_archive(folder,archive_window(context),osi,members,
                                  forecast_timezone=context.timezone)
     write_archive(frames,context.dss_path,version=7)
