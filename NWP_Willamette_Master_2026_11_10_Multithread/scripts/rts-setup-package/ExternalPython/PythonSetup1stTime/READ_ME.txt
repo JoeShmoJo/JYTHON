@@ -12,3 +12,6 @@ An exported specification is a recovery aid, not a complete copy of installed pa
 ResSim12Nov2026 uses Python 3.12,
 NumPy 1.26.4 and pandas 2.3.3. pydsstools remains 2.4.0 because 3.x changes APIs used by this workflow.
 Full instructions: scripts/rts-setup-package/documentation/INITIAL_SETUP.html.
+
+The installer downloads the pydsstools wheel using Windows networking and verifies its published PyPI SHA256.
+Pip uses that verified local wheel instead of its interrupted-download path.

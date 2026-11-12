@@ -18,6 +18,42 @@ function Invoke-Conda {
     }
 }
 
+function Get-VerifiedDssWheel {
+    param([string]$Directory)
+    New-Item -ItemType Directory -Path $Directory -Force | Out-Null
+    $metadata = (Invoke-WebRequest -UseBasicParsing -TimeoutSec 120 -Uri 'https://pypi.org/pypi/pydsstools/2.4.0/json').Content | ConvertFrom-Json
+    $packages = @($metadata.urls | Where-Object { $_.filename -eq 'pydsstools-2.4.0-cp312-cp312-win_amd64.whl' })
+    if ($packages.Count -ne 1) { throw 'Expected pydsstools Windows/Python 3.12 wheel was not found on PyPI.' }
+    $package = $packages[0]
+    $wheel = Join-Path $Directory $package.filename
+    if (Test-Path -LiteralPath $wheel) {
+        if ((Get-FileHash -LiteralPath $wheel -Algorithm SHA256).Hash -eq $package.digests.sha256) {
+            Write-Host 'Using the checksum-verified local pydsstools wheel.'
+            return
+        }
+        # Never offer an unverified cached artifact to pip.
+        Remove-Item -LiteralPath $wheel -Force
+    }
+    for ($attempt = 1; $attempt -le 2; $attempt++) {
+        $partial = Join-Path $Directory ([guid]::NewGuid().ToString('N') + '.partial')
+        try {
+            Write-Host "Downloading pydsstools with Windows downloader (attempt $attempt of 2)."
+            Invoke-WebRequest -UseBasicParsing -TimeoutSec 120 -Uri $package.url -OutFile $partial
+            if ((Get-FileHash -LiteralPath $partial -Algorithm SHA256).Hash -ne $package.digests.sha256) {
+                throw 'pydsstools download checksum mismatch. The file will not be installed.'
+            }
+            Move-Item -LiteralPath $partial -Destination $wheel -Force
+            Write-Host 'pydsstools wheel downloaded and SHA256 verified against PyPI.'
+            return
+        } catch {
+            if ($attempt -eq 2) { throw }
+            Write-Host 'Windows download did not complete. Retrying once.'
+        } finally {
+            if (Test-Path -LiteralPath $partial) { Remove-Item -LiteralPath $partial -Force }
+        }
+    }
+}
+
 $yaml = Join-Path $PSScriptRoot 'ResSim12Nov2026.yml'
 $verify = Join-Path $PSScriptRoot 'verify_environment.py'
 if (-not (Test-Path -LiteralPath $yaml)) { throw "Missing environment file: $yaml" }
@@ -25,6 +61,7 @@ if (-not (Test-Path -LiteralPath $verify)) { throw "Missing environment verifier
 
 # Process-local settings only: preserve proxy/CA configuration and TLS verification.
 # Classic avoids the native libmamba solver path; plugins are unnecessary here.
+$wheelRoot = Join-Path $env:LOCALAPPDATA 'WillametteWorkflow\wheels'
 $settings = @{
     CONDA_SOLVER = 'classic'
     CONDA_NO_PLUGINS = 'true'
@@ -44,6 +81,7 @@ $logRoot = Join-Path $env:LOCALAPPDATA 'WillametteWorkflow\setup-logs'
 New-Item -ItemType Directory -Path $logRoot -Force | Out-Null
 $log = Join-Path $logRoot ('install-' + [guid]::NewGuid().ToString('N') + '.log')
 $transcribing = $false
+$bootstrapYaml = $null
 try {
     Start-Transcript -Path $log -Force | Out-Null
     $transcribing = $true
@@ -98,6 +136,16 @@ try {
         $export | Set-Content -LiteralPath $backup -Encoding UTF8
         Write-Host "Saved previous environment specification: $backup"
     }
+    # Bootstrap Conda/Python first, install the verified wheel directly, then
+    # install the full YAML. Merely advertising --find-links still lets pip
+    # prefer the remote wheel for an equal version.
+    Get-VerifiedDssWheel -Directory $wheelRoot
+    $wheel = Join-Path $wheelRoot 'pydsstools-2.4.0-cp312-cp312-win_amd64.whl'
+    $bootstrapYaml = Join-Path $logRoot ('bootstrap-' + [guid]::NewGuid().ToString('N') + '.yml')
+    $yamlText = Get-Content -LiteralPath $yaml -Raw
+    $sections = [regex]::Split($yamlText, '(?m)^  - pip:\s*\r?$')
+    if ($sections.Count -ne 2) { throw 'Unexpected YAML layout: expected one pip dependency section.' }
+    $sections[0] | Set-Content -LiteralPath $bootstrapYaml -Encoding UTF8
     $installed = $false
     for ($attempt = 1; $attempt -le 3; $attempt++) {
         # A failed pip stage can leave a valid Conda prefix. Detect it again on
@@ -105,11 +153,20 @@ try {
         $existing = @(Get-WorkflowEnvironment)
         Write-Host "Installation attempt $attempt of 3"
         if ($existing.Count -eq 0) {
-            & $script:CondaExe env create --file $yaml --yes --solver classic
+            & $script:CondaExe env create --file $bootstrapYaml --yes --solver classic
         } else {
-            & $script:CondaExe env update --prefix $existing[0] --file $yaml --solver classic
+            & $script:CondaExe env update --prefix $existing[0] --file $bootstrapYaml --solver classic
         }
         $code = $LASTEXITCODE
+        if ($code -eq 0) {
+            & $script:CondaExe run --no-capture-output -n ResSim12Nov2026 python -m pip install --no-deps $wheel
+            $code = $LASTEXITCODE
+        }
+        if ($code -eq 0) {
+            $existing = @(Get-WorkflowEnvironment)
+            & $script:CondaExe env update --prefix $existing[0] --file $yaml --solver classic
+            $code = $LASTEXITCODE
+        }
         if ($code -eq 0) { $installed = $true; break }
         if ($code -eq -1073741819) {
             throw 'Conda still crashed with access violation 0xC0000005 using its classic solver. Repair the Conda installation before retrying; existing workflow environments have not been removed.'
@@ -123,6 +180,7 @@ try {
     Invoke-Conda -Arguments @('run', '--no-capture-output', '-n', 'ResSim12Nov2026', 'python', $verify)
     Write-Host 'Workflow environment checks passed. Open the workflow from the HEC Script Editor.'
 } finally {
+    if ($bootstrapYaml -and (Test-Path -LiteralPath $bootstrapYaml)) { Remove-Item -LiteralPath $bootstrapYaml -Force }
     foreach ($name in $settings.Keys) {
         [Environment]::SetEnvironmentVariable($name, $previous[$name], 'Process')
     }
