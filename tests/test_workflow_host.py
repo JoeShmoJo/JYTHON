@@ -21,6 +21,43 @@ class HostTests(unittest.TestCase):
             client.CAVI=types.SimpleNamespace(getCaviFrame=lambda:frame)
             with patch.dict(sys.modules,fake):self.assertEqual(host.detect_runtime(),expected)
 
+    def test_editor_without_file_discovers_loaded_project_or_compiled_source(self):
+        source=(SCRIPTS/'OPEN_WORKFLOW.py').read_text()
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp)/'Renamed Imported Watershed';scripts=root/'scripts'
+            scripts.mkdir(parents=True)
+            (scripts/'workflow_host.py').write_text('')
+            entry=scripts/'OPEN_WORKFLOW.py';entry.write_text(source)
+            for context in ('cavi','browser','compiled','standalone'):
+                with self.subTest(context=context):
+                    calls=[]
+                    project=types.SimpleNamespace(getProjectDirectory=lambda:str(root))
+                    frame=types.SimpleNamespace(getCurrentProject=lambda:project)
+                    client=types.ModuleType('usace.cavi.client')
+                    client.CAVI=types.SimpleNamespace(getCaviFrame=lambda:frame if context=='cavi' else None)
+                    browser=types.ModuleType('com.rma.client')
+                    browser.Browser=types.SimpleNamespace(getBrowser=lambda:types.SimpleNamespace(
+                        getBrowserFrame=lambda:frame if context=='browser' else None))
+                    hec=types.ModuleType('hec.script')
+                    hec.ClientAppWrapper=types.SimpleNamespace(getWatershed=lambda:
+                        types.SimpleNamespace(getWkspDir=lambda:str(root)) if context=='standalone' else None)
+                    host_stub=types.ModuleType('workflow_host');host_stub.launch=calls.append
+                    modules={'usace':types.ModuleType('usace'),'usace.cavi':types.ModuleType('usace.cavi'),
+                             'usace.cavi.client':client,'com':types.ModuleType('com'),
+                             'com.rma':types.ModuleType('com.rma'),'com.rma.client':browser,
+                             'hec':types.ModuleType('hec'),'hec.script':hec,'workflow_host':host_stub}
+                    filename=str(entry) if context=='compiled' else '<Script Editor>'
+                    # No Swing stub: any unexpected chooser import fails the test.
+                    with patch.dict(sys.modules,modules),patch.object(sys,'path',list(sys.path)):
+                        exec(compile(source,filename,'exec'),{'__name__':'__main__'})
+                    self.assertEqual(calls,[str(scripts)])
+
+    def test_distributed_openers_match(self):
+        source=(SCRIPTS/'OPEN_WORKFLOW.py').read_bytes()
+        for folder in (SCRIPTS,SCRIPTS/'rts-setup-package'):
+            for name in ('OPEN_WORKFLOW.py','STANDALONE_WORKFLOW_MENU.py'):
+                self.assertEqual((folder/name).read_bytes(),source)
+
     def test_existing_opener_routes_both_hosts_without_installing_or_switching(self):
         with tempfile.TemporaryDirectory() as temp:
             root=Path(temp)
