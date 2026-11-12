@@ -515,7 +515,24 @@ class WorkflowMenu(JFrame):
         message = ('Archived forecast inputs are loaded.\n\n' + report['selection_message'] +
                    '\n\nReopen the forecast, set this ensemble selection, and compute in RTS.')
         self.append(message)
-        JOptionPane.showMessageDialog(self, message, 'ResSim ensemble years to run', JOptionPane.INFORMATION_MESSAGE)
+        panel = JPanel(BorderLayout(6, 8))
+        instructions = JTextArea(message, 9, 65)
+        instructions.setEditable(False)
+        instructions.setLineWrap(True)
+        instructions.setWrapStyleWord(True)
+        panel.add(JScrollPane(instructions), BorderLayout.CENTER)
+        selection = JTextField(report['ressim_members'], 35)
+        selection.setEditable(False)
+        selection.selectAll()
+        def copy_selection(event):
+            selection.selectAll()
+            selection.copy()
+        row = JPanel(BorderLayout(6, 0))
+        row.add(JLabel('Complete ensemble selection:'), BorderLayout.NORTH)
+        row.add(selection, BorderLayout.CENTER)
+        row.add(JButton('Copy', actionPerformed=copy_selection), BorderLayout.EAST)
+        panel.add(row, BorderLayout.SOUTH)
+        JOptionPane.showMessageDialog(self, panel, 'ResSim ensemble years to run', JOptionPane.INFORMATION_MESSAGE)
     def extracted(self, state):
         JOptionPane.showMessageDialog(self, 'Initial inputs are loaded and archived.\nReopen the forecast, modify the base alternative if needed, and run the model in RTS.')
     def baseline_configuration(self, event):

@@ -24,11 +24,21 @@ class ArchiveMenuTests(unittest.TestCase):
         source=(SCRIPTS/'RTS_WORKFLOW_MENU.py').read_text()
         methods=[node for node in ast.walk(ast.parse(source)) if isinstance(node,ast.FunctionDef)
                  and node.name=='archive_extracted']
-        dialog=Mock();env={'JOptionPane':dialog}
+        dialog=Mock()
+        widgets={name:Mock() for name in ('JPanel','JTextArea','JScrollPane','JTextField','JLabel','JButton')}
+        env=dict(widgets,JOptionPane=dialog,BorderLayout=Mock())
         exec(compile(ast.Module(body=methods,type_ignores=[]),'<archive menu>','exec'),env)
-        menu=Mock();report={'selection_message':'Historical years: 1982,2011'}
+        menu=Mock();report={'selection_message':'Historical years: 1982,2011','ressim_members':'1982,2011,3000-3003'}
         env['archive_extracted'](menu,report)
-        self.assertIn(report['selection_message'],dialog.showMessageDialog.call_args.args[1])
+        self.assertIn(report['selection_message'],widgets['JTextArea'].call_args.args[0])
+        widgets['JTextField'].assert_called_once_with(report['ressim_members'],35)
+        field=widgets['JTextField'].return_value
+        field.setEditable.assert_called_once_with(False)
+        field.copy.assert_not_called()
+        copy=widgets['JButton'].call_args.kwargs['actionPerformed']
+        copy(None)
+        field.copy.assert_called_once_with()
+        self.assertEqual(field.selectAll.call_count,2)
         self.assertIn("self.start('archive-extract', settings, self.archive_extracted)",source)
         self.assertNotIn("self.start('archive-check'",source)
 
