@@ -1,0 +1,6 @@
+# Prevent pip dependencies from upgrading the locked working scientific stack.
+numpy==1.22.4
+pandas==2.3.2
+pyarrow==21.0.0
+plotly==5.24.1
+pydsstools==2.4.0

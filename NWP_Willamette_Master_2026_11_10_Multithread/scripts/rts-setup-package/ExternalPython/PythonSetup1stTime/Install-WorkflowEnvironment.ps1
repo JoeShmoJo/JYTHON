@@ -58,13 +58,18 @@ function Get-VerifiedDssWheel {
 $yaml = Join-Path $PSScriptRoot 'ResSim12Nov2026.yml'
 $verify = Join-Path $PSScriptRoot 'verify_environment.py'
 $trustHelper = Join-Path $PSScriptRoot 'configure_install_trust.py'
+$constraints = Join-Path $PSScriptRoot 'workflow-constraints.txt'
 if (-not (Test-Path -LiteralPath $yaml)) { throw "Missing environment file: $yaml" }
 if (-not (Test-Path -LiteralPath $verify)) { throw "Missing environment verifier: $verify" }
 if (-not (Test-Path -LiteralPath $trustHelper)) { throw "Missing trust helper: $trustHelper" }
+if (-not (Test-Path -LiteralPath $constraints)) { throw "Missing package constraints: $constraints" }
 
 # Process-local settings only: preserve proxy/CA configuration and TLS verification.
 # Classic avoids the native libmamba solver path; plugins are unnecessary here.
 $wheelRoot = Join-Path $env:LOCALAPPDATA 'WillametteWorkflow\wheels'
+$constraintUri = ([System.Uri]$constraints).AbsoluteUri
+$priorConstraints = [Environment]::GetEnvironmentVariable('PIP_CONSTRAINT', 'Process')
+$constraintList = (@($priorConstraints, $constraintUri) | Where-Object { $_ }) -join ' '
 $settings = @{
     CONDA_SOLVER = 'classic'
     CONDA_NO_PLUGINS = 'true'
@@ -75,6 +80,7 @@ $settings = @{
     PIP_RETRIES = '8'
     PIP_RESUME_RETRIES = '8'
     PIP_USER = 'false'
+    PIP_CONSTRAINT = $constraintList
     PIP_CERT = [Environment]::GetEnvironmentVariable('PIP_CERT', 'Process')
     REQUESTS_CA_BUNDLE = [Environment]::GetEnvironmentVariable('REQUESTS_CA_BUNDLE', 'Process')
     SSL_CERT_FILE = [Environment]::GetEnvironmentVariable('SSL_CERT_FILE', 'Process')
