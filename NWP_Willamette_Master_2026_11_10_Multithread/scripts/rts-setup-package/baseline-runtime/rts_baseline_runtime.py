@@ -50,7 +50,10 @@ def active(network):
         marker = os.path.join(directory, 'rts-baseline-config-active.json')
         if os.path.isfile(marker):
             pointer = read_json(marker)
-            if pointer.get('model_alternative') != str(network.getAlternative().getName()).split(':')[-1]:
+            # RTS pointers are scoped by the compute output directory. Unlike
+            # standalone pointers, they need not name a model alternative.
+            if (pointer.get('model_alternative') is not None and
+                    pointer['model_alternative'] != str(network.getAlternative().getName()).split(':')[-1]):
                 return None
             source = os.path.abspath(os.path.join(directory, pointer['directory']))
             allowed = os.path.join(directory, 'baseline-configurations', 'sets') + os.sep
