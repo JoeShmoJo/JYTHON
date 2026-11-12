@@ -113,7 +113,7 @@ def comparison_figure(baseline, augmented, title, units, synthetic_base=None,
                                         line=dict(width=1, dash='dot'), visible='legendonly', connectgaps=False))
     if rule_curve is not None:
         fig.add_trace(go.Scatter(x=rule_curve.index, y=rule_curve, name='Rule curve',
-                                line=dict(color='green', dash='dash'), connectgaps=False))
+                                line=dict(color='black', width=2, dash='solid'), connectgaps=False))
     fig.update_layout(title=title, template='plotly_white', xaxis_title='Forecast local date/time',
                       yaxis_title=units, hovermode='closest', legend=dict(groupclick='togglegroup'))
     return fig

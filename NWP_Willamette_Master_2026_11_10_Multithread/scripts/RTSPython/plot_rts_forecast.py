@@ -130,7 +130,7 @@ def make_figure(frame, title, units, rule_curve=None, rule_label='Rule curve', s
                             hovertemplate='%{x}<br>Median: %{y:.2f}<br>Members: %{customdata}<extra></extra>'))
     if rule_curve is not None:
         fig.add_trace(go.Scatter(x=rule_curve.index, y=rule_curve, mode='lines',
-                                line=dict(color='green', width=2, dash='dash'), name=rule_label, connectgaps=False))
+                                line=dict(color='black', width=2, dash='solid'), name=rule_label, connectgaps=False))
     if synthetic_frame is not None:
         colors = {3000: '#d62728', 3001: '#1f77b4', 3002: '#9467bd'}
         for member in synthetic_frame.columns:
