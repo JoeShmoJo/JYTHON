@@ -125,7 +125,7 @@ def make_figure(frame, title, units, rule_curve=None, rule_label='Rule curve', s
         fig.add_trace(go.Scatter(x=frame.index, y=frame[member], mode='lines',
                                 line=dict(width=1), opacity=0.35, name=str(member),
                                 connectgaps=False))
-    fig.add_trace(go.Scatter(x=q.index, y=q[0.50], mode='lines', line=dict(color='black', width=2),
+    fig.add_trace(go.Scatter(x=q.index, y=q[0.50], mode='lines', line=dict(color='black', width=2, dash='dash'),
                             customdata=q['member_count'], name='Median',
                             hovertemplate='%{x}<br>Median: %{y:.2f}<br>Members: %{customdata}<extra></extra>'))
     if rule_curve is not None:

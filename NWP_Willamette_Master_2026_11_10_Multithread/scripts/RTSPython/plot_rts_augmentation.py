@@ -83,7 +83,7 @@ def comparison_figure(baseline, augmented, title, units, synthetic_base=None,
         fig.add_trace(go.Scatter(x=q.index, y=q[.25], line=dict(width=0), showlegend=False, hoverinfo='skip'))
         fig.add_trace(go.Scatter(x=q.index, y=q[.75], line=dict(width=0), fill='tonexty',
                                 fillcolor=fill, name=name + ' 25–75%', connectgaps=False))
-        fig.add_trace(go.Scatter(x=q.index, y=q[.5], line=dict(color=color, width=3),
+        fig.add_trace(go.Scatter(x=q.index, y=q[.5], line=dict(color=color, width=3, dash='dash'),
                                 name=name + ' median', customdata=q.member_count,
                                 hovertemplate='%{x}<br>%{y:.2f}<br>Paired members: %{customdata}<extra>%{fullData.name}</extra>'))
     for member in baseline.columns:
