@@ -20,7 +20,9 @@ For a custom Conda installation, supply its executable:
 
 The menus prefer ResSim12Nov2026 and retain hydro39 as a fallback while an existing installation is being updated. For a custom location, launch the HEC application from a shell with `CONDA_EXE` pointing to that installation's `Scripts/conda.exe`, so the menu can locate it too.
 
-If ResSim12Nov2026 already exists, the installer checks it without changing packages. To refresh it, close applications using that environment and run the installer with `-Update`. The previous environment specification is exported before updating; it is a recovery aid rather than a complete package backup.
+Close applications using ResSim12Nov2026 before running the installer. An existing healthy environment is checked without package changes. An incomplete environment is repaired automatically, including after an interrupted first installation. Use `-Update` to refresh a healthy environment. The previous environment specification is exported before updating; it is a recovery aid rather than a complete package backup.
+
+The installer uses Conda’s classic solver with plugins disabled only for its own commands, retries interrupted installs up to three times, and restores its process settings afterward. Each run saves a log under LocalAppData/WillametteWorkflow/setup-logs and copies it to the clipboard when available. If Conda itself crashes even with the classic solver, the log identifies that failure; repair of the local Conda installation may be required.
 
 This environment uses Python 3.12, NumPy 1.26.4, and pandas 2.3.3. The workflow currently needs pydsstools 2.4.0's API. Version 3.x changes time-series and catalog APIs and requires a separate application migration. A newer NumPy major version alone would not make that API compatible.
 

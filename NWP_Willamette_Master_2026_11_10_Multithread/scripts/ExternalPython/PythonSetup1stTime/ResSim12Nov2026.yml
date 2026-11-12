@@ -5,7 +5,7 @@ channels:
   - conda-forge
 dependencies:
   - python=3.12
-  - pip>=24,<27
+  - pip>=25.2,<27
   - pip:
       - --only-binary=pydsstools,numpy,pandas,pyarrow
       - pydsstools==2.4.0
