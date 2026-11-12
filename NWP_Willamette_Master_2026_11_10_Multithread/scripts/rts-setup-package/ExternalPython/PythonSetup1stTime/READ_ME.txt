@@ -8,8 +8,8 @@ working-environment-packages.json records the accompanying actual installed-pack
 
 Run Install-WorkflowEnvironment.ps1 in Windows PowerShell. It finds Conda, uses the classic solver,
 and creates/repairs ResSim12Nov2026 without changing hydro39. Close jobs using the test environment first.
-The pydsstools wheel is downloaded with Windows networking, using the YAML Python version,
-and verified against its PyPI SHA256 before installation. Dependencies are then installed from the full YAML.
+The Python 3.9 Windows pydsstools wheel is bundled under wheels/. Its published SHA256
+and size are verified before local installation. The installer can download a wheel if not bundled. Dependencies are then installed from the full YAML.
 Checks include exact core versions, Parquet write/read and DSS7 write/catalog/read.
 
 The installer retains normal download caches, saves a log and copies it to the clipboard.

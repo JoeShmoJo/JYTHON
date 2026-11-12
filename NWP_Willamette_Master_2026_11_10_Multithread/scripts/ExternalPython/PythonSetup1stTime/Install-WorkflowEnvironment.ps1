@@ -21,8 +21,22 @@ function Invoke-Conda {
 function Get-VerifiedDssWheel {
     param([string]$Directory, [string]$PythonTag)
     New-Item -ItemType Directory -Path $Directory -Force | Out-Null
-    $metadata = (Invoke-WebRequest -UseBasicParsing -TimeoutSec 120 -Uri 'https://pypi.org/pypi/pydsstools/2.4.0/json').Content | ConvertFrom-Json
     $filename = 'pydsstools-2.4.0-' + $PythonTag + '-' + $PythonTag + '-win_amd64.whl'
+    $bundled = Join-Path (Join-Path $PSScriptRoot 'wheels') $filename
+    if (Test-Path -LiteralPath $bundled -PathType Leaf) {
+        $manifestFile = Join-Path $PSScriptRoot 'wheels\manifest.json'
+        $manifest = Get-Content -LiteralPath $manifestFile -Raw | ConvertFrom-Json
+        if ($manifest.filename -ne $filename -or $manifest.sha256 -notmatch '^[a-fA-F0-9]{64}$') {
+            throw 'Invalid bundled wheel manifest.'
+        }
+        if ((Get-Item -LiteralPath $bundled).Length -ne $manifest.size -or
+            (Get-FileHash -LiteralPath $bundled -Algorithm SHA256).Hash -ne $manifest.sha256) {
+            throw 'Bundled pydsstools wheel checksum/size mismatch. Restore it from the source watershed.'
+        }
+        Write-Host 'Using bundled, checksum-verified pydsstools wheel (no wheel download).'
+        return $bundled
+    }
+    $metadata = (Invoke-WebRequest -UseBasicParsing -TimeoutSec 120 -Uri 'https://pypi.org/pypi/pydsstools/2.4.0/json').Content | ConvertFrom-Json
     $packages = @($metadata.urls | Where-Object { $_.filename -eq $filename })
     if ($packages.Count -ne 1) { throw 'Expected pydsstools wheel for the YAML Python version was not found on PyPI.' }
     $package = $packages[0]
@@ -30,7 +44,7 @@ function Get-VerifiedDssWheel {
     if (Test-Path -LiteralPath $wheel) {
         if ((Get-FileHash -LiteralPath $wheel -Algorithm SHA256).Hash -eq $package.digests.sha256) {
             Write-Host 'Using the checksum-verified local pydsstools wheel.'
-            return
+            return $wheel
         }
         # Never offer an unverified cached artifact to pip.
         Remove-Item -LiteralPath $wheel -Force
@@ -45,7 +59,7 @@ function Get-VerifiedDssWheel {
             }
             Move-Item -LiteralPath $partial -Destination $wheel -Force
             Write-Host 'pydsstools wheel downloaded and SHA256 verified against PyPI.'
-            return
+            return $wheel
         } catch {
             if ($attempt -eq 2) { throw }
             Write-Host 'Windows download did not complete. Retrying once.'
@@ -156,8 +170,7 @@ try {
     $pythonMatch = [regex]::Match($yamlText, '(?m)^  - python=(\d+)\.(\d+)(?:\.\d+)?\s*\r?$')
     if (-not $pythonMatch.Success) { throw 'Expected a pinned Python version in the environment YAML.' }
     $pythonTag = 'cp' + $pythonMatch.Groups[1].Value + $pythonMatch.Groups[2].Value
-    Get-VerifiedDssWheel -Directory $wheelRoot -PythonTag $pythonTag
-    $wheel = Join-Path $wheelRoot ('pydsstools-2.4.0-' + $pythonTag + '-' + $pythonTag + '-win_amd64.whl')
+    $wheel = Get-VerifiedDssWheel -Directory $wheelRoot -PythonTag $pythonTag
     $bootstrapYaml = Join-Path $logRoot ('bootstrap-' + [guid]::NewGuid().ToString('N') + '.yml')
     $yamlText = Get-Content -LiteralPath $yaml -Raw
     $sections = [regex]::Split($yamlText, '(?m)^  - pip:\s*\r?$')
@@ -169,6 +182,7 @@ try {
         # each attempt and update it instead of trying to create it a second time.
         $existing = @(Get-WorkflowEnvironment)
         Write-Host "Installation attempt $attempt of 3"
+        Write-Host 'Stage 1/4: Conda dependency solving and native-package installation.'
         if ($existing.Count -eq 0) {
             & $script:CondaExe env create --file $bootstrapYaml --yes --solver classic
         } else {
@@ -189,11 +203,13 @@ try {
                 [Environment]::SetEnvironmentVariable($name, $bundle, 'Process')
             }
             Write-Host 'PyPI TLS preflight passed with verified CA trust.'
+            Write-Host 'Stage 2/4: Installing pydsstools from the verified local wheel.'
             & $script:CondaExe run --no-capture-output -n ResSim12Nov2026 python -m pip install --no-deps $wheel
             $code = $LASTEXITCODE
         }
         if ($code -eq 0) {
             $existing = @(Get-WorkflowEnvironment)
+            Write-Host 'Stage 3/4: Installing remaining packages from the locked specification.'
             & $script:CondaExe env update --prefix $existing[0] --file $yaml --solver classic
             $code = $LASTEXITCODE
         }
@@ -207,6 +223,7 @@ try {
         }
     }
     if (-not $installed) { throw "Installation failed after 3 attempts (exit $code). See the saved log for the pip/Conda error." }
+    Write-Host 'Stage 4/4: Checking versions, Parquet, and DSS write/read behavior.'
     Invoke-Conda -Arguments @('run', '--no-capture-output', '-n', 'ResSim12Nov2026', 'python', $verify)
     Write-Host 'Workflow environment checks passed. Open the workflow from the HEC Script Editor.'
 } finally {

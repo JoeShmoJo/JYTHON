@@ -50,4 +50,19 @@ class EnvironmentTests(unittest.TestCase):
         for name in ('numpy','pandas','pydsstools','pyarrow','plotly'):
             self.assertRegex(text,r'(?m)^\s+- '+name+r'={1,2}'+re.escape(packages[name])+r'$')
 
+    def test_bundled_windows_wheel_matches_published_manifest(self):
+        import hashlib
+        import json
+        import zipfile
+        for folder in (SCRIPTS/'ExternalPython',SCRIPTS/'rts-setup-package/ExternalPython'):
+            wheels=folder/'PythonSetup1stTime/wheels'
+            manifest=json.loads((wheels/'manifest.json').read_text())
+            self.assertEqual(manifest['filename'],'pydsstools-2.4.0-cp39-cp39-win_amd64.whl')
+            artifact=wheels/manifest['filename']
+            self.assertEqual(artifact.stat().st_size,manifest['size'])
+            self.assertEqual(hashlib.sha256(artifact.read_bytes()).hexdigest(),manifest['sha256'])
+            with zipfile.ZipFile(artifact) as archive:
+                self.assertIsNone(archive.testzip())
+            self.assertIn('Permission is hereby granted',(wheels/'LICENSE-pydsstools.txt').read_text())
+
 if __name__=='__main__':unittest.main()
