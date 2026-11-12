@@ -1000,23 +1000,7 @@ Index=785
 ModifiedTime=9223372036854775807
 ManagerProxyEnd
 
-ManagerProxyBegin
-Name=ConSeason
-Description=
-Path=rss/ConSeason.ralt
-Class=hec.rss.model.RssAlt
-Index=792
-ModifiedTime=1772829169387
-ManagerProxyEnd
 
-ManagerProxyBegin
-Name=ConSeason
-Description=Copy of For testing purposes. (Global Variable Data Set)
-Path=rss/ConSeason.igv
-Class=hec.rss.model.GVDataSet
-Index=793
-ModifiedTime=9223372036854775807
-ManagerProxyEnd
 
 ManagerProxyBegin
 Name=Con_Season
