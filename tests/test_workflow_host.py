@@ -96,7 +96,8 @@ class HostTests(unittest.TestCase):
         loader=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='load_functions')
         env={'ast':ast,'types':types}
         exec(compile(ast.Module(body=[loader],type_ignores=[]),'<RTS calculator loader>','exec'),env)
-        calc=env['load_functions'](backend/'MainstemAugmentation.py',{})
+        import pandas as pd
+        calc=env['load_functions'](backend/'MainstemAugmentation.py',{'Path':Path,'pd':pd})
         self.assertTrue(callable(calc.create_total_available_volume_pivot_tables))
         self.assertTrue(callable(calc.load_wy_type_flow_dict))
 
