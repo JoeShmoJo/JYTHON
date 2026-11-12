@@ -57,8 +57,10 @@ function Get-VerifiedDssWheel {
 
 $yaml = Join-Path $PSScriptRoot 'ResSim12Nov2026.yml'
 $verify = Join-Path $PSScriptRoot 'verify_environment.py'
+$trustHelper = Join-Path $PSScriptRoot 'configure_install_trust.py'
 if (-not (Test-Path -LiteralPath $yaml)) { throw "Missing environment file: $yaml" }
 if (-not (Test-Path -LiteralPath $verify)) { throw "Missing environment verifier: $verify" }
+if (-not (Test-Path -LiteralPath $trustHelper)) { throw "Missing trust helper: $trustHelper" }
 
 # Process-local settings only: preserve proxy/CA configuration and TLS verification.
 # Classic avoids the native libmamba solver path; plugins are unnecessary here.
@@ -73,6 +75,9 @@ $settings = @{
     PIP_RETRIES = '8'
     PIP_RESUME_RETRIES = '8'
     PIP_USER = 'false'
+    PIP_CERT = [Environment]::GetEnvironmentVariable('PIP_CERT', 'Process')
+    REQUESTS_CA_BUNDLE = [Environment]::GetEnvironmentVariable('REQUESTS_CA_BUNDLE', 'Process')
+    SSL_CERT_FILE = [Environment]::GetEnvironmentVariable('SSL_CERT_FILE', 'Process')
 }
 $previous = @{}
 foreach ($name in $settings.Keys) {
@@ -83,6 +88,7 @@ New-Item -ItemType Directory -Path $logRoot -Force | Out-Null
 $log = Join-Path $logRoot ('install-' + [guid]::NewGuid().ToString('N') + '.log')
 $transcribing = $false
 $bootstrapYaml = $null
+$generatedBundle = $null
 try {
     Start-Transcript -Path $log -Force | Out-Null
     $transcribing = $true
@@ -164,6 +170,19 @@ try {
         }
         $code = $LASTEXITCODE
         if ($code -eq 0) {
+            if (-not $generatedBundle) {
+                $generatedBundle = Join-Path $logRoot ('windows-trust-' + [guid]::NewGuid().ToString('N') + '.pem')
+            }
+            $trustOutput = & $script:CondaExe run --no-capture-output -n ResSim12Nov2026 python $trustHelper --output $generatedBundle
+            if ($LASTEXITCODE -ne 0) {
+                throw 'TLS trust preflight failed. Verify that the approved network CA is installed in Windows or supply PIP_CERT pointing to an approved PEM bundle. TLS verification remains enabled.'
+            }
+            $bundle = @($trustOutput | Where-Object { $_ -and (Test-Path -LiteralPath $_ -PathType Leaf) }) | Select-Object -Last 1
+            if (-not $bundle) { throw 'Trust helper did not return a valid CA bundle.' }
+            foreach ($name in @('PIP_CERT', 'REQUESTS_CA_BUNDLE', 'SSL_CERT_FILE')) {
+                [Environment]::SetEnvironmentVariable($name, $bundle, 'Process')
+            }
+            Write-Host 'PyPI TLS preflight passed with verified CA trust.'
             & $script:CondaExe run --no-capture-output -n ResSim12Nov2026 python -m pip install --no-deps $wheel
             $code = $LASTEXITCODE
         }
@@ -185,6 +204,7 @@ try {
     Invoke-Conda -Arguments @('run', '--no-capture-output', '-n', 'ResSim12Nov2026', 'python', $verify)
     Write-Host 'Workflow environment checks passed. Open the workflow from the HEC Script Editor.'
 } finally {
+    if ($generatedBundle -and (Test-Path -LiteralPath $generatedBundle)) { Remove-Item -LiteralPath $generatedBundle -Force }
     if ($bootstrapYaml -and (Test-Path -LiteralPath $bootstrapYaml)) { Remove-Item -LiteralPath $bootstrapYaml -Force }
     foreach ($name in $settings.Keys) {
         [Environment]::SetEnvironmentVariable($name, $previous[$name], 'Process')

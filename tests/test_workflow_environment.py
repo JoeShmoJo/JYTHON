@@ -36,7 +36,7 @@ class EnvironmentTests(unittest.TestCase):
             self.assertEqual((SCRIPTS/name).read_bytes(),(SCRIPTS/'rts-setup-package'/name).read_bytes())
         source=SCRIPTS/'ExternalPython/PythonSetup1stTime'
         kit=SCRIPTS/'rts-setup-package/ExternalPython/PythonSetup1stTime'
-        for name in ('ResSim12Nov2026.yml','Install-WorkflowEnvironment.ps1','verify_environment.py','READ_ME.txt','working-environment-packages.json'):
+        for name in ('ResSim12Nov2026.yml','Install-WorkflowEnvironment.ps1','verify_environment.py','READ_ME.txt','working-environment-packages.json','configure_install_trust.py'):
             self.assertEqual((source/name).read_bytes(),(kit/name).read_bytes())
 
     def test_exported_core_versions_match_recorded_working_packages(self):
