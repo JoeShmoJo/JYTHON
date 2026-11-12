@@ -73,7 +73,7 @@ class HostTests(unittest.TestCase):
 
     def test_backend_is_already_bundled_and_uses_actual_watershed_root(self):
         backend=SCRIPTS/'RTSPython';kit=SCRIPTS/'rts-setup-package'
-        for name in ('rts_workflow.py','rts_archive.py','run_extraction.py','extraction_context.py','CWMS_Downloader_Module.py','baseline_configuration.py'):
+        for name in ('rts_workflow.py','rts_archive.py','run_extraction.py','extraction_context.py','CWMS_Downloader_Module.py','baseline_configuration.py','median_remaining_by_day.pkl'):
             self.assertEqual((backend/name).read_bytes(),(kit/'ExternalPython'/name).read_bytes(),name)
             self.assertEqual((backend/name).parent.parent.parent,ROOT)
         for name in ('baseline-editor.html','baseline-configuration.example.json','CONFIG.py'):
