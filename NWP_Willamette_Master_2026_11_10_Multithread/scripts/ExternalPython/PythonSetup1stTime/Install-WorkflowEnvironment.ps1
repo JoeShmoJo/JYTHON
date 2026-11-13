@@ -2,9 +2,11 @@
 [CmdletBinding()]
 param(
     [string]$CondaPath,
-    [switch]$Update
+    [switch]$Update,
+    [switch]$Fresh
 )
 $ErrorActionPreference = 'Stop'
+if ($Update -and $Fresh) { throw 'Use either -Update or -Fresh, not both.' }
 
 function Invoke-Conda {
     param([string[]]$Arguments)
@@ -15,6 +17,21 @@ function Invoke-Conda {
             throw 'Conda crashed with Windows access violation 0xC0000005. This is a native Conda failure, not an environment dependency error.'
         }
         throw "Conda failed (exit $code). See the output above."
+    }
+}
+
+function Invoke-CondaInstall {
+    param([string[]]$Arguments, [string]$StageLog)
+    # Capture native output directly: PowerShell transcripts can omit parts of
+    # Conda's subprocess output. Keep the solver's actual error for diagnosis.
+    $ErrorActionPreference = 'Continue'
+    & $script:CondaExe @Arguments 2>&1 | Tee-Object -FilePath $StageLog | Out-Host
+    $script:CondaInstallExitCode = $LASTEXITCODE
+    if ($script:CondaInstallExitCode -ne 0 -and (Test-Path -LiteralPath $StageLog)) {
+        $output = Get-Content -LiteralPath $StageLog -Raw
+        if ($output -match 'UnsatisfiableError|LibMambaUnsatisfiableError|PackagesNotFoundError|ResolvePackageNotFound|Found conflicts!|Could not solve for environment specs') {
+            throw "Conda cannot satisfy the pinned specification. This will not improve by retrying. Solver details: $StageLog"
+        }
     }
 }
 
@@ -86,6 +103,7 @@ $priorConstraints = [Environment]::GetEnvironmentVariable('PIP_CONSTRAINT', 'Pro
 $constraintList = (@($priorConstraints, $constraintUri) | Where-Object { $_ }) -join ' '
 $settings = @{
     CONDA_SOLVER = 'classic'
+    CONDA_CHANNEL_PRIORITY = 'flexible'
     CONDA_NO_PLUGINS = 'true'
     CONDA_REMOTE_CONNECT_TIMEOUT_SECS = '30'
     CONDA_REMOTE_READ_TIMEOUT_SECS = '120'
@@ -115,7 +133,7 @@ try {
     foreach ($name in $settings.Keys) {
         [Environment]::SetEnvironmentVariable($name, $settings[$name], 'Process')
     }
-    Write-Host 'Using the classic Conda solver with plugins disabled for this installer only.'
+    Write-Host 'Using classic solver and flexible channel priority for this installer only; plugins disabled.'
     $candidates = @()
     if ($CondaPath) { $candidates += $CondaPath }
     if (-not $CondaPath) {
@@ -144,6 +162,18 @@ try {
         return $found
     }
     $existing = @(Get-WorkflowEnvironment)
+    if ($Fresh -and $existing.Count -eq 1) {
+        $backupRoot = Join-Path $env:LOCALAPPDATA 'WillametteWorkflow\environment-backups'
+        New-Item -ItemType Directory -Path $backupRoot -Force | Out-Null
+        $backup = Join-Path $backupRoot ('ResSim12Nov2026-before-fresh-' + [guid]::NewGuid().ToString('N') + '.yml')
+        $export = & $script:CondaExe env export --prefix $existing[0]
+        if ($LASTEXITCODE -ne 0) { throw 'Could not export the test environment; nothing was removed.' }
+        $export | Set-Content -LiteralPath $backup -Encoding UTF8
+        Write-Host "Fresh install: removing only ResSim12Nov2026. Specification backup: $backup"
+        Invoke-Conda -Arguments @('env', 'remove', '--prefix', $existing[0], '--yes', '--solver', 'classic')
+        $existing = @(Get-WorkflowEnvironment)
+        if ($existing.Count -ne 0) { throw 'Test environment removal was not completed; stopping.' }
+    }
     if ($existing.Count -eq 1 -and -not $Update) {
         Write-Host 'Checking the existing environment before making package changes.'
         & $script:CondaExe run --no-capture-output -n ResSim12Nov2026 python $verify
@@ -184,11 +214,11 @@ try {
         Write-Host "Installation attempt $attempt of 3"
         Write-Host 'Stage 1/4: Conda dependency solving and native-package installation.'
         if ($existing.Count -eq 0) {
-            & $script:CondaExe env create --file $bootstrapYaml --yes --solver classic
+            Invoke-CondaInstall -Arguments @('env', 'create', '--file', $bootstrapYaml, '--yes', '--solver', 'classic') -StageLog (Join-Path $logRoot ('conda-bootstrap-' + $attempt + '-' + [guid]::NewGuid().ToString('N') + '.log'))
         } else {
-            & $script:CondaExe env update --prefix $existing[0] --file $bootstrapYaml --solver classic
+            Invoke-CondaInstall -Arguments @('env', 'update', '--prefix', $existing[0], '--file', $bootstrapYaml, '--solver', 'classic') -StageLog (Join-Path $logRoot ('conda-bootstrap-' + $attempt + '-' + [guid]::NewGuid().ToString('N') + '.log'))
         }
-        $code = $LASTEXITCODE
+        $code = $script:CondaInstallExitCode
         if ($code -eq 0) {
             if (-not $generatedBundle) {
                 $generatedBundle = Join-Path $logRoot ('windows-trust-' + [guid]::NewGuid().ToString('N') + '.pem')
@@ -210,8 +240,8 @@ try {
         if ($code -eq 0) {
             $existing = @(Get-WorkflowEnvironment)
             Write-Host 'Stage 3/4: Installing remaining packages from the locked specification.'
-            & $script:CondaExe env update --prefix $existing[0] --file $yaml --solver classic
-            $code = $LASTEXITCODE
+            Invoke-CondaInstall -Arguments @('env', 'update', '--prefix', $existing[0], '--file', $yaml, '--solver', 'classic') -StageLog (Join-Path $logRoot ('conda-full-' + $attempt + '-' + [guid]::NewGuid().ToString('N') + '.log'))
+            $code = $script:CondaInstallExitCode
         }
         if ($code -eq 0) { $installed = $true; break }
         if ($code -eq -1073741819) {

@@ -16,3 +16,11 @@ The installer retains normal download caches, saves a log and copies it to the c
 Existing healthy environments are checked without changes; -Update refreshes an existing environment.
 A version conflict or missing package must be diagnosed rather than silently changing the exported versions.
 Full instructions: scripts/rts-setup-package/documentation/INITIAL_SETUP.html.
+
+The installer temporarily uses flexible channel priority: strict priority excludes the required
+pandas build from defaults. Arrow is pinned to the CPU build; CUDA is not needed for archive reading.
+Unsatisfiable/missing-package solver errors stop immediately and retain a separate solver log.
+
+For an explicit fresh-install test, close applications using ResSim12Nov2026 and run with -Fresh.
+It saves the existing specification and removes only ResSim12Nov2026 before recreating it.
+The original hydro39 environment is not removed or changed.
