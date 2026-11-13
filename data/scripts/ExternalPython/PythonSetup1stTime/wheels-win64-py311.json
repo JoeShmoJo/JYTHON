@@ -1,0 +1,205 @@
+[
+  {
+    "name": "affine",
+    "version": "3.0.1",
+    "filename": "affine-3.0.1-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/3d/87/e62f55c956b583380e7d2a71705dfd431ee32dd1689d50491ba0c610fc11/affine-3.0.1-py3-none-any.whl",
+    "sha256": "cda3b303325e7bf2bf34817e68753a0d1c4cacbdd451fe67c4878dc2ecbaa540"
+  },
+  {
+    "name": "annotated-types",
+    "version": "0.8.0",
+    "filename": "annotated_types-0.8.0-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/99/91/8acff4f5e50511b911bbccb72b8628a49c68ce14148cd9f6431094859a90/annotated_types-0.8.0-py3-none-any.whl",
+    "sha256": "f072f4d804ea359e4eaf198b1af7a8b0943881a87f31bb764f8bf219bb9419e0"
+  },
+  {
+    "name": "attrs",
+    "version": "26.1.0",
+    "filename": "attrs-26.1.0-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/64/b4/17d4b0b2a2dc85a6df63d1157e028ed19f90d4cd97c36717afef2bc2f395/attrs-26.1.0-py3-none-any.whl",
+    "sha256": "c647aa4a12dfbad9333ca4e71fe62ddc36f4e63b2d260a37a8b83d2f043ac309"
+  },
+  {
+    "name": "certifi",
+    "version": "2026.10.23",
+    "filename": "certifi-2026.10.23-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/32/d1/a3652fe2c19134d0d15922177821d863cbd7e842d53a21bbe7e8e3a1b5ac/certifi-2026.10.23-py3-none-any.whl",
+    "sha256": "e9b54de76e530bb6cf0ccd036787103acb58fd42ba930ea8bf948ddbaa2f61d1"
+  },
+  {
+    "name": "charset-normalizer",
+    "version": "3.5.2",
+    "filename": "charset_normalizer-3.5.2-cp311-cp311-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/e8/fc/fdf8cf52ff21cd5bf158f20978991cf985325842f74283eb6df26c8a39d8/charset_normalizer-3.5.2-cp311-cp311-win_amd64.whl",
+    "sha256": "87e50a3e7cb90af586b6c5faf23e302a970415ac73bd7bd90a515a04b427ef96"
+  },
+  {
+    "name": "click",
+    "version": "8.5.1",
+    "filename": "click-8.5.1-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/31/7d/164b7ffc8624fe9efb4221bf9af485d5c1e41b9ae118045d2b6dc5457d8b/click-8.5.1-py3-none-any.whl",
+    "sha256": "8bb5376d2006950386f8c6427613334a2acadc5f559cb80e638d00b4df957e37"
+  },
+  {
+    "name": "click-plugins",
+    "version": "1.1.1.2",
+    "filename": "click_plugins-1.1.1.2-py2.py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/3d/9a/2abecb28ae875e39c8cad711eb1186d8d14eab564705325e77e4e6ab9ae5/click_plugins-1.1.1.2-py2.py3-none-any.whl",
+    "sha256": "008d65743833ffc1f5417bf0e78e8d2c23aab04d9745ba817bd3e71b0feb6aa6"
+  },
+  {
+    "name": "cligj",
+    "version": "0.7.2",
+    "filename": "cligj-0.7.2-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/73/86/43fa9f15c5b9fb6e82620428827cd3c284aa933431405d1bcf5231ae3d3e/cligj-0.7.2-py3-none-any.whl",
+    "sha256": "c1ca117dbce1fe20a5809dc96f01e1c2840f6dcc939b3ddbb1111bf330ba82df"
+  },
+  {
+    "name": "cwms-python",
+    "version": "1.1.4",
+    "filename": "cwms_python-1.1.4-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/8a/a9/f565047978985a4d18e7eb4bf9225863ae9a3caebc6d60db7821c53dc5f8/cwms_python-1.1.4-py3-none-any.whl",
+    "sha256": "679898d9f796406f6b59d441ccf79e2602465792128d7b0dd404a25e7bcfc2b2"
+  },
+  {
+    "name": "idna",
+    "version": "3.20",
+    "filename": "idna-3.20-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/58/a2/bb081bab032533a855d44de1d56f8e8426114ff1ba5d1f07a438a0a654f8/idna-3.20-py3-none-any.whl",
+    "sha256": "ab7ae7122974553370f0bdb919e1a960b2cd1bc1ef0276416d896db81c14582c"
+  },
+  {
+    "name": "numpy",
+    "version": "1.26.4",
+    "filename": "numpy-1.26.4-cp311-cp311-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/3f/6b/5610004206cf7f8e7ad91c5a85a8c71b2f2f8051a0c0c4d5916b76d6cbb2/numpy-1.26.4-cp311-cp311-win_amd64.whl",
+    "sha256": "cd25bcecc4974d09257ffcd1f098ee778f7834c3ad767fe5db785be9a4aa9cb2"
+  },
+  {
+    "name": "packaging",
+    "version": "26.3",
+    "filename": "packaging-26.3-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/63/34/ba1c580383c9eada3711951fef0795c80b829a078d72188184bcab9dd527/packaging-26.3-py3-none-any.whl",
+    "sha256": "d7193f7c8e4e93f444fde0262bf90af30e16fa0ad0ad44cb553c87339b23cd1c"
+  },
+  {
+    "name": "pandas",
+    "version": "2.3.3",
+    "filename": "pandas-2.3.3-cp311-cp311-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/8e/59/712db1d7040520de7a4965df15b774348980e6df45c129b8c64d0dbe74ef/pandas-2.3.3-cp311-cp311-win_amd64.whl",
+    "sha256": "f086f6fe114e19d92014a1966f43a3e62285109afe874f067f5abbdcbb10e59c"
+  },
+  {
+    "name": "plotly",
+    "version": "5.24.1",
+    "filename": "plotly-5.24.1-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/e5/ae/580600f441f6fc05218bd6c9d5794f4aef072a7d9093b291f1c50a9db8bc/plotly-5.24.1-py3-none-any.whl",
+    "sha256": "f67073a1e637eb0dc3e46324d9d51e2fe76e9727c892dde64ddf1e1b51f29089"
+  },
+  {
+    "name": "pydantic",
+    "version": "2.14.3",
+    "filename": "pydantic-2.14.3-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/72/b8/b864503789ef5c58597d2a7b4adbee62c26440ab1e682581fc6838df8947/pydantic-2.14.3-py3-none-any.whl",
+    "sha256": "3f7b347782ab7e4cf4c798496ae3a82787d9f21ec12676a9c564355eeef8daa8"
+  },
+  {
+    "name": "pydantic_core",
+    "version": "2.50.4",
+    "filename": "pydantic_core-2.50.4-cp311-cp311-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/c6/06/cebeeb7a8e87b42a3d8bc189d0d400e47df5d1736cb326764bae8a74c433/pydantic_core-2.50.4-cp311-cp311-win_amd64.whl",
+    "sha256": "15bece43a02ad543c621c8305e67dedb5f27d378c5ba741e5a2c36523f8ef37f"
+  },
+  {
+    "name": "pydsstools",
+    "version": "3.1.0",
+    "filename": "pydsstools-3.1.0-cp311-cp311-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/8d/37/23f718e81858d3bf86af0482d5dbd64ead3b8dc8ed050b94e7ba00e5a96b/pydsstools-3.1.0-cp311-cp311-win_amd64.whl",
+    "sha256": "62acd66ea46c0a95c88d59a987819332d6470f4d2c8a509a21b864709118874c"
+  },
+  {
+    "name": "pyparsing",
+    "version": "3.3.3",
+    "filename": "pyparsing-3.3.3-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/38/bb/d215ee7c73b61497b28a5503f9f53523f294fcc936762b7caf90e0c1c2b5/pyparsing-3.3.3-py3-none-any.whl",
+    "sha256": "ece8c00a69cf01b45d0b1dedabb469c90d8caf996d4fda40f147627a122849a4"
+  },
+  {
+    "name": "pyproj",
+    "version": "3.7.2",
+    "filename": "pyproj-3.7.2-cp311-cp311-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/79/e0/b95584605cec9ed50b7ebaf7975d1c4ddeec5a86b7a20554ed8b60042bd7/pyproj-3.7.2-cp311-cp311-win_amd64.whl",
+    "sha256": "0b7cb633565129677b2a183c4d807c727d1c736fcb0568a12299383056e67433"
+  },
+  {
+    "name": "python-dateutil",
+    "version": "4.0.0",
+    "filename": "python_dateutil-4.0.0-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/2f/a9/52b89563d154433d79b51ed1eb4842bf7334cb2696891a7fe135618853d7/python_dateutil-4.0.0-py3-none-any.whl",
+    "sha256": "a5e246f79eb80475e691bf93862cead98decd8a498cf53ba0516fcdc0f50dc1c"
+  },
+  {
+    "name": "pytz",
+    "version": "2026.6",
+    "filename": "pytz-2026.6-py2.py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/b6/25/564f3fc5b70c1398d706c51f2b1470d0ea0b1b2f96fee67877b6f5bdf3b6/pytz-2026.6-py2.py3-none-any.whl",
+    "sha256": "7fed3fee8fd6bd4a2b7b75a8d56021d0624127bf69bd5691f115db929ac570b3"
+  },
+  {
+    "name": "rasterio",
+    "version": "1.4.3",
+    "filename": "rasterio-1.4.3-cp311-cp311-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/7e/1f/56462740694de764fde264051224fcbf800dad43cac92a66753153128866/rasterio-1.4.3-cp311-cp311-win_amd64.whl",
+    "sha256": "4009f7ce4e0883d8e5b400970daa3f1ca309caac8916d955722ee4486654d452"
+  },
+  {
+    "name": "requests",
+    "version": "2.34.2",
+    "filename": "requests-2.34.2-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/a0/f4/c67b0b3f1b9245e8d266f0f112c500d50e5b4e83cb6f3b71b6528104182a/requests-2.34.2-py3-none-any.whl",
+    "sha256": "2a0d60c172f83ac6ab31e4554906c0f3b3588d37b5cb939b1c061f4907e278e0"
+  },
+  {
+    "name": "requests-toolbelt",
+    "version": "1.0.0",
+    "filename": "requests_toolbelt-1.0.0-py2.py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/3f/51/d4db610ef29373b879047326cbf6fa98b6c1969d6f6dc423279de2b1be2c/requests_toolbelt-1.0.0-py2.py3-none-any.whl",
+    "sha256": "cccfdd665f0a24fcf4726e690f65639d272bb0637b9b92dfd91a5568ccf6bd06"
+  },
+  {
+    "name": "tenacity",
+    "version": "9.2.1",
+    "filename": "tenacity-9.2.1-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/d6/26/1ff2b0721ac66a3ec5b1402b333110b352ab0a8724052ac279a7b82d40c4/tenacity-9.2.1-py3-none-any.whl",
+    "sha256": "9e56f17539296baab7beabb08b92f6ee3d7be92d8be72d763360677c2ad6580e"
+  },
+  {
+    "name": "typing_extensions",
+    "version": "4.16.0",
+    "filename": "typing_extensions-4.16.0-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/49/d3/b8441a820a491ddfc024b0b0cf0393375b75ea13866d9c66727e54c2fc80/typing_extensions-4.16.0-py3-none-any.whl",
+    "sha256": "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8"
+  },
+  {
+    "name": "typing-inspection",
+    "version": "0.4.5",
+    "filename": "typing_inspection-0.4.5-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/de/0c/ea2544850a7c135e15033a5c7a8e7211136184b7ae63e2239d557c2b3019/typing_inspection-0.4.5-py3-none-any.whl",
+    "sha256": "bc210535442b39e1bf2805e0c7a17dfd6a4ace760c84c7f7d16245d23a6b1c39"
+  },
+  {
+    "name": "tzdata",
+    "version": "2026.6",
+    "filename": "tzdata-2026.6-py2.py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/0a/66/9a06c2227fedfd4919f0eaaa8b94377d9730882a7e4f95823c9a331ab5e1/tzdata-2026.6-py2.py3-none-any.whl",
+    "sha256": "0a10eec6e13ef16b627fabed9a5f2ba61a62b1c67f327305f4e7e412a70b4aec"
+  },
+  {
+    "name": "urllib3",
+    "version": "2.8.0",
+    "filename": "urllib3-2.8.0-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/92/9d/c4e665119135114480843e7ab388fa94d8480650450e6f8e26b70d323a4c/urllib3-2.8.0-py3-none-any.whl",
+    "sha256": "0cf3cae568d36aa9576b28dfb35f11328f1cb974ca7647d9475ebb86c75ac6e3"
+  }
+]
