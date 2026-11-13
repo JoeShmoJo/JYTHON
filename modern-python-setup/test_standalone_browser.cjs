@@ -50,7 +50,7 @@ async function main() {
     await page.waitForFunction(()=>document.querySelector('#output').value==='Con_Season0'&&!document.querySelector('#refresh').disabled);
     await page.selectOption('#kind','result');
     assert.equal(await page.locator('#capture').isDisabled(),true);
-    assert.match(await page.textContent('#baseline-help'),/Archive an unaugmented baseline first/);
+    assert.match(await page.textContent('#baseline-help'),/Archive a baseline first/);
     await page.selectOption('#kind','baseline');await page.fill('#name','First baseline');
     await page.click('#capture');
     await page.waitForFunction(()=>!document.querySelector('#plot').disabled);
@@ -106,6 +106,20 @@ async function main() {
     const download=page.waitForEvent('download');await page.click('#save');assert.equal((await download).suggestedFilename(),'Imported_configuration.json');
     assert.deepEqual(current.errors,[]);await page.close();
     console.log('PASS: augmentation configuration, missing baseline, refresh preserves edits, calculate payload and portable JSON open/save');
+    for(const filename of ['baseline-editor.html','../RTSPython/baseline-editor.html']){
+      current=await openPage(browser,filename,async()=>{throw Error('No server call expected')});
+      page=current.page;await page.waitForSelector('#baseline-augmentation');
+      assert.equal(await page.inputValue('#baseline-augmentation'),'off');
+      await page.selectOption('#baseline-augmentation','simplified');
+      await page.getByRole('button',{name:'Deep Drawdown',exact:true}).click();
+      await page.getByRole('button',{name:'Configuration Overview',exact:true}).click();
+      assert.equal(await page.inputValue('#baseline-augmentation'),'simplified');
+      const download=page.waitForEvent('download');await page.click('#save');
+      const exported=JSON.parse(fs.readFileSync(await (await download).path(),'utf8'));
+      assert.equal(exported.baseline_augmentation,'simplified');
+      assert.deepEqual(current.errors,[]);await page.close();
+    }
+    console.log('PASS: baseline editors preserve and export basic augmentation as part of baseline settings');
   } finally { await browser.close(); }
 }
 main().catch(error=>{console.error(error);process.exitCode=1});

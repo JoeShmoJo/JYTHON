@@ -21,7 +21,7 @@ checks one POR output or one selected ensemble member. See the
 2. Extract if inputs are needed; verify native mappings, dates/member coverage and
    the alternative's baseline/augmentation conventions. The menu does not configure
    native trial augmentation behavior or change existing script date constants.
-3. Compute the unaugmented baseline manually and check native success for every
+3. Compute the baseline manually and check native success for every
    intended member and date. Before recomputing over those outputs, open
    **Archive / Plot Results** and refresh.
 4. Choose the completed output suffix shown by the catalog, enter a useful name,
@@ -198,7 +198,7 @@ Warning grouping improves reporting; it does not resolve that data-read question
 
 The page shows a loading message and disables Archive until compatible completed
 outputs have loaded and a name is entered. With no saved baseline yet, choose
-**New unaugmented baseline**; there is no earlier baseline to select. The
+**New baseline**; there is no earlier baseline to select. The
 **Baseline for result** control appears only for an augmented result, and requires
 a saved baseline for the selected alternative.
 
@@ -206,3 +206,5 @@ After Archive succeeds, the named run appears immediately, is selected for
 plotting, and the page confirms the save. No close/reopen is needed. Saved runs
 remain visible and plottable if the live DSS is locked or unavailable. Refresh
 preserves existing names and selections rather than clearing the form.
+
+A baseline may use Basic MainstemFlowAug selected in Baseline Configuration. Its saved configuration retains that choice. Choose Off and recompute when an unaugmented reference is needed.

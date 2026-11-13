@@ -16,7 +16,7 @@ Ensemble extraction uses the applied job settings and saved simulation dates. Ar
 
 ## Baselines, augmentation, and saved results
 
-Compute an unaugmented case and save it as a named baseline before calculating augmentation. Open **Augmentation Configuration**, select that saved baseline, review the reservoir table and short forecast days, then **Calculate and load releases**. This two-step calculation reads the archived baseline, uses the existing configurable calculation helpers, and retains the settings and source hashes with its scheme. Reusable configuration JSON can be saved and opened on another simulation. After loading, compute an augmented trial manually, then save a named result paired with that baseline. Trial 0 retains its configured native behavior; loaded external releases and their configuration apply only to the selected alternative's augmented trials and covered members. The original simulation DSS is retained before replacement.
+Compute the configured baseline case and save it as a named baseline before calculating augmentation. Open **Augmentation Configuration**, select that saved baseline, review the reservoir table and short forecast days, then **Calculate and load releases**. This two-step calculation reads the archived baseline, uses the existing configurable calculation helpers, and retains the settings and source hashes with its scheme. Reusable configuration JSON can be saved and opened on another simulation. After loading, compute an augmented trial manually, then save a named result paired with that baseline. Trial 0 retains its configured native behavior; loaded external releases and their configuration apply only to the selected alternative's augmented trials and covered members. The original simulation DSS is retained before replacement.
 
 [Saved results](STANDALONE_SAVED_RESULTS.md) retain arrays and provenance for later one-run or two-run plots. Recomputing the live simulation does not replace those saved runs. [Plotting](RTS_PLOTTING.md) explains trace styles and member bands.
 
@@ -41,18 +41,29 @@ short forecast days. It retains all CSV columns and offers the current water-yea
 input interpretations. LOP/HCR remain pooled and Salem/Albany participation must
 match, consistent with the existing calculator/native mapping. Save configuration
 stores a draft and downloads portable JSON; it does not change live releases.
-Calculation requires an archived unaugmented trial-0 baseline for this alternative
+Calculation requires an archived trial-0 baseline for this alternative
 and run type, plus April 1 storage, travel lead-in and May 16 water-year data.
 It calculates every covered conservation season using the retained median runoff
 reference and current Salem/Albany target tables, retained with source hashes.
 Daily aggregation is used for subdaily inputs; requirements are written at the
 baseline's native interval. Incomplete boundary days do not extend the season.
 
-The rule/state variable also implements the native single-compute method
-`AllocationBasedOnConservationStorage`. That is distinct from this two-step
-configuration window. Adding an explicit single-compute/two-step selector in both
-standalone and RTS remains a separate follow-up; it is not being represented as
-an available selector here.
+**Baseline Configuration → Configuration Overview → Baseline flow augmentation**
+offers **Off** or **Basic: MainstemFlowAug (single compute)** in both standalone
+and RTS. Basic runs the existing `AllocationBasedOnConservationStorage` method
+during the baseline compute, including standalone trial 0; it needs no preliminary
+baseline pass or external release calculation. The choice is retained in saved
+baseline JSON, applied snapshots and configuration provenance. It uses the
+installed native reservoir configuration and Salem/Albany target tables. Off
+explicitly disables baseline augmentation. Older baseline JSON without this
+option defaults to Off when applied; existing applied snapshots without it retain
+their previous runtime behavior until reapplied.
+
+The separate **Augmentation Configuration** remains the two-step calculator.
+An explicitly loaded two-step scheme takes precedence for the augmented compute;
+standalone trial 0 keeps the selected baseline method. A baseline can therefore
+include basic augmentation. Apply the desired baseline choice, compute it, and
+archive that baseline before running the two-step comparison.
 
 The live DSS is staged and backed up; failed calculation leaves it unchanged.
 The loaded configuration is scoped by simulation, alternative and covered members

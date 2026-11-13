@@ -7,7 +7,7 @@
 <h2>Archive completed results</h2>
 <label>Completed output <select id="output" disabled><option>Loading…</option></select></label>
 <label>Name <input id="name" placeholder="Descriptive result name"></label>
-<label>Archive purpose <select id="kind"><option value="baseline">New unaugmented baseline</option><option value="result">Augmented result paired with a baseline</option></select></label>
+<label>Archive purpose <select id="kind"><option value="baseline">New baseline (using chosen baseline settings)</option><option value="result">Augmented result paired with a baseline</option></select></label>
 <label id="baseline-label">Baseline for result <select id="baseline" disabled></select></label>
 <p id="baseline-help" class="hint"></p>
 <button id="capture" disabled>Archive completed results</button>
@@ -26,7 +26,7 @@ function controls(){
   el('output').disabled=busy||!el('output').value;
   el('baseline').disabled=busy||!result||!baseline;
   el('baseline-label').hidden=!result;
-  el('baseline-help').textContent=result?(baseline?'Select the unaugmented baseline used by this result.':'Archive an unaugmented baseline first, then select “Augmented result”.'):
+  el('baseline-help').textContent=result?(baseline?'Select the unaugmented baseline used by this result.':'Archive a baseline first, then select “Augmented result”.'):
     'A new baseline does not need an earlier baseline. Choose the completed unaugmented output and give it a name.';
   el('capture').disabled=busy||!loaded||!el('output').value||!el('name').value.trim()||(result&&!baseline);
   el('runs').disabled=busy||!el('runs').options.length;

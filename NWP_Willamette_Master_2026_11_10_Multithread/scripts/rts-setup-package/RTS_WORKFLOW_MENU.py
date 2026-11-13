@@ -437,6 +437,18 @@ class WorkflowMenu(JFrame):
             pass
         except (Exception, JavaException):
             mode = 'unreadable activation marker - inspect before computing'
+        if mode == 'no augmentation':
+            try:
+                with open(os.path.join(root, 'rts-baseline-config-active.json')) as handle:
+                    pointer=json.load(handle)
+                with open(os.path.join(root,pointer['directory'],'resolved.json')) as handle:
+                    settings=json.load(handle)
+                if settings.get('baseline_augmentation')=='simplified':
+                    mode='Baseline with basic MainstemFlowAug'
+            except IOError:
+                pass
+            except (Exception, JavaException):
+                mode='unreadable baseline settings - inspect before computing'
         self.status.setText('Baseline: %s   |   Next compute: %s' % (baseline, mode))
     def set_busy(self, busy):
         self.busy = busy

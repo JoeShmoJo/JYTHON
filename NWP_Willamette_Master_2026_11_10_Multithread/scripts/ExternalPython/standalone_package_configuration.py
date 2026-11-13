@@ -213,7 +213,11 @@ def resolve(config, scripts, watershed):
         raise ValueError('Invalid baseline configuration header')
     if set(config['rules']) != set(defaults['rules']):
         raise ValueError('The baseline configuration must contain all eleven rule groups')
+    method=config.get('baseline_augmentation','off')
+    if method not in ('off','simplified'):
+        raise ValueError('Baseline augmentation must be off or simplified')
     result, linked = with_null_reservoirs(config), {}
+    result['baseline_augmentation']=method
     for key, rule in result['rules'].items():
         reference = defaults['rules'][key]
         validate_settings(rule['settings'],reference['settings'],key+'.')
@@ -467,7 +471,9 @@ def apply_standalone_patch(root, context, config, scripts):
         current_draft = resolved['rules']['draft_to_rc']['settings']['active']
         base_draft = base_resolved['rules']['draft_to_rc']['settings']['active']
         if current_draft != base_draft:
-            settings['draftToRCActive'] = copy.deepcopy(current_draft)
+            settings['baselineFlowAugMethod']='AllocationBasedOnConservationStorage' if resolved['baseline_augmentation']=='simplified' else 'NoFlowAug'
+        config['baseline_augmentation']=resolved['baseline_augmentation']
+        settings['draftToRCActive'] = copy.deepcopy(current_draft)
 
         current_irrm = resolved['rules']['irrm']['settings']
         base_irrm = base_resolved['rules']['irrm']['settings']
@@ -790,6 +796,7 @@ def apply_configuration(root, context, config, scripts):
     originals='_standalone_baseline_originals' if standalone else '_rts_baseline_originals'
     config=with_null_reservoirs(config)
     resolved,linked=resolve(config,scripts,watershed)
+    config['baseline_augmentation']=resolved['baseline_augmentation']
     config['operating_status']=copy.deepcopy(resolved['operating_status'])
     for rule,statuses in resolved['operating_status'].items():
         for reservoir,state in statuses.items():
@@ -828,14 +835,14 @@ def apply_configuration(root, context, config, scripts):
         atomic_json(directory/'manifest.json',pointer)
         atomic_json(root/'standalone-baseline-config-active.json',pointer)
         print('Applied standalone settings: '+config['name']+' to '+context['model_alternative'],flush=True)
-        print('Compute manually in ResSim. Existing extraction/augmentation trial settings are unchanged.',flush=True)
+        print('Baseline augmentation: '+resolved['baseline_augmentation']+'. Compute manually in ResSim.',flush=True)
     else:
         atomic_json(root/'augmentation-archives/workflow-pending.json',{'mode':'baseline','baseline_configuration_id':identity})
         disable(root,identity)
         atomic_json(root/'rts-baseline-config-active.json',pointer)
         event(root,'baseline-configuration-applied',configuration_id=identity,name=config['name'])
         print('Applied baseline configuration:', config['name'],identity,flush=True)
-        print('Augmentation disabled. Reopen and compute in RTS; check RTS baseline init messages.',flush=True)
+        print('Baseline augmentation: '+resolved['baseline_augmentation']+'. Reopen and compute in RTS; check baseline init messages.',flush=True)
     return pointer
 
 
@@ -910,7 +917,7 @@ def serve_editor(scripts, context=None):
         bridge="""<script>
 const applyButton=document.querySelector('button[disabled]');applyButton.disabled=false;applyButton.title='Validate, snapshot and apply to the selected forecast';
 const metadata=document.createElement('p');metadata.textContent=CONTEXT;metadata.className='notice';document.querySelector('.toolbar').after(metadata);
-applyButton.onclick=async()=>{if(!confirm('Finish all computes and close the forecast in RTS before applying. Apply this set, disable augmentation, and require a new unaugmented compute?'))return;applyButton.disabled=true;try{let response=await fetch('/apply',{method:'POST',headers:{'Content-Type':'application/json','X-Editor-Token':TOKEN},body:JSON.stringify(config)});let data=await response.json();if(!response.ok)throw Error(data.error);status('Applied '+data.name+'. Augmentation is off. Reopen the forecast and compute in RTS; check RTS baseline init messages.');alert('Settings are staged. Reopen the forecast and compute in RTS. Then accept completed baseline results. Do not re-extract.')}catch(e){status('Apply failed: '+e.message);alert(e.message)}finally{applyButton.disabled=false}};
+applyButton.onclick=async()=>{if(!confirm('Finish all computes and close the forecast in RTS before applying. Apply this set, clear externally loaded releases, and require a new baseline compute using the selected baseline augmentation option?'))return;applyButton.disabled=true;try{let response=await fetch('/apply',{method:'POST',headers:{'Content-Type':'application/json','X-Editor-Token':TOKEN},body:JSON.stringify(config)});let data=await response.json();if(!response.ok)throw Error(data.error);status('Applied '+data.name+'. The selected baseline augmentation option will apply. Reopen the forecast and compute in RTS; check baseline init messages.');alert('Settings are staged. Reopen the forecast and compute in RTS. Then accept completed baseline results. Do not re-extract.')}catch(e){status('Apply failed: '+e.message);alert(e.message)}finally{applyButton.disabled=false}};
 </script>""".replace('CONTEXT',json.dumps('Apply target: '+context['forecast_name']+' / '+context['run_name']+' / '+str(root))).replace('TOKEN',json.dumps(token))
         page=page.replace('</html>',bridge+'</html>')
     library_bridge="""<script>
@@ -931,8 +938,8 @@ const standaloneJobDefaults=DEFAULTS;
 const baseRender=render;render=function(){if(!config.standalone_workflow)config.standalone_workflow=JSON.parse(JSON.stringify(standaloneJobDefaults));config.standalone_workflow.run_type=standaloneJobDefaults.run_type||'ensemble';baseRender()};render();
 </script>""".replace('DEFAULTS',json.dumps(config['standalone_workflow']).replace('</','<\\/'))
         page=page.replace('</html>',workflow_bridge+'</html>')
-        page=page.replace('Finish all computes and close the forecast in RTS before applying. Apply this set, disable augmentation, and require a new unaugmented compute?', 'Finish all computes before applying. Apply these settings to the displayed standalone simulation and alternative? Recompute affected trials afterward.')
-        page=page.replace('Augmentation is off. Reopen the forecast and compute in RTS; check RTS baseline init messages.', 'Settings will load at the next initialization. Compute manually in ResSim; retain earlier results separately.')
+        page=page.replace('Finish all computes and close the forecast in RTS before applying. Apply this set, clear externally loaded releases, and require a new baseline compute using the selected baseline augmentation option?', 'Finish all computes before applying. Apply these settings to the displayed standalone simulation and alternative? Recompute affected trials afterward.')
+        page=page.replace('The selected baseline augmentation option will apply. Reopen the forecast and compute in RTS; check baseline init messages.', 'Settings will load at the next initialization. Compute manually in ResSim; retain earlier results separately.')
         page=page.replace('Settings are staged. Reopen the forecast and compute in RTS. Then accept completed baseline results. Do not re-extract.', 'Standalone settings are staged. Recompute the baseline and affected augmentation trials manually. Do not re-extract for settings changes.')
         page=page.replace('Apply for Baseline Compute', 'Apply to Standalone Alternative')
         page=page.replace('Apply target: '+context['forecast_name']+' / '+context['run_name'], 'Standalone target: '+context['run_name']+' / '+context['model_alternative'])

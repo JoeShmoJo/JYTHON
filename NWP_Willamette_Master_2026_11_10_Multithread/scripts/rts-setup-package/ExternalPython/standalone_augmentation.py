@@ -144,11 +144,11 @@ def prepare(root, scripts, alternative, run_type, baseline_id, config):
     """Calculate into a new scheme directory; never write the live simulation."""
     root,scripts=Path(root),Path(scripts)
     rows={row['id']:row for row in baselines(root,alternative,run_type)}
-    if baseline_id not in rows:raise ValueError('Select an archived unaugmented baseline for this alternative and run type')
+    if baseline_id not in rows:raise ValueError('Select an archived baseline for this alternative and run type')
     row=rows[baseline_id]
     # The existing native standalone adapter reads the alternative's trial 0.
     if not row['run_code'].endswith('0'):
-        raise ValueError('Select the unaugmented trial-0 baseline. The native standalone flow-augmentation adapter reads trial 0.')
+        raise ValueError('Select the trial-0 baseline. The native standalone flow-augmentation adapter reads trial 0.')
     source_dir=root/'standalone-results'/baseline_id
     source=source_dir/'forecast.dss'
     if digest_file(source_dir/'run-archive.json')!=row['archive_sha256']:

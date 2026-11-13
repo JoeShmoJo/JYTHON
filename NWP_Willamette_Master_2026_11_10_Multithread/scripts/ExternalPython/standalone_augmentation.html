@@ -1,9 +1,9 @@
 <!doctype html><meta charset="utf-8"><title>Standalone augmentation configuration</title>
 <style>body{font:16px system-ui;margin:30px;max-width:1500px}label{display:block;margin:12px 0}input,select,button{font:inherit;padding:7px;margin:4px}table{border-collapse:collapse}th,td{border:1px solid #ccc;padding:6px}td input{width:100px}pre{white-space:pre-wrap}button:disabled{opacity:.5}.table{overflow:auto}</style>
 <h1>Two-step Augmentation Configuration</h1><p id="target"></p>
-<p>Choose a saved unaugmented baseline, configure the existing calculator, then calculate and load releases. Run the augmented compute manually in ResSim afterward.</p>
+<p>Choose a saved baseline, configure the existing calculator, then calculate and load releases. Run the augmented compute manually in ResSim afterward.</p>
 <pre id="status" role="status">Loading augmentation settings and saved baselines…</pre>
-<label>Saved unaugmented baseline <select id="baseline" disabled></select></label>
+<label>Saved baseline <select id="baseline" disabled></select></label>
 <button id="refresh">Refresh saved baselines</button>
 <p id="baseline-help"></p>
 <label>Configuration name <input id="name"></label>
@@ -55,7 +55,7 @@ el('save').onclick=()=>task('Saving configuration…',async()=>{const value=awai
  el('status').textContent='Configuration saved. No releases were calculated or loaded.';
 });
 el('calculate').onclick=()=>{
- if(!confirm('Confirm the chosen baseline is unaugmented, all computes are finished, and DSS views are closed. Calculate from this saved baseline and load releases into the displayed simulation?'))return;
+ if(!confirm('Confirm the chosen baseline uses the intended baseline settings, all computes are finished, and DSS views are closed. Calculate from this saved baseline and load releases into the displayed simulation?'))return;
  task('Calculating from the saved baseline and staging releases…',async()=>{const result=await call('/calculate',{baseline_id:el('baseline').value,configuration:configuration(),confirmed:true});
  el('status').textContent='Loaded “'+result.configuration_name+'” from the selected saved baseline.\nRun the augmented trial manually in ResSim, then archive it as a result paired with that baseline.\nPrevious simulation retained with scheme: '+result.scheme;
  });
@@ -68,7 +68,7 @@ function populateBaselines(data){const previous=el('baseline').value;baselines=d
  if(!baselines.length){el('baseline').add(new Option('No archived baseline available',''));el('baseline-help').textContent='Use Archive / Plot Results to archive a completed unaugmented trial-0 baseline first. Then refresh saved baselines here.'}
  else el('baseline-help').textContent='All covered conservation seasons in this saved baseline will be calculated. The current native adapter reads trial 0.';
 }
-el('refresh').onclick=()=>task('Refreshing saved baselines…',async()=>{populateBaselines(await call('/state',{}));el('status').textContent=baselines.length?'Saved baselines refreshed. Your configuration edits are retained.':'No archived unaugmented baseline is available yet.'});
+el('refresh').onclick=()=>task('Refreshing saved baselines…',async()=>{populateBaselines(await call('/state',{}));el('status').textContent=baselines.length?'Saved baselines refreshed. Your configuration edits are retained.':'No archived baseline is available yet.'});
 controls();(async()=>{try{const data=await call('/state',{});populate(data.configuration);baselines=data.baselines;
  populateBaselines(data);
  el('status').textContent=baselines.length?'Ready. Review the baseline and configuration before calculating.':'Configuration is available; calculation requires an archived baseline.';

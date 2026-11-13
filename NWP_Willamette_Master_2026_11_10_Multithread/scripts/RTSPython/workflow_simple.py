@@ -198,7 +198,7 @@ def catalog(root):
     runs = []
     for identity, version in data['versions'].items():
         runs.append({'id': identity, 'kind': 'baseline', 'baseline_id': identity,
-                     'label': identity + ' (unaugmented)', 'directory': str(Path(root) / 'augmentation-archives' / version['directory']),
+                     'label': identity + ' (baseline)', 'directory': str(Path(root) / 'augmentation-archives' / version['directory']),
                      'status': 'Current baseline' if identity == data['current'] else 'Previous baseline'})
     for row in write_archive_index(root):
         directory = Path(row['directory'])
@@ -215,7 +215,7 @@ def state(root, context, scripts, include_config=False):
     result = {'context': context, 'current_baseline': data['current'], 'runs': catalog(root)}
     if include_config:
         if not data['current']:
-            raise ValueError('Compute the initial unaugmented model and confirm completion before opening augmentation configuration.')
+            raise ValueError('Compute the configured baseline and confirm completion before opening two-step augmentation configuration.')
         source = baseline_directory(root) / 'forecast.dss'
         result['outputs'] = inspect_run(source, data['versions'][data['current']]['run_code'])
         default = Path(scripts).parent / 'externalSVs' / CONFIG_NAME
@@ -235,7 +235,7 @@ def process_configuration(root, context, settings, scripts):
         accept_completed(root, context)
     data = registry(root)
     if not data['current']:
-        raise ValueError('Compute and accept the initial unaugmented baseline first')
+        raise ValueError('Compute and accept the initial baseline first')
     pending = Path(root) / 'augmentation-archives/workflow-pending.json'
     if pending.exists() and json.loads(pending.read_text())['mode'] == 'baseline':
         raise ValueError('A new baseline compute is pending. Compute it in RTS and confirm completion before processing augmentation.')
@@ -287,8 +287,8 @@ def reset_baseline(root, context, confirm_completed=False):
                     {'baseline_id': data['current'], 'context': context, 'run_code': version['run_code']})
     atomic_json(Path(root) / 'augmentation-archives/workflow-pending.json', {'mode': 'baseline'})
     event(root, 'baseline-reset-requested', baseline_id=data['current'])
-    print('Augmentation disabled. Modify the base alternative if needed, then run it in RTS.', flush=True)
-    print('The baseline version and older result labels will change only when different completed unaugmented results are accepted.', flush=True)
+    print('External two-step augmentation disabled. The Baseline Configuration augmentation choice still applies. Reopen and compute the baseline in RTS.', flush=True)
+    print('The baseline version and older result labels will change only when different completed baseline results are accepted.', flush=True)
 
 
 def execute_simple(action, args, context, scripts):

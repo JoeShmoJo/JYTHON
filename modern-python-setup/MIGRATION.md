@@ -78,3 +78,18 @@ After those workflows pass, build the final idempotent handoff installer:
 detect Conda, compare against the tested spec, leave current environments alone,
 create missing environments, and update outdated environments. Automatic updates
 are intentionally deferred until functional testing is complete.
+
+### Basic augmentation as a baseline option
+
+Baseline Configuration → Configuration Overview now includes Baseline flow augmentation:
+Off or Basic MainstemFlowAug (single compute), for both RTS and standalone. Apply
+and recompute the baseline (trial 0 in standalone). This selection is retained in
+portable JSON and applied snapshots. The separate augmentation configuration
+continues to prepare two-step releases; explicitly loaded releases take precedence
+for the augmented compute. Existing applied snapshots without this field keep
+their earlier behavior until reapplied. Older JSON defaults to Off when applied.
+
+Regression checks: `python modern-python-setup/test_baseline_augmentation.py`
+(and `--backend RTSPython` or `--backend rts-setup-package/ExternalPython`), plus
+`test_standalone_workflow.py` and the Playwright `test_standalone_browser.cjs`.
+Native HEC compute still requires a Windows ResSim/RTS functionality test.

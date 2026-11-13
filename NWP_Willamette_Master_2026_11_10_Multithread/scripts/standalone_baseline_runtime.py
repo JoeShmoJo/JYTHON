@@ -87,6 +87,11 @@ def alternative_overrides(network):
         return {}
     source, data, pointer = found
     result = dict((key, os.path.join(source, relative)) for key, relative in data['table_paths'].items())
+    if 'baseline_augmentation' in data:
+        method=data['baseline_augmentation']
+        if method not in ('off','simplified'):
+            raise RuntimeError('Invalid baseline augmentation method')
+        result['baselineFlowAugMethod']='AllocationBasedOnConservationStorage' if method=='simplified' else 'NoFlowAug'
     result['draftToRCActive'] = copy.deepcopy(data['rules']['draft_to_rc']['settings']['active'])
     result['irrmActive'] = dict((name, False) for name in ('Big Cliff','Blue River','Cottage Grove','Cougar','Detroit','Dexter','Dorena','Fall Creek','Fern Ridge','Foster','Green Peter','Hills Creek','Lookout Point'))
     result['irrmActive'].update(copy.deepcopy(data['rules']['irrm']['settings']['active']))

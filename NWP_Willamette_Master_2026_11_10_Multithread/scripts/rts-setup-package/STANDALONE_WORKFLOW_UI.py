@@ -134,7 +134,7 @@ class Menu:
         self.log = os.path.join(directory, 'augmentation-' + str(System.currentTimeMillis()) + '.log')
         builder = ProcessBuilder(command);builder.directory(File(scripts))
         builder.redirectErrorStream(True);builder.redirectOutput(File(self.log));builder.start()
-        self.message('Augmentation configuration starting. Select a saved unaugmented baseline in the browser. Log: ' + self.log)
+        self.message('Augmentation configuration starting. Select a saved baseline in the browser. Log: ' + self.log)
     def start(self, title, job):
         if self.busy:
             JOptionPane.showMessageDialog(self.frame, 'A job is already running.')

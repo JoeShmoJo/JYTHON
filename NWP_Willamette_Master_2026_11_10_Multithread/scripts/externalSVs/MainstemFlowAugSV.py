@@ -62,6 +62,12 @@ class MainstemFlowAugSV(ExternalSV):
         altSetupSV = network.getStateVariable("Alternative_Setup")
         self.mainstemFlowAugMethod = altSetupSV.varGet("mainstemFlowAugMethod")
         self.isRtsCompute = bool(altSetupSV.varGet("cwmsCompute"))
+        baselineMethod = altSetupSV.varGet("baselineFlowAugMethod")
+        if baselineMethod:
+            if baselineMethod not in ("NoFlowAug", "AllocationBasedOnConservationStorage"):
+                raise AssertionError("Invalid baseline augmentation method: " + str(baselineMethod))
+            self.mainstemFlowAugMethod = baselineMethod
+            network.printMessage("MainstemFlowAugSV: baseline augmentation " + baselineMethod)
         self.rtsScheme = None
         self.standaloneAugmentationConfig = None
         if not self.isRtsCompute:
@@ -75,17 +81,20 @@ class MainstemFlowAugSV(ExternalSV):
             outputFile = str(altSetupSV.varGet("fileNameSimulation"))
             marker = os.path.join(os.path.dirname(outputFile), "rts-augmentation-active.json")
             if not os.path.isfile(marker):
-                network.printMessage("MainstemFlowAugSV: RTS baseline mode; augmentation minimum is zero")
-                self.computeSV = False
-                return True
-            self.rtsScheme = json.loads(parallelSafeReadText(marker, "UTF-8"))
-            actualFpart = str(altSetupSV.varGet("dssOutputFpart"))
-            expectedFparts = ["C:%06d|%s" % (int(member), self.rtsScheme["run_code"])
-                              for member in self.rtsScheme["members"]]
-            if actualFpart not in expectedFparts:
-                raise AssertionError("Active RTS augmentation scheme does not cover run/member: " + actualFpart)
-            self.mainstemFlowAugMethod = "ReadExternalFlowAugTS"
-            network.printMessage("MainstemFlowAugSV: RTS augmentation scheme " + self.rtsScheme["scheme"])
+                if baselineMethod != "AllocationBasedOnConservationStorage":
+                    network.printMessage("MainstemFlowAugSV: RTS baseline mode; augmentation minimum is zero")
+                    self.computeSV = False
+                    return True
+                network.printMessage("MainstemFlowAugSV: RTS baseline uses simplified MainstemFlowAug")
+            else:
+                self.rtsScheme = json.loads(parallelSafeReadText(marker, "UTF-8"))
+                actualFpart = str(altSetupSV.varGet("dssOutputFpart"))
+                expectedFparts = ["C:%06d|%s" % (int(member), self.rtsScheme["run_code"])
+                                  for member in self.rtsScheme["members"]]
+                if actualFpart not in expectedFparts:
+                    raise AssertionError("Active RTS augmentation scheme does not cover run/member: " + actualFpart)
+                self.mainstemFlowAugMethod = "ReadExternalFlowAugTS"
+                network.printMessage("MainstemFlowAugSV: RTS augmentation scheme " + self.rtsScheme["scheme"])
 
         if self.mainstemFlowAugMethod == "NoFlowAug": #Don't compute mainstem flow aug, skip everything else
             self.computeSV = False
