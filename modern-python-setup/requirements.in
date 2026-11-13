@@ -1,0 +1,15 @@
+# Desktop Python scripts in ExternalPython/ and model_check/.
+# pydsstools 3.1.0 requires NumPy <2 on Python 3.11; no legacy 1.22.4 pin.
+numpy>=1.26,<2
+pandas==2.3.3
+pydsstools==3.1.0
+cwms-python==1.1.4
+plotly==5.24.1
+requests==2.34.2
+urllib3==2.8.0
+# Prevent pydsstools' optional raster import from printing a traceback.
+rasterio==1.4.3
+# Archive forecast Parquet input and SalemAlbanyAugScript plotting.
+pyarrow==21.0.0
+matplotlib==3.9.4
+dataretrieval==1.3.0

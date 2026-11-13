@@ -1,0 +1,13 @@
+{
+  "commit": "8ed50a4dd9ff01ed7fdeb618d83206abe6c1d027",
+  "branch": "sync-renamed-watershed",
+  "watershed": "NWP_Willamette_Master_2026_11_10_Multithread",
+  "files": {
+    "archive_backend/RFC_Archive_Module.py": "e43d28cc4b667690d4d70b6182fe60f432fabd33557e4a81e0f01b58a58789f8",
+    "archive_backend/ensemble_ids.py": "2779ebb9ce42cc8a74bca6e7807395576da480c29bc41164a78da46b1586140c"
+  },
+  "source_backends": [
+    "RTSPython",
+    "ExternalPython"
+  ]
+}
