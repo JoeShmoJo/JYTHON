@@ -72,3 +72,9 @@ activation are unchanged. Existing skip-trial settings still apply. Recompute
 only after checking successful loading, and restart ResSim after updating scripts.
 
 Both main GUIs now include named archive, refresh, plot and delete controls. See [saved results](STANDALONE_SAVED_RESULTS.md#named-result-archives-on-the-main-gui) for naming, reminders, deletion dependencies and RTS workflow-archive behavior.
+
+Applied snapshots are selected by `standalone-baseline-config-active.json`. Native
+initialization must load that selection; an archive's recorded configuration ID
+alone does not prove it was used during compute. Initialization receipts in the
+applied snapshot are evidence that its rule adapters ran. Restart ResSim after
+runtime updates and recompute Off and Basic when verifying augmentation changes.

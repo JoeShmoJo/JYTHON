@@ -122,3 +122,19 @@ old input records its label on retained legacy snapshots and does not remove the
 arrays or plots. Only active standalone calculation inputs block deletion.
 Expected backend failures are returned as data to the Swing panel, preventing a
 Java ExecutionException traceback from obscuring the useful message.
+
+### Applied standalone settings marker correction
+
+The maintained standalone runtime now reads `standalone-baseline-config-active.json`,
+the exact selection written by the main Baseline Configuration Apply action. It
+uses `standalone-legacy-applied-config-active.json` only if the current marker is
+absent. Previously the runtime could silently ignore the GUI's applied snapshot,
+producing no initialization receipts and leaving Off/Basic runs on the same
+alternative defaults. Existing archives' configuration IDs record the selection
+at capture and do not independently prove native initialization used it.
+
+The regression follows Apply through the real runtime reader from an ensemble
+output path, verifies Basic and Off, checks alternative scoping and legacy
+fallback/precedence, and runs native rule initialization through receipt writing.
+Restart ResSim after updating so Jython reloads the adapter; recompute both cases
+before relying on their comparison.

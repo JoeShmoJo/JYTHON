@@ -1,6 +1,7 @@
 """Baseline basic/off selection, snapshots and native initialization routing."""
 import argparse
 import ast
+import importlib.util
 import copy
 import json
 from pathlib import Path
@@ -61,6 +62,48 @@ class BaselineAugmentationTests(unittest.TestCase):
             self.assertEqual(saved['baseline_augmentation'],'simplified')
             self.assertEqual(resolved['baseline_augmentation'],'simplified')
             self.assertFalse((root/'simulation.dss').exists())
+            # Load the real runtime reader against the snapshot Apply wrote.
+            io=types.ModuleType('NWDJyLib.cFile')
+            from baseline_versions import digest_file
+            io.parallelSafeDigest=digest_file
+            io.parallelSafeReadText=lambda path,encoding='UTF-8':Path(path).read_text(encoding='utf-8')
+            io.parallelSafeWriteText=lambda path,text,encoding='UTF-8':Path(path).write_text(text,encoding='utf-8')
+            spec=importlib.util.spec_from_file_location('real_'+mode+'_runtime',S/(mode+'_baseline_runtime.py'))
+            runtime=importlib.util.module_from_spec(spec)
+            with mock.patch.dict(sys.modules,{'NWDJyLib':types.ModuleType('NWDJyLib'),'NWDJyLib.cFile':io}):
+                spec.loader.exec_module(runtime)
+            values={}
+            sv=types.SimpleNamespace(varGet=lambda key:values.get(key),varPut=lambda key,value:values.update({key:value}))
+            # Exercise discovery from an actual ensemble-member output path.
+            output=root/'EnsembleRuns/1981/simulation.dss'
+            network=types.SimpleNamespace(getStateVariable=lambda name:sv,
+                getAlternative=lambda:types.SimpleNamespace(getName=lambda:'Con_Season'),
+                getRssRun=lambda:types.SimpleNamespace(getDSSOutputFile=lambda:str(output),getOutputFPart=lambda:'C:001981|Con_Season0'),
+                makeAbsolutePathFromWatershed=lambda path:str(fake/path) if not Path(path).is_absolute() else path,
+                printMessage=lambda text:None)
+            if mode=='rts':values['cwmsCompute']=True
+            overrides=runtime.alternative_overrides(network)
+            self.assertEqual(overrides.get('baselineFlowAugMethod'),'AllocationBasedOnConservationStorage')
+            if mode=='standalone':
+                (root/'standalone-legacy-applied-config-active.json').write_text(json.dumps(pointer))
+            other=types.SimpleNamespace(**vars(network))
+            other.getAlternative=lambda:types.SimpleNamespace(getName=lambda:'Other')
+            if mode=='standalone':self.assertEqual(runtime.alternative_overrides(other),{})
+            # Run native rule initialization, including its real receipt writer.
+            self.settings['baseline_augmentation']='off'
+            pointer_off=config.apply_configuration(root,context,self.settings,scripts)
+            overrides=runtime.alternative_overrides(network)
+            self.assertEqual(overrides.get('baselineFlowAugMethod'),'NoFlowAug')
+            namespace=dict(_rts_original_initRuleScript=lambda rule,network:True,runRuleScript=lambda *args:None)
+            rule=types.SimpleNamespace(varPut=lambda key,value:None)
+            runtime.initialize_rule('DraftToRC',rule,network,namespace)
+            receipt_paths=list((root/pointer_off['directory']/'initialization-receipts').glob('*.json'))
+            self.assertEqual(len(receipt_paths),1)
+            self.assertEqual(json.loads(receipt_paths[0].read_text())['configuration_id'],pointer_off['id'])
+            if mode=='standalone':
+                (root/'standalone-baseline-config-active.json').unlink()
+                self.assertEqual(runtime.alternative_overrides(network)['baselineFlowAugMethod'],'AllocationBasedOnConservationStorage')
+
     def test_both_runtime_adapters_pass_selection_to_alternative(self):
         data=dict(name='Test',table_paths={},baseline_augmentation='simplified',rules={
             'draft_to_rc':dict(settings=dict(active=True)),

@@ -47,7 +47,9 @@ def active(network):
     # Ensemble output may be in EnsembleRuns/member. Select by this compute's
     # output path, never by the selected GUI forecast or a watershed global.
     for ignored in range(5):
-        marker = os.path.join(directory, 'standalone-legacy-applied-config-active.json')
+        marker = os.path.join(directory, 'standalone-baseline-config-active.json')
+        if not os.path.isfile(marker):
+            marker = os.path.join(directory, 'standalone-legacy-applied-config-active.json')
         if os.path.isfile(marker):
             pointer = read_json(marker)
             if pointer.get('model_alternative') != str(network.getAlternative().getName()).split(':')[-1]:
