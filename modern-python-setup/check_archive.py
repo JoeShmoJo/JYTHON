@@ -9,14 +9,22 @@ from pathlib import Path
 from zipfile import ZipFile, ZIP_DEFLATED
 
 
+def verify_sources(root):
+    source = json.loads((root/'source-manifest.json').read_text())
+    for relative, expected in source['files'].items():
+        # Git archive honors core.autocrlf on Windows. Verify the same source
+        # content in either LF or CRLF form; do not ignore any code changes.
+        content = (root/relative).read_bytes().replace(b'\r\n', b'\n')
+        if hashlib.sha256(content).hexdigest() != expected:
+            raise ValueError('Archive verification source differs from the manifest: '+relative)
+
+
 def check_archive(root):
     import numpy as np
     import pandas as pd
     import pyarrow as pa
     import pyarrow.parquet as pq
-    source = json.loads((root/'source-manifest.json').read_text())
-    for relative, expected in source['files'].items():
-        assert hashlib.sha256((root/relative).read_bytes()).hexdigest() == expected, relative
+    verify_sources(root)
     sys.path.insert(0, str(root/'archive_backend'))
     import RFC_Archive_Module as archive
     frame = pd.DataFrame({

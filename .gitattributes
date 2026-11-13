@@ -1,0 +1,2 @@
+# The bundled source manifest hashes LF text; Git archive also applies this.
+modern-python-setup/archive_backend/*.py text eol=lf

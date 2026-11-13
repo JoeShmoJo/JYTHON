@@ -62,6 +62,8 @@ loader on generated ZIPs for all 27 stations, validating Parquet metadata,
 six-hour to daily conversion, KCFS to CFS conversion, percentile members,
 source receipts, wrong units, and missing stations. `archive_backend` is a
 hash-checked source snapshot; provenance is in `source-manifest.json`.
+Source checks normalize Windows CRLF line endings to LF before comparing with
+the unchanged manifest. Wheel hashes still verify the exact downloaded bytes.
 
 These checks pass on the cloud Linux machine; Windows wheel hashes and target
 dependency markers are validated. The Windows test installation and real HEC
