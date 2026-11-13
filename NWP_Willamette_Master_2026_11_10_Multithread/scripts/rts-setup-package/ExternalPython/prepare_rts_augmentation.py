@@ -3,6 +3,7 @@
 No live DSS records or rule switches are changed. Calculation functions are
 loaded from the maintained legacy script without executing its top-level run.
 """
+from dss3 import dss_datetimes
 from run_archive import archive_digest
 import argparse
 import ast
@@ -95,10 +96,10 @@ def read_config(path):
 
 def read_series(dss, path, units):
     record = dss.read_ts(path, trim_missing=True)
-    actual_units = str(record.units).strip().upper()
+    actual_units = str(record.data_units).strip().upper()
     if actual_units not in units:
         raise ValueError('{}: unexpected units {}'.format(path, actual_units))
-    series = pd.Series(np.asarray(record.values, dtype=float), index=pd.DatetimeIndex(record.pytimes)).sort_index()
+    series = pd.Series(np.asarray(record.values, dtype=float), index=pd.DatetimeIndex(dss_datetimes(record))).sort_index()
     if series.empty or series.index.has_duplicates:
         raise ValueError('Empty series or duplicate timestamps: ' + path)
     return series
@@ -301,12 +302,13 @@ def main():
                         raise ValueError('Invalid calculated release/target: ' + column)
                     if name in selected and (values > limits[name] + 0.051).any():
                         raise ValueError('Release limit exceeded: ' + name)
-                    tsc = TimeSeriesContainer()
-                    tsc.pathname = '//{}/FLOW-MIN-EXTERNALFLOWAUG//1DAY/{}/'.format(name.upper(), fpart)
-                    tsc.startDateTime = data.index[0].strftime('%d%b%Y %H%M').upper()
-                    tsc.interval, tsc.numberValues = 1440, len(values)
-                    tsc.units, tsc.type = 'CFS', 'PER-AVER'
-                    tsc.values = np.round(values, 1)
+                    _tsc_arguments = {}
+                    _tsc_arguments['pathname'] = '//{}/FLOW-MIN-EXTERNALFLOWAUG//1DAY/{}/'.format(name.upper(), fpart)
+                    _tsc_arguments['start_time'] = data.index[0].strftime('%d%b%Y %H%M').upper()
+                    _tsc_arguments['interval'], _tsc_arguments['count'] = 1440, len(values)
+                    _tsc_arguments['data_units'], _tsc_arguments['data_type'] = 'CFS', 'PER-AVER'
+                    _tsc_arguments['values'] = np.round(values, 1)
+                    tsc = TimeSeriesContainer(**_tsc_arguments)
                     out.put_ts(tsc)
                     paths_written.append(tsc.pathname)
                     stats.append({'member': member, 'location': name, 'maximum_cfs': float(values.max())})

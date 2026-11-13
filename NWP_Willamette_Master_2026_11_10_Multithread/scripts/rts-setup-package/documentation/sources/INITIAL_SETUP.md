@@ -1,34 +1,49 @@
 # Initial setup
 
-## Load the Python environment
+## Load the Python test environment
 
-The HEC menu runs in Jython. Downloads, calculations, checks, and plots use the Windows 64-bit desktop Python environment **ResSim12Nov2026**.
+This branch tests **pydsstools 3.1.0** using the separate Windows x64 environment
+**hydro13Nov2026**. It is based on the current multithreaded watershed, including
+standalone, RTS archive loading, Model Check and Damages Prevented.
 
-Install 64-bit Miniconda or Anaconda once. Open PowerShell, change to the watershed's `scripts/ExternalPython/PythonSetup1stTime` folder, and run:
-
-```powershell
-.\Install-WorkflowEnvironment.ps1
-```
-
-The installer searches common Conda locations, creates the environment from `ResSim12Nov2026.yml`, and verifies imports, archive/Parquet reading, and a temporary DSS7 write/read round trip. All workflow dependencies, including `pyarrow`, are in the YAML. The test uses a temporary file, not your model DSS.
-
-For a custom Conda installation, supply its executable:
+Install Windows x64 Miniconda or Anaconda once. Extract the complete supplied
+`modern-python-setup` folder to any location. Close applications using the test
+environment. From that folder run in ordinary Windows PowerShell:
 
 ```powershell
-.\Install-WorkflowEnvironment.ps1 -CondaPath 'D:\Miniconda3\Scripts\conda.exe'
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Create-TestEnvironment.ps1 -Fresh
 ```
 
-The menus prefer ResSim12Nov2026 and retain hydro39 as a fallback while an existing installation is being updated. For a custom location, launch the HEC application from a shell with `CONDA_EXE` pointing to that installation's `Scripts/conda.exe`, so the menu can locate it too.
+The script detects common Miniconda and Anaconda locations and stops with an
+error if neither is found. Use `-CondaPath 'D:\Miniconda3\Scripts\conda.exe'`
+for a custom installation. `-Fresh` exports the existing test specification,
+removes only hydro13Nov2026, then recreates it. The export is a record, not a
+complete package or custom-file backup. Existing hydro39 and ResSim12Nov2026
+installations are protected.
 
-Close applications using ResSim12Nov2026 before running the installer. An existing healthy environment is checked without package changes. An incomplete environment is repaired automatically, including after an interrupted first installation. Use `-Update` to refresh a healthy environment. The previous environment specification is exported before updating; it is a recovery aid rather than a complete package backup.
+PowerShell downloads the 41 SHA256-verified wheels in the versioned Windows
+lock, then pip installs locally with no network downloads or source builds.
+The spec includes PyArrow 21.0.0 for station ZIP/Parquet input, Matplotlib and
+USGS dataretrieval 1.3.0. Verification checks exact package versions, real DSS7
+writes and reads, and the actual archive loader against generated ZIPs for all
+27 stations. Logs and verification evidence are retained under
+LocalAppData/WillametteWorkflow/modern-python-setup.
 
-The installer uses Conda’s classic solver with flexible channel priority and plugins disabled only for its own commands. Flexible priority lets Conda use the exact pinned pandas build from the configured defaults channel. It retries interrupted installs up to three times, stops immediately on unsatisfiable specifications, and restores its process settings afterward. Arrow uses a CPU build; CUDA is not required for archive reading. Pip in a fresh Python 3.9 environment may lack certificates that were configured in an existing developer environment. The installer preserves an explicitly configured CA bundle or combines certifi with Windows roots trusted for TLS server authentication. It checks PyPI certificate validation before pip starts; it does not disable TLS verification.
+Success ends with `SUCCESS: Installed and checked hydro13Nov2026`. Native HEC
+computes, real forecast ZIPs and live CWMS/USGS access still require operator
+testing. No model data is changed by installation. The older
+Install-WorkflowEnvironment.ps1/YAML files describe the legacy Python 3.9 /
+pydsstools 2 environment; do not use them to install this test branch.
 
-The Python 3.9 Windows pydsstools wheel (10,961,331 bytes, about 11 MB) is bundled in `PythonSetup1stTime/wheels`. The installer verifies its size and published PyPI SHA256 before local installation. Windows downloading is a fallback if the wheel is not bundled; other Conda/pip packages still require network access. Each run saves a log under LocalAppData/WillametteWorkflow/setup-logs and copies it to the clipboard when available. If Conda itself crashes even with the classic solver, the log identifies that failure; repair of the local Conda installation may be required.
+The migrated menus and batch launchers select hydro13Nov2026 without falling
+back to a pydsstools 2 environment. For a custom test name, launch the HEC
+application from a shell with WILLAMETTE_PYTHON_ENV set to that name. A custom
+Conda installation can be advertised with CONDA_EXE as before.
 
-For a deliberate fresh-install test, use `-Fresh`. It exports the test environment’s specification, removes only ResSim12Nov2026, and recreates it. Close applications using that environment first; hydro39 remains untouched.
-
-This specification preserves the working hydro39 package versions under a new name: Python 3.9.23, NumPy 1.22.4, pandas 2.3.2, PyArrow 21.0.0, and Plotly 5.24.1. Conda installs NumPy, pandas, PyArrow, and Plotly at those exact versions. The remaining pip stage uses `workflow-constraints.txt` to prevent dependency upgrades of the locked scientific stack. The accompanying `working-environment-packages.json` records the actual installed-package listing supplied with the export. The workflow currently needs pydsstools 2.4.0's API. Version 3.x changes time-series and catalog APIs and requires a separate application migration. A newer NumPy major version alone would not make that API compatible.
+After functional testing, a separate handoff installer will compare an existing
+environment with the spec, leave a current environment alone, create a missing
+one and update an outdated one. This test bootstrap deliberately uses -Fresh;
+that final updater is not implemented yet.
 
 ## Add Open Workflow to the Script Editor
 

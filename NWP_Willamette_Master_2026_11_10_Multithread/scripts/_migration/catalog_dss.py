@@ -87,7 +87,7 @@ def main():
 
     fid = HecDss.Open(dssPath)
     try:
-        pathnames = fid.getPathnameList("/*/*/*/*/*/*/", sort=1)
+        pathnames = fid.search_path("/*/*/*/*/*/*/", sort=1)
     finally:
         fid.close()
 

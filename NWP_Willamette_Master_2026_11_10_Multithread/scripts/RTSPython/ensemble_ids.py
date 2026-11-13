@@ -23,7 +23,7 @@ def computed_standalone_members(filename, alternative):
     suffix=alternative.replace(' ','-').ljust(10,'-')+'0'
     members=set()
     with HecDss.Open(str(filename)) as dss:
-        for path in dss.getPathnameList('/*/*/*/*/*/*/'):
+        for path in dss.search_path('/*/*/*/*/*/*/'):
             parts=str(path).split('/')
             if len(parts)!=8 or not parts[2].upper().endswith('-POOL') or parts[3].upper()!='FLOW-OUT':continue
             match=re.fullmatch(r'C:(\d{6})\|'+re.escape(suffix),parts[6],re.I)

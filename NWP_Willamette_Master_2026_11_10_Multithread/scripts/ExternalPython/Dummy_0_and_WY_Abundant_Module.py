@@ -1,5 +1,6 @@
 
 
+from dss3 import dss_datetimes
 import os
 import hashlib
 import shutil
@@ -57,24 +58,25 @@ DSS_FILE_OUT = str(getattr(cfg, 'DSS_FILE_OUT', DSS_PATH))
 print("DSS_FILE_OUT:", DSS_FILE_OUT)
 
 
-def _write_series_v6(fid, pathname: str, series: pd.Series, units: str, interval_min: int, dss_type: str, decimals: int = 2):
+def _write_series(fid, pathname: str, series: pd.Series, units: str, interval_min: int, dss_type: str, decimals: int = 2):
     if series is None or series.empty:
         return False
 
     series = series.sort_index()
     start_dt = series.index[0].strftime("%d%b%Y %H%M").upper()
 
-    tsc = TimeSeriesContainer()
-    tsc.pathname = pathname
-    tsc.startDateTime = start_dt
-    tsc.numberValues = len(series)
-    tsc.units = units
-    tsc.type = dss_type
-    tsc.interval = interval_min
+    _tsc_arguments = {}
+    _tsc_arguments['pathname'] = pathname
+    _tsc_arguments['start_time'] = start_dt
+    _tsc_arguments['count'] = len(series)
+    _tsc_arguments['data_units'] = units
+    _tsc_arguments['data_type'] = dss_type
+    _tsc_arguments['interval'] = interval_min
     values = series.to_numpy(dtype="float64")
-    tsc.values = values if decimals is None else np.round(values, decimals)
+    _tsc_arguments['values'] = values if decimals is None else np.round(values, decimals)
 
 
+    tsc = TimeSeriesContainer(**_tsc_arguments)
     fid.put_ts(tsc)
     return True
 
@@ -89,7 +91,7 @@ def _file_digest(path):
 def _read_dummy_series(fid, pathname):
     parts = pathname.split("/")
     parts[4] = "*"
-    records = sorted(fid.getPathnameList("/".join(parts)))
+    records = sorted(fid.search_path("/".join(parts)))
     pieces = []
     for record in records:
         ts = fid.read_ts(record)
@@ -101,7 +103,7 @@ def _read_dummy_series(fid, pathname):
             raise ValueError("Dummy series has values requiring double precision: " + record)
         values = values.copy()
         values[~valid] = np.nan
-        pieces.append(pd.Series(values, index=pd.DatetimeIndex(ts.pytimes)))
+        pieces.append(pd.Series(values, index=pd.DatetimeIndex(dss_datetimes(ts))))
     if not pieces:
         return records, pd.Series(dtype="float64")
     existing = pd.concat(pieces).sort_index()
@@ -137,7 +139,7 @@ def _replace_dummy_series(dss_path, updates):
                 merged.loc[update.index] = update.to_numpy()
                 # Delete only these generated records, only on the staged copy.
                 for record in records:
-                    fid.deletePathname(record)
+                    fid.del_path(record)
                 # Missing-value padding returned by DSS reads can be large.
                 # Trim padding without removing valid out-of-window history.
                 first, last = merged.first_valid_index(), merged.last_valid_index()
@@ -147,7 +149,7 @@ def _replace_dummy_series(dss_path, updates):
                 values = merged.to_numpy(copy=True)
                 values[np.isnan(values)] = -3.4028234663852886e38
                 stored = pd.Series(values, index=merged.index)
-                _write_series_v6(fid, pathname, stored, units, 1440, "INST-VAL", decimals=None)
+                _write_series(fid, pathname, stored, units, 1440, "INST-VAL", decimals=None)
                 expected.append((pathname, merged))
         # Reopen the staged DSS and verify values and coverage before replacing.
         with HecDss.Open(str(staged)) as fid:

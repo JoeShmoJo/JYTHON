@@ -75,5 +75,6 @@ This file intentionally creates/recreates a test environment. After the actual
 workflow passes, the final installer will detect Miniconda/Anaconda, fail if
 absent, compare the named environment against the versioned spec, return without
 changes when current, install when absent, and update when outdated. Do not
-switch working HEC menus to the new environment until the pydsstools 3 migration
-and representative native computes pass.
+switch production HEC menus until representative native computes pass. The test
+branch now contains the pydsstools 3 migration and selects the test environment;
+see [migration and functional tests](MIGRATION.md).

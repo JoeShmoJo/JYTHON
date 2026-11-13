@@ -20,6 +20,7 @@ in the file, so a new reservoir or junction is picked up without editing this
 script. Run catalog_dss.py to see what a file holds.
 """
 
+from dss3 import dss_datetimes
 import os
 import re
 import sys
@@ -152,8 +153,8 @@ def readSeries(fid, blockPaths):
         nodata = getattr(ts, "nodata", None)
         if nodata is not None and len(nodata) == len(values):
             values[np.array(nodata, dtype=bool)] = np.nan
-        pieces.append(pd.Series(values, index=pd.to_datetime(list(ts.pytimes))))
-        units = units or getattr(ts, "units", "") or ""
+        pieces.append(pd.Series(values, index=pd.to_datetime(list(dss_datetimes(ts)))))
+        units = units or getattr(ts, 'data_units', "") or ""
     if not pieces:
         return pd.Series(dtype=float), units
     data = pd.concat(pieces)
@@ -186,7 +187,7 @@ def main():
 
     fid = HecDss.Open(dssPath)
     try:
-        pathnames = fid.getPathnameList("/*/*/*/*/*/*/", sort=1)
+        pathnames = fid.search_path("/*/*/*/*/*/*/", sort=1)
         fPart = F_PART or mostCommonF(pathnames)
         series = groupByseries(pathnames, fPart)
         print("F part %s: %d series in %s" % (fPart, len(series), dssPath))

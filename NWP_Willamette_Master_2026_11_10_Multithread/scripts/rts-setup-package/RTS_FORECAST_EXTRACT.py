@@ -45,12 +45,12 @@ roots += [r'C:\ProgramData\miniconda3', r'C:\ProgramData\anaconda3',
           r'C:\Miniconda3', r'C:\Anaconda3', r'C:\Programs\Miniconda3', r'C:\Programs\Anaconda3']
 python_exe = None
 for root in roots:
-    candidate = os.path.join(root, 'envs', 'hydro39', 'python.exe')
+    candidate = os.path.join(root, 'envs', os.environ.get('WILLAMETTE_PYTHON_ENV', 'hydro13Nov2026'), 'python.exe')
     if os.path.isfile(candidate):
         python_exe = candidate
         break
 if python_exe is None:
-    raise IOError('hydro39 Python was not found')
+    raise IOError('The modern Python test environment was not found')
 runner = os.path.join(EXTERNAL_PYTHON_DIR, 'run_extraction.py')
 if not os.path.isfile(runner):
     raise IOError('Install the updated ExternalPython files first: ' + runner)

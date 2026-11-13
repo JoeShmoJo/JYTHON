@@ -4,6 +4,7 @@ Only logical computed series used by plots and augmentation are included; never
 search for absent rule curves or fill data gaps. Compact archives cannot rebuild
 from an archived DSS; corrupt primary data must fail rather than use live data.
 """
+from dss3 import dss_datetimes
 from datetime import datetime, timezone
 import json
 import os
@@ -75,8 +76,9 @@ class CachedRun:
         return self
     def __exit__(self, *args):
         self.arrays.close()
-    def getPathnameList(self, pattern):
-        return [item['pathname'] for item in self.metadata['records'].values()]
+    def search_path(self, pattern, sort=False):
+        paths = [item['pathname'] for item in self.metadata['records'].values()]
+        return sorted(paths) if sort else paths
     def read_ts(self, path, **kwargs):
         key = logical_path(path).upper()
         item = self.metadata['records'].get(key)
@@ -89,11 +91,11 @@ class CachedRun:
             if item['timezone']:
                 times = times.tz_localize('UTC').tz_convert(item['timezone'])
             self.records[key] = SimpleNamespace(values=self.arrays[item['array'] + '_values'],
-                pytimes=times, units=item['units'], type=item['type'])
+                times=times, data_units=item['units'], data_type=item['type'])
         record = self.records[key]
         # Return independent values: plotting cleans missing sentinels in place.
-        return SimpleNamespace(values=record.values.copy(), pytimes=record.pytimes,
-                               units=record.units, type=record.type)
+        return SimpleNamespace(values=record.values.copy(), times=dss_datetimes(record),
+                               data_units=record.data_units, data_type=record.data_type)
 
 
 def open_cached_run(filename, run_code, expected_sha256=None):
@@ -127,7 +129,7 @@ def open_cached_run(filename, run_code, expected_sha256=None):
         from plot_rts_forecast import target_record
         with HecDss.Open(str(filename)) as dss:
             paths = {}
-            for path in dss.getPathnameList('/*/*/*/*/*/*/'):
+            for path in dss.search_path('/*/*/*/*/*/*/'):
                 logical = logical_path(path)
                 parts = logical.split('/')
                 if needed_record(parts) and re.fullmatch(r'C:\d{6}\|' + re.escape(run_code), parts[6], re.I):
@@ -135,7 +137,7 @@ def open_cached_run(filename, run_code, expected_sha256=None):
             for number, (key, path) in enumerate(sorted(paths.items())):
                 try:
                     record = dss.read_ts(path, trim_missing=True)
-                    times = pd.DatetimeIndex(record.pytimes)
+                    times = pd.DatetimeIndex(dss_datetimes(record))
                     values = np.ma.asarray(record.values, dtype=float).filled(np.nan)
                     if len(times) != len(values) or times.hasnans or times.has_duplicates or not len(times):
                         raise ValueError('Empty series, invalid timestamps, or duplicate timestamps')
@@ -146,8 +148,8 @@ def open_cached_run(filename, run_code, expected_sha256=None):
                     array = 'record_' + str(number)
                     arrays[array + '_times'] = times_ns[order]
                     arrays[array + '_values'] = values[order]
-                    records[key] = {'pathname': path, 'array': array, 'units': str(record.units),
-                                    'type': str(getattr(record, 'type', '')),
+                    records[key] = {'pathname': path, 'array': array, 'units': str(record.data_units),
+                                    'type': str(getattr(record, 'data_type', '')),
                                     'timezone': str(times.tz) if times.tz is not None else None}
                     valid = np.isfinite(values[order]) & (np.abs(values[order]) <= 1e30)
                     if target_record(path.split('/')) and valid.any():

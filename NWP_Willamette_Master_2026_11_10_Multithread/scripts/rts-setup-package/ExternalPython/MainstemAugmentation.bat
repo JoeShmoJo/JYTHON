@@ -11,7 +11,8 @@ if /I not "%~1"=="__IN_CONSOLE__" (
 shift
 
 REM ====== USER SETTINGS ======
-set "ENV_NAME=hydro39"
+set "ENV_NAME=hydro13Nov2026"
+if defined WILLAMETTE_PYTHON_ENV set "ENV_NAME=%WILLAMETTE_PYTHON_ENV%"
 
 REM Script is assumed to be in the SAME folder as this .bat (ExternalPython)
 set "PY_SCRIPT=MainstemAugmentation.py"

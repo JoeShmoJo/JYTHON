@@ -39,7 +39,7 @@ def main():
     from pydsstools.heclib.dss import HecDss
     catalog = defaultdict(set)
     with HecDss.Open(str(args.forecast_root / 'forecast.dss')) as dss:
-        for path in dss.getPathnameList('/*/*/*/*/*/*/'):
+        for path in dss.search_path('/*/*/*/*/*/*/'):
             logical, member = key(path)
             catalog[logical].add(member)
     print('READ ONLY: catalog presence only; no values read or compute started.')

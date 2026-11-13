@@ -206,7 +206,7 @@ def _build_path(site: str, bpart: str, epart: str, fpart: str) -> str:
 # DSS WRITE
 # =====================================================================
 
-def _write_series_daily_v6(fid, pathname: str, series: pd.Series, decimals: int = 1) -> None:
+def _write_series_daily(fid, pathname: str, series: pd.Series, decimals: int = 1) -> None:
     if series is None or series.empty:
         return
 
@@ -224,15 +224,15 @@ def _write_series_daily_v6(fid, pathname: str, series: pd.Series, decimals: int 
     vals = series.to_numpy(dtype="float64")
     vals = np.round(vals, decimals)
 
-    tsc = TimeSeriesContainer()
-    tsc.pathname = pathname
-    tsc.startDateTime = start_dt
-    tsc.numberValues = len(vals)
-    tsc.units = "CFS"
-    tsc.type = "PER-AVER"
-    tsc.interval = 1440
-    tsc.values = vals
-
+    tsc = TimeSeriesContainer(
+        pathname=pathname,
+        start_time=start_dt,
+        count=len(vals),
+        data_units="CFS",
+        data_type="PER-AVER",
+        interval=1440,
+        values=vals,
+    )
     fid.put_ts(tsc)
 
 
@@ -290,7 +290,7 @@ def write_rfc_to_dss(
                         fpart = _member_to_fpart(member)
                         pathname = _build_path(site=site, bpart=bpart, epart="1Day", fpart=fpart)
 
-                        _write_series_daily_v6(fid, pathname, s, decimals=decimals)
+                        _write_series_daily(fid, pathname, s, decimals=decimals)
                         written += 1
 
                     if debug:

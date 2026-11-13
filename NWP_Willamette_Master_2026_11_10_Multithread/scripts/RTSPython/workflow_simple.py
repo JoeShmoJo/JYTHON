@@ -81,7 +81,7 @@ def inspect_run(filename, run_code=None, catalog_only=False):
         run_code = metadata(filename)['run_code']
     reader = open_cached_run(filename,run_code) if compact or (cache and cache.is_dir() and is_archived(filename)) else HecDss.Open(str(filename))
     with reader as dss:
-        paths = [str(path) for path in dss.getPathnameList('/*/*/*/*/*/*/')
+        paths = [str(path) for path in dss.search_path('/*/*/*/*/*/*/')
                  if len(str(path).split('/')) == 8
                  and str(path).split('/')[2].upper().endswith('-POOL')
                  and str(path).split('/')[3].upper() in ('ELEV','ELEVATION','FLOW-OUT')]

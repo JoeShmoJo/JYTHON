@@ -194,7 +194,7 @@ def _infer_dss_meta_from_path(pathname: str) -> Tuple[int, str]:
         return 360, "INST-VAL"
     return 1440, "PER-AVER"
 
-def _write_series_v6(fid, pathname: str, series: pd.Series, units: str, interval_min: int, dss_type: str, decimals: int = 2):
+def _write_series(fid, pathname: str, series: pd.Series, units: str, interval_min: int, dss_type: str, decimals: int = 2):
     if series is None or series.empty:
         return False
 
@@ -205,19 +205,20 @@ def _write_series_v6(fid, pathname: str, series: pd.Series, units: str, interval
             raise ValueError('Historical CWMS series has gaps or unexpected spacing; refusing to compress timestamps')
     start_dt = series.index[0].strftime("%d%b%Y %H%M").upper()
 
-    tsc = TimeSeriesContainer()
-    tsc.pathname = pathname
-    tsc.startDateTime = start_dt
-    tsc.numberValues = len(series)
-    tsc.units = units
-    tsc.type = dss_type
-    tsc.interval = interval_min
+    _tsc_arguments = {}
+    _tsc_arguments['pathname'] = pathname
+    _tsc_arguments['start_time'] = start_dt
+    _tsc_arguments['count'] = len(series)
+    _tsc_arguments['data_units'] = units
+    _tsc_arguments['data_type'] = dss_type
+    _tsc_arguments['interval'] = interval_min
     values = np.round(series.to_numpy(dtype="float64"), decimals)
     if CONTEXT:
         from pydsstools.core import UNDEFINED
         values = np.where(np.isnan(values), UNDEFINED, values)
-    tsc.values = values
+    _tsc_arguments['values'] = values
 
+    tsc = TimeSeriesContainer(**_tsc_arguments)
     fid.put_ts(tsc)
     return True
 
@@ -299,7 +300,7 @@ def cwms_download_and_write(
                 if force_dss_type is not None:
                     dss_type = force_dss_type
 
-                ok = _write_series_v6(
+                ok = _write_series(
                     fid=fid,
                     pathname=dss_path,
                     series=s,

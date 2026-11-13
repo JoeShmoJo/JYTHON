@@ -1,4 +1,5 @@
 """Read-only parallel-versus-serial Salem FLOW comparison for members 1985/1986."""
+from dss3 import dss_datetimes
 from pathlib import Path
 from datetime import datetime
 
@@ -36,7 +37,7 @@ def find_paths(dss, member):
     fpart = "C:{:06d}|Con_Season0".format(member)
     matches = []
 
-    for raw in dss.getPathnameList("/*/*/*/*/*/*/"):
+    for raw in dss.search_path("/*/*/*/*/*/*/"):
         path = str(raw)
         parts = path.split("/")
 
@@ -64,14 +65,14 @@ def find_paths(dss, member):
 
 def metadata(ts):
     return (
-        str(getattr(ts, "units", "")),
-        str(getattr(ts, "type", "")),
+        str(getattr(ts, 'data_units', "")),
+        str(getattr(ts, 'data_type', "")),
         str(getattr(ts, "interval", "")),
     )
 
 def compare(left, right):
-    left_times = list(left.pytimes)
-    right_times = list(right.pytimes)
+    left_times = list(dss_datetimes(left))
+    right_times = list(dss_datetimes(right))
 
     left_values = list(left.values)
     right_values = list(right.values)

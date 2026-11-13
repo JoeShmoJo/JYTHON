@@ -449,30 +449,31 @@ def write_to_dss(dss_file, DataDict):
         if isinstance(df, pd.Series):
             df = df.to_frame()
         # Create the time series container
-        tsc = TimeSeriesContainer()
-        tsc.pathname = pathname
-        tsc.startDateTime = str(df.index[0])
-        tsc.numberValues = df.shape[0]
+        _tsc_arguments = {}
+        _tsc_arguments['pathname'] = pathname
+        _tsc_arguments['start_time'] = str(df.index[0])
+        _tsc_arguments['count'] = df.shape[0]
         # Check if df has the expected structure
         if df.shape[1] > 0:
-            tsc.values = df.iloc[:, 0].copy().to_numpy()
+            _tsc_arguments['values'] = df.iloc[:, 0].copy().to_numpy()
         else:
             print(f"DataFrame {pathname} does not have any columns.")
             continue
-        tsc.interval = 1  # Assuming this is the interval
+        _tsc_arguments['interval'] = 1  # Assuming this is the interval
         # Set units based on the path
         if "ELEV" in pathname:
-            tsc.units = "FEET"
+            _tsc_arguments['data_units'] = "FEET"
         elif "FLOW" in pathname:
-            tsc.units = "CFS"
+            _tsc_arguments['data_units'] = "CFS"
         else:
-            tsc.units = 'Unknown'
+            _tsc_arguments['data_units'] = 'Unknown'
             print('Not Flow or Elev!')
         # Set the type
-        tsc.type = "INST-VAL"  # Assuming this is always the type
+        _tsc_arguments['data_type'] = "INST-VAL"  # Assuming this is always the type
         # Write the data to the DSS file to the out folder
 
         with HecDss.Open(dss_file, version=7) as fid:
+            tsc = TimeSeriesContainer(**_tsc_arguments)
             fid.put_ts(tsc)
         
 #%%

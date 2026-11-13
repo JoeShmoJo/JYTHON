@@ -1,3 +1,4 @@
+from dss3 import dss_datetimes
 import os
 from pathlib import Path
 from typing import List, Tuple
@@ -70,7 +71,7 @@ def _build_path(site: str, bpart: str, epart: str, fpart: str) -> str:
 
 def _clean_series_from_tsc(tsc) -> pd.Series:
     vals = np.asarray(tsc.values, dtype="float64")
-    idx = pd.to_datetime(np.array(tsc.pytimes))
+    idx = pd.to_datetime(np.array(dss_datetimes(tsc)))
 
     if len(vals) != len(idx):
         raise ValueError(
@@ -84,7 +85,7 @@ def _clean_series_from_tsc(tsc) -> pd.Series:
     return s
 
 
-def _write_series_daily_v6(fid, pathname: str, series: pd.Series, decimals: int = 1) -> None:
+def _write_series_daily(fid, pathname: str, series: pd.Series, decimals: int = 1) -> None:
     if series is None or series.empty:
         return
 
@@ -99,15 +100,15 @@ def _write_series_daily_v6(fid, pathname: str, series: pd.Series, decimals: int 
     vals = series.to_numpy(dtype="float64")
     vals = np.round(vals, decimals)
 
-    tsc = TimeSeriesContainer()
-    tsc.pathname = pathname
-    tsc.startDateTime = start_dt
-    tsc.numberValues = len(vals)
-    tsc.units = "CFS"
-    tsc.type = "PER-AVER"
-    tsc.interval = 1440
-    tsc.values = vals
-
+    tsc = TimeSeriesContainer(
+        pathname=pathname,
+        start_time=start_dt,
+        count=len(vals),
+        data_units="CFS",
+        data_type="PER-AVER",
+        interval=1440,
+        values=vals,
+    )
     fid.put_ts(tsc)
 
 
@@ -135,7 +136,7 @@ def copy_ensemble_year_to_1980(
     source_fpart = _member_to_fpart(source_year)
     target_fpart = _member_to_fpart(target_year)
 
-    fid = HecDss.Open(dss_file, version=6)
+    fid = HecDss.Open(dss_file, version=7)
     try:
         for group, sites in GROUP_TO_SITES.items():
             bpart = GROUP_TO_BPART[group]
@@ -162,7 +163,7 @@ def copy_ensemble_year_to_1980(
                     if s.empty:
                         raise ValueError("Source series is empty after cleaning")
 
-                    _write_series_daily_v6(fid, dst_path, s, decimals=decimals)
+                    _write_series_daily(fid, dst_path, s, decimals=decimals)
                     copied += 1
 
                     if debug:

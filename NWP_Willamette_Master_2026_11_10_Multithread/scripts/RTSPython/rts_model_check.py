@@ -35,8 +35,8 @@ def run(root,alternative,code=None,run_type='por',member=None,label=None,watersh
     from pydsstools.heclib.dss import HecDss
     before=signature(source)
     with HecDss.Open(str(source)) as dss:
-        paths=dss.getPathnameList('/*/*/*/*/*/*/')
-        if not paths:paths=dss.getPathnameList('*')
+        paths=dss.search_path('/*/*/*/*/*/*/')
+        if not paths:paths=dss.search_path('*')
     if dss_name=='forecast.dss':
         if run_type!='ensemble':
             raise ValueError('RTS Model Check supports one ensemble member only')

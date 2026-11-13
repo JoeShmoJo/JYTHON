@@ -1,3 +1,4 @@
+from dss3 import dss_datetimes
 import os
 from pathlib import Path
 from typing import Dict, List, Tuple
@@ -78,10 +79,10 @@ def readallpaths(dss_file, path_dict):
             ts = fid.read_ts(path, trim_missing=True)
 
             # Minimal guard: pydsstools can return pytimes=None if trimmed-to-empty
-            if ts is None or ts.pytimes is None or ts.values is None:
+            if ts is None or dss_datetimes(ts) is None or ts.values is None:
                 continue
 
-            df = pd.DataFrame(ts.values, columns=[alias], index=np.array(ts.pytimes))
+            df = pd.DataFrame(ts.values.copy(), columns=[alias], index=np.array(dss_datetimes(ts)))
             dflist.append(df.copy())
 
         except Exception as e:

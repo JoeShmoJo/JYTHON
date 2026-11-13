@@ -1,4 +1,5 @@
 """Copy shared dummy inputs into the collection paths requested by RTS."""
+from dss3 import dss_datetimes
 import argparse
 from pathlib import Path
 import re
@@ -22,14 +23,14 @@ def copy_records(filename, specifications):
     if not Path(filename).is_file():
         raise FileNotFoundError(filename)
     with HecDss.Open(str(filename)) as dss:
-        members = member_prefixes(dss.getPathnameList('/*/*/*/*/*/*/'))
+        members = member_prefixes(dss.search_path('/*/*/*/*/*/*/'))
         if not members:
             raise ValueError('No downloaded ensemble FLOW-LOC/FLOW-UNREG members found')
         # Validate both source records before writing any copies.
         sources = []
         for path, units, interval, data_type in specifications:
             series = dss.read_ts(path, trim_missing=True)
-            dates = pd.DatetimeIndex(pd.to_datetime(series.pytimes))
+            dates = pd.DatetimeIndex(pd.to_datetime(dss_datetimes(series)))
             values = np.asarray(series.values, dtype=float)
             if len(dates) != len(values) or not len(values) or not np.isfinite(values).all():
                 raise ValueError('Invalid source dummy record: ' + path)
@@ -43,14 +44,15 @@ def copy_records(filename, specifications):
             for prefix in members:
                 parts = path.split('/')
                 parts[6] = prefix + parts[6]
-                record = TimeSeriesContainer()
-                record.pathname = '/'.join(parts)
-                record.startDateTime = dates[0].strftime('%d%b%Y %H%M')
-                record.numberValues = len(values)
-                record.interval = interval
-                record.units = units
-                record.type = data_type
-                record.values = values
+                record = TimeSeriesContainer(
+                    pathname='/'.join(parts),
+                    start_time=dates[0].strftime('%d%b%Y %H%M'),
+                    count=len(values),
+                    interval=interval,
+                    data_units=units,
+                    data_type=data_type,
+                    values=values,
+                )
                 dss.put_ts(record)
                 written += 1
         print('Ensemble members:', ', '.join(members))

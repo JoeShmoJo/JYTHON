@@ -22,6 +22,7 @@ in the file, so a new reservoir or junction is picked up without editing this
 script. Run catalog_dss.py to see what a file holds.
 """
 
+from dss3 import dss_datetimes
 import datetime
 import glob
 import shutil
@@ -226,9 +227,9 @@ def readSeries(fid, blockPaths):
         except Exception as e:
             print("    could not read %s: %s" % (path, e))
             continue
-        if ts is None or ts.pytimes is None or ts.values is None:
+        if ts is None or dss_datetimes(ts) is None or ts.values is None:
             continue
-        times = list(ts.pytimes)
+        times = list(dss_datetimes(ts))
         if not times:
             continue
         values = np.array(ts.values, dtype=float)
@@ -237,7 +238,7 @@ def readSeries(fid, blockPaths):
         if nodata is not None and len(nodata) == len(values):
             values[np.array(nodata, dtype=bool)] = np.nan
         pieces.append(pd.Series(values, index=pd.to_datetime(times)))
-        units = units or getattr(ts, "units", "") or ""
+        units = units or getattr(ts, 'data_units', "") or ""
     if not pieces:
         # A date index even when empty, or concat can turn the whole table's
         # index into a plain Index on some pandas versions
@@ -318,7 +319,7 @@ def main(dssPath=None, alternative=None):
 
     fid = HecDss.Open(dssPath)
     try:
-        pathnames = fid.getPathnameList("/*/*/*/*/*/*/", sort=1)
+        pathnames = fid.search_path("/*/*/*/*/*/*/", sort=1)
         if alternative:
             fPart = fPartFor(pathnames, alternative)
         else:

@@ -68,14 +68,15 @@ def main():
             array = np.asarray(values[name], dtype=float)
             if not np.isfinite(array).all():
                 raise ValueError('Nonfinite rule curve for ' + name)
-            record = TimeSeriesContainer()
-            record.pathname = '//{}/ELEV//1DAY/RULE CURVE/'.format(name)
-            record.startDateTime = dates[0].strftime('%d%b%Y %H%M')
-            record.numberValues = len(dates)
-            record.interval = 1440
-            record.units = 'FT'
-            record.type = 'INST-VAL'
-            record.values = array
+            record = TimeSeriesContainer(
+                pathname='//{}/ELEV//1DAY/RULE CURVE/'.format(name),
+                start_time=dates[0].strftime('%d%b%Y %H%M'),
+                count=len(dates),
+                interval=1440,
+                data_units='FT',
+                data_type='INST-VAL',
+                values=array,
+            )
             dss.put_ts(record)
             print('Rule curve:', record.pathname, dates[0], 'through', dates[-1])
     print('Mapped rule curves written:', len(RESERVOIRS))

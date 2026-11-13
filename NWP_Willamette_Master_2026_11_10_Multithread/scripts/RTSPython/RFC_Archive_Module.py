@@ -220,26 +220,29 @@ def format_archive_check(report):
     return '\n'.join(lines)
 
 
-def write_archive(frames, target, version=6):
+def write_archive(frames, target, version=7):
     from pydsstools.heclib.dss import HecDss
     from pydsstools.core import TimeSeriesContainer
     with HecDss.Open(str(target), version=version) as dss:
         # Remove old input members/blocks for these station-products on the staged
         # copy. Preserve computed output F-parts, observations and other records.
-        for record in dss.getPathnameList('/*/*/*/*/*/*/'):
+        for record in dss.search_path('/*/*/*/*/*/*/'):
             parts = str(record).split('/')
             if (len(parts)==8 and not parts[1] and (parts[2].upper(),parts[3].upper()) in frames
                     and parts[5].upper()=='1DAY' and re.fullmatch(r'C:\d{6}\|',parts[6], re.I)):
-                dss.deletePathname(str(record))
+                dss.del_path(str(record))
         for (station,flow), frame in frames.items():
             for member in frame.columns:
                 series = frame[member]
-                tsc = TimeSeriesContainer()
-                tsc.pathname = f'//{station}/{flow}//1Day/C:{int(member):06d}|/'
-                tsc.startDateTime = series.index[0].strftime('%d%b%Y %H%M')
-                tsc.numberValues = len(series); tsc.interval = 1440
-                tsc.units = 'CFS'; tsc.type = 'PER-AVER'
-                tsc.values = np.round(series.to_numpy(dtype=float),1)
+                tsc = TimeSeriesContainer(
+                    pathname=f'//{station}/{flow}//1Day/C:{int(member):06d}|/',
+                    start_time=series.index[0].strftime('%d%b%Y %H%M'),
+                    count=len(series),
+                    interval=1440,
+                    data_units='CFS',
+                    data_type='PER-AVER',
+                    values=np.round(series.to_numpy(dtype=float),1),
+                )
                 dss.put_ts(tsc)
 
 

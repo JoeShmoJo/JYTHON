@@ -27,8 +27,8 @@ def outputs(root,run_type="ensemble"):
     from run_data_cache import needed_record
     codes=set()
     with HecDss.Open(str(Path(root)/'simulation.dss')) as dss:
-        paths=dss.getPathnameList('/*/*/*/*/*/*/')
-        if not paths:paths=dss.getPathnameList('*')
+        paths=dss.search_path('/*/*/*/*/*/*/')
+        if not paths:paths=dss.search_path('*')
         for path in paths:
             parts=str(path).split('/')
             if len(parts)!=8 or not needed_record(parts):continue
@@ -110,7 +110,7 @@ def plot(root,identities):
         directory=root/'standalone-results'/row['id']
         if digest_file(directory/'run-archive.json')!=row['archive_sha256']:raise ValueError('Archive manifest changed')
         with open_archive(directory/'forecast.dss',row['run_code'],row['archive_sha256']) as handle:
-            paths=handle.getPathnameList('/*/*/*/*/*/*/')
+            paths=handle.search_path('/*/*/*/*/*/*/')
             if row.get('run_type','ensemble')=='por':
                 from plot_rts_forecast import target_record
                 groups={}
@@ -136,15 +136,15 @@ def plot(root,identities):
                 except ValueError as error:
                     reference_failures.append({'run':row['label'],'reference':target[2],'location':target[0],'member':member,'path':path,'error':str(error)});continue
                 refkey=(row['id'],target[0],target[1],parts[5].upper(),target[2])
-                entry=references.setdefault(refkey,{'series':{},'units':record.units})
-                if entry['units']!=record.units:raise ValueError('Mixed reference units')
+                entry=references.setdefault(refkey,{'series':{},'units':record.data_units})
+                if entry['units']!=record.data_units:raise ValueError('Mixed reference units')
                 entry['series'][member]=clean_series(record)
             for key,members in groups.items():
                 data={};unit=None
                 for member,path in members.items():
                     record=handle.read_ts(path);data[member]=clean_series(record)
-                    if unit is not None and unit!=record.units:raise ValueError('Mixed plot units')
-                    unit=record.units
+                    if unit is not None and unit!=record.data_units:raise ValueError('Mixed plot units')
+                    unit=record.data_units
                 if key in units and units[key]!=unit:raise ValueError('Compared run units differ')
                 units[key]=unit;frames[row['id'],key]=pd.DataFrame(data)
     keys=sorted({key for _,key in frames})

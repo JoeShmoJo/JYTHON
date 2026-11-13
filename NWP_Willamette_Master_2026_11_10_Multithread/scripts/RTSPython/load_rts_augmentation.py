@@ -3,6 +3,7 @@
 Close RTS forecast/DSSVue views before loading. Live DSS is backed up and a
 complete candidate copy is prepared before replacement. No compute is started.
 """
+from dss3 import dss_datetimes
 from run_archive import archive_digest
 import argparse
 import json
@@ -70,11 +71,12 @@ def main():
             values = np.asarray(ts.values, dtype=float)
             if not len(values) or not np.isfinite(values).all() or (values < 0).any():
                 raise ValueError('Invalid prepared record: ' + path)
-            container = TimeSeriesContainer()
-            container.pathname = path
-            container.startDateTime = ts.pytimes[0].strftime('%d%b%Y %H%M').upper()
-            container.numberValues, container.interval = len(values), 1440
-            container.units, container.type, container.values = 'CFS', 'PER-AVER', values
+            _container_arguments = {}
+            _container_arguments['pathname'] = path
+            _container_arguments['start_time'] = dss_datetimes(ts)[0].strftime('%d%b%Y %H%M').upper()
+            _container_arguments['count'], _container_arguments['interval'] = len(values), 1440
+            _container_arguments['data_units'], _container_arguments['data_type'], _container_arguments['values'] = 'CFS', 'PER-AVER', values
+            container = TimeSeriesContainer(**_container_arguments)
             target.put_ts(container)
     # Replace only after all DSS handles have closed. If Windows holds a lock,
     # replacement fails, preserving live DSS and leaving the backup/candidate.

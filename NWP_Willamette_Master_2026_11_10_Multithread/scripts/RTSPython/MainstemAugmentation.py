@@ -14,6 +14,7 @@ augmentation requirements.
 This script is intended to be run after a simulation has already been computed that has no flow-aug.
 """
 
+from dss3 import dss_datetimes
 import pandas as pd
 from pydsstools.heclib.dss import HecDss
 from pydsstools.core import TimeSeriesContainer
@@ -208,7 +209,7 @@ def readallpaths_dpart(dss_file: str, base_path_dict: dict, dparts: list, fid=No
     # Step 2: read everything
     _opened_here = False
     if fid is None:
-        fid = HecDss.Open(dss_file, version=6)
+        fid = HecDss.Open(dss_file, version=7)
         _opened_here = True
 
     dflist = []
@@ -216,7 +217,7 @@ def readallpaths_dpart(dss_file: str, base_path_dict: dict, dparts: list, fid=No
         for alias, path in combined_path_dict.items():
             try:
                 ts = fid.read_ts(path, trim_missing=True)
-                df = pd.DataFrame(ts.values, columns=[alias], index=np.array(ts.pytimes))
+                df = pd.DataFrame(ts.values.copy(), columns=[alias], index=np.array(dss_datetimes(ts)))
                 dflist.append(df.copy())
             except Exception as e:
                 print(f"[DSS] Failed '{alias}' -> {path} in {os.path.basename(dss_file)}: {e}")
@@ -371,7 +372,7 @@ print("Albany Aug Reservoirs:", AUG_ALBANY_RESERVOIRS_DICT)
 def readallpaths(dss_file, path_dict, fid=None):
     _opened_here = False
     if fid is None:
-        fid = HecDss.Open(dss_file, version=6)
+        fid = HecDss.Open(dss_file, version=7)
         _opened_here = True
 
     dflist = []
@@ -379,7 +380,7 @@ def readallpaths(dss_file, path_dict, fid=None):
         for alias, path in path_dict.items():
             try:
                 ts = fid.read_ts(path, trim_missing=True)
-                df = pd.DataFrame(ts.values, columns=[alias], index=np.array(ts.pytimes))
+                df = pd.DataFrame(ts.values.copy(), columns=[alias], index=np.array(dss_datetimes(ts)))
                 dflist.append(df.copy())
             except Exception as e:
                 msg = f"[DSS] Failed '{alias}' -> {path} in {os.path.basename(dss_file)}: {e}"
@@ -736,7 +737,7 @@ def melt_pivot_to_series(pivot_table, new_name, start_dt, end_dt, fill_value=0.0
     pieces = []
     for year in years:
         ser = pd.Series(
-            df[year].values,
+            df[year].values.copy(),
             index=pd.to_datetime(f"{year}-" + df.index.strftime("%m-%d"))
         )
         pieces.append(ser)
@@ -818,7 +819,7 @@ def write_outflows_to_dss(
     fid=None,  # optional open HecDss handle
 ) -> int:
     """
-    Write series to a DSS-6 file.
+    Write series to a DSS7 file.
 
     If `fid` is provided, it is reused and NOT closed here.
     If `fid` is None, the function opens/closes the DSS file internally.
@@ -873,7 +874,7 @@ def write_outflows_to_dss(
     written = 0
     _opened_here = False
     if fid is None:
-        fid = HecDss.Open(dss_file_write, version=6)
+        fid = HecDss.Open(dss_file_write, version=7)
         _opened_here = True
 
     try:
@@ -881,23 +882,23 @@ def write_outflows_to_dss(
             vals = series.to_numpy(dtype="float64")
             vals = np.round(vals, decimals)
 
-            tsc = TimeSeriesContainer()
-            tsc.pathname = pathname
-            tsc.startDateTime = _dss_datetime(series.index[0])
-            tsc.numberValues = series.shape[0]
-            tsc.units = "CFS"
-            tsc.type = "PER-AVER"
-            tsc.interval = 1440
-            tsc.values = vals
-
+            tsc = TimeSeriesContainer(
+                pathname=pathname,
+                start_time=_dss_datetime(series.index[0]),
+                count=series.shape[0],
+                data_units="CFS",
+                data_type="PER-AVER",
+                interval=1440,
+                values=vals,
+            )
             fid.put_ts(tsc)
             written += 1
-            print(f"[write_outflows_v6] Wrote: {tsc.pathname}")
+            print(f"[write_outflows] Wrote: {tsc.pathname}")
     finally:
         if _opened_here:
             fid.close()
 
-    print(f"[write_outflows_v6] Wrote {written} series to DSS.")
+    print(f"[write_outflows] Wrote {written} series to DSS.")
     return written
 
 
@@ -938,8 +939,8 @@ WY_TYPE_FLOW_ALB = load_wy_type_flow_dict(WY_TYPE_FLOW_ALBANY_CSV)
 # ---------------------------------------------------------
 # Open DSS OUT ONCE (reused for all ensemble years)
 # ---------------------------------------------------------
-fid_in = HecDss.Open(DSS_FILE_IN, version=6)
-fid_out = HecDss.Open(DSS_FILE_OUT, version=6)
+fid_in = HecDss.Open(DSS_FILE_IN, version=7)
+fid_out = HecDss.Open(DSS_FILE_OUT, version=7)
 try:
     # Do the flow aug for each alternative (f-part)
     for fpart in fparts:

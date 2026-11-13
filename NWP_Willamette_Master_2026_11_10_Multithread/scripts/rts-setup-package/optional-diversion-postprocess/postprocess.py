@@ -1,4 +1,5 @@
 """Optional diversion bookkeeping, read-only DSS input and separate CSV outputs."""
+from dss3 import dss_datetimes
 import argparse
 from collections import defaultdict
 import csv
@@ -127,9 +128,9 @@ def read_series(dss,paths):
     samples={};metadata=None
     for path in sorted(paths):
         record=dss.read_ts(path,trim_missing=True)
-        times=pd.DatetimeIndex(record.pytimes)
+        times=pd.DatetimeIndex(dss_datetimes(record))
         values=np.ma.asarray(record.values,dtype=float).filled(np.nan)
-        current=(str(record.units).upper(),str(record.type).upper(),path.split('/')[5].upper())
+        current=(str(record.data_units).upper(),str(record.data_type).upper(),path.split('/')[5].upper())
         if metadata is not None and metadata!=current:raise ValueError('Mixed metadata for logical series')
         metadata=current
         if len(times)!=len(values) or times.has_duplicates or times.hasnans:raise ValueError('Invalid timestamps')
@@ -163,7 +164,7 @@ def run(args):
         with HecDss.Open(str(args.source.resolve())) as dss, gzip.open(args.output/'diversion-audit.csv.gz','wt',newline='') as audit:
             writer=csv.writer(audit);writer.writerow(['member','timestamp','element','scheduled_cfs','effective_cfs','source_included_cfs','delta_to_junction_cfs'])
             catalog=defaultdict(list)
-            for pathname in dss.getPathnameList('/*/*/*/*/*/*/'):
+            for pathname in dss.search_path('/*/*/*/*/*/*/'):
                 parts=str(pathname).split('/')
                 if len(parts)!=8:continue
                 match=re.fullmatch(r'C:(\d+)\|(.*)',parts[6],re.I)

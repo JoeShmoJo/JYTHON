@@ -70,7 +70,7 @@ def capture_run(source, destination, run_code, standalone=False, run_type="ensem
     matcher = re.compile((r'C:\d{6}\|' if run_type=='ensemble' else '') + re.escape(run_code), re.I)
     reads = 0
     with HecDss.Open(str(source)) as dss:
-        catalog=[str(path) for path in dss.getPathnameList('/*/*/*/*/*/*/')]
+        catalog=[str(path) for path in dss.search_path('/*/*/*/*/*/*/')]
         computed_fparts={path.split('/')[6].upper() for path in catalog
                          if len(path.split('/'))==8 and path.split('/')[2].upper().endswith('-POOL')
                          and path.split('/')[3].upper() in ('ELEV','ELEVATION','FLOW-OUT')}

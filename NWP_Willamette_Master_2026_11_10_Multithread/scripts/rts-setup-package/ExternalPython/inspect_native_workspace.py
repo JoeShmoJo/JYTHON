@@ -1,4 +1,5 @@
 """Start installed ResSim's JVM and inspect only an isolated trial workspace."""
+from dss3 import dss_datetimes
 import argparse
 import json
 import os
@@ -22,20 +23,21 @@ def seed_trial_inputs(root, output, members):
               for record in records(root / 'rss' / name)}
     count = 0
     with HecDss.Open(str(root / 'forecast.dss')) as source, HecDss.Open(str(output)) as target:
-        for path in source.getPathnameList('/*/*/*/*/*/*/'):
+        for path in source.search_path('/*/*/*/*/*/*/'):
             logical, member = key(path)
             if logical not in needed or member not in members:
                 continue
             ts = source.read_ts(path, trim_missing=True)
-            if ts.pytimes is None or not len(ts.pytimes):
+            if dss_datetimes(ts) is None or not len(dss_datetimes(ts)):
                 raise ValueError('Empty trial input: ' + path)
-            container = TimeSeriesContainer()
-            container.pathname = path
-            container.startDateTime = ts.pytimes[0].strftime('%d%b%Y %H%M').upper()
-            container.interval = {'1DAY': 1440, '6HOUR': 360}[path.split('/')[5].upper()]
-            container.values = np.ma.asarray(ts.values, dtype=float).filled(-901.0)
-            container.numberValues = len(container.values)
-            container.units, container.type = ts.units, ts.type
+            _container_arguments = {}
+            _container_arguments['pathname'] = path
+            _container_arguments['start_time'] = dss_datetimes(ts)[0].strftime('%d%b%Y %H%M').upper()
+            _container_arguments['interval'] = {'1DAY': 1440, '6HOUR': 360}[path.split('/')[5].upper()]
+            _container_arguments['values'] = np.ma.asarray(ts.values, dtype=float).filled(-901.0)
+            _container_arguments['count'] = len(_container_arguments['values'])
+            _container_arguments['data_units'], _container_arguments['data_type'] = ts.data_units, ts.data_type
+            container = TimeSeriesContainer(**_container_arguments)
             target.put_ts(container)
             count += 1
     print('Seeded input blocks:', count, 'No pool outputs copied.', flush=True)
@@ -46,7 +48,7 @@ def verify_trial_outputs(output, members):
     import numpy as np
     found = {member: set() for member in members}
     with HecDss.Open(str(output)) as source:
-        for path in source.getPathnameList('/*/*/*/*/*/*/'):
+        for path in source.search_path('/*/*/*/*/*/*/'):
             parts = path.split('/')
             for member in found:
                 if (parts[6].upper() in ('C:%06d|C0' % member, 'C:%06d|' % member) and

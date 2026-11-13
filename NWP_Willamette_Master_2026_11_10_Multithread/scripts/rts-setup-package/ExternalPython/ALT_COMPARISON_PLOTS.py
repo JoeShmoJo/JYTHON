@@ -1,3 +1,4 @@
+from dss3 import dss_datetimes
 import os
 from pathlib import Path
 from typing import Dict, List
@@ -61,7 +62,7 @@ def readallpaths(dss_file, path_dict):
     for alias, path in path_dict.items():
         try:
             ts = fid.read_ts(path, trim_missing=True)
-            df = pd.DataFrame(ts.values, columns=[alias], index=np.array(ts.pytimes))
+            df = pd.DataFrame(ts.values.copy(), columns=[alias], index=np.array(dss_datetimes(ts)))
             dflist.append(df.copy())
         except Exception as e:
             msg = f"[DSS] Failed '{alias}' -> {path} in {os.path.basename(os.fspath(dss_file))}: {e}"
@@ -124,7 +125,7 @@ def readallpaths_dpart(dss_file, base_path_dict: dict, dparts: list) -> pd.DataF
     for alias, path in combined_path_dict.items():
         try:
             ts = fid.read_ts(path, trim_missing=True)
-            df = pd.DataFrame(ts.values, columns=[alias], index=np.array(ts.pytimes))
+            df = pd.DataFrame(ts.values.copy(), columns=[alias], index=np.array(dss_datetimes(ts)))
             dflist.append(df.copy())
         except Exception as e:
             print(f"[DSS] Failed '{alias}' -> {path} in {os.path.basename(os.fspath(dss_file))}: {e}")

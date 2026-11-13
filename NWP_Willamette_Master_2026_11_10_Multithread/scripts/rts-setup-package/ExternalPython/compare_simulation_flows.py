@@ -1,4 +1,5 @@
 """Compare selected reservoir outflows and Salem flow; never write DSS records."""
+from dss3 import dss_datetimes
 import argparse
 from collections import defaultdict
 import csv
@@ -46,7 +47,7 @@ def read_series(dss, paths):
     samples = {}; metadata = None
     for path in sorted(paths):
         record = dss.read_ts(path, trim_missing=True)
-        times = getattr(record, 'pytimes', None)
+        times = dss_datetimes(record)
         values = getattr(record, 'values', None)
         if times is None or values is None:
             raise ValueError('No timestamps/values: '+path)
@@ -55,9 +56,9 @@ def read_series(dss, paths):
         if len(times) != len(values) or not len(times) or times.hasnans or times.has_duplicates:
             raise ValueError('Empty or ambiguous block: '+path)
         parts = path.split('/')[1:-1]
-        units = str(record.units).strip().upper()
+        units = str(record.data_units).strip().upper()
         if units in ('FT3/S', 'FT^3/S', 'CFS'): units = 'CFS'
-        current = (units, str(getattr(record, 'type', '')).strip().upper(),
+        current = (units, str(getattr(record, 'data_type', '')).strip().upper(),
                    parts[0].upper(), parts[4].upper())
         if metadata is not None and current != metadata:
             raise ValueError('Mixed units/type/A-part/interval in logical series')
@@ -112,7 +113,7 @@ def main():
     report.mkdir(parents=True)
     rows = []; detail = []; timeline = {}; total_differences = 0
     with HecDss.Open(str(args.parallel.resolve())) as parallel, HecDss.Open(str(args.serial.resolve())) as serial:
-        catalogs = [dss.getPathnameList('/*/*/*/*/*/*/') for dss in (parallel, serial)]
+        catalogs = [dss.search_path('/*/*/*/*/*/*/') for dss in (parallel, serial)]
         grouped = [groups(paths, members, args.run_code or '') for paths in catalogs]
         common = sorted(set(grouped[0][1]) & set(grouped[1][1]))
         if not args.run_code:

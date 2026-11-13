@@ -5,6 +5,7 @@ become complete-day means; instantaneous storage is taken at day end. No native
 results are overwritten by this reader. The calculator writes its usual daily
 augmentation requirement records, which must be mapped in ResSim as before.
 """
+from dss3 import dss_datetimes
 import re
 import numpy as np
 import pandas as pd
@@ -14,8 +15,8 @@ from standalone_model_check import select_output
 def por_fparts(filename,alternative):
     from pydsstools.heclib.dss import HecDss
     with HecDss.Open(str(filename)) as dss:
-        paths=dss.getPathnameList('/*/*/*/*/*/*/')
-        if not paths:paths=dss.getPathnameList('*')
+        paths=dss.search_path('/*/*/*/*/*/*/')
+        if not paths:paths=dss.search_path('*')
     return [select_output(paths,alternative,'por')]
 
 
@@ -49,8 +50,8 @@ def read_daily_por(dss_file,base_path_dict,dparts=None,fid=None):
     owned=fid is None
     if owned:fid=HecDss.Open(str(dss_file))
     try:
-        paths=fid.getPathnameList('/*/*/*/*/*/*/')
-        if not paths:paths=fid.getPathnameList('*')
+        paths=fid.search_path('/*/*/*/*/*/*/')
+        if not paths:paths=fid.search_path('*')
         columns={}
         for alias,requested in base_path_dict.items():
             wanted=requested.upper().split('/')
@@ -64,11 +65,11 @@ def read_daily_por(dss_file,base_path_dict,dparts=None,fid=None):
             pieces=[];kinds=set()
             for path in sorted(matches):
                 ts=fid.read_ts(path,trim_missing=True)
-                kinds.add(str(getattr(ts,'type','')))
+                kinds.add(str(getattr(ts,'data_type','')))
                 values=np.asarray(ts.values,dtype=float).copy()
                 missing=getattr(ts,'nodata',None)
                 if missing is not None and np.asarray(missing).shape==values.shape:values[np.asarray(missing,dtype=bool)]=np.nan
-                pieces.append(pd.Series(values,index=pd.to_datetime(ts.pytimes)))
+                pieces.append(pd.Series(values,index=pd.to_datetime(dss_datetimes(ts))))
             combined=pd.concat(pieces).sort_index()
             # Some readers return the full logical series for each physical
             # block. Collapse equal repeats, reject conflicting repeats.

@@ -1,4 +1,5 @@
 """Immutable RTS baseline versions, result provenance, and an append-only action trail."""
+from dss3 import dss_datetimes
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -101,7 +102,7 @@ def read_fingerprint_series(dss, logical, paths, allow_empty=False):
     samples={};units=kind=None
     for path in sorted(paths):
         record=dss.read_ts(path,trim_missing=True)
-        raw_times=getattr(record,'pytimes',None)
+        raw_times=dss_datetimes(record)
         raw_values=getattr(record,'values',None)
         if raw_times is None or raw_values is None:
             if allow_empty and raw_times is None and raw_values is None:
@@ -113,8 +114,8 @@ def read_fingerprint_series(dss, logical, paths, allow_empty=False):
             continue
         if len(times)!=len(values) or not len(values) or times.has_duplicates or times.hasnans:
             raise ValueError('Empty or ambiguous baseline DSS block: '+path)
-        current_units=unit_key(record.units)
-        current_kind=str(getattr(record,'type','')).strip().upper()
+        current_units=unit_key(record.data_units)
+        current_kind=str(getattr(record,'data_type','')).strip().upper()
         if units is not None and (units,kind)!=(current_units,current_kind):
             raise ValueError('Inconsistent units/type across DSS blocks: '+logical)
         units,kind=current_units,current_kind
@@ -146,7 +147,7 @@ def semantic_fingerprint(filename, run_code):
     from run_archive import is_compact, open_archive
     reader = open_archive(filename, run_code) if is_compact(filename) else HecDss.Open(str(filename))
     with reader as dss:
-        for path in dss.getPathnameList('/*/*/*/*/*/*/'):
+        for path in dss.search_path('/*/*/*/*/*/*/'):
             # Preserve blank pathname parts, including the usually blank A part.
             parts = str(path).split('/')[1:-1]
             if len(parts) != 6:

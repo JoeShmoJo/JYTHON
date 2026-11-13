@@ -6,6 +6,7 @@ Mini simulations will predict elevations for April through October, starting wit
 
 """
 
+from dss3 import dss_datetimes
 import pandas as pd
 from pydsstools.heclib.dss import HecDss
 import numpy as np
@@ -257,7 +258,7 @@ def readallpaths(dss_file, path_dict):
     for alias, path in path_dict.items():
         try:
             ts = fid.read_ts(path, trim_missing=True)
-            df = pd.DataFrame(ts.values, columns=[alias], index=np.array(ts.pytimes))
+            df = pd.DataFrame(ts.values.copy(), columns=[alias], index=np.array(dss_datetimes(ts)))
             dflist.append(df.copy())
         except Exception as e:
             msg = f"[DSS] Failed '{alias}' -> {path} in {os.path.basename(dss_file)}: {e}"
@@ -650,7 +651,7 @@ def melt_pivot_to_series(pivot_table, new_name, start_dt, end_dt, fill_value=0.0
     pieces = []
     for year in years:
         ser = pd.Series(
-            df[year].values,
+            df[year].values.copy(),
             index=pd.to_datetime(f"{year}-" + df.index.strftime("%m-%d"))
         )
         pieces.append(ser)
@@ -778,29 +779,30 @@ def write_outflows_to_dss(
         return 0
 
     written = 0
-    fid = HecDss.Open(dss_file_write, version=6)
+    fid = HecDss.Open(dss_file_write, version=7)
     try:
         for pathname, series in to_write:
             # TRUNCATE (not round) to the requested decimals
             vals = series.to_numpy(dtype="float64")
             vals = np.round(vals, decimals)
-            tsc = TimeSeriesContainer()
-            tsc.pathname = pathname
-            tsc.startDateTime = _dss_datetime(series.index[0])
-            tsc.numberValues = series.shape[0]
-            tsc.units = "CFS"
-            tsc.type = "PER-AVER"
-            tsc.interval = 1440
-            tsc.values = vals
+            _tsc_arguments = {}
+            _tsc_arguments['pathname'] = pathname
+            _tsc_arguments['start_time'] = _dss_datetime(series.index[0])
+            _tsc_arguments['count'] = series.shape[0]
+            _tsc_arguments['data_units'] = "CFS"
+            _tsc_arguments['data_type'] = "PER-AVER"
+            _tsc_arguments['interval'] = 1440
+            _tsc_arguments['values'] = vals
             try:
-                fid.deletePathname(tsc.pathname)  # overwrite if exists
+                fid.del_path(_tsc_arguments['pathname'])  # overwrite if exists
             except Exception:
                 pass
+            tsc = TimeSeriesContainer(**_tsc_arguments)
             fid.put_ts(tsc)
             written += 1
     finally:
         fid.close()
-    print(f"[write_outflows_v6] Wrote {written} series to DSS.")
+    print(f"[write_outflows] Wrote {written} series to DSS.")
     return written
 
 # ==== Main Processing ==== #

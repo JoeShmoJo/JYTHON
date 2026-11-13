@@ -118,7 +118,7 @@ def plot_saved_runs(root, descriptors):
     audit, links = [], []
     with ExitStack() as stack:
         handles = [stack.enter_context(open_cached_run(filename, code)) for filename, code, _ in sources]
-        groups = [output_groups(handle.getPathnameList('/*/*/*/*/*/*/'), source[1], all_members)
+        groups = [output_groups(handle.search_path('/*/*/*/*/*/*/'), source[1], all_members)
                   for handle, source in zip(handles, sources)]
         keys = set().union(*(set(group) for group in groups))
         for number, key in enumerate(sorted(keys), 1):
@@ -132,7 +132,7 @@ def plot_saved_runs(root, descriptors):
                         series = clean_series(record)
                         if series.dropna().empty:
                             raise ValueError('No finite samples')
-                        units.add(unit_key(record.units))
+                        units.add(unit_key(record.data_units))
                         data[member] = series
                         audit.append([descriptor['id'], location, parameter, member, 'read', ''])
                     except Exception as exc:

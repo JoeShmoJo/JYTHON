@@ -16,7 +16,8 @@ shift
 
 REM ====== USER SETTINGS ======
 set "SIM_NAME=SalemAlbanyAug"
-set "ENV_NAME=hydro39"
+set "ENV_NAME=hydro13Nov2026"
+if defined WILLAMETTE_PYTHON_ENV set "ENV_NAME=%WILLAMETTE_PYTHON_ENV%"
 set "PY_SCRIPT_1=RFC_Downloader_Module.py"
 set "PY_SCRIPT_2=CWMS_Downloader_Module.py"
 set "PY_SCRIPT_3=Dummy_0_and_WY_Abundant_Module.py"

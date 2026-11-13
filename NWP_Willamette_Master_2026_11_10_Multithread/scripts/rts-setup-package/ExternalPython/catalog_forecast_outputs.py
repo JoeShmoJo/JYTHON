@@ -33,7 +33,7 @@ def main():
     for path in selected:
         print('\nCATALOG:', path.relative_to(root))
         with HecDss.Open(str(path)) as dss:
-            paths = sorted(dss.getPathnameList('/*/*/*/*/*/*/'))
+            paths = sorted(dss.search_path('/*/*/*/*/*/*/'))
         print('Record count:', len(paths))
         parts = [p.split('/') for p in paths if len(p.split('/')) == 8]
         print('Collection member IDs:', sorted({int(re.match(r'C:(\d+)\|', p[6]).group(1))

@@ -15,6 +15,7 @@ integrating into the main script.
 # ============================================================
 # USER SETTINGS — edit these to match your environment
 # ============================================================
+from dss3 import dss_datetimes
 import os
 from pathlib import Path
 
@@ -143,8 +144,8 @@ def _worker(args):
             try:
                 ts = fid.read_ts(path, trim_missing=True)
                 s = pd.Series(
-                    ts.values,
-                    index=pd.to_datetime(np.array(ts.pytimes)),
+                    ts.values.copy(),
+                    index=pd.to_datetime(np.array(dss_datetimes(ts))),
                     name=alias
                 )
                 results[alias] = s
@@ -254,9 +255,9 @@ def sequential_readallpaths(dss_file, path_dict):
         try:
             ts = fid.read_ts(path, trim_missing=True)
             df_s = pd.DataFrame(
-                ts.values,
+                ts.values.copy(),
                 columns=[alias],
-                index=pd.to_datetime(np.array(ts.pytimes))
+                index=pd.to_datetime(np.array(dss_datetimes(ts)))
             )
             dflist.append(df_s)
         except Exception as e:

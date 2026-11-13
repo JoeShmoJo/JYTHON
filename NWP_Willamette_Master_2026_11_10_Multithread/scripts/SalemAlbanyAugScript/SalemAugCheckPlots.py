@@ -1,3 +1,4 @@
+from dss3 import dss_datetimes
 import pandas as pd
 import importlib
 from pydsstools.heclib.dss import HecDss
@@ -115,7 +116,7 @@ def readallpaths(dss_file, path_dict, start_dt, end_dt):
     for alias, path in path_dict.items():
         try:
             ts = fid.read_ts(path, window=(start_dt, end_dt), trim_missing=True)
-            df = pd.DataFrame(ts.values, columns=[alias], index=np.array(ts.pytimes))
+            df = pd.DataFrame(ts.values.copy(), columns=[alias], index=np.array(dss_datetimes(ts)))
             dflist.append(df.copy())
         except Exception as e:
             msg = f"[DSS] Failed '{alias}' -> {path} in {os.path.basename(dss_file)}: {e}"

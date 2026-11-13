@@ -1,4 +1,5 @@
 """Plot actual RTS ensemble outputs without standalone naming assumptions."""
+from dss3 import dss_datetimes
 import argparse
 import csv
 from datetime import datetime
@@ -62,7 +63,7 @@ def clean_series(record):
     import numpy as np
     import pandas as pd
     values = np.ma.asarray(record.values, dtype=float).filled(np.nan)
-    times = pd.DatetimeIndex(pd.to_datetime(record.pytimes))
+    times = pd.DatetimeIndex(pd.to_datetime(dss_datetimes(record)))
     if len(values) != len(times):
         raise ValueError('DSS timestamp/value length mismatch')
     # Both DSS undefined sentinels and nonfinite values are absent observations.
@@ -93,7 +94,7 @@ def load_rule_curve(dss, location, units, begin, end, csv_path, prefer_csv=False
         if prefer_csv:
             raise LookupError('Using selected CSV source')
         record = dss.read_ts(rule_path, trim_missing=True)
-        if unit_key(record.units) != unit_key(units):
+        if unit_key(record.data_units) != unit_key(units):
             raise ValueError('Rule curve/output units differ')
         curve = clean_series(record)
         curve = curve[(curve.index >= begin) & (curve.index <= end)]
@@ -202,7 +203,7 @@ def main():
     (output / '_plotly.min.js').write_text(plotly.offline.get_plotlyjs(), encoding='utf-8')
     audit, links = [], []
     with HecDss.Open(str(source)) as dss:
-        groups = output_groups(dss.getPathnameList('/*/*/*/*/*/*/'), args.run_code, members | synthetic_members)
+        groups = output_groups(dss.search_path('/*/*/*/*/*/*/'), args.run_code, members | synthetic_members)
         if args.location:
             groups = {key: value for key, value in groups.items() if key[1].upper() == args.location.upper()}
         if not groups:
@@ -222,7 +223,7 @@ def main():
                     valid_values = values.dropna()
                     if valid_values.empty:
                         raise ValueError('No valid values in requested window')
-                    units = str(record.units).strip()
+                    units = str(record.data_units).strip()
                     units_seen.add(unit_key(units))
                     series[member] = values
                     row.update(status='read', samples=len(valid_values), first=str(valid_values.index[0]), last=str(valid_values.index[-1]), units=units)

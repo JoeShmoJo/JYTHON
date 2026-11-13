@@ -35,8 +35,8 @@ def run(root,alternative,code=None,run_type='por',member=None,label=None):
     from pydsstools.heclib.dss import HecDss
     before=signature(source)
     with HecDss.Open(str(source)) as dss:
-        paths=dss.getPathnameList('/*/*/*/*/*/*/')
-        if not paths:paths=dss.getPathnameList('*')
+        paths=dss.search_path('/*/*/*/*/*/*/')
+        if not paths:paths=dss.search_path('*')
     fpart=select_output(paths,alternative,run_type,member,code)
     print('MODEL CHECK selected F-part: '+fpart,flush=True)
     folder=watershed/'scripts/model_check'

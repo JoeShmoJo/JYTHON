@@ -1,7 +1,7 @@
 """Jython-compatible desktop Python discovery for both workflow menus."""
 import os
 
-ENVIRONMENTS = ('ResSim12Nov2026', 'hydro39')
+ENVIRONMENTS = (os.environ.get('WILLAMETTE_PYTHON_ENV', 'hydro13Nov2026'),)
 
 
 def python_executable():
@@ -24,4 +24,4 @@ def python_executable():
             candidate = os.path.join(directory, environment, 'python.exe')
             if os.path.isfile(candidate):
                 return candidate
-    raise IOError('Could not find ResSim12Nov2026 (or legacy hydro39). Run PythonSetup1stTime/Install-WorkflowEnvironment.ps1.')
+    raise IOError('Could not find %s. Install the modern Python test environment first.' % ENVIRONMENTS[0])

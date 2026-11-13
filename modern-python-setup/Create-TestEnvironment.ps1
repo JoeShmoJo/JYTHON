@@ -147,7 +147,7 @@ try {
     Write-Host "Evidence and log: $runDirectory"
     Write-Host "Verified wheels: $WheelDirectory"
     Write-Host "Activate in a Conda-enabled terminal: conda activate $EnvironmentName"
-    Write-Host 'Application migration to pydsstools 3 and GUI environment selection remain separate work.'
+    Write-Host 'Package checks passed. Test the migrated scripts and native HEC workflow on the test branch.'
 } finally {
     $ProgressPreference = $previousProgress
     [Net.ServicePointManager]::SecurityProtocol = $previousTls

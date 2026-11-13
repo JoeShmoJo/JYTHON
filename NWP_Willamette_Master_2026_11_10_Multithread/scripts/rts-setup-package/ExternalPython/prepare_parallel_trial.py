@@ -32,7 +32,7 @@ def main():
     from pydsstools.heclib.dss import HecDss
     available = set()
     with HecDss.Open(str(source / 'forecast.dss')) as dss:
-        for path in dss.getPathnameList('/*/*/*/*/*/*/'):
+        for path in dss.search_path('/*/*/*/*/*/*/'):
             available.add(key(path))
     for template in templates:
         for record in records(template):

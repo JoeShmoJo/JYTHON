@@ -1,4 +1,5 @@
 """Read-only RTS augmentation input audit. Does not calculate or write releases."""
+from dss3 import dss_datetimes
 import argparse
 from pathlib import Path
 import re
@@ -27,7 +28,7 @@ def logical_outputs(paths, run_code, members):
 def inspect_series(dss, path, start, end):
     record = dss.read_ts(path, trim_missing=True)
     series = pd.Series(np.asarray(record.values, dtype=float),
-                       index=pd.DatetimeIndex(record.pytimes)).sort_index()
+                       index=pd.DatetimeIndex(dss_datetimes(record))).sort_index()
     if series.index.has_duplicates:
         raise ValueError('Duplicate timestamps')
     series = series.loc[start:end]
@@ -40,7 +41,7 @@ def inspect_series(dss, path, start, end):
         raise ValueError('Coverage {} to {}'.format(series.index[0], series.index[-1]))
     if (series.index.to_series().diff().dropna() != pd.Timedelta(days=1)).any():
         raise ValueError('Not a continuous daily series')
-    return len(series), record.units
+    return len(series), record.data_units
 
 
 def main():
@@ -67,7 +68,7 @@ def main():
     print('READ ONLY:', filename, flush=True)
     print('Checking daily coverage:', start.date(), 'through', end.date(), flush=True)
     with HecDss.Open(str(filename)) as dss:
-        paths = dss.getPathnameList('/*/*/*/*/*/*/')
+        paths = dss.search_path('/*/*/*/*/*/*/')
         outputs = logical_outputs(paths, args.run_code, members)
         # Report naming once: the legacy calculator's rule/state-variable names
         # may differ from the imported network. No guessing or substitutions.

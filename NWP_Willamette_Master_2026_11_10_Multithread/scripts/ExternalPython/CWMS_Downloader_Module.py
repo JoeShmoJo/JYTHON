@@ -201,7 +201,7 @@ def _infer_dss_meta_from_path(pathname: str) -> Tuple[int, str]:
         return 360, "INST-VAL"
     return 1440, "PER-AVER"
 
-def _write_series_v6(fid, pathname: str, series: pd.Series, units: str, interval_min: int, dss_type: str, decimals: int = 2):
+def _write_series(fid, pathname: str, series: pd.Series, units: str, interval_min: int, dss_type: str, decimals: int = 2):
     if series is None or series.empty:
         return False
 
@@ -212,15 +212,15 @@ def _write_series_v6(fid, pathname: str, series: pd.Series, units: str, interval
             raise ValueError('Historical CWMS series has gaps or unexpected spacing; refusing to compress timestamps')
     start_dt = series.index[0].strftime("%d%b%Y %H%M").upper()
 
-    tsc = TimeSeriesContainer()
-    tsc.pathname = pathname
-    tsc.startDateTime = start_dt
-    tsc.numberValues = len(series)
-    tsc.units = units
-    tsc.type = dss_type
-    tsc.interval = interval_min
-    tsc.values = np.round(series.to_numpy(dtype="float64"), decimals)
-
+    tsc = TimeSeriesContainer(
+        pathname=pathname,
+        start_time=start_dt,
+        count=len(series),
+        data_units=units,
+        data_type=dss_type,
+        interval=interval_min,
+        values=np.round(series.to_numpy(dtype="float64"), decimals),
+    )
     fid.put_ts(tsc)
     return True
 
@@ -258,7 +258,7 @@ def cwms_download_and_write(
     if out_dir:
         os.makedirs(out_dir, exist_ok=True)
 
-    fid = HecDss.Open(DSS_FILE_OUT, version=6)
+    fid = HecDss.Open(DSS_FILE_OUT, version=7)
     try:
         for i, (tsid, dss_path) in enumerate(tsid_to_dss.items(), start=1):
             print(f"[CWMS] ({i}/{len(tsid_to_dss)}) START  tsid={tsid} -> dss={dss_path}")
@@ -289,7 +289,7 @@ def cwms_download_and_write(
                 if force_dss_type is not None:
                     dss_type = force_dss_type
 
-                ok = _write_series_v6(
+                ok = _write_series(
                     fid=fid,
                     pathname=dss_path,
                     series=s,

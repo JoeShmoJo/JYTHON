@@ -162,8 +162,8 @@ def main():
         requirements[member] = pd.read_csv(scheme / ('member-{}.csv'.format(member)), index_col=0, parse_dates=True)
     baseline_file = baseline_directory(root, manifest) / 'forecast.dss'
     with open_cached_run(baseline_file, manifest['run_code']) as baseline_dss, open_cached_run(results / 'forecast.dss', manifest['run_code']) as augmented_dss:
-        bg = output_groups(baseline_dss.getPathnameList('/*/*/*/*/*/*/'), manifest['run_code'], historical | synthetic)
-        ag = output_groups(augmented_dss.getPathnameList('/*/*/*/*/*/*/'), manifest['run_code'], historical | synthetic)
+        bg = output_groups(baseline_dss.search_path('/*/*/*/*/*/*/'), manifest['run_code'], historical | synthetic)
+        ag = output_groups(augmented_dss.search_path('/*/*/*/*/*/*/'), manifest['run_code'], historical | synthetic)
         for index, key in enumerate(sorted(set(bg) | set(ag))):
             _, location, parameter, interval = key
             frames, units = [], None
@@ -175,7 +175,7 @@ def main():
                         if path is None:
                             raise ValueError('Output record absent')
                         record = dss.read_ts(path, trim_missing=True)
-                        record_units = unit_key(record.units)
+                        record_units = unit_key(record.data_units)
                         if units is not None and record_units != units:
                             raise ValueError('Output units differ: ' + record_units)
                         units = record_units
