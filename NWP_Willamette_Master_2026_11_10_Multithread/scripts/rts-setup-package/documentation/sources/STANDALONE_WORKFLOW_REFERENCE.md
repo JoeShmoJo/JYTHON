@@ -70,3 +70,5 @@ The loaded configuration is scoped by simulation, alternative and covered member
 in `standalone-augmentation-active.json`. Original/global CSV files and RTS
 activation are unchanged. Existing skip-trial settings still apply. Recompute
 only after checking successful loading, and restart ResSim after updating scripts.
+
+Both main GUIs now include named archive, refresh, plot and delete controls. See [saved results](STANDALONE_SAVED_RESULTS.md#named-result-archives-on-the-main-gui) for naming, reminders, deletion dependencies and RTS workflow-archive behavior.

@@ -15,7 +15,7 @@ $names = @('RFC_Downloader_Module.py', 'CWMS_Downloader_Module.py',
     'write_ensemble_shared_inputs.py', 'ensemble_ids.py', 'catalog_forecast_outputs.py', 'plot_rts_forecast.py',
     'check_augmentation_inputs.py', 'augmentation_mapping.py',
     'prepare_rts_augmentation.py', 'load_rts_augmentation.py', 'plot_rts_augmentation.py', 'rts_workflow.py',
-    'rts_model_check.py', 'baseline_versions.py', 'workflow_simple.py', 'plot_rts_runs.py', 'run_data_cache.py', 'run_archive.py', 'baseline_configuration.py', 'standalone_jobs.py')
+    'rts_model_check.py', 'baseline_versions.py', 'workflow_simple.py', 'plot_rts_runs.py', 'run_data_cache.py', 'run_archive.py', 'baseline_configuration.py', 'standalone_jobs.py', 'archive_operations.py', 'saved_results_actions.py')
 foreach ($name in $names) {
     if (-not (Test-Path -LiteralPath (Join-Path $PSScriptRoot "ExternalPython\$name"))) {
         throw "Missing installation source: $name"
@@ -36,6 +36,11 @@ $items += [pscustomobject]@{
     Source = Join-Path $PSScriptRoot 'RTS_WORKFLOW_MENU.py'
     Target = Join-Path $WatershedRoot 'scripts\RTS_WORKFLOW_MENU.py'
     Backup = Join-Path $backup 'RTS_WORKFLOW_MENU.py'
+}
+$items += [pscustomobject]@{
+    Source = Join-Path $PSScriptRoot 'saved_results_panel.py'
+    Target = Join-Path $WatershedRoot 'scripts\saved_results_panel.py'
+    Backup = Join-Path $backup 'saved_results_panel.py'
 }
 $svTarget = Join-Path $WatershedRoot 'scripts\externalSVs\MainstemFlowAugSV.py'
 if (-not (Test-Path -LiteralPath $svTarget)) {

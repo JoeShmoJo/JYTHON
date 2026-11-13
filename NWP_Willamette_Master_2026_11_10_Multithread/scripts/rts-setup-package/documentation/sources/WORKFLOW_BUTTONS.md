@@ -42,3 +42,5 @@ Short forecast days is the number of days of member-specific inflows used before
 [Model Check](MODEL_CHECK.md) explains reports and coverage. [Plotting](RTS_PLOTTING.md) explains historical bands, synthetic members, and reference lines. [Baseline configuration](RTS_BASELINE_CONFIGURATION.md) explains applied snapshots and initialization receipts.
 
 Baseline Configuration includes **Baseline flow augmentation: Off / Basic MainstemFlowAug (single compute)**. This is part of the baseline settings in both RTS and standalone; Augmentation Configuration remains the separate two-step calculator.
+
+Both main GUIs now include named archive, refresh, plot and delete controls. See [saved results](STANDALONE_SAVED_RESULTS.md#named-result-archives-on-the-main-gui) for naming, reminders, deletion dependencies and RTS workflow-archive behavior.

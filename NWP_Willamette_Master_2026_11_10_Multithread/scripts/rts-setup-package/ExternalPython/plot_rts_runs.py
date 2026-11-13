@@ -33,6 +33,11 @@ def validate_run(root, descriptor):
         directory = baseline_directory(root, {'baseline_id': identity, 'baseline_sha256': item['sha256']})
         digest, code = item['sha256'], item['run_code']
         scheme = None
+    elif descriptor['kind'] == 'named':
+        from archive_operations import archive_directory
+        directory=archive_directory(root,'augmentation-archives/named-results',descriptor['id'])
+        metadata=json.loads((directory/'capture.json').read_text(encoding='utf-8'))
+        digest,code,scheme=metadata['sha256'],metadata['run_code'],None
     elif descriptor['kind'] == 'augmented':
         directory = result_directory(root, descriptor['directory'])
         metadata = json.loads((directory / 'capture.json').read_text())
@@ -197,7 +202,7 @@ def plot_saved_runs(root, descriptors):
     data = registry(root)
     notes = []
     for number, item in enumerate(descriptors, 1):
-        status = 'Current baseline' if item['baseline_id'] == data['current'] else 'Previous baseline'
+        status = 'Named snapshot (no fixed baseline pairing)' if item['kind']=='named' else ('Current baseline' if item['baseline_id'] == data['current'] else 'Previous baseline')
         notes.append('Run {}: {} — {} ({})'.format(number, item['label'], status, item['baseline_id']))
     if len({item['baseline_id'] for item in descriptors}) > 1:
         notes.append('These runs use different baselines. Differences include baseline changes as well as augmentation.')

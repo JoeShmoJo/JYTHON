@@ -65,6 +65,7 @@ async function main() {
     current=await openPage(browser,'standalone_results.html',async (url,data)=>{
       if(url==='/archives')return {runs:rows};
       if(url==='/list')return {runs:rows,outputs:locked?[]:['Con_Season1'],notices:locked?['Live DSS is locked']:[]};
+      if(url==='/delete'){assert.equal(data.id,'run-result');assert.equal(data.confirmed,true);rows=rows.filter(row=>row.id!==data.id);return {deleted:data.id}}
       if(url==='/capture'){assert.equal(data.baseline_id,baseline.id);assert.equal(data.kind,'result');
         const row={...baseline,id:'run-result',label:'Augmented result',kind:'result'};rows=[row,baseline];return row}
       throw Error('Unexpected API '+url);
@@ -78,6 +79,13 @@ async function main() {
     assert.equal(await page.inputValue('#name'),'Augmented result');
     await page.click('#capture');await page.waitForFunction(()=>document.querySelector('#runs').value==='run-result'&&!document.querySelector('#plot').disabled);
     assert.equal(await page.locator('#runs option').count(),2);
+    assert.equal(await page.inputValue('#name'),'');
+    await page.fill('#name','  FIRST BASELINE  ');await page.click('#capture');
+    await page.waitForFunction(()=>document.querySelector('#status').textContent.includes('already exists'));
+    assert.equal(await page.locator('#runs option').count(),2);
+    await page.click('#delete');
+    await page.waitForFunction(()=>document.querySelector('#runs').options.length===1&&!document.querySelector('#refresh').disabled);
+    assert.match(await page.textContent('#status'),/Deleted/);
     assert.deepEqual(current.errors,[]);await page.close();
     console.log('PASS: existing archives with locked live DSS, baseline pairing and refresh preserves selections');
 

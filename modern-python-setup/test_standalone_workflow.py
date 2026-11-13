@@ -183,6 +183,9 @@ class StandaloneWorkflowTests(unittest.TestCase):
             self.assertEqual(post('/archives',{})['runs'][0]['id'],row['id'])
             state=post('/list',{});self.assertEqual(state['outputs'],['Con_Season0'])
             self.assertEqual(state['runs'][0]['id'],row['id'])
+            with self.assertRaises(urllib.error.HTTPError):post('/delete',dict(id=row['id'],confirmed=False))
+            self.assertEqual(post('/delete',dict(id=row['id'],confirmed=True))['deleted'],row['id'])
+            self.assertEqual(post('/archives',{})['runs'],[])
         self.request_editor(results.serve,(self.root,'Con_Season','ensemble'),inspect)
 
     def test_augmentation_editor_http_saves_without_loading(self):

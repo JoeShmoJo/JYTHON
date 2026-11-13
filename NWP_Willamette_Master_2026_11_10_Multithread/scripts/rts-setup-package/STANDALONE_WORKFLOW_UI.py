@@ -28,7 +28,7 @@ class Menu:
         self.log = None
         self.frame = JFrame('Standalone ResSim workflow')
         self.frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE)
-        self.text = JTextArea(9, 90)
+        self.text = JTextArea(5, 90)
         self.text.setEditable(False)
         self.text.setLineWrap(True)
         self.text.setWrapStyleWord(True)
@@ -66,9 +66,19 @@ class Menu:
         buttons.add(JButton('Model Check', actionPerformed=lambda e: self.open_results(True)))
         self.frame.add(buttons, BorderLayout.NORTH)
         self.frame.add(JScrollPane(self.text), BorderLayout.CENTER)
+        from saved_results_panel import SavedResultsPanel
+        self.archives=SavedResultsPanel(self,'standalone',scripts,python,self.archive_context)
+        self.frame.add(self.archives,BorderLayout.SOUTH)
         self.frame.pack()
         self.frame.setLocationRelativeTo(None)
         self.frame.setVisible(True)
+    def archive_context(self):
+        if self.simulation.getSelectedIndex()==0 or not str(self.alternative.getText()).strip():
+            raise RuntimeError('Select a simulation and alternative first.')
+        simulation=str(self.simulation.getSelectedItem()).replace(' ','_')
+        return dict(mode='standalone',dss_path=os.path.join(root,'rss',simulation,'simulation.dss'),
+                    model_alternative=str(self.alternative.getText()).strip(),
+                    run_type='por' if self.run_type.getSelectedIndex()==1 else 'ensemble')
     def update_mode(self, event):
         for button in self.ensemble_buttons:
             button.setEnabled(self.run_type.getSelectedIndex() == 0)
@@ -85,7 +95,7 @@ class Menu:
         if not os.path.isfile(filename):
             JOptionPane.showMessageDialog(self.frame, 'Install the standalone configuration editor first.')
             return
-        if JOptionPane.showConfirmDialog(self.frame, 'Finish all computes before Apply. Confirm this matches ResSim Simulation Control:\nSimulation: ' + simulation + '\nAlternative: ' + alternative + '\nDirectory: ' + os.path.join(root, 'rss', simulation), 'Standalone configuration', JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION:
+        if JOptionPane.showConfirmDialog(self.frame, 'Archive current results first if you want to keep them. Finish all computes before Apply. Confirm this matches ResSim Simulation Control:\nSimulation: ' + simulation + '\nAlternative: ' + alternative + '\nDirectory: ' + os.path.join(root, 'rss', simulation), 'Standalone configuration', JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION:
             return
         directory = os.path.join(root, 'standalone-workflow-logs')
         if not os.path.isdir(directory): os.makedirs(directory)
@@ -145,7 +155,7 @@ class Menu:
             JOptionPane.showMessageDialog(self.frame, 'Select the simulation and alternative first. Review and Apply Baseline Configuration before running jobs.')
             return
         if job not in ('archive-check','archive-extract') and JOptionPane.showConfirmDialog(self.frame,
-            title + '\nSimulation: ' + simulation + '\nAlternative: ' + alternative + '\nUses applied Baseline Configuration job settings. Save Simulation Control dates first. Confirm no compute is running and DSS views are closed.',
+            title + '\nSimulation: ' + simulation + '\nAlternative: ' + alternative + '\nUses applied Baseline Configuration job settings. Save Simulation Control dates first. Archive current results first if you want to keep them. Confirm no compute is running and DSS views are closed.',
             'Run standalone scripts', JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION:
             return
         run_type = 'por' if self.run_type.getSelectedIndex() == 1 else 'ensemble'

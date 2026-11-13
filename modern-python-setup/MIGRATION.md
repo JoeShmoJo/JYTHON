@@ -93,3 +93,19 @@ Regression checks: `python modern-python-setup/test_baseline_augmentation.py`
 (and `--backend RTSPython` or `--backend rts-setup-package/ExternalPython`), plus
 `test_standalone_workflow.py` and the Playwright `test_standalone_browser.cjs`.
 Native HEC compute still requires a Windows ResSim/RTS functionality test.
+
+### Named archives on the main workflow GUI
+
+The shared Jython `saved_results_panel.py` calls the host-specific CPython
+`saved_results_actions.py` without launching a compute. Standalone reuses its
+existing snapshots; RTS named snapshots live under `augmentation-archives/named-results`
+and coexist with workflow-managed baselines/schemes. Duplicate names are rejected
+by both the UI and backend, and file locks serialize creation/deletion. Dependencies
+protect standalone baselines and RTS workflow baselines remain retained.
+
+Verification: `test_saved_results_actions.py` (and `--host rts`),
+`test_standalone_workflow.py`, and `test_standalone_browser.cjs`.
+`check_saved_results_panel_jython.py` runs under Jython 2.7 with a JSON fixture describing
+the host, script_root, backend, Python executable and context; it exercises the real
+headless Swing panel and background processes for both hosts. Native HEC compute
+is still tested manually in Windows.

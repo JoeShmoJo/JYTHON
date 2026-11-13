@@ -1,6 +1,7 @@
 <!doctype html><meta charset="utf-8"><title>Standalone saved results</title>
 <style>body{font:16px system-ui;max-width:1000px;margin:30px auto}input,select,button{font:inherit;padding:8px;margin:6px}label{display:block}pre{white-space:pre-wrap}.hint{color:#43566a}button:disabled{opacity:.5}</style>
 <h1>Standalone saved results</h1><p id="target"></p>
+<p><strong>Archive current results before the next compute if you want to keep them. Refresh does not save them.</strong></p>
 <p>Finish and check the native compute before archiving. Archiving saves a snapshot; plotting uses those saved snapshots.</p>
 <pre id="status" role="status">Loading completed outputs and saved runs…</pre>
 <button id="refresh">Refresh completed outputs and saved runs</button>
@@ -14,7 +15,7 @@
 <hr><h2>Plot archived results</h2><p>Select one or two runs (Ctrl-click for two).</p>
 <p id="empty" class="hint">Loading saved runs…</p>
 <select multiple size="10" id="runs" style="width:95%" disabled></select><br>
-<button id="plot" disabled>Plot selected saved runs</button><button id="close">Close</button>
+<button id="plot" disabled>Plot selected saved runs</button><button id="delete" disabled>Delete selected archive</button><button id="close">Close</button>
 <script>
 const TOKEN=__TOKEN__,TARGET=__TARGET__,RUN_TYPE=__RUN_TYPE__;
 const el=id=>document.getElementById(id);
@@ -32,6 +33,7 @@ function controls(){
   el('runs').disabled=busy||!el('runs').options.length;
   const n=el('runs').selectedOptions.length;
   el('plot').disabled=busy||n<1||n>2;
+  el('delete').disabled=busy||n!==1;
 }
 async function call(path,data){
   const response=await fetch(path,{method:'POST',headers:{'X-Editor-Token':TOKEN,'Content-Type':'application/json'},body:JSON.stringify(data),cache:'no-store'});
@@ -43,7 +45,7 @@ function renderRuns(rows,selectId){
   const previous=el('baseline').value;
   el('runs').replaceChildren();el('baseline').replaceChildren();
   for(const row of rows){
-    const label=row.label+' ['+row.kind+'] '+row.alternative+' / '+row.created_utc;
+    const label=row.label+' ['+row.kind+'] '+row.alternative+' / '+new Date(row.created_utc).toLocaleString()+' / '+row.id.slice(-8);
     const option=new Option(label,row.id);option.selected=selected.has(row.id);el('runs').add(option);
     if(row.kind==='baseline'&&row.alternative===ALTERNATIVE)el('baseline').add(new Option(label,row.id));
   }
@@ -68,14 +70,27 @@ async function refresh(selectId,success){
 async function task(message,fn){if(busy)return;busy=true;controls();el('status').textContent=message;try{await fn()}catch(error){el('status').textContent=error.message}finally{busy=false;controls()}}
 el('refresh').onclick=()=>task('Loading completed outputs and saved runs…',()=>refresh());
 el('capture').onclick=()=>{
+  const duplicate=currentRows.find(row=>row.label.trim().toLocaleLowerCase()===el('name').value.trim().toLocaleLowerCase());
+  if(duplicate){el('status').textContent='An archive named "'+duplicate.label+'" already exists, saved '+new Date(duplicate.created_utc).toLocaleString()+'. Enter a different name; it has not been replaced.';return}
+
   if(!confirm('Has this unaugmented or augmented native compute finished successfully for every intended member and date? Archive it now?'))return;
   task('Archiving completed results…',async()=>{
     const row=await call('/capture',{label:el('name').value,code:el('output').value,kind:el('kind').value,baseline_id:el('baseline').value,confirmed:true});
     renderRuns([row,...currentRows.filter(item=>item.id!==row.id)],row.id);
-    const success='Archived “'+row.label+'”. It is selected below and ready to plot.';
+    el('name').value='';
+    const success='Archived “'+row.label+'” at '+new Date(row.created_utc).toLocaleString()+'. It is selected below and ready to plot.';
     el('status').textContent=success;
     try{await refresh(row.id,success)}catch(error){el('status').textContent=success+'\nOutput refresh failed: '+error.message}
   });
+};
+el('delete').onclick=()=>{
+ const row=currentRows.find(item=>item.id===el('runs').value);if(!row)return;
+ if(!confirm('Permanently delete "'+row.label+'", saved '+new Date(row.created_utc).toLocaleString()+'? Live results and exported plots are kept. Referenced baselines are protected.'))return;
+ task('Deleting saved archive…',async()=>{await call('/delete',{id:row.id,confirmed:true});
+   renderRuns(currentRows.filter(item=>item.id!==row.id));
+   const success='Deleted "'+row.label+'".';el('status').textContent=success;
+   try{await refresh(null,success)}catch(error){el('status').textContent=success+' Refresh failed: '+error.message}
+ });
 };
 el('plot').onclick=()=>task('Preparing plots…',async()=>{const result=await call('/plot',{ids:[...el('runs').selectedOptions].map(o=>o.value)});el('status').textContent='Plots: '+result.path});
 el('close').onclick=()=>task('Closing…',async()=>{await call('/close',{});document.body.textContent='Closed'});

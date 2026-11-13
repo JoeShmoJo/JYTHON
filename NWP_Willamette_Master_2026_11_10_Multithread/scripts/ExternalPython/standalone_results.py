@@ -22,6 +22,26 @@ def catalog(root):
     return sorted(runs,key=lambda row:row['created_utc'],reverse=True)
 
 
+def delete_archive(root,identity,confirmed=False):
+    from archive_operations import archive_directory,archive_lock,history
+    if not confirmed:raise ValueError('Confirm deletion of the selected saved archive.')
+    root=Path(root)
+    with archive_lock(root):
+        folder=archive_directory(root,'standalone-results',identity)
+        row=json.loads((folder/'capture.json').read_text(encoding='utf-8'))
+        dependents=[item['label'] for item in catalog(root) if item['id']!=identity and item.get('baseline_id')==identity]
+        if dependents:raise ValueError('This baseline is used by saved results: '+', '.join(dependents)+'. Delete those results first.')
+        marker=root/'standalone-augmentation-active.json'
+        references=list((root/'standalone-augmentation-schemes').glob('scheme-*/manifest.json'))
+        if marker.exists():references.append(marker)
+        if any(json.loads(path.read_text(encoding='utf-8')).get('baseline_id')==identity for path in references):
+            raise ValueError('This baseline is referenced by an augmentation scheme and cannot be deleted.')
+        history(root,'archive-delete-requested',id=identity,capture=row)
+        shutil.rmtree(folder)
+        history(root,'archive-deleted',id=identity,label=row['label'])
+    return {'deleted':identity,'label':row['label']}
+
+
 def saved_runs(root,run_type):
     return [row for row in catalog(root) if row.get('run_type','ensemble')==run_type]
 
@@ -59,11 +79,19 @@ def outputs(root,run_type="ensemble"):
 
 
 def capture(root,alternative,label,code,kind,baseline_id=None,confirmed=False,run_type="ensemble"):
+    from archive_operations import archive_lock
+    with archive_lock(root):
+        return _capture(root,alternative,label,code,kind,baseline_id,confirmed,run_type)
+
+
+def _capture(root,alternative,label,code,kind,baseline_id=None,confirmed=False,run_type="ensemble"):
     root=Path(root)
     if run_type not in ('ensemble','por'):raise ValueError('Invalid run type')
     if not confirmed:raise ValueError('Confirm successful compute before capturing results')
     if kind not in ('baseline','result') or not isinstance(label,str) or not label.strip():raise ValueError('Choose baseline/result and a name')
     saved={row['id']:row for row in catalog(root)}
+    from archive_operations import unique_name
+    label=unique_name(label,saved.values())
     if kind=='result' and (baseline_id not in saved or saved[baseline_id]['kind']!='baseline'):
         raise ValueError('Select an archived baseline for this result')
     if kind=='result' and saved[baseline_id]['alternative']!=alternative:
@@ -111,6 +139,8 @@ def capture(root,alternative,label,code,kind,baseline_id=None,confirmed=False,ru
               'scope':'Configuration provenance is the applied snapshot at capture, not independent proof that it produced every output. Catalog-selected members for this output suffix. Presence does not prove freshness; capture only after checking full native completion.'}
         if signature(source)!=before:raise ValueError('Simulation DSS changed during capture')
         atomic_json(pending/'capture.json',data);pending.rename(archive/identity)
+        from archive_operations import history
+        history(root,'archive-created',id=identity,label=label,created_utc=data['created_utc'])
         return dict(data,id=identity)
     except BaseException:
         # Partial captures are not published in the run-* catalog.
@@ -118,6 +148,11 @@ def capture(root,alternative,label,code,kind,baseline_id=None,confirmed=False,ru
 
 
 def plot(root,identities):
+    from archive_operations import archive_lock
+    with archive_lock(root):return _plot(root,identities)
+
+
+def _plot(root,identities):
     from plot_rts_forecast import output_groups,clean_series,make_figure
     import pandas as pd
     from plotly.offline import get_plotlyjs
@@ -295,6 +330,8 @@ def serve(root,alternative,run_type="ensemble",check_only=False):
                     if not task_lock.acquire(False):raise ValueError('Another archive task is running')
                     try:result=capture(root,alternative,run_type=run_type,**data)
                     finally:task_lock.release()
+                elif self.path=='/delete':
+                    with task_lock:result=delete_archive(root,data['id'],data.get('confirmed',False))
                 elif self.path=='/model_check':
                     if not task_lock.acquire(False):raise ValueError('Another result task is running')
                     try:path=model_check_job(root,alternative,run_type,data.get('member'),data.get('label'))

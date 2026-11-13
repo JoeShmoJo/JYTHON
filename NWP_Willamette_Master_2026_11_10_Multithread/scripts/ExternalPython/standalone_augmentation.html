@@ -55,7 +55,7 @@ el('save').onclick=()=>task('Saving configuration…',async()=>{const value=awai
  el('status').textContent='Configuration saved. No releases were calculated or loaded.';
 });
 el('calculate').onclick=()=>{
- if(!confirm('Confirm the chosen baseline uses the intended baseline settings, all computes are finished, and DSS views are closed. Calculate from this saved baseline and load releases into the displayed simulation?'))return;
+ if(!confirm('Archive current live results first if you want to keep them. Confirm the chosen baseline uses the intended baseline settings, all computes are finished, and DSS views are closed. Calculate from this saved baseline and load releases into the displayed simulation?'))return;
  task('Calculating from the saved baseline and staging releases…',async()=>{const result=await call('/calculate',{baseline_id:el('baseline').value,configuration:configuration(),confirmed:true});
  el('status').textContent='Loaded “'+result.configuration_name+'” from the selected saved baseline.\nRun the augmented trial manually in ResSim, then archive it as a result paired with that baseline.\nPrevious simulation retained with scheme: '+result.scheme;
  });

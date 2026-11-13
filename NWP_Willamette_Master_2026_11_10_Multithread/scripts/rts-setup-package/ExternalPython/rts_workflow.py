@@ -134,6 +134,10 @@ def execute(args, context):
             print('No archived augmented results yet.', flush=True)
         return
     if args.action == 'delete-result':
+        if settings.get('named_id'):
+            from saved_results_actions import delete_named
+            delete_named(root,settings['named_id'],settings.get('confirmed',False))
+            return
         delete_result(root, settings['result_dir'], include_plots=settings.get('include_plots', False))
         return
     if args.action == 'link-baseline':

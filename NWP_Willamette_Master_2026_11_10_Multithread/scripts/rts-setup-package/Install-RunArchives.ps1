@@ -9,7 +9,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $target 'workflow_simple.py'))) {
 }
 $names = @('run_archive.py','run_data_cache.py','baseline_versions.py','workflow_simple.py',
     'prepare_rts_augmentation.py','load_rts_augmentation.py','plot_rts_augmentation.py',
-    'plot_rts_runs.py','rts_workflow.py')
+    'plot_rts_runs.py','rts_workflow.py','archive_operations.py','saved_results_actions.py')
 foreach ($name in $names) {
     if (-not (Test-Path -LiteralPath (Join-Path $PSScriptRoot "ExternalPython\$name"))) {
         throw "Missing installation source: $name"

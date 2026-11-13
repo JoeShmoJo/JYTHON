@@ -61,7 +61,7 @@ def bundle_runtime(source, watershed):
         else:
             shutil.copy2(source/relative,destination/target)
     for name in ('OPEN_WORKFLOW.py','workflow_host.py','workflow_python.py','STANDALONE_WORKFLOW_MENU.py',
-                 'STANDALONE_WORKFLOW_UI.py','RTS_WORKFLOW_MENU.py','runtime-host-adapter.py'):
+                 'STANDALONE_WORKFLOW_UI.py','RTS_WORKFLOW_MENU.py','runtime-host-adapter.py','saved_results_panel.py'):
         shutil.copy2(source/name,scripts/name)
     shutil.copy2(source/'baseline-runtime/rts_baseline_runtime.py',scripts/'rts_baseline_runtime.py')
 

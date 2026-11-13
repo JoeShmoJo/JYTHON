@@ -313,7 +313,10 @@ class ResultsWindow(JDialog):
         self.runs = state['runs']
         self.model.clear()
         for item in self.runs:
-            self.model.addElement('%s | %s | %s' % (item['status'], item['baseline_id'], item['label']))
+            if item['kind']=='named':
+                from saved_results_panel import display_time
+                self.model.addElement(item['label']+' | '+display_time(item['created_utc'])+' | '+item['id'][-8:])
+            else:self.model.addElement('%s | %s | %s' % (item['status'], item['baseline_id'], item['label']))
         if self.runs:
             self.results_list.setSelectedIndex(len(self.runs) - 1)
     def selected(self):
@@ -326,8 +329,12 @@ class ResultsWindow(JDialog):
         self.workflow_menu.start('plot-selected', {'selected_runs': [row['id'] for row in rows]})
     def delete(self, event):
         rows = self.selected()
-        if len(rows) != 1 or rows[0]['kind'] != 'augmented':
-            JOptionPane.showMessageDialog(self, 'Select exactly one augmented result. Baselines are retained.')
+        if len(rows) != 1 or rows[0]['kind'] not in ('augmented','named'):
+            JOptionPane.showMessageDialog(self, 'Select one named snapshot or augmented result. Workflow baselines are retained.')
+            return
+        if rows[0]['kind']=='named':
+            if JOptionPane.showConfirmDialog(self,'Permanently delete '+rows[0]['label']+'? Live data and exported plots are kept.', 'Delete named archive',JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION:
+                self.workflow_menu.start('delete-result',{'named_id':rows[0]['id'],'confirmed':True},self.deleted)
             return
         message = 'Permanently delete this archived result and plots that include it?\n' + rows[0]['label'] + '\nBaseline and configuration inputs remain; deletion is recorded in the history.'
         if JOptionPane.showConfirmDialog(self, message, 'Delete archived result', JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION:
@@ -372,7 +379,7 @@ class WorkflowMenu(JFrame):
         options = JPanel(GridLayout(0, 1, 3, 3))
         self.status = JLabel()
         options.add(self.status)
-        options.add(JLabel('Compute stays in RTS. Finish compute and close DSSVue before file operations.'))
+        options.add(JLabel('Compute stays in RTS. Archive current results before your next compute if you want to keep them. Finish compute and close DSSVue before file operations.'))
         self.use_closed = JCheckBox('Use this displayed forecast after closing it in RTS', False)
         options.add(self.use_closed)
         self.controls.append(self.use_closed)
@@ -393,9 +400,13 @@ class WorkflowMenu(JFrame):
             buttons.add(button)
             self.controls.append(button)
         center.add(buttons, BorderLayout.NORTH)
-        self.text = JTextArea(13, 85)
+        self.text = JTextArea(6, 85)
         self.text.setEditable(False)
         center.add(JScrollPane(self.text), BorderLayout.CENTER)
+        from saved_results_panel import SavedResultsPanel
+        self.archives=SavedResultsPanel(self,'rts',EXTERNAL_PYTHON_DIR,self.executable,self.archive_context)
+        center.add(self.archives,BorderLayout.SOUTH)
+        self.controls.extend(self.archives.controls)
         pane.add(center, BorderLayout.CENTER)
         self.progress = JProgressBar()
         self.progress.setStringPainted(True)
@@ -419,6 +430,10 @@ class WorkflowMenu(JFrame):
             field.setText(' '.join(value) if isinstance(value, list) else value)
             field.setToolTipText(field.getText())
         self.update_status()
+    def archive_context(self):
+        if not self.use_closed.isSelected() and forecast_context()!=self.context:
+            raise RuntimeError('Forecast selection changed. Refresh forecast metadata first.')
+        return dict(self.context)
     def update_status(self):
         root = os.path.dirname(self.context['dss_path'])
         baseline, mode = 'not saved yet', 'no augmentation'
@@ -485,7 +500,7 @@ class WorkflowMenu(JFrame):
             return None
         return answer == JOptionPane.YES_OPTION
     def extract(self, event):
-        message = 'Download, archive and load initial inputs for the displayed forecast?\nAfterwards, modify the base alternative if needed and compute in RTS.'
+        message = 'Archive current results first if you want to keep them. Download, archive and load initial inputs for the displayed forecast?\nAfterwards, modify the base alternative if needed and compute in RTS.'
         if JOptionPane.showConfirmDialog(self, message, 'Initial Extract', JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION:
             self.start('initial-extract', {}, self.extracted)
     def archive_extract(self, event):
