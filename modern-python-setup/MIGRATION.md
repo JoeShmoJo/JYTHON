@@ -138,3 +138,28 @@ output path, verifies Basic and Off, checks alternative scoping and legacy
 fallback/precedence, and runs native rule initialization through receipt writing.
 Restart ResSim after updating so Jython reloads the adapter; recompute both cases
 before relying on their comparison.
+
+### Effective augmentation execution status and Off diagnostics
+
+`augmentation_diagnostics.py` records the effective method, selected baseline flag,
+member/F-part, configuration ID, calculation completion, native rule invocation
+counts, positive returned minima and storage-limited calls. Each initialization
+gets a unique JSON file under simulation `augmentation-status`; native cleanup
+updates its stage. These are execution evidence, not an independent certificate
+of a successful full model compute. `Show-AugmentationStatus.ps1` selects the
+latest status per F-part for the currently applied configuration.
+
+Off stages explicit zeros for MainstemFlowAugSV diagnostic series and standard
+`<reservoir>-MainstemFlowAug/FLOW-SPEC` rule results at the current member/F-part
+and native time window. Controller cleanup writes those local series via native
+ResSim I/O. No DSS records are deleted, archives are unchanged, and prepared
+external inputs, pool outflow results, other members and other trial F-parts are
+not overwritten by this diagnostic cleanup. A currently loaded two-step scheme
+retains its documented precedence for augmented trials, and the status reports
+that actual external mode. The native SV main callback now invokes its instance
+compute method and bypasses disabled/external modes.
+
+Validation: `test_augmentation_diagnostics.py` exercises real DSS nonzero-to-zero
+replacement, preservation of other records, Off native rule calls, Basic storage
+clamping status and callback routing. `check_augmentation_status_jython.py` tests
+16 concurrent status writers through the actual Java NIO reader/writer.

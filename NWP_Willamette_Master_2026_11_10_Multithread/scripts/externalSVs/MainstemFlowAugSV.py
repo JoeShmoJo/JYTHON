@@ -83,9 +83,9 @@ class MainstemFlowAugSV(ExternalSV):
             if not os.path.isfile(marker):
                 if baselineMethod != "AllocationBasedOnConservationStorage":
                     network.printMessage("MainstemFlowAugSV: RTS baseline mode; augmentation minimum is zero")
-                    self.computeSV = False
-                    return True
-                network.printMessage("MainstemFlowAugSV: RTS baseline uses simplified MainstemFlowAug")
+                    self.mainstemFlowAugMethod = "NoFlowAug"
+                else:
+                    network.printMessage("MainstemFlowAugSV: RTS baseline uses simplified MainstemFlowAug")
             else:
                 self.rtsScheme = json.loads(parallelSafeReadText(marker, "UTF-8"))
                 actualFpart = str(altSetupSV.varGet("dssOutputFpart"))
@@ -96,8 +96,16 @@ class MainstemFlowAugSV(ExternalSV):
                 self.mainstemFlowAugMethod = "ReadExternalFlowAugTS"
                 network.printMessage("MainstemFlowAugSV: RTS augmentation scheme " + self.rtsScheme["scheme"])
 
+        from augmentation_diagnostics import Status, initialize_off
+        self.augmentationStatus = Status(network, altSetupSV, self.mainstemFlowAugMethod, self.isRtsCompute)
         if self.mainstemFlowAugMethod == "NoFlowAug": #Don't compute mainstem flow aug, skip everything else
             self.computeSV = False
+            self.hasComputed = False
+            self.useExternalTS = False
+            configPath = network.makeAbsolutePathFromWatershed(altSetupSV.varGet("mainstemFlowAugReservoirConfigCSV"))
+            reservoirs = list(next(iter(loadReservoirConfig(configPath).values())).keys())
+            initialize_off(currentVariable, altSetupSV.varGet("dssOutputFpart"), reservoirs)
+            self.augmentationStatus.write('off-initialized', compute_enabled=False, zero_diagnostics_staged=True)
             return True
         self.computeSV = True
         self.hasComputed = False
@@ -179,6 +187,8 @@ class MainstemFlowAugSV(ExternalSV):
                     "MainstemFlowAugSV: omitting flow-aug for trial %s (F-part=%s)" % (trialDigit, fPartInput)
                 )
                 self.computeSV = False
+                initialize_off(currentVariable,fPartInput,self.resvNamesAll)
+                self.augmentationStatus.write('off-initialized',compute_enabled=False,effective_method='NoFlowAug',reason='omitted-trial',zero_diagnostics_staged=True)
                 return True
 
             if not self.isRtsCompute and not fPartInput.endswith("0"): #Standalone trial reads baseline; RTS keeps its exact F-part
@@ -201,6 +211,9 @@ class MainstemFlowAugSV(ExternalSV):
                         network.printMessage("Auto-detect for mainstem flow-aug couldn't locate external TS, not doing flow-aug")
                         dssFile.close()
                         self.computeSV = False
+                        self.useExternalTS = False
+                        initialize_off(currentVariable,altSetupSV.varGet("dssOutputFpart"),self.resvNamesAll)
+                        self.augmentationStatus.write('off-initialized',compute_enabled=False,effective_method='NoFlowAug',reason='no-auto-detected-input',zero_diagnostics_staged=True)
                         return True
                     else:
                         #Not OK, there really should be valid data
@@ -256,17 +269,12 @@ class MainstemFlowAugSV(ExternalSV):
         
         #Initialize local time series that may eventually get written to DSS
         #Helpful for debugging/diagnostic purposes after a simulation has completed
-        tsNames = []
-        for locName in MAINSTEM_LOCATIONS:
-            tsNames.append("MinFlowTarget-%s" %locName)
-            tsNames.append("Deficit-%s" %locName)
-            tsNames.append("IncidentalFlowAugFromOthers-%s" %locName)
-        for resvName in self.resvNamesAll:
-            tsNames.append("PctAllocation-%s" %resvName)
-            tsNames.append("BufferStor-%s" %resvName)
-            for locName in MAINSTEM_LOCATIONS:
-                tsNames.append("MinReleaseFor_%s-%s" %(locName, resvName))
+        from augmentation_diagnostics import series_names
+        tsNames = series_names(self.resvNamesAll)
         self.initializeLocalTSCs(currentVariable, tsNames)
+        self.augmentationStatus.write('initialized',compute_enabled=self.computeSV,
+            effective_method='ReadExternalFlowAugTS' if self.useExternalTS else self.mainstemFlowAugMethod,
+            use_external_ts=self.useExternalTS,supporting_reservoirs=self.resvNamesSupporting)
         
         return True
         
@@ -277,7 +285,9 @@ class MainstemFlowAugSV(ExternalSV):
         Can actually be triggered multiple times on the same compute time step.
         Just make it a pass-through to call the real compute function
         '''
-        return compute(network, currentVariable, currentRuntimestep)
+        if not self.computeSV or self.useExternalTS:
+            return True
+        return self.compute(network)
         
     def compute(self, network):
         '''
@@ -305,6 +315,7 @@ class MainstemFlowAugSV(ExternalSV):
         #Check up front to see if this has already been calculated before, and skip if so. 
         if self.hasComputed: return None
         self.hasComputed = True
+        self.augmentationStatus.data['calculation_started'] = True
         #Loop through each timestep and do the computations
         rtw = network.getRssRun().getCurrentComputeBlockRunTimeWindow()
         rts = RunTimeStep(rtw)
@@ -402,6 +413,7 @@ class MainstemFlowAugSV(ExternalSV):
                     minFlow = min(minFlow, maxRel)
                     minFlowByProject[resvName] = minFlow
                     self.setLocalTSValue("MinReleaseFor_%s-%s" %(locName, resvName), rts, minFlow)
+        self.augmentationStatus.data['calculation_finished'] = True
         return True
     
     def cleanup(self, network, currentVariable):
@@ -411,6 +423,8 @@ class MainstemFlowAugSV(ExternalSV):
         '''
         if len(currentVariable.localTimeSeriesList()) > 0:
             currentVariable.localTimeSeriesWriteAll()
+        self.augmentationStatus.write('cleanup-finished',compute_enabled=self.computeSV,
+            use_external_ts=self.useExternalTS)
     
     def initRuleScript(self, currentRule, network):
         """
@@ -427,11 +441,14 @@ class MainstemFlowAugSV(ExternalSV):
         as well as the current timestep inflow. 
         """
         opValue = OpValue()
+        resvName = currentRule.getReservoirElement()._name
         if not self.computeSV:
+            self.augmentationStatus.rule(resvName,0.,'off')
             opValue.init(OpRule.RULETYPE_MIN, 0)
             return opValue
         resvName = currentRule.getReservoirElement()._name
         if not resvName in self.resvNamesSupporting:
+            self.augmentationStatus.rule(resvName,0.,'not-supporting')
             #This reservoir isn't supporting, don't do anything.
             opValue.init(OpRule.RULETYPE_MIN, 0)
             return opValue
@@ -442,6 +459,7 @@ class MainstemFlowAugSV(ExternalSV):
             if ts is None:
                 raise AssertionError("Expecting to use an external time series for flow-aug, but doesn't exist: %s" %tsName)
             tsCur = ts.getCurrentValue(currentRuntimestep)
+            self.augmentationStatus.rule(resvName,tsCur,'external')
             opValue.init(OpRule.RULETYPE_MIN, tsCur)
             return opValue
         
@@ -454,6 +472,7 @@ class MainstemFlowAugSV(ExternalSV):
         for locName in MAINSTEM_LOCATIONS:
             ruleValue = max(ruleValue, self.getLocalTSValue("MinReleaseFor_%s-%s" %(locName, resvName), currentRuntimestep))
         if ruleValue == 0: #don't waste any more time, just return 0
+            self.augmentationStatus.rule(resvName,0.,'no-requirement')
             opValue.init(OpRule.RULETYPE_MIN, 0)
             return opValue
         storPrev = network.getTimeSeries("Reservoir",resvName, "Pool", "Stor").getPreviousValue(currentRuntimestep)
@@ -463,7 +482,9 @@ class MainstemFlowAugSV(ExternalSV):
         #Don't go below the buffer elevation/storage to support these min flows.
         bufferStor = self.getLocalTSValue("BufferStor-%s" %(resvName), currentRuntimestep)
         relForBuffer = inflow + (storPrev-bufferStor)/cfsToAcFt
+        requestedRuleValue = ruleValue
         ruleValue = max(0, min(ruleValue, relForBuffer))
+        self.augmentationStatus.rule(resvName,ruleValue,'storage-limited' if ruleValue<requestedRuleValue else 'basic',requestedRuleValue)
         opValue.init(OpRule.RULETYPE_MIN, ruleValue)
         return opValue
 

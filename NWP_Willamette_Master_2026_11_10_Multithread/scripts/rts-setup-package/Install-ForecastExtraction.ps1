@@ -42,6 +42,11 @@ $items += [pscustomobject]@{
     Target = Join-Path $WatershedRoot 'scripts\saved_results_panel.py'
     Backup = Join-Path $backup 'saved_results_panel.py'
 }
+$items += [pscustomobject]@{
+    Source = Join-Path $PSScriptRoot 'augmentation_diagnostics.py'
+    Target = Join-Path $WatershedRoot 'scripts\augmentation_diagnostics.py'
+    Backup = Join-Path $backup 'augmentation_diagnostics.py'
+}
 $svTarget = Join-Path $WatershedRoot 'scripts\externalSVs\MainstemFlowAugSV.py'
 if (-not (Test-Path -LiteralPath $svTarget)) {
     throw "Expected existing state-variable module: $svTarget"

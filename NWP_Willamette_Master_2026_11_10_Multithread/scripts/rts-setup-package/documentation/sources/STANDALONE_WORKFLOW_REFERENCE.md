@@ -78,3 +78,21 @@ initialization must load that selection; an archive's recorded configuration ID
 alone does not prove it was used during compute. Initialization receipts in the
 applied snapshot are evidence that its rule adapters ran. Restart ResSim after
 runtime updates and recompute Off and Basic when verifying augmentation changes.
+
+## Verify the effective augmentation mode
+
+Each initialized MainstemFlowAugSV writes a member/F-part-specific JSON record in
+`augmentation-status` beside the simulation/forecast DSS (or the scoped baseline
+selection root for ensemble member subfolders). It records `effective_method`,
+`configuration_id`, calculation completion, rule call counts, positive release
+requirements and storage-limited counts. `cleanup-finished` means that SV's
+cleanup ran; it does not certify success of the entire native compute.
+
+For standalone, run `modern-python-setup/Show-AugmentationStatus.ps1` with the
+simulation name after compute. Off returns zero and now stages zero state/rule
+diagnostics for the current member and native time window, including standard
+`<reservoir>-MainstemFlowAug/FLOW-SPEC` outputs. This prevents old nonzero
+diagnostics from appearing as the new Off result. It does not erase prepared
+external inputs, pool results, other members/trials or saved archives. Loaded
+two-step schemes still override the baseline setting for augmented trials, and
+the execution status reports that effective external mode.

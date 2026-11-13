@@ -60,7 +60,7 @@ def install(watershed, mode="standalone"):
     for name,sourcefile in [('baseline-editor.html','editor-mockup.html'),('baseline-configuration.example.json','baseline-configuration.example.json')]:
         writes[scripts/'ExternalPython'/name]=(HERE/'baseline-editor-design'/sourcefile).read_bytes()
     writes[scripts/'STANDALONE_WORKFLOW_MENU.py']=(HERE/'STANDALONE_WORKFLOW_MENU.py').read_bytes()
-    for name in ('OPEN_WORKFLOW.py','workflow_host.py','STANDALONE_WORKFLOW_UI.py','runtime-host-adapter.py','standalone_augmentation_runtime.py','saved_results_panel.py'):
+    for name in ('OPEN_WORKFLOW.py','workflow_host.py','STANDALONE_WORKFLOW_UI.py','runtime-host-adapter.py','standalone_augmentation_runtime.py','saved_results_panel.py','augmentation_diagnostics.py'):
         writes[scripts/name]=(HERE/name).read_bytes()
     writes[scripts/'rts_baseline_runtime.py']=(HERE/'baseline-runtime/rts_baseline_runtime.py').read_bytes()
     mainstem=scripts/'externalSVs/MainstemFlowAugSV.py'

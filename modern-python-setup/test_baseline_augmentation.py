@@ -132,11 +132,12 @@ class BaselineAugmentationTests(unittest.TestCase):
                         makeAbsolutePathFromWatershed=lambda p:p)
                     namespace=dict(os=__import__('os'),json=json,
                         parallelSafeReadText=lambda path,encoding:Path(path).read_text(),
-                        loadReservoirConfig=mock.Mock(side_effect=ConfigReached))
+                        loadReservoirConfig=mock.Mock(return_value={'SupportsSalem':{'Lookout Point':'TRUE'}}) if (not external and (method=='NoFlowAug' or (rts and method is None))) else mock.Mock(side_effect=ConfigReached))
                     init=function(S/'externalSVs/MainstemFlowAugSV.py','initialization',namespace)
                     state=types.SimpleNamespace()
                     external_config='external.csv' if external and not rts else None
-                    with mock.patch.dict(sys.modules,{'standalone_augmentation_runtime':types.SimpleNamespace(external_trial_configuration=lambda *a:external_config)}):
+                    with mock.patch.dict(sys.modules,{'standalone_augmentation_runtime':types.SimpleNamespace(external_trial_configuration=lambda *a:external_config),
+                        'augmentation_diagnostics':types.SimpleNamespace(Status=lambda *a:types.SimpleNamespace(write=lambda *a,**kw:None,data={}),initialize_off=lambda *a:None)}):
                         if not external and (method=='NoFlowAug' or (rts and method is None)):
                             self.assertTrue(init(state,network,None));self.assertFalse(state.computeSV)
                         else:

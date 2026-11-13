@@ -23,3 +23,21 @@ The access check is a preflight: another process can reopen the file afterward. 
 ## Saved results
 
 The accepted baseline remains available for comparison. After augmented compute finishes, use **Plot Results** to accept the completed result and compare saved runs. Plotting reads computed member coverage. See [plots](RTS_PLOTTING.md).
+
+## Verify the effective augmentation mode
+
+Each initialized MainstemFlowAugSV writes a member/F-part-specific JSON record in
+`augmentation-status` beside the simulation/forecast DSS (or the scoped baseline
+selection root for ensemble member subfolders). It records `effective_method`,
+`configuration_id`, calculation completion, rule call counts, positive release
+requirements and storage-limited counts. `cleanup-finished` means that SV's
+cleanup ran; it does not certify success of the entire native compute.
+
+For standalone, run `modern-python-setup/Show-AugmentationStatus.ps1` with the
+simulation name after compute. Off returns zero and now stages zero state/rule
+diagnostics for the current member and native time window, including standard
+`<reservoir>-MainstemFlowAug/FLOW-SPEC` outputs. This prevents old nonzero
+diagnostics from appearing as the new Off result. It does not erase prepared
+external inputs, pool results, other members/trials or saved archives. Loaded
+two-step schemes still override the baseline setting for augmented trials, and
+the execution status reports that effective external mode.
