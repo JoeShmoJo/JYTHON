@@ -22,6 +22,27 @@ def catalog(root):
     return sorted(runs,key=lambda row:row['created_utc'],reverse=True)
 
 
+def saved_runs(root,run_type):
+    return [row for row in catalog(root) if row.get('run_type','ensemble')==run_type]
+
+
+def list_state(root,alternative,run_type):
+    """An unavailable live DSS must not hide successfully archived results."""
+    notices=[]
+    try:runs=saved_runs(root,run_type)
+    except (OSError,ValueError,KeyError) as error:
+        runs=None;notices.append('Could not refresh saved archives: '+str(error))
+    codes=[]
+    try:
+        if (Path(root)/'simulation.dss').is_file():
+            prefix=alternative.replace(' ','-').ljust(10,'-')
+            codes=[code for code in outputs(root,run_type)
+                   if re.fullmatch(re.escape(prefix)+r'\d+',code,re.I)]
+    except Exception as error:
+        notices.append('Live outputs could not be read; finish compute and close DSS views, then refresh. Saved archives can still be plotted. Details: '+str(error))
+    return {'outputs':codes,'runs':runs,'notices':notices}
+
+
 def outputs(root,run_type="ensemble"):
     from pydsstools.heclib.dss import HecDss
     from run_data_cache import needed_record
@@ -215,13 +236,7 @@ def plot(root,identities):
     return destination/'index.html'
 
 
-PAGE='''<!doctype html><meta charset="utf-8"><title>Standalone saved results</title><style>body{font:16px system-ui;max-width:1000px;margin:30px auto}input,select,button{font:inherit;padding:8px;margin:6px}label{display:block}pre{white-space:pre-wrap}</style><h1>Standalone saved results</h1><p id="target"></p><p>Capture only after checking successful native compute. Saved archives are independent of future changes to simulation.dss.</p><pre id="status" role="status"></pre><button onclick="refresh()">Refresh completed outputs and saved runs</button><label>Completed output <select id="output"></select></label><label>Name <input id="name" placeholder="Descriptive result name"></label><label>Archive purpose <select id="kind"><option value="baseline">New baseline</option><option value="result">Result paired with baseline</option></select></label><label>Baseline for result <select id="baseline"></select></label><button onclick="capture()">Archive completed results</button><hr><h2>Plot archived results</h2><p>Select one or two runs (Ctrl-click for two).</p><select multiple size="10" id="runs" style="width:95%"></select><br><button onclick="plot()">Plot selected saved runs</button><button onclick="closeEditor()">Close</button><script>
-const TOKEN=__TOKEN__,TARGET=__TARGET__,RUN_TYPE=__RUN_TYPE__;document.getElementById('target').textContent=TARGET;
-const el=id=>document.getElementById(id);async function call(path,data){el('status').textContent='Working…';const response=await fetch(path,{method:'POST',headers:{'X-Editor-Token':TOKEN},body:JSON.stringify(data)});const result=await response.json();if(!response.ok)throw Error(result.error);return result}
-async function refresh(){try{const data=await call('/list',{});el('output').replaceChildren();for(const code of data.outputs)el('output').add(new Option(code,code));el('runs').replaceChildren();el('baseline').replaceChildren();for(const row of data.runs){let label=row.label+' ['+row.kind+'] '+row.created_utc;el('runs').add(new Option(label,row.id));if(row.kind==='baseline')el('baseline').add(new Option(label,row.id))}el('status').textContent=data.outputs.length?'Ready':'No compatible outputs found in simulation.dss for this mode. Verify the selected simulation and native run type.'}catch(e){el('status').textContent=e.message}}
-async function capture(){if(!confirm('Has the selected native compute finished successfully for every intended member and date? Archive these results?'))return;try{await call('/capture',{label:el('name').value,code:el('output').value,kind:el('kind').value,baseline_id:el('baseline').value,confirmed:true});await refresh()}catch(e){el('status').textContent=e.message}}
-async function plot(){try{const result=await call('/plot',{ids:[...el('runs').selectedOptions].map(o=>o.value)});el('status').textContent='Plots: '+result.path}catch(e){el('status').textContent=e.message}}
-async function closeEditor(){await call('/close',{});document.body.textContent='Closed'}refresh();</script>'''
+PAGE=Path(__file__).with_name('standalone_results.html').read_text(encoding='utf-8')
 
 
 CHECK_PAGE='''<!doctype html><meta charset="utf-8"><title>Model Check</title>
@@ -260,20 +275,22 @@ def serve(root,alternative,run_type="ensemble",check_only=False):
     root=Path(root);token=secrets.token_urlsafe(32)
     template=CHECK_PAGE if check_only else PAGE
     template=template.replace('__MEMBER__','<label>Ensemble member <input id="member" type="number" min="0" step="1"></label>' if run_type=='ensemble' else '')
-    page=template.replace('__RUN_TYPE__',json.dumps(run_type)).replace('__TOKEN__',json.dumps(token)).replace('__TARGET__',json.dumps(str(root)+' / '+alternative+' / '+('Single POR' if run_type=='por' else 'Ensemble')).replace('</','<\\/'))
+    page=template.replace('__RUN_TYPE__',json.dumps(run_type)).replace('__TOKEN__',json.dumps(token)).replace('__ALTERNATIVE__',json.dumps(alternative).replace('</','<\\/')).replace('__TARGET__',json.dumps(str(root)+' / '+alternative+' / '+('Single POR' if run_type=='por' else 'Ensemble')).replace('</','<\\/'))
     task_lock=threading.Lock()
     class Handler(BaseHTTPRequestHandler):
         def log_message(self,*args):pass
         def do_GET(self):
             if self.path!='/'+token:self.send_error(404);return
-            self.send_response(200);self.end_headers();self.wfile.write(page.encode('utf-8'))
+            self.send_response(200);self.send_header('Content-Type','text/html; charset=utf-8');self.send_header('Cache-Control','no-store');self.end_headers();self.wfile.write(page.encode('utf-8'))
         def do_POST(self):
             if self.headers.get('X-Editor-Token')!=token:self.send_error(403);return
             try:
                 length=int(self.headers.get('Content-Length','0'))
                 if not 0<length<1024*1024:raise ValueError('Invalid request size')
                 data=json.loads(self.rfile.read(length))
-                if self.path=='/list':result={'outputs':outputs(root,run_type) if (root/'simulation.dss').is_file() else [],'runs':[row for row in catalog(root) if row.get('run_type','ensemble')==run_type]}
+                if self.path=='/list':
+                    with task_lock: result=list_state(root,alternative,run_type)
+                elif self.path=='/archives':result={'runs':saved_runs(root,run_type)}
                 elif self.path=='/capture':
                     if not task_lock.acquire(False):raise ValueError('Another archive task is running')
                     try:result=capture(root,alternative,run_type=run_type,**data)

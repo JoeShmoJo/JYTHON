@@ -54,14 +54,14 @@ class Menu:
         buttons.add(JButton('Baseline Configuration', actionPerformed=lambda e: self.open_baseline()))
         jobs = [('Extract ensemble inputs', 'extract'),
                 ('Check archive dates / members', 'archive-check'),
-                ('Extract archived ensemble inputs', 'archive-extract'),
-                ('Calculate augmentation', 'augmentation')]
+                ('Extract archived ensemble inputs', 'archive-extract')]
         self.ensemble_buttons = []
         for title, job in jobs:
             button = JButton(title, actionPerformed=lambda e, t=title, j=job: self.start(t, j))
             if job in ('extract','archive-extract','archive-check'): self.ensemble_buttons.append(button)
             buttons.add(button)
         self.run_type.addActionListener(self.update_mode)
+        buttons.add(JButton('Augmentation Configuration', actionPerformed=lambda e: self.open_augmentation()))
         buttons.add(JButton('Archive / Plot Results', actionPerformed=lambda e: self.open_results()))
         buttons.add(JButton('Model Check', actionPerformed=lambda e: self.open_results(True)))
         self.frame.add(buttons, BorderLayout.NORTH)
@@ -117,6 +117,24 @@ class Menu:
         builder = ProcessBuilder(command);builder.directory(File(scripts))
         builder.redirectErrorStream(True);builder.redirectOutput(File(self.log));builder.start()
         self.message('Saved results browser starting. Log: ' + self.log)
+    def open_augmentation(self):
+        if self.busy: return
+        simulation = str(self.simulation.getSelectedItem())
+        alternative = str(self.alternative.getText()).strip()
+        if self.simulation.getSelectedIndex() == 0 or not alternative:
+            JOptionPane.showMessageDialog(self.frame, 'Select the simulation and alternative first.')
+            return
+        filename = os.path.join(scripts, 'standalone_augmentation.py')
+        if not os.path.isfile(filename): raise RuntimeError('Install the updated standalone augmentation editor first.')
+        command = ArrayList()
+        for arg in [python, '-u', filename, '--watershed', root, '--simulation', simulation,
+                    '--alternative', alternative, '--run-type', 'por' if self.run_type.getSelectedIndex() == 1 else 'ensemble']: command.add(arg)
+        directory = os.path.join(root, 'standalone-workflow-logs')
+        if not os.path.isdir(directory): os.makedirs(directory)
+        self.log = os.path.join(directory, 'augmentation-' + str(System.currentTimeMillis()) + '.log')
+        builder = ProcessBuilder(command);builder.directory(File(scripts))
+        builder.redirectErrorStream(True);builder.redirectOutput(File(self.log));builder.start()
+        self.message('Augmentation configuration starting. Select a saved unaugmented baseline in the browser. Log: ' + self.log)
     def start(self, title, job):
         if self.busy:
             JOptionPane.showMessageDialog(self.frame, 'A job is already running.')

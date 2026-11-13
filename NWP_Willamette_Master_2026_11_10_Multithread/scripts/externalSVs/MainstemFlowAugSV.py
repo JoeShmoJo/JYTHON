@@ -63,6 +63,12 @@ class MainstemFlowAugSV(ExternalSV):
         self.mainstemFlowAugMethod = altSetupSV.varGet("mainstemFlowAugMethod")
         self.isRtsCompute = bool(altSetupSV.varGet("cwmsCompute"))
         self.rtsScheme = None
+        self.standaloneAugmentationConfig = None
+        if not self.isRtsCompute:
+            from standalone_augmentation_runtime import external_trial_configuration
+            self.standaloneAugmentationConfig = external_trial_configuration(network, altSetupSV)
+            if self.standaloneAugmentationConfig is not None:
+                self.mainstemFlowAugMethod = "ReadExternalFlowAugTS"
         if self.isRtsCompute:
             # RTS has no standalone trials. Explicit activation, scoped to this
             # forecast directory, controls the pass without changing op sets.
@@ -93,6 +99,8 @@ class MainstemFlowAugSV(ExternalSV):
             resvConfigPath = os.path.join(self.rtsScheme["scheme_directory"], "MinFlowSalemAlbanyConfig.csv")
         else:
             resvConfigPath = network.makeAbsolutePathFromWatershed(resvConfigCSV)
+            if self.standaloneAugmentationConfig is not None:
+                resvConfigPath = self.standaloneAugmentationConfig
         self.resvConfig = loadReservoirConfig(resvConfigPath)
         self.resvNamesAll = list(self.resvConfig.values()[0].keys()) #all reservoirs in config file
         #list of reservoirs in config file that directly operate for mainsteam flow targets

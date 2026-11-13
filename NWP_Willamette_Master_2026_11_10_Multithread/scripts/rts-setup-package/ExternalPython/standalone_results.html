@@ -1,0 +1,88 @@
+<!doctype html><meta charset="utf-8"><title>Standalone saved results</title>
+<style>body{font:16px system-ui;max-width:1000px;margin:30px auto}input,select,button{font:inherit;padding:8px;margin:6px}label{display:block}pre{white-space:pre-wrap}.hint{color:#43566a}button:disabled{opacity:.5}</style>
+<h1>Standalone saved results</h1><p id="target"></p>
+<p>Finish and check the native compute before archiving. Archiving saves a snapshot; plotting uses those saved snapshots.</p>
+<pre id="status" role="status">Loading completed outputs and saved runs…</pre>
+<button id="refresh">Refresh completed outputs and saved runs</button>
+<h2>Archive completed results</h2>
+<label>Completed output <select id="output" disabled><option>Loading…</option></select></label>
+<label>Name <input id="name" placeholder="Descriptive result name"></label>
+<label>Archive purpose <select id="kind"><option value="baseline">New unaugmented baseline</option><option value="result">Augmented result paired with a baseline</option></select></label>
+<label id="baseline-label">Baseline for result <select id="baseline" disabled></select></label>
+<p id="baseline-help" class="hint"></p>
+<button id="capture" disabled>Archive completed results</button>
+<hr><h2>Plot archived results</h2><p>Select one or two runs (Ctrl-click for two).</p>
+<p id="empty" class="hint">Loading saved runs…</p>
+<select multiple size="10" id="runs" style="width:95%" disabled></select><br>
+<button id="plot" disabled>Plot selected saved runs</button><button id="close">Close</button>
+<script>
+const TOKEN=__TOKEN__,TARGET=__TARGET__,RUN_TYPE=__RUN_TYPE__;
+const el=id=>document.getElementById(id);
+el('target').textContent=TARGET;
+let busy=false,loaded=false,currentRows=[];
+function controls(){
+  const result=el('kind').value==='result',baseline=!!el('baseline').value;
+  for(const id of ['refresh','name','kind','close'])el(id).disabled=busy;
+  el('output').disabled=busy||!el('output').value;
+  el('baseline').disabled=busy||!result||!baseline;
+  el('baseline-label').hidden=!result;
+  el('baseline-help').textContent=result?(baseline?'Select the unaugmented baseline used by this result.':'Archive an unaugmented baseline first, then select “Augmented result”.'):
+    'A new baseline does not need an earlier baseline. Choose the completed unaugmented output and give it a name.';
+  el('capture').disabled=busy||!loaded||!el('output').value||!el('name').value.trim()||(result&&!baseline);
+  el('runs').disabled=busy||!el('runs').options.length;
+  const n=el('runs').selectedOptions.length;
+  el('plot').disabled=busy||n<1||n>2;
+}
+async function call(path,data){
+  const response=await fetch(path,{method:'POST',headers:{'X-Editor-Token':TOKEN,'Content-Type':'application/json'},body:JSON.stringify(data),cache:'no-store'});
+  const result=await response.json();if(!response.ok)throw Error(result.error);return result;
+}
+function renderRuns(rows,selectId){
+  currentRows=rows;
+  const selected=new Set(selectId?[selectId]:[...el('runs').selectedOptions].map(o=>o.value));
+  const previous=el('baseline').value;
+  el('runs').replaceChildren();el('baseline').replaceChildren();
+  for(const row of rows){
+    const label=row.label+' ['+row.kind+'] '+row.alternative+' / '+row.created_utc;
+    const option=new Option(label,row.id);option.selected=selected.has(row.id);el('runs').add(option);
+    if(row.kind==='baseline'&&row.alternative===ALTERNATIVE)el('baseline').add(new Option(label,row.id));
+  }
+  if([...el('baseline').options].some(o=>o.value===previous))el('baseline').value=previous;
+  if(selectId&&[...el('baseline').options].some(o=>o.value===selectId))el('baseline').value=selectId;
+  el('empty').textContent=rows.length?'':'No saved runs yet. Archive a completed unaugmented baseline above to start.';
+}
+const ALTERNATIVE=__ALTERNATIVE__;
+async function refresh(selectId,success){
+  const previous=el('output').value;
+  const data=await call('/list',{});
+  if(data.runs!==null)renderRuns(data.runs,selectId);
+  el('output').replaceChildren();
+  for(const code of data.outputs)el('output').add(new Option(code,code));
+  if(!data.outputs.length)el('output').add(new Option('No compatible completed outputs',''));
+  if(data.outputs.includes(previous))el('output').value=previous;
+  loaded=true;
+  const notices=[success,...(data.notices||[])].filter(Boolean);
+  if(!notices.length)notices.push(data.outputs.length?'Ready. Choose an output to archive, or select a saved run to plot.':'No compatible completed outputs found for this alternative and run type. Saved runs remain available to plot.');
+  el('status').textContent=notices.join('\n');
+}
+async function task(message,fn){if(busy)return;busy=true;controls();el('status').textContent=message;try{await fn()}catch(error){el('status').textContent=error.message}finally{busy=false;controls()}}
+el('refresh').onclick=()=>task('Loading completed outputs and saved runs…',()=>refresh());
+el('capture').onclick=()=>{
+  if(!confirm('Has this unaugmented or augmented native compute finished successfully for every intended member and date? Archive it now?'))return;
+  task('Archiving completed results…',async()=>{
+    const row=await call('/capture',{label:el('name').value,code:el('output').value,kind:el('kind').value,baseline_id:el('baseline').value,confirmed:true});
+    renderRuns([row,...currentRows.filter(item=>item.id!==row.id)],row.id);
+    const success='Archived “'+row.label+'”. It is selected below and ready to plot.';
+    el('status').textContent=success;
+    try{await refresh(row.id,success)}catch(error){el('status').textContent=success+'\nOutput refresh failed: '+error.message}
+  });
+};
+el('plot').onclick=()=>task('Preparing plots…',async()=>{const result=await call('/plot',{ids:[...el('runs').selectedOptions].map(o=>o.value)});el('status').textContent='Plots: '+result.path});
+el('close').onclick=()=>task('Closing…',async()=>{await call('/close',{});document.body.textContent='Closed'});
+for(const id of ['name','kind','baseline','runs','output']){el(id).addEventListener('input',controls);el(id).addEventListener('change',controls)}
+controls();task('Loading completed outputs and saved runs…',async()=>{
+  const data=await call('/archives',{});renderRuns(data.runs);
+  el('status').textContent='Saved archives loaded. Reading completed outputs…';
+  await refresh();
+});
+</script>

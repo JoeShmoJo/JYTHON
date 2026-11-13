@@ -11,7 +11,7 @@ Follow the [Operator SOP](WORKFLOW_SOP.md) for the normal sequence. Compute runs
 | Extract ensemble inputs | Download the live RFC inputs and supporting data for the selected simulation. |
 | Check archive dates / members | Inspect historical archive coverage against standalone job settings before extraction. |
 | Extract archived ensemble inputs | Load historical RFC inputs using the standalone archive settings and selected simulation dates. |
-| Calculate augmentation | Calculate release requirements from the baseline results and augmentation settings, ready for the next native compute. |
+| Augmentation Configuration (standalone) | Select an archived unaugmented baseline, edit/save/open the two-step settings, and calculate/load release requirements before a manual augmented compute. |
 | Archive / Plot Results | Save a completed baseline or augmented result, then plot selected saved runs. |
 | Model Check | Check the selected POR output or exactly one ensemble member. Produces a report without starting compute. |
 

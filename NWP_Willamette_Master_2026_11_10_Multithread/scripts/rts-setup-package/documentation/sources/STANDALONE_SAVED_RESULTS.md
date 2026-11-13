@@ -28,8 +28,9 @@ checks one POR output or one selected ensemble member. See the
    select **New baseline**, and **Archive completed results**. Confirm only after
    checking actual compute completion. An output suffix such as CON_SEASON0 is an
    input selector at capture time, not a persistent plot-trial setting.
-5. Calculate augmentation and compute using the existing model's augmentation
-   setup. In the result browser choose the completed output, give it a name, select
+5. Open **Augmentation Configuration**, select the saved baseline, edit or load
+   named settings, and **Calculate and load releases**. Compute the augmented trial
+   manually using the existing attached rules. In the result browser choose the completed output, give it a name, select
    **Result paired with baseline**, select the correct archived baseline and archive.
    This pairing is operator-specified; the tool does not infer scheme activation
    or certify that the selected native trial was unaugmented/augmented.
@@ -103,8 +104,9 @@ retired trial plot fields; opening/applying migrates them without rewriting the
 historical file. Old HTML plots and native trial results remain untouched.
 
 Use the installed original HEC application and a supported compute mode. This
-feature does not enable multithreading, modify native rule bindings or replace
-the standalone augmentation calculator with RTS's scheme system. Test a small
+feature does not enable multithreading or modify native rule bindings. Standalone
+augmentation uses its own saved baselines/configuration snapshots; RTS retains
+its own acceptance and scheme workflow. Test a small
 serial case, archive/plot it, change/recompute/archive and verify the first archive
 still plots the original values before a large study.
 
@@ -191,3 +193,16 @@ Open diagnostic at the 16 October 2026 handoff: FLOW-MINLIM catalog records exis
 but it is not yet established whether their native values are missing or the
 archive reader failed to retrieve them. Use the plot read report and native DSS values to investigate a missing reference.
 Warning grouping improves reporting; it does not resolve that data-read question.
+
+## Opening and refreshing the results window
+
+The page shows a loading message and disables Archive until compatible completed
+outputs have loaded and a name is entered. With no saved baseline yet, choose
+**New unaugmented baseline**; there is no earlier baseline to select. The
+**Baseline for result** control appears only for an augmented result, and requires
+a saved baseline for the selected alternative.
+
+After Archive succeeds, the named run appears immediately, is selected for
+plotting, and the page confirms the save. No close/reopen is needed. Saved runs
+remain visible and plottable if the live DSS is locked or unavailable. Refresh
+preserves existing names and selections rather than clearing the form.

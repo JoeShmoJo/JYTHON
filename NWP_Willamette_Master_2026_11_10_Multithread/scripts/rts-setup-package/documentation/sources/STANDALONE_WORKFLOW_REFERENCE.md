@@ -16,7 +16,7 @@ Ensemble extraction uses the applied job settings and saved simulation dates. Ar
 
 ## Baselines, augmentation, and saved results
 
-Compute an unaugmented case and save it as a named baseline before calculating augmentation. Calculate augmentation uses the selected baseline's reservoir flows/storage, target settings, and historical median remaining runoff. Compute the augmented case, then save a named result paired with that baseline.
+Compute an unaugmented case and save it as a named baseline before calculating augmentation. Open **Augmentation Configuration**, select that saved baseline, review the reservoir table and short forecast days, then **Calculate and load releases**. This two-step calculation reads the archived baseline, uses the existing configurable calculation helpers, and retains the settings and source hashes with its scheme. Reusable configuration JSON can be saved and opened on another simulation. After loading, compute an augmented trial manually, then save a named result paired with that baseline. Trial 0 retains its configured native behavior; loaded external releases and their configuration apply only to the selected alternative's augmented trials and covered members. The original simulation DSS is retained before replacement.
 
 [Saved results](STANDALONE_SAVED_RESULTS.md) retain arrays and provenance for later one-run or two-run plots. Recomputing the live simulation does not replace those saved runs. [Plotting](RTS_PLOTTING.md) explains trace styles and member bands.
 
@@ -33,3 +33,29 @@ Compute an unaugmented case and save it as a named baseline before calculating a
 ## Updating scripts
 
 The source and imported RTS copy are distinct. Maintain active files and their setup-package counterparts together. For parallel compute, restart after compute-script edits. In serial development the watershed loader can reload its managed modules when the reload option is enabled. See [Start here](PROJECT_START_HERE.md).
+
+## Standalone augmentation configuration
+
+The browser edits participation, storage floors, release limits, travel times and
+short forecast days. It retains all CSV columns and offers the current water-year
+input interpretations. LOP/HCR remain pooled and Salem/Albany participation must
+match, consistent with the existing calculator/native mapping. Save configuration
+stores a draft and downloads portable JSON; it does not change live releases.
+Calculation requires an archived unaugmented trial-0 baseline for this alternative
+and run type, plus April 1 storage, travel lead-in and May 16 water-year data.
+It calculates every covered conservation season using the retained median runoff
+reference and current Salem/Albany target tables, retained with source hashes.
+Daily aggregation is used for subdaily inputs; requirements are written at the
+baseline's native interval. Incomplete boundary days do not extend the season.
+
+The rule/state variable also implements the native single-compute method
+`AllocationBasedOnConservationStorage`. That is distinct from this two-step
+configuration window. Adding an explicit single-compute/two-step selector in both
+standalone and RTS remains a separate follow-up; it is not being represented as
+an available selector here.
+
+The live DSS is staged and backed up; failed calculation leaves it unchanged.
+The loaded configuration is scoped by simulation, alternative and covered members
+in `standalone-augmentation-active.json`. Original/global CSV files and RTS
+activation are unchanged. Existing skip-trial settings still apply. Recompute
+only after checking successful loading, and restart ResSim after updating scripts.

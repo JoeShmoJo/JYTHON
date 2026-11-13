@@ -78,6 +78,8 @@ def run_script(script,scripts,values):
 
 
 def execute(watershed,simulation,alternative,job,run_type=None,report_path=None):
+    if job=='augmentation':
+        raise ValueError('Open Augmentation Configuration in the standalone menu and select an archived baseline before calculating.')
     from standalone_configuration import context
     from baseline_configuration import digest_file
     ctx=context(watershed,alternative,simulation);root=Path(ctx['dss_path']).parent

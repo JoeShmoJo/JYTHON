@@ -1,0 +1,76 @@
+<!doctype html><meta charset="utf-8"><title>Standalone augmentation configuration</title>
+<style>body{font:16px system-ui;margin:30px;max-width:1500px}label{display:block;margin:12px 0}input,select,button{font:inherit;padding:7px;margin:4px}table{border-collapse:collapse}th,td{border:1px solid #ccc;padding:6px}td input{width:100px}pre{white-space:pre-wrap}button:disabled{opacity:.5}.table{overflow:auto}</style>
+<h1>Two-step Augmentation Configuration</h1><p id="target"></p>
+<p>Choose a saved unaugmented baseline, configure the existing calculator, then calculate and load releases. Run the augmented compute manually in ResSim afterward.</p>
+<pre id="status" role="status">Loading augmentation settings and saved baselines…</pre>
+<label>Saved unaugmented baseline <select id="baseline" disabled></select></label>
+<button id="refresh">Refresh saved baselines</button>
+<p id="baseline-help"></p>
+<label>Configuration name <input id="name"></label>
+<label>Short forecast days <input id="days" type="number" min="1" step="1"></label>
+<label>Water-year input interpretation <select id="wy"><option value="storage-maf">Storage in MAF</option><option value="fixed-abundant">Fixed abundant (baseline values must equal 4)</option></select></label>
+<p>Participation, MinConStor, MaxRelease and TravelTimeDays control this calculation. Other CSV parameters are retained. Lookout Point and Hills Creek remain combined; Salem and Albany use the same supporting reservoirs.</p>
+<div class="table"><table id="reservoirs"></table></div>
+<button id="open">Open configuration JSON</button><input id="file" type="file" accept=".json,application/json" hidden>
+<button id="save" disabled>Save configuration</button>
+<button id="calculate" disabled>Calculate and load releases</button><button id="close">Close</button>
+<script>
+const TOKEN=__TOKEN__,TARGET=__TARGET__,el=id=>document.getElementById(id);
+el('target').textContent=TARGET;
+let config=null,busy=true,baselines=[];
+function controls(){for(const id of ['baseline','name','days','wy','open','save','refresh'])el(id).disabled=busy||!config;
+ el('close').disabled=busy;
+ for(const input of el('reservoirs').querySelectorAll('input'))input.disabled=busy;
+ el('calculate').disabled=busy||!config||!el('baseline').value;
+}
+async function call(path,data){const response=await fetch(path,{method:'POST',headers:{'X-Editor-Token':TOKEN,'Content-Type':'application/json'},body:JSON.stringify(data),cache:'no-store'});const result=await response.json();if(!response.ok)throw Error(result.error);return result}
+function populate(value){
+ if(value.schema!==1||!value.columns||value.columns[0]!=='Variable'||!Array.isArray(value.rows)||value.rows.some(r=>r.length!==value.columns.length)||!value.calculation)throw Error('Choose a reusable augmentation configuration JSON file.');
+ config=structuredClone(value);el('name').value=config.name;el('days').value=config.calculation.forecast_days;el('wy').value=config.calculation.wy_type_mode;
+ const table=el('reservoirs');table.replaceChildren();
+ const header=table.insertRow();header.appendChild(document.createElement('th')).textContent='Reservoir';
+ for(const row of config.rows)header.appendChild(document.createElement('th')).textContent=row[0];
+ for(let column=1;column<config.columns.length;column++){
+   const tr=table.insertRow();tr.appendChild(document.createElement('th')).textContent=config.columns[column];
+   for(let row=0;row<config.rows.length;row++){
+     const input=document.createElement('input');input.dataset.row=row;input.dataset.column=column;
+     const variable=config.rows[row][0];input.title=variable+' / '+config.columns[column];
+     if(variable.startsWith('Supports')){input.type='checkbox';input.checked=String(config.rows[row][column]).toUpperCase()==='TRUE'}
+     else{input.value=config.rows[row][column];input.readOnly=variable==='Abbreviation'}
+     tr.insertCell().appendChild(input);
+   }
+ }
+}
+function configuration(){const value=structuredClone(config);value.name=el('name').value.trim();
+ const days=Number(el('days').value);if(!Number.isInteger(days)||days<1)throw Error('Short forecast days must be a positive whole number.');
+ value.calculation={forecast_days:days,wy_type_mode:el('wy').value};
+ for(const input of el('reservoirs').querySelectorAll('input'))value.rows[Number(input.dataset.row)][Number(input.dataset.column)]=input.type==='checkbox'?(input.checked?'TRUE':'FALSE'):input.value.trim();
+ if(!value.name)throw Error('Enter a configuration name.');return value;
+}
+async function task(message,fn){if(busy)return;busy=true;controls();el('status').textContent=message;try{await fn()}catch(error){el('status').textContent=error.message}finally{busy=false;controls()}}
+el('open').onclick=()=>el('file').click();
+el('file').onchange=async()=>{if(!el('file').files.length)return;try{populate(JSON.parse(await el('file').files[0].text()));el('status').textContent='Configuration opened. Review it before saving or calculating.';controls()}catch(error){el('status').textContent=error.message}};
+el('save').onclick=()=>task('Saving configuration…',async()=>{const value=await call('/save',{configuration:configuration(),baseline_id:el('baseline').value});
+ const url=URL.createObjectURL(new Blob([JSON.stringify(value,null,2)],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download=value.name.replace(/[^A-Za-z0-9_-]/g,'_')+'.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+ el('status').textContent='Configuration saved. No releases were calculated or loaded.';
+});
+el('calculate').onclick=()=>{
+ if(!confirm('Confirm the chosen baseline is unaugmented, all computes are finished, and DSS views are closed. Calculate from this saved baseline and load releases into the displayed simulation?'))return;
+ task('Calculating from the saved baseline and staging releases…',async()=>{const result=await call('/calculate',{baseline_id:el('baseline').value,configuration:configuration(),confirmed:true});
+ el('status').textContent='Loaded “'+result.configuration_name+'” from the selected saved baseline.\nRun the augmented trial manually in ResSim, then archive it as a result paired with that baseline.\nPrevious simulation retained with scheme: '+result.scheme;
+ });
+};
+el('close').onclick=()=>task('Closing…',async()=>{await call('/close',{});document.body.textContent='Closed'});
+function populateBaselines(data){const previous=el('baseline').value;baselines=data.baselines;el('baseline').replaceChildren();
+ for(const row of baselines)el('baseline').add(new Option(row.label+' / '+row.run_code,row.id));
+ const selected=baselines.some(row=>row.id===previous)?previous:data.baseline_id;
+ if(baselines.some(row=>row.id===selected))el('baseline').value=selected;
+ if(!baselines.length){el('baseline').add(new Option('No archived baseline available',''));el('baseline-help').textContent='Use Archive / Plot Results to archive a completed unaugmented trial-0 baseline first. Then refresh saved baselines here.'}
+ else el('baseline-help').textContent='All covered conservation seasons in this saved baseline will be calculated. The current native adapter reads trial 0.';
+}
+el('refresh').onclick=()=>task('Refreshing saved baselines…',async()=>{populateBaselines(await call('/state',{}));el('status').textContent=baselines.length?'Saved baselines refreshed. Your configuration edits are retained.':'No archived unaugmented baseline is available yet.'});
+controls();(async()=>{try{const data=await call('/state',{});populate(data.configuration);baselines=data.baselines;
+ populateBaselines(data);
+ el('status').textContent=baselines.length?'Ready. Review the baseline and configuration before calculating.':'Configuration is available; calculation requires an archived baseline.';
+}catch(error){el('status').textContent=error.message}finally{busy=false;controls()}})();
+</script>
