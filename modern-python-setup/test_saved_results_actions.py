@@ -93,7 +93,7 @@ class SavedResultsTests(unittest.TestCase):
         if HOST!='standalone':self.skipTest('Standalone scheme scope')
         first=self.archive()
         (self.root/'standalone-augmentation-active.json').write_text(json.dumps({'baseline_id':first['id']}))
-        with self.assertRaisesRegex(ValueError,'augmentation scheme'):self.call('delete',id=first['id'],confirmed=True)
+        with self.assertRaisesRegex(ValueError,'active two-step'):self.call('delete',id=first['id'],confirmed=True)
     def test_rts_plot_menu_and_delete_action_support_named_runs(self):
         if HOST!='rts':self.skipTest('RTS menu route')
         row=self.archive()
@@ -106,14 +106,45 @@ class SavedResultsTests(unittest.TestCase):
         self.assertEqual(done.returncode,0,done.stdout+done.stderr)
         self.assertEqual(self.call('list')['runs'],[])
 
+    def test_two_step_name_is_automatic_and_survives_source_deletion(self):
+        if HOST=='standalone':
+            baseline=self.archive('Input case')
+            active=dict(status='loaded-awaiting-native-compute',baseline_run_code=self.code,
+                baseline_id=baseline['id'],baseline_label=baseline['label'],members=[1981],run_type='ensemble',scheme='test')
+            code='Con_Season1'
+            with HecDss.Open(self.context['dss_path']) as dss:
+                for parameter,units in [('ELEV','FT'),('FLOW-OUT','CFS')]:
+                    dss.put_ts(TimeSeriesContainer('//DETROIT-POOL/'+parameter+'//1DAY/C:001981|'+code+'/',5,1440,
+                        values=np.arange(5,dtype=float)+200.,start_time='01APR2026 0000',data_units=units,data_type='PER-AVER'))
+            marker=self.root/'standalone-augmentation-active.json';marker.write_text(json.dumps(active))
+        else:
+            from workflow_simple import accept_completed
+            from baseline_versions import registry
+            accept_completed(self.root,self.context)
+            data=registry(self.root);identity=data['current']
+            active=dict(run_code=self.code,baseline_id=identity,baseline_sha256=data['versions'][identity]['sha256'],scheme='test')
+            marker=self.root/'rts-augmentation-active.json';marker.write_text(json.dumps(active));code=self.code
+        saved=self.archive('My result',code=code)
+        self.assertIn('[two-step from: ',saved['label'])
+        self.assertEqual(saved['name'],'My result')
+        with self.assertRaisesRegex(ValueError,'already exists'):self.archive('My result',code=code)
+        marker.unlink()
+        if HOST=='standalone':self.call('delete',id=baseline['id'],confirmed=True)
+        with mock.patch('webbrowser.open'):
+            self.assertTrue(Path(self.call('plot',ids=[saved['id']])['path']).is_file())
+
     def test_referenced_baseline_is_protected(self):
         if HOST=='standalone':
             first=self.archive()
-            child=self.archive('Dependent result',kind='result',baseline_id=first['id'])
-            with self.assertRaisesRegex(ValueError,'used by saved results'):
-                self.call('delete',id=first['id'],confirmed=True)
-            self.call('delete',id=child['id'],confirmed=True)
+            child=self.archive('Independent result')
+            sidecar=self.root/'standalone-results'/child['id']/'capture.json'
+            legacy=json.loads(sidecar.read_text());legacy.update(kind='result',baseline_id=first['id'])
+            sidecar.write_text(json.dumps(legacy))
             self.call('delete',id=first['id'],confirmed=True)
+            retained=json.loads(sidecar.read_text())
+            self.assertEqual(retained['baseline_history']['label'],first['label'])
+            with mock.patch('webbrowser.open'):
+                self.assertTrue(Path(self.call('plot',ids=[child['id']])['path']).is_file())
         else:
             from workflow_simple import accept_completed
             accept_completed(self.root,self.context)

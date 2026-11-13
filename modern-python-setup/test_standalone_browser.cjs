@@ -41,17 +41,14 @@ async function main() {
         await new Promise(resolve=>setTimeout(resolve,200));
         return {runs:rows,outputs:locked?[]:['Con_Season0'],notices:locked?['Live DSS is locked; saved runs remain available.']:[]};
       }
-      if(url==='/capture'){assert.equal(data.kind,'baseline');assert.equal(data.code,'Con_Season0');rows=[baseline];locked=true;return baseline}
+      if(url==='/capture'){assert.equal(data.kind,undefined);assert.equal(data.code,'Con_Season0');rows=[baseline];locked=true;return baseline}
       if(url==='/plot'){assert.deepEqual(data.ids,[baseline.id]);return {path:'saved-plots/index.html'}}
       throw Error('Unexpected API '+url);
     });
     let page=current.page;
     assert.equal(await page.locator('#capture').isDisabled(),true);
     await page.waitForFunction(()=>document.querySelector('#output').value==='Con_Season0'&&!document.querySelector('#refresh').disabled);
-    await page.selectOption('#kind','result');
-    assert.equal(await page.locator('#capture').isDisabled(),true);
-    assert.match(await page.textContent('#baseline-help'),/Archive a baseline first/);
-    await page.selectOption('#kind','baseline');await page.fill('#name','First baseline');
+    await page.fill('#name','First baseline');
     await page.click('#capture');
     await page.waitForFunction(()=>!document.querySelector('#plot').disabled);
     assert.match(await page.textContent('#status'),/Archived.*First baseline/);
@@ -66,16 +63,15 @@ async function main() {
       if(url==='/archives')return {runs:rows};
       if(url==='/list')return {runs:rows,outputs:locked?[]:['Con_Season1'],notices:locked?['Live DSS is locked']:[]};
       if(url==='/delete'){assert.equal(data.id,'run-result');assert.equal(data.confirmed,true);rows=rows.filter(row=>row.id!==data.id);return {deleted:data.id}}
-      if(url==='/capture'){assert.equal(data.baseline_id,baseline.id);assert.equal(data.kind,'result');
+      if(url==='/capture'){assert.equal(data.baseline_id,undefined);assert.equal(data.kind,undefined);
         const row={...baseline,id:'run-result',label:'Augmented result',kind:'result'};rows=[row,baseline];return row}
       throw Error('Unexpected API '+url);
     });
     page=current.page;await page.waitForFunction(()=>!document.querySelector('#refresh').disabled);
     assert.equal(await page.locator('#runs option').count(),1);
     await page.selectOption('#runs',baseline.id);assert.equal(await page.locator('#plot').isEnabled(),true);
-    await page.selectOption('#kind','result');await page.fill('#name','Augmented result');
+    await page.fill('#name','Augmented result');
     locked=false;await page.click('#refresh');await page.waitForFunction(()=>!document.querySelector('#capture').disabled);
-    assert.equal(await page.inputValue('#baseline'),baseline.id);
     assert.equal(await page.inputValue('#name'),'Augmented result');
     await page.click('#capture');await page.waitForFunction(()=>document.querySelector('#runs').value==='run-result'&&!document.querySelector('#plot').disabled);
     assert.equal(await page.locator('#runs option').count(),2);
@@ -87,7 +83,7 @@ async function main() {
     await page.waitForFunction(()=>document.querySelector('#runs').options.length===1&&!document.querySelector('#refresh').disabled);
     assert.match(await page.textContent('#status'),/Deleted/);
     assert.deepEqual(current.errors,[]);await page.close();
-    console.log('PASS: existing archives with locked live DSS, baseline pairing and refresh preserves selections');
+    console.log('PASS: existing archives with locked live DSS, independent snapshots, duplicate warning, deletion and refresh');
 
     let available=[];let submitted;
     current=await openPage(browser,'standalone_augmentation.html',async (url,data)=>{

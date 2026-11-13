@@ -34,14 +34,14 @@ class Owner:
 owner=Owner();panels=[]
 ui(lambda:panels.append(gui.SavedResultsPanel(owner,settings['host'],settings['backend'],settings['python'],lambda:settings['context'])))
 panel=panels[0]
-def wait_done():
+def wait_done(allow_messages=False):
     end=time.time()+30
     while time.time()<end:
         ui(lambda:None)
         if not panel.busy:break
         time.sleep(.05)
     assert not panel.busy,'Archive task timed out'
-    assert not Confirm.messages,'Unexpected GUI message: '+repr(Confirm.messages)
+    if not allow_messages:assert not Confirm.messages,'Unexpected GUI message: '+repr(Confirm.messages)
 ui(lambda:panel.refresh());wait_done()
 assert panel.output.getItemCount()==1
 for name in ['Off case','Basic case']:
@@ -66,6 +66,14 @@ ui(lambda:panel.delete(None));wait_done()
 assert len(panel.rows)==1
 assert 'Deleted' in panel.status.getText(),panel.status.getText()
 assert not owner.busy
+if settings['host']=='standalone':
+    marker=os.path.join(os.path.dirname(settings['context']['dss_path']),'standalone-augmentation-active.json')
+    with codecs.open(marker,'w','utf-8') as handle:handle.write(unicode(json.dumps({'baseline_id':panel.rows[0]['id']})))
+    ui(lambda:panel.runs.setSelectedIndex(0))
+    ui(lambda:panel.delete(None));wait_done(True)
+    assert len(Confirm.messages)==1,repr(Confirm.messages)
+    assert 'active two-step' in Confirm.messages[0] and 'Traceback' not in Confirm.messages[0],repr(Confirm.messages)
+    assert len(panel.rows)==1
 print('PASS: '+settings['host']+' real Swing panel: refresh, two snapshots, duplicate warning, compare, delete and status timestamp')
 # Swing EDT is non-daemon in some Java builds.
 from java.lang import System

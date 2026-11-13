@@ -205,7 +205,7 @@ def catalog(root):
         manifest = json.loads((directory.parent / 'manifest.json').read_text())
         runs.append({'id': str(directory.relative_to(Path(root) / 'augmentation-archives')),
                      'kind': 'augmented', 'baseline_id': row['baseline_id'], 'directory': str(directory),
-                     'label': '{} — {}'.format(manifest.get('configuration_name', row['scheme']), row.get('captured_utc') or directory.name),
+                     'label': '{} [two-step from: {}] — {}'.format(manifest.get('configuration_name', row['scheme']),row['baseline_id'],row.get('captured_utc') or directory.name),
                      'status': row['baseline_status']})
     for path in sorted((Path(root)/'augmentation-archives/named-results').glob('run-*/capture.json')):
         if path.parent.is_symlink():continue

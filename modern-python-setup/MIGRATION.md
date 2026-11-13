@@ -109,3 +109,16 @@ Verification: `test_saved_results_actions.py` (and `--host rts`),
 the host, script_root, backend, Python executable and context; it exercises the real
 headless Swing panel and background processes for both hosts. Native HEC compute
 is still tested manually in Windows.
+
+### Independent snapshots and automatic calculation indicators
+
+Manual archive-purpose/baseline pairing controls have been removed. New standalone
+snapshots use kind `snapshot` and can supply trial-0 inputs to the two-step calculator.
+Loaded two-step results retain structured `augmentation` metadata and append the
+source name to the display label. Basic augmentation and standalone trial 0 receive
+no two-step indicator. RTS named snapshots and workflow result lists use the same
+indicator convention. Legacy pairing IDs remain historical metadata; deleting an
+old input records its label on retained legacy snapshots and does not remove their
+arrays or plots. Only active standalone calculation inputs block deletion.
+Expected backend failures are returned as data to the Swing panel, preventing a
+Java ExecutionException traceback from obscuring the useful message.

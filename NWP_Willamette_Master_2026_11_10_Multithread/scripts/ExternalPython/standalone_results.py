@@ -29,13 +29,16 @@ def delete_archive(root,identity,confirmed=False):
     with archive_lock(root):
         folder=archive_directory(root,'standalone-results',identity)
         row=json.loads((folder/'capture.json').read_text(encoding='utf-8'))
-        dependents=[item['label'] for item in catalog(root) if item['id']!=identity and item.get('baseline_id')==identity]
-        if dependents:raise ValueError('This baseline is used by saved results: '+', '.join(dependents)+'. Delete those results first.')
         marker=root/'standalone-augmentation-active.json'
-        references=list((root/'standalone-augmentation-schemes').glob('scheme-*/manifest.json'))
-        if marker.exists():references.append(marker)
-        if any(json.loads(path.read_text(encoding='utf-8')).get('baseline_id')==identity for path in references):
-            raise ValueError('This baseline is referenced by an augmentation scheme and cannot be deleted.')
+        if marker.exists() and json.loads(marker.read_text(encoding='utf-8')).get('baseline_id')==identity:
+            raise ValueError('This snapshot is the input of the active two-step augmentation calculation. Switch or disable that scheme before deleting its input.')
+        # Legacy manual pairings are descriptive history, not data dependencies.
+        for item in catalog(root):
+            if item['id']!=identity and item.get('baseline_id')==identity:
+                source=archive_directory(root,'standalone-results',item['id'])/'capture.json'
+                data=json.loads(source.read_text(encoding='utf-8'))
+                data['baseline_history']=dict(id=identity,label=row['label'])
+                atomic_json(source,data)
         history(root,'archive-delete-requested',id=identity,capture=row)
         shutil.rmtree(folder)
         history(root,'archive-deleted',id=identity,label=row['label'])
@@ -78,29 +81,24 @@ def outputs(root,run_type="ensemble"):
     return sorted(codes)
 
 
-def capture(root,alternative,label,code,kind,baseline_id=None,confirmed=False,run_type="ensemble"):
+def capture(root,alternative,label,code,kind=None,baseline_id=None,confirmed=False,run_type="ensemble"):
     from archive_operations import archive_lock
     with archive_lock(root):
         return _capture(root,alternative,label,code,kind,baseline_id,confirmed,run_type)
 
 
-def _capture(root,alternative,label,code,kind,baseline_id=None,confirmed=False,run_type="ensemble"):
+def _capture(root,alternative,label,code,kind=None,baseline_id=None,confirmed=False,run_type="ensemble"):
     root=Path(root)
     if run_type not in ('ensemble','por'):raise ValueError('Invalid run type')
     if not confirmed:raise ValueError('Confirm successful compute before capturing results')
-    if kind not in ('baseline','result') or not isinstance(label,str) or not label.strip():raise ValueError('Choose baseline/result and a name')
+    if not isinstance(label,str) or not label.strip():raise ValueError('Enter an archive name')
     saved={row['id']:row for row in catalog(root)}
     from archive_operations import unique_name
     label=unique_name(label,saved.values())
-    if kind=='result' and (baseline_id not in saved or saved[baseline_id]['kind']!='baseline'):
-        raise ValueError('Select an archived baseline for this result')
-    if kind=='result' and saved[baseline_id]['alternative']!=alternative:
-        raise ValueError('Baseline belongs to a different native alternative')
     # Exact alternative/run spelling comes from the catalog; case is ignored only
     # for comparison. This admits native padding/hyphen naming plus trial digits.
     prefix=alternative.replace(' ','-').ljust(10,'-')
     if not re.fullmatch(re.escape(prefix)+r'\d+',code,re.I):raise ValueError('Output suffix does not match the selected alternative')
-    if kind=='result' and saved[baseline_id].get('run_type','ensemble')!=run_type:raise ValueError('Baseline run type differs')
     if code not in outputs(root,run_type):raise ValueError('Selected output is absent from this simulation')
     archive=root/'standalone-results';archive.mkdir(exist_ok=True)
     pending=archive/('pending-'+uuid.uuid4().hex);pending.mkdir()
@@ -118,8 +116,10 @@ def _capture(root,alternative,label,code,kind,baseline_id=None,confirmed=False,r
                     pools.setdefault(parts[2].upper(),set()).add(parts[3].upper())
             if not pools or any('FLOW-OUT' not in params or not {'ELEV','ELEVATION'}&params for params in pools.values()):
                 raise ValueError('Member lacks paired pool elevation/outflow: '+str(member))
-        if kind=='result' and members!=saved[baseline_id]['members']:
-            raise ValueError('Result member selection differs from its baseline')
+        from archive_operations import standalone_augmentation,annotated_name
+        augmentation=standalone_augmentation(root,code,run_type,members,list(saved.values()))
+        display_label=annotated_name(label,augmentation)
+        unique_name(display_label,saved.values(),limit=512)
         pointer=root/'standalone-baseline-config-active.json'
         applied=None
         if pointer.exists():
@@ -128,8 +128,8 @@ def _capture(root,alternative,label,code,kind,baseline_id=None,confirmed=False,r
             if digest_file(source_config/'resolved.json')!=applied['resolved_sha256']:raise ValueError('Applied configuration checksum mismatch')
             shutil.copytree(source_config,pending/'configuration-provenance')
         identity='run-'+uuid.uuid4().hex
-        data={'format':'standalone-saved-result','label':label.strip(),'kind':kind,
-              'baseline_id':identity if kind=='baseline' else baseline_id,'run_code':code.upper(),
+        data={'format':'standalone-saved-result','label':display_label,'name':label.strip(),'kind':'snapshot','augmentation':augmentation,
+              'baseline_id':augmentation['baseline_id'] if augmentation else None,'run_code':code.upper(),
               'alternative':alternative,'simulation':root.name,'members':members,'run_type':run_type,
               'synthetic_members':[m for m in members if m in (3000,3001,3002,3003)],
               'created_utc':datetime.now(timezone.utc).isoformat(),
@@ -180,7 +180,7 @@ def _plot(root,identities):
             for path in paths:
                 parts=path.split('/');target=standalone_reference(parts)
                 if not target:continue
-                if target[2].startswith('Prepared ') and row['kind']=='baseline':continue
+                if target[2].startswith('Prepared ') and not row.get('augmentation') and row['kind']!='result':continue
                 match=re.fullmatch(r'C:(\d{6})\|'+re.escape(row['run_code']),parts[6],re.I) if row.get('run_type','ensemble')!='por' else None
                 if row.get('run_type','ensemble')=='por':
                     if parts[6].upper()!=row['run_code'].upper():continue
@@ -265,8 +265,8 @@ def _plot(root,identities):
     with (destination/'reference-read-report.csv').open('w',newline='',encoding='utf-8') as stream:
         writer=csv.DictWriter(stream,fieldnames=['run','reference','location','member','path','error'])
         writer.writeheader();writer.writerows(reference_failures)
-    paired=len(selected)==2 and selected[0]['baseline_id']==selected[1]['baseline_id']
-    (destination/'index.html').write_text('<!doctype html><meta charset="utf-8"><title>Saved standalone results</title><h1>Saved standalone results</h1><p>'+escape(' / '.join(row['label'] for row in selected))+'</p><p>'+('Same baseline pairing' if paired else 'One run, or different baseline pairings: differences may include baseline changes')+'</p><ul>'+''.join(links)+'</ul><details><summary>Reference availability ('+str(len(reference_notes))+' notices)</summary><p><a href="reference-read-report.csv">Detailed reference read report</a></p><ul>'+''.join('<li>'+escape(note)+'</li>' for note in reference_notes)+'</ul></details>',encoding='utf-8')
+    paired=False
+    (destination/'index.html').write_text('<!doctype html><meta charset="utf-8"><title>Saved standalone results</title><h1>Saved standalone results</h1><p>'+escape(' / '.join(row['label'] for row in selected))+'</p><p>'+'Saved snapshots are independent. Differences may include changes in baseline settings and augmentation.'+'</p><ul>'+''.join(links)+'</ul><details><summary>Reference availability ('+str(len(reference_notes))+' notices)</summary><p><a href="reference-read-report.csv">Detailed reference read report</a></p><ul>'+''.join('<li>'+escape(note)+'</li>' for note in reference_notes)+'</ul></details>',encoding='utf-8')
     atomic_json(destination/'selection.json',{'runs':selected,'same_baseline':paired,'reference_notes':reference_notes})
     return destination/'index.html'
 

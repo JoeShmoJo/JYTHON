@@ -35,7 +35,11 @@ def rts_capture(root,context,label,code,confirmed):
     from run_archive import capture_run,metadata,signature
     from workflow_simple import inspect_run
     if not confirmed:raise ValueError('Confirm the native compute finished successfully before archiving.')
-    label=unique_name(label,rts_rows(root))
+    rows=rts_rows(root)
+    label=unique_name(label,rows)
+    from archive_operations import rts_augmentation,annotated_name
+    augmentation=rts_augmentation(root,code)
+    display_label=unique_name(annotated_name(label,augmentation),rows,limit=512)
     info=inspect_run(root/'forecast.dss',code,catalog_only=True)
     if not info['members']:raise ValueError('No computed historical-member outputs to archive.')
     container=root/'augmentation-archives/named-results'
@@ -46,7 +50,7 @@ def rts_capture(root,context,label,code,confirmed):
     source=root/'forecast.dss';before=signature(source)
     try:
         digest=capture_run(source,pending,code)
-        row=dict(id=identity,label=label,kind='named',run_code=code,baseline_id=None,
+        row=dict(id=identity,label=display_label,name=label,augmentation=augmentation,kind='named',run_code=code,baseline_id=None,
             created_utc=datetime.now(timezone.utc).isoformat(),sha256=digest,
             context=context,compute_status='user-confirmed-success-not-independently-verified')
         for filename in ('rts-baseline-config-active.json','rts-augmentation-active.json'):
@@ -91,7 +95,7 @@ def execute(request):
             if result['runs'] is not None:result['runs']=[row for row in result['runs'] if row['alternative']==alternative]
             return result
         if action=='archive':
-            row=saved.capture(root,alternative,request['label'],request['code'],request['kind'],request.get('baseline_id'),request.get('confirmed',False),run_type)
+            row=saved.capture(root,alternative,request['label'],request['code'],None,None,request.get('confirmed',False),run_type)
             return {'saved':row}
         if action=='delete':
             row=next((row for row in saved.catalog(root) if row['id']==request['id']),None)

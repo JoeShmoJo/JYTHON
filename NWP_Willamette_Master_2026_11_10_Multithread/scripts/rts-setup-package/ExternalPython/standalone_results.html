@@ -8,9 +8,7 @@
 <h2>Archive completed results</h2>
 <label>Completed output <select id="output" disabled><option>Loading…</option></select></label>
 <label>Name <input id="name" placeholder="Descriptive result name"></label>
-<label>Archive purpose <select id="kind"><option value="baseline">New baseline (using chosen baseline settings)</option><option value="result">Augmented result paired with a baseline</option></select></label>
-<label id="baseline-label">Baseline for result <select id="baseline" disabled></select></label>
-<p id="baseline-help" class="hint"></p>
+<p>Two-step results automatically show the saved input name in their archive name.</p>
 <button id="capture" disabled>Archive completed results</button>
 <hr><h2>Plot archived results</h2><p>Select one or two runs (Ctrl-click for two).</p>
 <p id="empty" class="hint">Loading saved runs…</p>
@@ -22,14 +20,9 @@ const el=id=>document.getElementById(id);
 el('target').textContent=TARGET;
 let busy=false,loaded=false,currentRows=[];
 function controls(){
-  const result=el('kind').value==='result',baseline=!!el('baseline').value;
-  for(const id of ['refresh','name','kind','close'])el(id).disabled=busy;
+  for(const id of ['refresh','name','close'])el(id).disabled=busy;
   el('output').disabled=busy||!el('output').value;
-  el('baseline').disabled=busy||!result||!baseline;
-  el('baseline-label').hidden=!result;
-  el('baseline-help').textContent=result?(baseline?'Select the unaugmented baseline used by this result.':'Archive a baseline first, then select “Augmented result”.'):
-    'A new baseline does not need an earlier baseline. Choose the completed unaugmented output and give it a name.';
-  el('capture').disabled=busy||!loaded||!el('output').value||!el('name').value.trim()||(result&&!baseline);
+  el('capture').disabled=busy||!loaded||!el('output').value||!el('name').value.trim();
   el('runs').disabled=busy||!el('runs').options.length;
   const n=el('runs').selectedOptions.length;
   el('plot').disabled=busy||n<1||n>2;
@@ -42,16 +35,12 @@ async function call(path,data){
 function renderRuns(rows,selectId){
   currentRows=rows;
   const selected=new Set(selectId?[selectId]:[...el('runs').selectedOptions].map(o=>o.value));
-  const previous=el('baseline').value;
-  el('runs').replaceChildren();el('baseline').replaceChildren();
+  el('runs').replaceChildren();
   for(const row of rows){
-    const label=row.label+' ['+row.kind+'] '+row.alternative+' / '+new Date(row.created_utc).toLocaleString()+' / '+row.id.slice(-8);
+    const label=row.label+' '+row.alternative+' / '+new Date(row.created_utc).toLocaleString()+' / '+row.id.slice(-8);
     const option=new Option(label,row.id);option.selected=selected.has(row.id);el('runs').add(option);
-    if(row.kind==='baseline'&&row.alternative===ALTERNATIVE)el('baseline').add(new Option(label,row.id));
   }
-  if([...el('baseline').options].some(o=>o.value===previous))el('baseline').value=previous;
-  if(selectId&&[...el('baseline').options].some(o=>o.value===selectId))el('baseline').value=selectId;
-  el('empty').textContent=rows.length?'':'No saved runs yet. Archive a completed unaugmented baseline above to start.';
+  el('empty').textContent=rows.length?'':'No saved runs yet. Name and archive a completed run above to start.';
 }
 const ALTERNATIVE=__ALTERNATIVE__;
 async function refresh(selectId,success){
@@ -75,7 +64,7 @@ el('capture').onclick=()=>{
 
   if(!confirm('Has this unaugmented or augmented native compute finished successfully for every intended member and date? Archive it now?'))return;
   task('Archiving completed results…',async()=>{
-    const row=await call('/capture',{label:el('name').value,code:el('output').value,kind:el('kind').value,baseline_id:el('baseline').value,confirmed:true});
+    const row=await call('/capture',{label:el('name').value,code:el('output').value,confirmed:true});
     renderRuns([row,...currentRows.filter(item=>item.id!==row.id)],row.id);
     el('name').value='';
     const success='Archived “'+row.label+'” at '+new Date(row.created_utc).toLocaleString()+'. It is selected below and ready to plot.';
@@ -85,7 +74,7 @@ el('capture').onclick=()=>{
 };
 el('delete').onclick=()=>{
  const row=currentRows.find(item=>item.id===el('runs').value);if(!row)return;
- if(!confirm('Permanently delete "'+row.label+'", saved '+new Date(row.created_utc).toLocaleString()+'? Live results and exported plots are kept. Referenced baselines are protected.'))return;
+ if(!confirm('Permanently delete "'+row.label+'", saved '+new Date(row.created_utc).toLocaleString()+'? Live results and exported plots are kept. Active calculation inputs are protected.'))return;
  task('Deleting saved archive…',async()=>{await call('/delete',{id:row.id,confirmed:true});
    renderRuns(currentRows.filter(item=>item.id!==row.id));
    const success='Deleted "'+row.label+'".';el('status').textContent=success;
@@ -94,7 +83,7 @@ el('delete').onclick=()=>{
 };
 el('plot').onclick=()=>task('Preparing plots…',async()=>{const result=await call('/plot',{ids:[...el('runs').selectedOptions].map(o=>o.value)});el('status').textContent='Plots: '+result.path});
 el('close').onclick=()=>task('Closing…',async()=>{await call('/close',{});document.body.textContent='Closed'});
-for(const id of ['name','kind','baseline','runs','output']){el(id).addEventListener('input',controls);el(id).addEventListener('change',controls)}
+for(const id of ['name','runs','output']){el(id).addEventListener('input',controls);el(id).addEventListener('change',controls)}
 controls();task('Loading completed outputs and saved runs…',async()=>{
   const data=await call('/archives',{});renderRuns(data.runs);
   el('status').textContent='Saved archives loaded. Reading completed outputs…';

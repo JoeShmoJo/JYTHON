@@ -6,10 +6,10 @@ from pathlib import Path
 import unicodedata
 
 
-def unique_name(label, rows):
+def unique_name(label, rows, limit=160):
     if not isinstance(label,str) or not label.strip():raise ValueError('Enter an archive name.')
     label=label.strip()
-    if len(label)>160 or any(ord(c)<32 for c in label):raise ValueError('Use an archive name of at most 160 characters without control characters.')
+    if len(label)>limit or any(ord(c)<32 for c in label):raise ValueError('Archive name is too long or contains control characters.')
     key=lambda value:unicodedata.normalize('NFKC',value.strip()).casefold()
     duplicate=next((row for row in rows if key(row['label'])==key(label)),None)
     if duplicate:
@@ -42,3 +42,34 @@ def archive_directory(root,container,identity):
 def history(root,action,**details):
     with (Path(root)/'saved-results-history.jsonl').open('a',encoding='utf-8') as handle:
         handle.write(json.dumps(dict(utc=datetime.now(timezone.utc).isoformat(),action=action,**details))+'\n')
+
+
+def annotated_name(label, augmentation):
+    return label+' [two-step from: '+augmentation['baseline_label']+']' if augmentation else label
+
+
+def standalone_augmentation(root,code,run_type,members,rows):
+    path=Path(root)/'standalone-augmentation-active.json'
+    if not path.exists():return None
+    active=json.loads(path.read_text(encoding='utf-8'))
+    baseline=active.get('baseline_run_code','')
+    if (active.get('status')!='loaded-awaiting-native-compute' or not baseline
+            or not code[-1:].isdigit() or code.endswith('0') or code[:-1].upper()!=baseline[:-1].upper()
+            or active.get('run_type')!=run_type):return None
+    if run_type=='ensemble' and not set(members)<=set(active.get('members',[])):
+        raise ValueError('Loaded augmentation does not cover the selected output members.')
+    source=next((row for row in rows if row['id']==active['baseline_id']),None)
+    return dict(scheme=active['scheme'],baseline_id=active['baseline_id'],
+        baseline_label=active.get('baseline_label') or (source['label'] if source else active['baseline_id']))
+
+
+def rts_augmentation(root,code):
+    path=Path(root)/'rts-augmentation-active.json'
+    if not path.exists():return None
+    active=json.loads(path.read_text(encoding='utf-8'))
+    if active.get('run_code','').upper()!=code.upper():return None
+    from baseline_versions import registry,baseline_identity
+    identity=baseline_identity(root,active)
+    version=registry(root)['versions'][identity]
+    return dict(scheme=active['scheme'],baseline_id=identity,
+        baseline_label=version.get('label') or version.get('name') or identity)

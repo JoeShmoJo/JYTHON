@@ -45,7 +45,7 @@ class ArchiveTask(SwingWorker):
             else:
                 with codecs.open(log,'r','utf-8','replace') as handle:detail=''.join(handle.readlines()[-20:])
                 raise RuntimeError('Archive task did not return a response. '+detail)
-            if code or result.get('error'):raise RuntimeError(result.get('error','Archive task failed.'))
+            if code and not result.get('error'):result={'error':'Archive task failed.'}
             return result
         finally:shutil.rmtree(directory)
     def done(self):
@@ -70,10 +70,6 @@ class SavedResultsPanel(JPanel):
         top.add(JLabel('Archive name for current results'));self.archive_name=JTextField();top.add(self.archive_name)
         self.archive_name.setToolTipText('Enter a distinct name after each compute; saving settings does not archive outputs.')
         top.add(JLabel('Completed output to archive'));self.output=JComboBox();top.add(self.output)
-        self.kind=JComboBox(['New baseline','Result paired with a baseline']);self.baseline=JComboBox()
-        if mode=='standalone':
-            top.add(JLabel('Archive purpose'));top.add(self.kind)
-            top.add(JLabel('Baseline for paired result'));top.add(self.baseline)
         self.add(top,BorderLayout.NORTH)
         self.model=DefaultListModel();self.runs=JList(self.model)
         self.runs.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION)
@@ -89,8 +85,7 @@ class SavedResultsPanel(JPanel):
         bottom.add(JLabel('<html><b>Before your next compute:</b> archive current results if you want to keep them. Recomputing replaces live outputs.<br>Saving baseline settings is separate from archiving results. Select one or two saved archives to plot.</html>'))
         self.status=JLabel('Select the target, then Refresh archives / outputs.');bottom.add(self.status)
         self.add(bottom,BorderLayout.SOUTH)
-        self.controls.extend([self.archive_name,self.output,self.kind,self.baseline,self.runs])
-        self.kind.addActionListener(lambda event:self.update_controls())
+        self.controls.extend([self.archive_name,self.output,self.runs])
         self.update_controls()
     def host_busy(self,busy):
         if hasattr(self.owner,'set_busy'):self.owner.set_busy(busy)
@@ -100,7 +95,6 @@ class SavedResultsPanel(JPanel):
         elif hasattr(self.owner,'append'):self.owner.append(text)
     def update_controls(self):
         for control in self.controls:control.setEnabled(not self.busy)
-        self.baseline.setEnabled(not self.busy and self.kind.getSelectedIndex()==1)
     def selection(self):return [self.rows[int(index)] for index in self.runs.getSelectedIndices()]
     def start(self,action,**data):
         if self.busy or self.owner.busy:return
@@ -128,15 +122,10 @@ class SavedResultsPanel(JPanel):
             JOptionPane.showMessageDialog(self.dialog_parent,'An archive named "'+duplicate['label']+'" already exists, saved '+display_time(duplicate.get('created_utc'))+'.\nEnter a different name. The existing archive will be kept.','Duplicate archive name',JOptionPane.WARNING_MESSAGE);return
         if not self.output.getSelectedItem():
             JOptionPane.showMessageDialog(self.dialog_parent,'Refresh and select a completed output first.');return
-        paired=self.mode=='standalone' and self.kind.getSelectedIndex()==1
-        baselines=[row for row in self.rows if row['kind']=='baseline']
-        if paired and self.baseline.getSelectedIndex()<0:
-            JOptionPane.showMessageDialog(self.dialog_parent,'Archive or select a baseline first.');return
-        baseline_id=baselines[self.baseline.getSelectedIndex()]['id'] if paired else None
         if JOptionPane.showConfirmDialog(self.dialog_parent,
             'Confirm the native compute finished successfully and no compute is running.\nSave a snapshot named "'+label+'" from '+str(self.output.getSelectedItem())+'?\nArchive again after each compute you want to keep.',
             'Archive current results',JOptionPane.OK_CANCEL_OPTION)!=JOptionPane.OK_OPTION:return
-        self.start('archive',label=label,code=str(self.output.getSelectedItem()),kind='result' if paired else 'baseline',baseline_id=baseline_id,confirmed=True)
+        self.start('archive',label=label,code=str(self.output.getSelectedItem()),confirmed=True)
     def plot(self,event):
         rows=self.selection()
         if len(rows) not in (1,2):
@@ -148,10 +137,14 @@ class SavedResultsPanel(JPanel):
             JOptionPane.showMessageDialog(self.dialog_parent,'Select one archive to delete.');return
         row=rows[0]
         if JOptionPane.showConfirmDialog(self.dialog_parent,
-            'Permanently delete "'+row['label']+'", saved '+display_time(row.get('created_utc'))+'?\nLive model results and other archives are kept. Exported plots are retained.\nDeletion cannot be undone; referenced baselines are protected.',
+            'Permanently delete "'+row['label']+'", saved '+display_time(row.get('created_utc'))+'?\nLive model results and other archives are kept. Exported plots are retained.\nDeletion cannot be undone; active calculation inputs are protected.',
             'Delete saved archive',JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE)!=JOptionPane.YES_OPTION:return
         self.start('delete',id=row['id'],confirmed=True)
     def completed(self,request,result):
+        if result.get('error'):
+            self.status.setText(result['error']);self.message(result['error'])
+            JOptionPane.showMessageDialog(self.dialog_parent,result['error'],'Saved results',JOptionPane.WARNING_MESSAGE)
+            return
         action=request['action']
         if action=='list':
             rows=result['runs']
@@ -160,15 +153,12 @@ class SavedResultsPanel(JPanel):
             indices=[]
             for index,row in enumerate(self.rows):
                 stamp=display_time(row.get('created_utc'))
-                self.model.addElement(row['label']+' | '+row['kind']+' | '+stamp+' | '+row['id'][-8:])
+                self.model.addElement(row['label']+' | '+stamp+' | '+row['id'][-8:])
                 if row['id'] in self.want_selection:indices.append(index)
             self.runs.setSelectedIndices(indices);self.want_selection=[]
             previous=self.output.getSelectedItem();self.output.removeAllItems()
             for code in result['outputs']:self.output.addItem(code)
             if previous in result['outputs']:self.output.setSelectedItem(previous)
-            self.baseline.removeAllItems()
-            for row in self.rows:
-                if row['kind']=='baseline':self.baseline.addItem(row['label']+' / '+display_time(row.get('created_utc')))
             text=self.notice or ('Saved archives: '+str(len(self.rows))+'. Refresh does not save live results.')
             self.notice=None
             if result.get('notices'):text+=' '+ ' '.join(result['notices'])
@@ -177,7 +167,7 @@ class SavedResultsPanel(JPanel):
             if action=='archive':
                 row=result['saved'];self.want_selection=[row['id']];self.archive_name.setText('')
                 self.rows.insert(0,row)
-                self.model.insertElementAt(row['label']+' | '+row['kind']+' | '+display_time(row['created_utc'])+' | '+row['id'][-8:],0)
+                self.model.insertElementAt(row['label']+' | '+display_time(row['created_utc'])+' | '+row['id'][-8:],0)
                 self.runs.setSelectedIndex(0)
                 self.notice='Archived "'+row['label']+'" at '+display_time(row['created_utc'])+'.'
             else:self.notice='Deleted "'+result['label']+'".'

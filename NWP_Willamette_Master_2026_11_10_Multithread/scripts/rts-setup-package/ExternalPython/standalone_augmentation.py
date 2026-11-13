@@ -31,7 +31,7 @@ CSV_NAME = 'MinFlowSalemAlbanyConfig.csv'
 
 
 def baselines(root, alternative, run_type):
-    return [row for row in catalog(root) if row['kind']=='baseline'
+    return [row for row in catalog(root) if row['run_code'].endswith('0')
             and row['alternative']==alternative and row.get('run_type','ensemble')==run_type]
 
 
@@ -197,7 +197,7 @@ def prepare(root, scripts, alternative, run_type, baseline_id, config):
         hashes={path.name:digest_file(scheme/path.name) for path in assets}
         hashes.update({CSV_NAME:digest_file(csv_path),'configuration.json':digest_file(scheme/'configuration.json')})
         manifest=dict(schema=1,status='prepared',scheme=scheme.name,alternative=alternative,run_type=run_type,
-            baseline_id=baseline_id,baseline_run_code=row['run_code'],baseline_sha256=row['archive_sha256'],members=row['members'],
+            baseline_id=baseline_id,baseline_label=row['label'],baseline_run_code=row['run_code'],baseline_sha256=row['archive_sha256'],members=row['members'],
             configuration_name=config['name'],configuration_sha256=hashes,augmentation_sha256=digest_file(output),
             supporting_reservoirs=selected,paths=written,seasons=windows)
         atomic_json(scheme/'manifest.json',manifest)
