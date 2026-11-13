@@ -29,7 +29,7 @@ The script refuses to modify an existing environment unless explicitly passed
 ```
 
 Conda supplies Python 3.11 and pip from conda-forge. PowerShell downloads all
-29 resolved Windows Python 3.11 wheels into a fresh directory, with bounded
+36 resolved Windows Python 3.11 wheels into a fresh directory, with bounded
 retries and SHA256 verification against official PyPI metadata. Pip then installs
 locally with --no-index and --require-hashes. This avoids pip's interrupted
 download cleanup path, which failed with WinError 32 during user testing.
@@ -39,9 +39,15 @@ versions are retained under %LOCALAPPDATA%\JYTHON\python-environments.
 
 ## Packages covered
 
-The imports in ExternalPython (including archives), model_check, offline rule
-tests, migration tools and API-reference generator require NumPy, pandas,
-pydsstools, cwms-python (imported as cwms), Plotly, requests and urllib3.
+The initial audit covered ExternalPython (including archives), model_check,
+offline rule tests, migration tools and the API-reference generator. A subsequent
+scan of all 150 Python files under data/scripts found Matplotlib in
+SalemAlbanyAugScript/SalemAugCheckPlots.py, which the first audit missed.
+The desktop dependency list now includes NumPy, pandas, pydsstools, cwms-python
+(imported as cwms), Plotly, requests, urllib3, and Matplotlib. PyArrow is included
+for the user's archive forecast Parquet loading, even though that loader was
+not found in this checkout or current origin/main. Its additional dependencies
+and actual Parquet schema remain unverified until the loader is available.
 Pydsstools also installs its declared affine, pyproj and pydantic dependencies.
 The Windows lock records the complete dependency set, including NumPy 1.26.4
 as resolved for the new pydsstools version; this is not the old NumPy 1.22.4 pin.
@@ -56,8 +62,10 @@ data, a notebook IDE, or the separate Node.js Word-document generator.
 ## Verification and remaining migration
 
 The installer checks dependency consistency, imports, a DSS7 write/reopen/read
-round trip with values/timestamps/units, and CWMS parsing of a local response.
-Those checks passed in the cloud Linux environment. All 29 Windows wheel hashes
+round trip with values/timestamps/units, CWMS parsing of a local response,
+a Snappy-compressed Parquet round trip (including dates and missing values),
+and Matplotlib PNG rendering.
+Those checks passed in the cloud Linux environment. All 36 Windows wheel hashes
 were checked against PyPI, and dependency closure was validated with Windows
 Python 3.11 markers. The revised PowerShell wrapper and
 Windows runtime still need execution on your Windows machine; live CWMS requests

@@ -9,3 +9,6 @@ requests==2.34.2
 urllib3==2.8.0
 # Prevent pydsstools' optional raster import from printing a traceback.
 rasterio==1.4.3
+# Archive forecast Parquet input and SalemAlbanyAugScript plotting.
+pyarrow==19.0.1
+matplotlib==3.9.4

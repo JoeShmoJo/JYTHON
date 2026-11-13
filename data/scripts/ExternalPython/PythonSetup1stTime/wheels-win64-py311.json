@@ -56,6 +56,13 @@
     "sha256": "c1ca117dbce1fe20a5809dc96f01e1c2840f6dcc939b3ddbb1111bf330ba82df"
   },
   {
+    "name": "contourpy",
+    "version": "1.3.3",
+    "filename": "contourpy-1.3.3-cp311-cp311-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/98/4b/9bd370b004b5c9d8045c6c33cf65bae018b27aca550a3f657cdc99acdbd8/contourpy-1.3.3-cp311-cp311-win_amd64.whl",
+    "sha256": "3519428f6be58431c56581f1694ba8e50626f2dd550af225f82fb5f5814d2a42"
+  },
+  {
     "name": "cwms-python",
     "version": "1.1.4",
     "filename": "cwms_python-1.1.4-py3-none-any.whl",
@@ -63,11 +70,39 @@
     "sha256": "679898d9f796406f6b59d441ccf79e2602465792128d7b0dd404a25e7bcfc2b2"
   },
   {
+    "name": "cycler",
+    "version": "0.12.1",
+    "filename": "cycler-0.12.1-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/e7/05/c19819d5e3d95294a6f5947fb9b9629efb316b96de511b418c53d245aae6/cycler-0.12.1-py3-none-any.whl",
+    "sha256": "85cef7cff222d8644161529808465972e51340599459b8ac3ccbac5a854e0d30"
+  },
+  {
+    "name": "fonttools",
+    "version": "4.68.0",
+    "filename": "fonttools-4.68.0-cp311-cp311-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/46/87/4ba592099172764aa56e66919b0c3ddaf944c775433e806e36e165062095/fonttools-4.68.0-cp311-cp311-win_amd64.whl",
+    "sha256": "35425bba603cf9d72c9f3c173ea6c98632164f3bdfb1ce1a3dcc928979c6ec6d"
+  },
+  {
     "name": "idna",
     "version": "3.20",
     "filename": "idna-3.20-py3-none-any.whl",
     "url": "https://files.pythonhosted.org/packages/58/a2/bb081bab032533a855d44de1d56f8e8426114ff1ba5d1f07a438a0a654f8/idna-3.20-py3-none-any.whl",
     "sha256": "ab7ae7122974553370f0bdb919e1a960b2cd1bc1ef0276416d896db81c14582c"
+  },
+  {
+    "name": "kiwisolver",
+    "version": "1.5.1",
+    "filename": "kiwisolver-1.5.1-cp311-cp311-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/bf/9f/6f9e489c188200e6fb3193935501894811e8c97577c8ffe9033589bf3521/kiwisolver-1.5.1-cp311-cp311-win_amd64.whl",
+    "sha256": "1a7587dc335f2c0f5bd577fd0540bd16c66006bdb60f759a1059f025e6c4f071"
+  },
+  {
+    "name": "matplotlib",
+    "version": "3.9.4",
+    "filename": "matplotlib-3.9.4-cp311-cp311-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/23/e1/4f0e237bf349c02ff9d1b6e7109f1a17f745263809b9714a8576dc17752b/matplotlib-3.9.4-cp311-cp311-win_amd64.whl",
+    "sha256": "1f6882828231eca17f501c4dcd98a05abb3f03d157fbc0769c6911fe08b6cfd3"
   },
   {
     "name": "numpy",
@@ -91,11 +126,25 @@
     "sha256": "f086f6fe114e19d92014a1966f43a3e62285109afe874f067f5abbdcbb10e59c"
   },
   {
+    "name": "pillow",
+    "version": "13.0.0",
+    "filename": "pillow-13.0.0-cp311-cp311-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/7d/f6/6e2d96413e4c9dbec12ea584d9e646d602877d4cce3ea669099f959deac6/pillow-13.0.0-cp311-cp311-win_amd64.whl",
+    "sha256": "d7710eb676e9bb68965cb045be0d333b4c0d7f9dfbaa7fbf121385b1588683d3"
+  },
+  {
     "name": "plotly",
     "version": "5.24.1",
     "filename": "plotly-5.24.1-py3-none-any.whl",
     "url": "https://files.pythonhosted.org/packages/e5/ae/580600f441f6fc05218bd6c9d5794f4aef072a7d9093b291f1c50a9db8bc/plotly-5.24.1-py3-none-any.whl",
     "sha256": "f67073a1e637eb0dc3e46324d9d51e2fe76e9727c892dde64ddf1e1b51f29089"
+  },
+  {
+    "name": "pyarrow",
+    "version": "19.0.1",
+    "filename": "pyarrow-19.0.1-cp311-cp311-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/ff/77/e62aebd343238863f2c9f080ad2ef6ace25c919c6ab383436b5b81cbeef7/pyarrow-19.0.1-cp311-cp311-win_amd64.whl",
+    "sha256": "008a4009efdb4ea3d2e18f05cd31f9d43c388aad29c636112c2966605ba33466"
   },
   {
     "name": "pydantic",

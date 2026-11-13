@@ -18,6 +18,7 @@ def main():
         ('plotly', 'plotly.graph_objects'), ('requests', 'requests'),
         ('urllib3', 'urllib3'), ('rasterio', 'rasterio'),
         ('pyproj', 'pyproj'), ('affine', 'affine'), ('pydantic', 'pydantic'),
+        ('pyarrow', 'pyarrow.parquet'), ('matplotlib', 'matplotlib.figure'),
     ]:
         importlib.import_module(module)
         print(package, importlib.metadata.version(package))
@@ -54,6 +55,18 @@ def main():
     assert frame['value'].iloc[0] == 123.25
     assert frame['date-time'].iloc[0] == pd.Timestamp('2026-01-01', tz='UTC')
     print('PASS: CWMS local-response parsing (no live API request)')
+    with tempfile.TemporaryDirectory() as folder:
+        frame = pd.DataFrame({'forecast': [1.25, 2.5, np.nan]},
+                             index=pd.date_range('2026-01-01', periods=3))
+        path = pathlib.Path(folder) / 'forecast.parquet'
+        frame.to_parquet(path, engine='pyarrow', compression='snappy')
+        pd.testing.assert_frame_equal(pd.read_parquet(path, engine='pyarrow'), frame,
+                                      check_freq=False)
+        from matplotlib.figure import Figure
+        figure = Figure()
+        figure.subplots().plot(frame.index, frame['forecast'])
+        figure.savefig(pathlib.Path(folder) / 'forecast.png')
+    print('PASS: PyArrow Parquet round trip and Matplotlib PNG rendering')
 
 
 if __name__ == '__main__':
