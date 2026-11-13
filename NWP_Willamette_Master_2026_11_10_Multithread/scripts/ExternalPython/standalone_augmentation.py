@@ -260,7 +260,7 @@ def process(root,scripts,alternative,run_type,baseline_id,config,confirmed=False
 
 def serve(root,scripts,alternative,run_type):
     root,scripts=Path(root),Path(scripts);token=secrets.token_urlsafe(32);lock=threading.Lock()
-    page=Path(__file__).with_suffix('.html').read_text().replace('__TOKEN__',json.dumps(token)).replace('__TARGET__',json.dumps(str(root)+' / '+alternative+' / '+run_type).replace('</','<\\/'))
+    page=Path(__file__).with_suffix('.html').read_text(encoding='utf-8').replace('__TOKEN__',json.dumps(token)).replace('__TARGET__',json.dumps(str(root)+' / '+alternative+' / '+run_type).replace('</','<\\/'))
     class Handler(BaseHTTPRequestHandler):
         def log_message(self,*args):pass
         def do_GET(self):

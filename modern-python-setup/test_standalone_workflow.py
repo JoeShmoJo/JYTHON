@@ -193,7 +193,13 @@ class StandaloneWorkflowTests(unittest.TestCase):
             saved=post('/save',dict(configuration=config,baseline_id=None))
             self.assertNotIn('unrelated_path',saved)
             self.assertFalse((self.root/augmentation.ACTIVE).exists())
-        self.request_editor(augmentation.serve,(self.root,self.source,'Con_Season','ensemble'),inspect)
+        original_read_text=Path.read_text
+        def windows_read_text(path,encoding=None,errors=None):
+            # Reproduce Windows' legacy default for templates on every host.
+            if path.suffix=='.html' and encoding is None:encoding='cp1252'
+            return original_read_text(path,encoding=encoding,errors=errors)
+        with mock.patch.object(Path,'read_text',windows_read_text):
+            self.request_editor(augmentation.serve,(self.root,self.source,'Con_Season','ensemble'),inspect)
 
 
 if __name__=='__main__':unittest.main(verbosity=2)
