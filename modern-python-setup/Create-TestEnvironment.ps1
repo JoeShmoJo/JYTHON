@@ -95,7 +95,9 @@ try {
     if (-not $WheelDirectory) { $WheelDirectory = Join-Path $stateRoot ('wheels-' + $lockHash.Substring(0, 16)) }
     New-Item -ItemType Directory -Path $WheelDirectory -Force | Out-Null
     $WheelDirectory = (Resolve-Path -LiteralPath $WheelDirectory).Path
-    $manifest = @(Get-Content -Raw -LiteralPath (Join-Path $PSScriptRoot 'wheels-win64-py311.json') | ConvertFrom-Json)
+    # PowerShell 5.1 can preserve the JSON array as one pipeline object. Avoid
+    # wrapping that object in another @() array, which makes .filename an array.
+    $manifest = Get-Content -Raw -LiteralPath (Join-Path $PSScriptRoot 'wheels-win64-py311.json') | ConvertFrom-Json
     [Net.ServicePointManager]::SecurityProtocol = $previousTls -bor [Net.SecurityProtocolType]::Tls12
     $ProgressPreference = 'SilentlyContinue'
     $index = 0
