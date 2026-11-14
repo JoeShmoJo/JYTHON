@@ -44,3 +44,21 @@ Short forecast days is the number of days of member-specific inflows used before
 Baseline Configuration includes **Baseline flow augmentation: Off / Basic MainstemFlowAug (single compute)**. This is part of the baseline settings in both RTS and standalone; Augmentation Configuration remains the separate two-step calculator.
 
 Both main GUIs now include named archive, refresh, plot and delete controls. See [saved results](STANDALONE_SAVED_RESULTS.md#named-result-archives-on-the-main-gui) for naming, reminders, deletion dependencies and RTS workflow-archive behavior.
+
+## Min Flow Cuts
+
+Baseline Configuration includes a **Min Flow Cuts** page. Choose **Off at all
+attached reservoirs** to remove this rule's maximum-release constraint while
+checking mainstem augmentation, or **On at all attached reservoirs** to enable
+it. **Existing alternative settings** preserves the alternative's
+`cutMinFlowsActive` behavior, including older Boolean or per-reservoir settings.
+Saving preserves the choice; Apply activates it for the next native compute.
+The setting does not attach a rule or change its native operation-set priority.
+
+Min Flow Cuts forecasts remaining inflow/storage and may cap releases above the
+priority of tributary minimum-flow and mainstem augmentation rules. Disabling it
+returns no constraint; it does not return a maximum release of zero. Other
+operating constraints remain active. Native initialization receipts now include
+`module: MinFlowCuts` and the actual `active` flag for each initialized rule.
+Older saved JSON remains loadable; an omitted Min Flow Cuts group defaults to
+Existing, and previously applied snapshots without the group retain legacy behavior.

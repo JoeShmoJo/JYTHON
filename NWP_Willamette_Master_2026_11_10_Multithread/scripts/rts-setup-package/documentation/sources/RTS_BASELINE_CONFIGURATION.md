@@ -56,3 +56,21 @@ implementations or switch installation mode as part of normal troubleshooting;
 start with current logs, target metadata, receipts, data coverage and source hashes.
 The older slow-compute/install comparisons were historical development diagnostics,
 not a requirement for this bundled workflow.
+
+## Min Flow Cuts
+
+Baseline Configuration includes a **Min Flow Cuts** page. Choose **Off at all
+attached reservoirs** to remove this rule's maximum-release constraint while
+checking mainstem augmentation, or **On at all attached reservoirs** to enable
+it. **Existing alternative settings** preserves the alternative's
+`cutMinFlowsActive` behavior, including older Boolean or per-reservoir settings.
+Saving preserves the choice; Apply activates it for the next native compute.
+The setting does not attach a rule or change its native operation-set priority.
+
+Min Flow Cuts forecasts remaining inflow/storage and may cap releases above the
+priority of tributary minimum-flow and mainstem augmentation rules. Disabling it
+returns no constraint; it does not return a maximum release of zero. Other
+operating constraints remain active. Native initialization receipts now include
+`module: MinFlowCuts` and the actual `active` flag for each initialized rule.
+Older saved JSON remains loadable; an omitted Min Flow Cuts group defaults to
+Existing, and previously applied snapshots without the group retain legacy behavior.

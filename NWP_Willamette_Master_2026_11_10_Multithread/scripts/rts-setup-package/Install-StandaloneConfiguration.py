@@ -3,6 +3,7 @@
 Back up only affected scripts; do not copy watersheds or change application JARs.
 """
 import argparse
+import ast
 from datetime import datetime, timezone
 import importlib.util
 import json
@@ -36,8 +37,9 @@ def install(watershed, mode="standalone"):
         target=scripts/'externalRules'/(module+'.py')
         current=target.read_bytes()
         adapter=None
+        imports={node.module for node in ast.walk(ast.parse(current.decode('utf-8-sig'))) if isinstance(node,ast.ImportFrom)}
         for candidate in ('standalone','rts'):
-            if ('from '+candidate+'_baseline_runtime import').encode() in current:
+            if candidate+'_baseline_runtime' in imports:
                 adapter=candidate
         saved=originals/target.name
         source_path=scripts/('_'+adapter+'_baseline_originals')/'externalRules'/target.name if adapter else target

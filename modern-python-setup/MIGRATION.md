@@ -163,3 +163,21 @@ Validation: `test_augmentation_diagnostics.py` exercises real DSS nonzero-to-zer
 replacement, preservation of other records, Off native rule calls, Basic storage
 clamping status and callback routing. `check_augmentation_status_jython.py` tests
 16 concurrent status writers through the actual Java NIO reader/writer.
+
+### Min Flow Cuts baseline activation
+
+The baseline schema/editor now includes `rules.min_flow_cuts.settings.active`:
+`false` means Off, `true` means On, and `null` preserves native alternative
+settings. Existing per-reservoir maps remain accepted. Older JSON is normalized
+with Existing rather than forcing a new operating choice. Both host runtime
+adapters map an explicit selection to `cutMinFlowsActive`, and MinFlowCuts uses
+the same snapshot/checksum/initialization-receipt path as other baseline rules.
+Off sets the native rule's active flag false without requiring forecast inputs;
+the original per-timestep function returns None (no MAX constraint). The original
+release calculation and the hedge multiplier remain unchanged. Older applied
+snapshots lacking the rule continue to use its legacy initialization.
+
+The installer detects real import statements using AST so the old commented
+MinFlowCuts adapter example is not mistaken for an installed active wrapper.
+Validation is in `test_min_flow_cuts.py`, plus the baseline runtime and browser
+regressions. Native HEC operation-set behavior still requires a Windows compute.

@@ -29850,6 +29850,17 @@
         "purpose": "Keep Hills Creek and Lookout Point at similar fractions of their conservation storage during the balancing season.",
         "how_it_works": "Uses their combined previous storage to calculate a target for Hills Creek, then proposes a minimum release subject to flow limits. Balancing stands down when Lookout Point\u2019s Deep Drawdown rule is operating. These two reservoirs are explicitly named in the script."
       }
+    },
+    "min_flow_cuts": {
+      "label": "Min Flow Cuts",
+      "settings": {
+        "active": null
+      },
+      "tables": {},
+      "help": {
+        "purpose": "Reduce releases when forecast remaining inflow and storage indicate a risk of draining too deeply.",
+        "how_it_works": "This is a maximum-release rule that can throttle tributary minimum flows and mainstem augmentation when its priority is higher. Off removes this rule's constraint wherever it is attached; other operating rules remain in effect. Existing preserves the alternative's cutMinFlowsActive setting."
+      }
     }
   }
 }

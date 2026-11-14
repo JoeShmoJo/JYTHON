@@ -2,7 +2,7 @@ param([string]$WatershedRoot = 'C:\CWMS\watershed\ResSimMaster', [string]$Backup
 $ErrorActionPreference = 'Stop'
 if ($WatershedRoot -notlike '*\watershed\*') { throw 'Install into an imported RTS watershed, not the standalone model.' }
 $scripts = Join-Path $WatershedRoot 'scripts'
-$modules = @('DeepDrawdown','SpringSpill','NoDraft','SecondaryFloodDraftLimit','FIRO_SPACE','MinFlowPlusWithdrawal','DiversionFromCSV','IRRM','DraftToRC','FillLOPfirst','HCR_LOP_Balance')
+$modules = @('DeepDrawdown','SpringSpill','NoDraft','SecondaryFloodDraftLimit','FIRO_SPACE','MinFlowPlusWithdrawal','DiversionFromCSV','IRRM','DraftToRC','FillLOPfirst','HCR_LOP_Balance','MinFlowCuts')
 $backup = Join-Path $BackupRoot ('baseline-' + [Guid]::NewGuid().ToString())
 New-Item -ItemType Directory -Path $backup -Force | Out-Null
 $items = @()

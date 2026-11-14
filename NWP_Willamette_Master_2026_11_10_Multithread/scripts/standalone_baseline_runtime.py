@@ -19,7 +19,7 @@ RULE_KEYS = {'DeepDrawdown': 'deep_drawdown', 'SpringSpill': 'spring_spill',
     'NoDraft': 'no_draft', 'SecondaryFloodDraftLimit': 'secondary_flood_draft',
     'FIRO_SPACE': 'firo_space', 'MinFlowPlusWithdrawal': 'minimum_flow_withdrawal',
     'DiversionFromCSV': 'diversions', 'IRRM': 'irrm', 'DraftToRC': 'draft_to_rc',
-    'FillLOPfirst': 'fill_lop_first', 'HCR_LOP_Balance': 'hcr_lop_balance'}
+    'FillLOPfirst': 'fill_lop_first', 'HCR_LOP_Balance': 'hcr_lop_balance', 'MinFlowCuts':'min_flow_cuts'}
 CONSTANTS = {'target_buffer_ft':'TARGET_BUFFER', 'glide_days':'GLIDE_DAYS',
     'mode':'MODE', 'mode_by_reservoir':'MODE_BY_RESERVOIR', 'deadband_ft':'DEADBAND_FT',
     'interpolate_gaps_up_to_days':'INTERPOLATE_GAPS_UP_TO_DAYS',
@@ -94,6 +94,8 @@ def alternative_overrides(network):
         if method not in ('off','simplified'):
             raise RuntimeError('Invalid baseline augmentation method')
         result['baselineFlowAugMethod']='AllocationBasedOnConservationStorage' if method=='simplified' else 'NoFlowAug'
+    cuts=data['rules'].get('min_flow_cuts',{}).get('settings',{}).get('active')
+    if cuts is not None:result['cutMinFlowsActive']=copy.deepcopy(cuts)
     result['draftToRCActive'] = copy.deepcopy(data['rules']['draft_to_rc']['settings']['active'])
     result['irrmActive'] = dict((name, False) for name in ('Big Cliff','Blue River','Cottage Grove','Cougar','Detroit','Dexter','Dorena','Fall Creek','Fern Ridge','Foster','Green Peter','Hills Creek','Lookout Point'))
     result['irrmActive'].update(copy.deepcopy(data['rules']['irrm']['settings']['active']))
@@ -145,6 +147,7 @@ def initialize_rule(module_name, rule, network, namespace=None):
             spec.loader.exec_module(module)
         sys.modules.pop(module_id, None)
     found = active(network)
+    if module_name=='MinFlowCuts' and found and 'min_flow_cuts' not in found[1]['rules']:found=None
     if found:
         source, data, pointer = found
         if digest(path) != data['script_sha256'][module_name]:
@@ -168,7 +171,15 @@ def initialize_rule(module_name, rule, network, namespace=None):
         network.printMessage('Standalone baseline init: %s [%s]' % (module_name, pointer['id']))
     if namespace is None:
         rule.varPut('_rts_baseline_module', module)
-    if found and module_name == 'IRRM' and not network.getStateVariable('Alternative_Setup').varGet('irrmActive').get(str(rule.getReservoirElement().toString()), False):
+    cuts_disabled=False
+    if found and module_name=='MinFlowCuts':
+        setting=network.getStateVariable('Alternative_Setup').varGet('cutMinFlowsActive')
+        if isinstance(setting,dict):setting=setting.get(str(rule.getReservoirElement().toString()),True)
+        cuts_disabled=setting is not None and not bool(setting)
+    if cuts_disabled:
+        rule.varPut('active',False)
+        outcome=True
+    elif found and module_name == 'IRRM' and not network.getStateVariable('Alternative_Setup').varGet('irrmActive').get(str(rule.getReservoirElement().toString()), False):
         # Disabled IRRM rules must not interpolate an unused target elevation.
         outcome = True
     else:
@@ -194,6 +205,9 @@ def initialize_rule(module_name, rule, network, namespace=None):
             'module': module_name,
             'resolved_sha256': pointer['resolved_sha256'],
         }
+        if module_name=='MinFlowCuts':
+            receipt['active']=bool(rule.varGet('active'))
+            receipt['reservoir']=str(rule.getReservoirElement().toString())
         parallelSafeWriteText(
             os.path.join(directory, uuid.uuid4().hex + '.json'),
             json.dumps(receipt, sort_keys=True),

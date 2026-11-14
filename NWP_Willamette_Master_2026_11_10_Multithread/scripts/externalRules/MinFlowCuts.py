@@ -140,7 +140,8 @@ def runRuleScript(currentRule, network, currentRuntimestep):
         print("releaseLimit: %s" %releaseLimit)
     return opValue
 
-'''
+
+
 # RTS initialization adapter; original runRuleScript above remains unchanged.
 _rts_baseline_direct = True
 _rts_original_initRuleScript = initRuleScript
@@ -152,4 +153,3 @@ def initRuleScript(currentRule, network):
         sys.path.append(scripts)
     from standalone_baseline_runtime import initialize_rule
     return initialize_rule("MinFlowCuts", currentRule, network, globals())
-'''

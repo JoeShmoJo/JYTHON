@@ -61,7 +61,7 @@ def bundle_runtime(source, watershed):
         else:
             shutil.copy2(source/relative,destination/target)
     for name in ('OPEN_WORKFLOW.py','workflow_host.py','workflow_python.py','STANDALONE_WORKFLOW_MENU.py',
-                 'STANDALONE_WORKFLOW_UI.py','RTS_WORKFLOW_MENU.py','runtime-host-adapter.py','saved_results_panel.py','augmentation_diagnostics.py'):
+                 'STANDALONE_WORKFLOW_UI.py','RTS_WORKFLOW_MENU.py','runtime-host-adapter.py','saved_results_panel.py','augmentation_diagnostics.py','standalone_augmentation_runtime.py'):
         shutil.copy2(source/name,scripts/name)
     shutil.copy2(source/'baseline-runtime/rts_baseline_runtime.py',scripts/'rts_baseline_runtime.py')
 
@@ -81,7 +81,8 @@ def package(watershed):
         for name in ('Install-StandaloneConfiguration.py','Package-Workflow.py','render_documentation.py',
                      'Install-ForecastExtraction.ps1','Install-BaselineConfiguration.ps1','Install-RunArchives.ps1',
                      'STANDALONE_WORKFLOW_MENU.py','STANDALONE_WORKFLOW_UI.py','OPEN_WORKFLOW.py','workflow_host.py','workflow_python.py',
-                     'runtime-host-adapter.py','RTS_WORKFLOW_MENU.py','RTS_FORECAST_EXTRACT.py'):
+                     'runtime-host-adapter.py','RTS_WORKFLOW_MENU.py','RTS_FORECAST_EXTRACT.py',
+                     'saved_results_panel.py','augmentation_diagnostics.py','standalone_augmentation_runtime.py'):
             shutil.copy2(HERE/name,stage/name)
         shutil.copytree(HERE/'documentation/sources',stage/'documentation/sources')
         renderer_spec=importlib.util.spec_from_file_location('workflow_docs',stage/'render_documentation.py')

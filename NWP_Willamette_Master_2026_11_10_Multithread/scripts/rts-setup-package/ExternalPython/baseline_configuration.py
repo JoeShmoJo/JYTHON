@@ -26,7 +26,7 @@ MODULE_KEYS = {'DeepDrawdown':'deep_drawdown','SpringSpill':'spring_spill',
     'NoDraft':'no_draft','SecondaryFloodDraftLimit':'secondary_flood_draft',
     'FIRO_SPACE':'firo_space','MinFlowPlusWithdrawal':'minimum_flow_withdrawal',
     'DiversionFromCSV':'diversions','IRRM':'irrm','DraftToRC':'draft_to_rc',
-    'FillLOPfirst':'fill_lop_first','HCR_LOP_Balance':'hcr_lop_balance'}
+    'FillLOPfirst':'fill_lop_first','HCR_LOP_Balance':'hcr_lop_balance','MinFlowCuts':'min_flow_cuts'}
 RESERVOIRS = {'Big Cliff','Blue River','Cottage Grove','Cougar','Detroit','Dexter',
              'Dorena','Fall Creek','Fern Ridge','Foster','Green Peter','Hills Creek','Lookout Point'}
 
@@ -117,6 +117,7 @@ def with_null_reservoirs(configuration):
     """Expand editable IRRM/Deep Drawdown slots without inventing operating values."""
     result=copy.deepcopy(configuration)
     rules=result.get('rules',{})
+    rules.setdefault('min_flow_cuts',copy.deepcopy({'label': 'Min Flow Cuts', 'settings': {'active': None}, 'tables': {}, 'help': {'purpose': 'Reduce releases when forecast remaining inflow and storage indicate a risk of draining too deeply.', 'how_it_works': "This is a maximum-release rule that can throttle tributary minimum flows and mainstem augmentation when its priority is higher. Off removes this rule's constraint wherever it is attached; other operating rules remain in effect. Existing preserves the alternative's cutMinFlowsActive setting."}}))
     irrm=rules.get('irrm',{}).get('settings',{})
     for name in sorted(RESERVOIRS):
         irrm.setdefault('active',{}).setdefault(name,False)
@@ -160,7 +161,10 @@ def validate_settings(settings, defaults, prefix=''):
         raise ValueError('Unknown or missing rule settings: ' + prefix)
     for key, expected in defaults.items():
         value = settings[key]
-        if prefix == 'irrm.' and key in ('active','target_elevation_ft'):
+        if prefix=='min_flow_cuts.' and key=='active':
+            if value is not None and not isinstance(value,bool) and not (isinstance(value,dict) and all(name in RESERVOIRS and isinstance(flag,bool) for name,flag in value.items())):
+                raise ValueError('Min Flow Cuts activation must be Existing, On or Off')
+        elif prefix == 'irrm.' and key in ('active','target_elevation_ft'):
             if not isinstance(value,dict) or any(name not in RESERVOIRS for name in value):
                 raise ValueError('Invalid IRRM reservoir map')
             for name,item in value.items():
@@ -204,6 +208,7 @@ def validate_settings(settings, defaults, prefix=''):
 
 
 def resolve(config, scripts, watershed):
+    config=with_null_reservoirs(config)
     defaults = template(scripts)
     if 'standalone_workflow' in config:
         from standalone_jobs import validate
@@ -211,7 +216,7 @@ def resolve(config, scripts, watershed):
     if config.get('format') != defaults['format'] or config.get('schema_version') != 1 or not str(config.get('name','')).strip():
         raise ValueError('Invalid baseline configuration header')
     if set(config['rules']) != set(defaults['rules']):
-        raise ValueError('The baseline configuration must contain all eleven rule groups')
+        raise ValueError('The baseline configuration must contain all supported rule groups')
     method=config.get('baseline_augmentation','off')
     if method not in ('off','simplified'):
         raise ValueError('Baseline augmentation must be off or simplified')
@@ -243,7 +248,7 @@ def read_alternative_settings(path):
     Hjson values (including augmentation settings and OFF) to ResSim's reader.
     CSV paths may be quoted JSON strings or Hjson bare strings.
     """
-    wanted=set(TABLE_KEYS) | {'draftToRCActive','irrmActive','irrmTargetElevs'}
+    wanted=set(TABLE_KEYS) | {'draftToRCActive','irrmActive','irrmTargetElevs','cutMinFlowsActive'}
     values={}
     for number,line in enumerate(Path(path).read_text(encoding='utf-8-sig').splitlines(),1):
         text=line.strip()
@@ -314,6 +319,7 @@ def current_configuration(root, scripts, alternative='Con_Season', marker_name='
         if not path.is_absolute(): path=watershed/path
         table['columns'],table['rows']=read_csv(path)
         table['csv_path']=str(values.get(alt_key,table['csv_path']))
+    result['rules']['min_flow_cuts']['settings']['active']=values.get('cutMinFlowsActive')
     result['rules']['draft_to_rc']['settings']['active']=values.get('draftToRCActive',True)
     for key,setting in [('irrmActive','active'),('irrmTargetElevs','target_elevation_ft')]:
         if key in values: result['rules']['irrm']['settings'][setting]=values[key]

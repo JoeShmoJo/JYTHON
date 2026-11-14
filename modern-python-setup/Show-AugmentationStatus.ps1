@@ -11,6 +11,10 @@ $resolved = Join-Path $simulationRoot ($active.directory + '\resolved.json')
 $settings = Get-Content -LiteralPath $resolved -Raw | ConvertFrom-Json
 Write-Host "Applied setting: $($settings.baseline_augmentation)"
 Write-Host "Configuration: $($active.id)"
+$cuts = $settings.rules.min_flow_cuts.settings.active
+$cutsLabel = if ($null -eq $cuts) { 'Existing alternative settings' } elseif ($cuts -is [bool]) { if ($cuts) { 'On' } else { 'Off' } } else { 'Per-reservoir settings' }
+Write-Host "Min Flow Cuts: $cutsLabel"
+
 $records = @(Get-ChildItem -LiteralPath (Join-Path $simulationRoot 'augmentation-status') -Filter '*.json' -File -ErrorAction SilentlyContinue |
     ForEach-Object { Get-Content -LiteralPath $_.FullName -Raw | ConvertFrom-Json } |
     Where-Object { $_.configuration_id -eq $active.id -and $_.alternative -eq $Alternative })
