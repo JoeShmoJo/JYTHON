@@ -1587,7 +1587,10 @@ def main(runDir=None, startDate=None, endDate=None, headroom=None):
         results[name] = (table, note)
         print("\n== %s ==" % name)
         with pd.option_context("display.width", 200, "display.max_columns", 30):
-            print(table.to_string(index=False) if len(table) else "nothing to check")
+            if name == 'Diversions':
+                print('%d diversion/return entries; details retained in Diversions_summary.csv and report.html' % len(table))
+            else:
+                print(table.to_string(index=False) if len(table) else "nothing to check")
 
     resPlots, control, conflicts, decisions, inControl = reservoirPlots(groups, dates, extras)
     # One page per reservoir keeps each file a size a browser opens quickly,

@@ -215,10 +215,11 @@ def _initialize(currentRule, network):
     currentRule.varPut("elementName", elementName)
 
     #One line per load, so the log always shows which numbers are in play
-    network.printMessage("DiversionFromCSV: loaded %s from column '%s'. Values "
-        "on %d of %d days. 01Jan=%.0f, 01Jul=%.0f"
-        %(elementName, column, countDefinedDays(dayTable), DAYS_IN_YEAR,
-        getDiversionFlow(dayTable, _dayOneOf(1)), getDiversionFlow(dayTable, _dayOneOf(7))))
+    if DEBUG:
+        network.printMessage("DiversionFromCSV: loaded %s from column '%s'. Values "
+            "on %d of %d days. 01Jan=%.0f, 01Jul=%.0f"
+            %(elementName, column, countDefinedDays(dayTable), DAYS_IN_YEAR,
+            getDiversionFlow(dayTable, _dayOneOf(1)), getDiversionFlow(dayTable, _dayOneOf(7))))
 
 
 def initRuleScript(currentRule, network):

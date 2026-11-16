@@ -201,3 +201,7 @@ mixed-case catalogs select the same output groups. Reservoir/parameter labels
 are normalized for reporting, while original native pathnames remain in
 `*_series.csv` and are used unchanged to read values. Rule/configuration matching
 also ignores capitalization; native DSS records are not renamed or rewritten.
+
+## Isolated reads and console detail
+
+Model Check copies the selected live DSS to a verified temporary file in the same directory before opening it with the native reader. This avoids treating reader header/timestamp changes as a changed compute. Live-file changes during copying or checking still fail the check. Finish computes and close DSS views first; allow temporary disk space for one DSS copy. The copy is removed afterward. Diversion/return detail remains in the HTML report and Diversions_summary.csv; the console prints only its entry count. Routine DiversionFromCSV initialization messages require DEBUG=True in updated rule sources.

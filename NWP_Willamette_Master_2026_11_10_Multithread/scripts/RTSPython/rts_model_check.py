@@ -8,6 +8,30 @@ from baseline_versions import digest_file,atomic_json
 from run_archive import signature
 
 
+from contextlib import contextmanager
+import os
+import shutil
+import tempfile
+
+
+@contextmanager
+def _snapshot_source(source):
+    """Read only a stable copy: native DSS readers can update file headers."""
+    before = signature(source)
+    descriptor, filename = tempfile.mkstemp(prefix='model-check-input-', suffix='.dss', dir=str(source.parent))
+    os.close(descriptor)
+    snapshot = Path(filename)
+    try:
+        print('MODEL CHECK copying results for isolated read; finish computes and close DSS views.', flush=True)
+        shutil.copy2(source, snapshot)
+        if signature(source) != before or digest_file(snapshot) != digest_file(source) or signature(source) != before:
+            raise ValueError('Simulation results changed while copying; finish compute and retry Model Check')
+        yield snapshot, before
+    finally:
+        snapshot.unlink(missing_ok=True)
+        snapshot.with_suffix('.dsc').unlink(missing_ok=True)
+
+
 def load(name,path):
     spec=importlib.util.spec_from_file_location(name,path)
     module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);return module
@@ -33,100 +57,105 @@ def run(root,alternative,code=None,run_type='por',member=None,label=None,watersh
     if run_type not in ('ensemble','por'):raise ValueError('Invalid run type')
     if run_type=='ensemble' and (isinstance(member,bool) or not isinstance(member,int) or member<0):raise ValueError('Select a single ensemble member')
     from pydsstools.heclib.dss import HecDss
-    before=signature(source)
-    with HecDss.Open(str(source)) as dss:
-        paths=dss.search_path('/*/*/*/*/*/*/')
-        if not paths:paths=dss.search_path('*')
-    if dss_name=='forecast.dss':
-        if run_type!='ensemble':
-            raise ValueError('RTS Model Check supports one ensemble member only')
-        prefix='C:'+str(member).zfill(6)+'|'
-        available={str(path).split('/')[6] for path in paths if len(str(path).split('/'))==8}
-        outputs=[value for value in available
-                 if value.upper().startswith(prefix.upper())
-                 and re.fullmatch(r'[A-Za-z][0-9]+',value[len(prefix):],re.I)]
-        desired=prefix+(code or 'C0')
-        matches=[value for value in outputs if value.upper()==desired.upper()]
-        if len(matches)==1:
-            fpart=matches[0]
-        elif code is None and len(outputs)==1:
-            fpart=outputs[0]
-        else:
-            raise ValueError('No unique computed RTS output for member '+str(member)+
-                             '. Expected '+desired+'. Available outputs: '+', '.join(sorted(outputs)))
-    else:
-        fpart=select_output(paths,alternative,run_type,member,code)
-    print('MODEL CHECK selected F-part: '+fpart,flush=True)
-    folder=watershed/'scripts/model_check'
-    if not (folder/'extract_dss.py').is_file():raise ValueError('Install the model-check scripts into this watershed first')
-    report_name=str(label or alternative+' model check').strip()
-    slug=re.sub(r'[^A-Za-z0-9_-]+','-',report_name).strip('-')[:64] or 'report'
-    destination=root/'model-check-runs'/('check-'+slug+'-'+uuid.uuid4().hex);destination.mkdir(parents=True)
-    status={'status':'incomplete','source':str(source),'source_signature':before,'alternative':alternative,
-            'label':report_name,'run_type':run_type,'member':member if run_type=='ensemble' else None,'f_part':fpart,
-            'note':'Checks current configured expectations against selected live results; native compute freshness and operation-report freshness must be verified by operator.'}
-    atomic_json(destination/'check-context.json',status)
-    try:
-        extractor=load('workflow_check_extract',folder/'extract_dss.py')
-        checker=load('workflow_check_report',folder/'check_model.py')
-        extractor.OUTPUT_ROOT=str(destination)
+    with _snapshot_source(source) as (read_source, before):
+        with HecDss.Open(str(read_source)) as dss:
+            paths=dss.search_path('/*/*/*/*/*/*/')
+            if not paths:paths=dss.search_path('*')
         if dss_name=='forecast.dss':
-            # In RTS, the DSS is under the forecast directory; rule-stack reports
-            # remain under the imported watershed's rss directory.
-            extractor.MODEL_REPORT_DIRS=[str(watershed/'rss'), '.', '..']
-        # Pass the real alternative for metadata/config names, but never let the
-        # old prefix-based selector choose a different member or trial.
-        extractor.fPartFor=lambda paths,unused:fpart
-        def exact_model_report(simDir,selectedAlternative,outDir):
-            import shutil
-            for relative in extractor.MODEL_REPORT_DIRS:
-                path=Path(simDir)/relative/('modelReport_'+selectedAlternative+'.json')
-                if path.is_file():
-                    shutil.copy2(path,Path(outDir)/'modelReport.json');return
-            print('No matching model report for '+selectedAlternative+'; rule-stack checks will be limited',flush=True)
-        extractor.copyModelReport=exact_model_report
-        directory=Path(extractor.main(str(source),alternative))
-        checker.CONFIG_ROOT=str(watershed)
-        original=checker.configPath
-        overrides={}
-        pointer=root/('rts-baseline-config-active.json' if dss_name=='forecast.dss' else 'standalone-baseline-config-active.json')
-        if pointer.exists():
-            data=json.loads(pointer.read_text())
-            if data.get('model_alternative') and data.get('model_alternative')!=alternative:raise ValueError('Applied alternative differs; use matching configuration')
-            applied=root/data['directory'];resolved=applied/'resolved.json'
-            if digest_file(resolved)!=data['resolved_sha256']:raise ValueError('Applied configuration checksum mismatch')
-            settings=json.loads(resolved.read_text());overrides={key:str((applied/path).resolve()) for key,path in settings['table_paths'].items()}
-            status['configuration_id']=data['id']
-        # Match the existing coupled diversion/withdrawal disable switch in
-        # report-local expectations; never edit the real schedules.
-        switch=watershed/'scripts/diversion-demands.json'
-        if switch.exists():
-            enabled=json.loads(switch.read_text()).get('diversion_demands_enabled')
-            if not isinstance(enabled,bool):raise ValueError('Invalid diversion demand switch')
-            status['diversion_demands_enabled']=enabled
-            if not enabled:
-                import pandas as pd
-                from baseline_configuration import legacy_values
-                legacy=legacy_values(watershed,alternative)
-                for key,default in [('diversionConfigCSV','scripts/externalRules/DiversionConfig_ALT.csv'),('withdrawalConfigCSV','scripts/externalRules/WithdrawalConfig.csv')]:
-                    path=Path(overrides.get(key,legacy.get(key,default)))
-                    if not path.is_absolute():path=watershed/path
-                    table=pd.read_csv(path,comment='#')
-                    for column in table:
-                        if column not in ('Month','Day','Notes','NOTES'):table[column]=0.
-                    target=directory/(key+'-disabled.csv');table.to_csv(target,index=False);overrides[key]=str(target)
-        checker.configPath=lambda configRoot,altConfig,key,default:overrides.get(key,original(configRoot,altConfig,key,default))
-        print('MODEL CHECK extracted data: '+str(directory),flush=True)
-        checker.main(str(directory))
-        if signature(source)!=before:raise ValueError('Simulation results changed during check')
-        report=directory/'report.html'
-        if not report.is_file():raise ValueError('Model check did not create a report')
-        status['status']='complete';status['report']=str(report)
-        return report
-    except BaseException as error:
-        status['error']=str(error);raise
-    finally:
+            if run_type!='ensemble':
+                raise ValueError('RTS Model Check supports one ensemble member only')
+            prefix='C:'+str(member).zfill(6)+'|'
+            available={str(path).split('/')[6] for path in paths if len(str(path).split('/'))==8}
+            outputs=[value for value in available
+                     if value.upper().startswith(prefix.upper())
+                     and re.fullmatch(r'[A-Za-z][0-9]+',value[len(prefix):],re.I)]
+            desired=prefix+(code or 'C0')
+            matches=[value for value in outputs if value.upper()==desired.upper()]
+            if len(matches)==1:
+                fpart=matches[0]
+            elif code is None and len(outputs)==1:
+                fpart=outputs[0]
+            else:
+                raise ValueError('No unique computed RTS output for member '+str(member)+
+                                 '. Expected '+desired+'. Available outputs: '+', '.join(sorted(outputs)))
+        else:
+            fpart=select_output(paths,alternative,run_type,member,code)
+        print('MODEL CHECK selected F-part: '+fpart,flush=True)
+        folder=watershed/'scripts/model_check'
+        if not (folder/'extract_dss.py').is_file():raise ValueError('Install the model-check scripts into this watershed first')
+        report_name=str(label or alternative+' model check').strip()
+        slug=re.sub(r'[^A-Za-z0-9_-]+','-',report_name).strip('-')[:64] or 'report'
+        destination=root/'model-check-runs'/('check-'+slug+'-'+uuid.uuid4().hex);destination.mkdir(parents=True)
+        status={'status':'incomplete','source':str(source),'source_signature':before,'alternative':alternative,
+                'label':report_name,'run_type':run_type,'member':member if run_type=='ensemble' else None,'f_part':fpart,
+                'note':'Checks current configured expectations against selected live results; native compute freshness and operation-report freshness must be verified by operator.'}
         atomic_json(destination/'check-context.json',status)
+        try:
+            extractor=load('workflow_check_extract',folder/'extract_dss.py')
+            checker=load('workflow_check_report',folder/'check_model.py')
+            extractor.OUTPUT_ROOT=str(destination)
+            if dss_name=='forecast.dss':
+                # In RTS, the DSS is under the forecast directory; rule-stack reports
+                # remain under the imported watershed's rss directory.
+                extractor.MODEL_REPORT_DIRS=[str(watershed/'rss'), '.', '..']
+            # Pass the real alternative for metadata/config names, but never let the
+            # old prefix-based selector choose a different member or trial.
+            extractor.fPartFor=lambda paths,unused:fpart
+            def exact_model_report(simDir,selectedAlternative,outDir):
+                import shutil
+                for relative in extractor.MODEL_REPORT_DIRS:
+                    path=Path(simDir)/relative/('modelReport_'+selectedAlternative+'.json')
+                    if path.is_file():
+                        shutil.copy2(path,Path(outDir)/'modelReport.json');return
+                print('No matching model report for '+selectedAlternative+'; rule-stack checks will be limited',flush=True)
+            extractor.copyModelReport=exact_model_report
+            directory=Path(extractor.main(str(read_source),alternative))
+            info=directory/'run_info.json'
+            if info.is_file():
+                metadata=json.loads(info.read_text());metadata['dss_path']=str(source)
+                metadata['read_mode']='verified temporary DSS copy'
+                atomic_json(info,metadata)
+            checker.CONFIG_ROOT=str(watershed)
+            original=checker.configPath
+            overrides={}
+            pointer=root/('rts-baseline-config-active.json' if dss_name=='forecast.dss' else 'standalone-baseline-config-active.json')
+            if pointer.exists():
+                data=json.loads(pointer.read_text())
+                if data.get('model_alternative') and data.get('model_alternative')!=alternative:raise ValueError('Applied alternative differs; use matching configuration')
+                applied=root/data['directory'];resolved=applied/'resolved.json'
+                if digest_file(resolved)!=data['resolved_sha256']:raise ValueError('Applied configuration checksum mismatch')
+                settings=json.loads(resolved.read_text());overrides={key:str((applied/path).resolve()) for key,path in settings['table_paths'].items()}
+                status['configuration_id']=data['id']
+            # Match the existing coupled diversion/withdrawal disable switch in
+            # report-local expectations; never edit the real schedules.
+            switch=watershed/'scripts/diversion-demands.json'
+            if switch.exists():
+                enabled=json.loads(switch.read_text()).get('diversion_demands_enabled')
+                if not isinstance(enabled,bool):raise ValueError('Invalid diversion demand switch')
+                status['diversion_demands_enabled']=enabled
+                if not enabled:
+                    import pandas as pd
+                    from baseline_configuration import legacy_values
+                    legacy=legacy_values(watershed,alternative)
+                    for key,default in [('diversionConfigCSV','scripts/externalRules/DiversionConfig_ALT.csv'),('withdrawalConfigCSV','scripts/externalRules/WithdrawalConfig.csv')]:
+                        path=Path(overrides.get(key,legacy.get(key,default)))
+                        if not path.is_absolute():path=watershed/path
+                        table=pd.read_csv(path,comment='#')
+                        for column in table:
+                            if column not in ('Month','Day','Notes','NOTES'):table[column]=0.
+                        target=directory/(key+'-disabled.csv');table.to_csv(target,index=False);overrides[key]=str(target)
+            checker.configPath=lambda configRoot,altConfig,key,default:overrides.get(key,original(configRoot,altConfig,key,default))
+            print('MODEL CHECK extracted data: '+str(directory),flush=True)
+            checker.main(str(directory))
+            if signature(source)!=before:raise ValueError('Simulation results changed during check')
+            report=directory/'report.html'
+            if not report.is_file():raise ValueError('Model check did not create a report')
+            status['status']='complete';status['report']=str(report)
+            return report
+        except BaseException as error:
+            status['error']=str(error);raise
+        finally:
+            atomic_json(destination/'check-context.json',status)
 
 
 def run_request(request_path,response_path):
