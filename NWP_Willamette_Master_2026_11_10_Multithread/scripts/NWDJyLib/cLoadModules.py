@@ -78,7 +78,7 @@ def convertFilePathToModuleName(filePath, scriptsDir):
 def _readLoadSettings(getAbsPath):
     pathname = getAbsPath("scripts/module-load-settings.json")
     if not os.path.exists(pathname):
-        return False
+        return True
     # Read at every initialization so this toggle does not itself require a
     # restart. Java NIO avoids the worker-thread PyFile close failure.
     from NWDJyLib.cFile import parallelSafeReadText
@@ -91,22 +91,20 @@ def _readLoadSettings(getAbsPath):
 
 
 def _computeReloadMode(network, currentAlt):
-    """Inspect native launcher/plugin metadata; unknown must not allow reloads."""
+    """Use the native multithread setting, independent of launcher/run type."""
     try:
         alternative = network.getAlternative() if network else currentAlt
-        launcher = alternative.getComputeLauncher()
-        launcher_name = str(launcher.getClass().getSimpleName())
-        if launcher_name == 'EnsembleComputeLauncher':
-            return 'parallel', launcher_name
         # ResSim 4.1 exposes useMultithreadedCompute(), confirmed from the
         # installed public API. Also support getter names on other releases.
         # Discover a zero-argument
         # Boolean multithread getter on ensemble plugin data, never guess from
         # the number of CPUs or the current worker's thread name.
         serial_setting = False
+        ensemble_plugin = False
         for plugin in alternative.getPluginDataList():
             if 'Ensemble' not in str(plugin.getClass().getSimpleName()):
                 continue
+            ensemble_plugin = True
             for method in plugin.getClass().getMethods():
                 name = str(method.getName()).lower()
                 if (name == 'usemultithreadedcompute' or
@@ -118,7 +116,9 @@ def _computeReloadMode(network, currentAlt):
                         serial_setting = True
         if serial_setting:
             return 'serial', 'native ensemble multithread setting=false'
-        return 'unknown', 'launcher=' + launcher_name
+        if not ensemble_plugin:
+            return 'serial', 'native alternative has no ensemble plugin; single/POR compute'
+        return 'unknown', 'native ensemble multithread setting unavailable'
     except Exception as error:
         return 'unknown', str(error)
 

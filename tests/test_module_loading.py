@@ -71,7 +71,7 @@ class ModuleLoadingTests(unittest.TestCase):
         self.assertTrue(cLoadModules._effectiveReload(True, 'serial'))
         self.assertFalse(cLoadModules._effectiveReload(False, 'serial'))
 
-    def test_native_ensemble_launcher_detected_and_missing_api_is_unknown(self):
+    def test_launcher_name_alone_does_not_decide_multithreading(self):
         class JavaClass(object):
             def getSimpleName(self):
                 return 'EnsembleComputeLauncher'
@@ -81,7 +81,7 @@ class ModuleLoadingTests(unittest.TestCase):
         class Alternative(object):
             def getComputeLauncher(self):
                 return Launcher()
-        self.assertEqual(cLoadModules._computeReloadMode(None, Alternative())[0], 'parallel')
+        self.assertEqual(cLoadModules._computeReloadMode(None, Alternative())[0], 'unknown')
         self.assertEqual(cLoadModules._computeReloadMode(None, object())[0], 'unknown')
 
     def test_native_plugin_serial_and_parallel_settings(self):
@@ -116,7 +116,7 @@ class ModuleLoadingTests(unittest.TestCase):
                 return PluginClass(self.enabled)
         class Launcher(object):
             def getClass(self):
-                return Type('ResSimComputeLauncher')
+                return Type('EnsembleComputeLauncher')
         class Alternative(object):
             def __init__(self, enabled):
                 self.enabled = enabled
@@ -126,6 +126,28 @@ class ModuleLoadingTests(unittest.TestCase):
                 return [Plugin(self.enabled)]
         self.assertEqual(cLoadModules._computeReloadMode(None, Alternative(False))[0], 'serial')
         self.assertEqual(cLoadModules._computeReloadMode(None, Alternative(True))[0], 'parallel')
+
+    def test_por_without_ensemble_plugin_reloads_an_imported_module(self):
+        class Alternative(object):
+            def getPluginDataList(self):return []
+            def getComputeLauncher(self):raise AssertionError('Launcher must not determine reload')
+        mode,detail=cLoadModules._computeReloadMode(None,Alternative())
+        self.assertEqual(mode,'serial')
+        self.write('por.py','values = ["initialized"]\n')
+        name=self.name+'.por'
+        cLoadModules.loadModule(name,self.absolute)
+        sys.modules[name].values.append('stale')
+        requested=cLoadModules._readLoadSettings(self.absolute)
+        self.assertTrue(requested)  # missing settings defaults to automatic serial reload
+        cLoadModules.loadModule(name,self.absolute,cLoadModules._effectiveReload(requested,mode))
+        self.assertEqual(sys.modules[name].values,['initialized'])
+
+    def test_unreadable_native_plugin_metadata_does_not_enable_reload(self):
+        class Alternative(object):
+            def getPluginDataList(self):raise RuntimeError('metadata error')
+        mode,detail=cLoadModules._computeReloadMode(None,Alternative())
+        self.assertEqual(mode,'unknown');self.assertFalse(cLoadModules._effectiveReload(True,mode))
+        self.assertIn('metadata error',detail)
 
     def test_both_modes_emit_warning_and_parallel_override_is_reported(self):
         class Network(object):
