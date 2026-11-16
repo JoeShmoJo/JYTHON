@@ -180,6 +180,7 @@ class Menu:
         with open(report_path, 'r') as handle: report = json.load(handle)
         self.message(report['summary'])
         answer = [False]
+        self.archive_report = report
         def display():
             area = JTextArea(report['summary'], 18, 85)
             area.setEditable(False);area.setLineWrap(True);area.setWrapStyleWord(True)
@@ -204,7 +205,9 @@ class Menu:
                 selection.selectAll();selection.copy();selection.requestFocusInWindow()
             copy_row.add(JButton('Copy members', actionPerformed=copy_members), BorderLayout.EAST)
             view.add(copy_row, BorderLayout.SOUTH)
-            if extract and report['compatible']:
+            if report.get('import_complete'):
+                JOptionPane.showMessageDialog(self.frame, view, 'IMPORT COMPLETE - paste members into the alternative editor before computing', JOptionPane.INFORMATION_MESSAGE)
+            elif extract and report['compatible']:
                 self.message('Check passed. Waiting for Extract inputs or Cancel; no inputs have been imported yet.')
                 answer[0] = JOptionPane.showOptionDialog(self.frame, view,
                     'Ready to extract - close Simulation windows/DSS views and finish computes first',
@@ -213,9 +216,10 @@ class Menu:
                 if not answer[0]: self.message('Extraction cancelled. No inputs imported.')
             else:
                 if extract:
-                    self.message('EXTRACTION NOT STARTED: archive check requires changes. Update and save the ResSim member selection shown in the report, close the Simulation window, then retry Extract archived ensemble inputs. Other reported errors must also be corrected.')
+                    self.message('EXTRACTION NOT STARTED: archive check requires changes. Correct the archive/date/OSI errors shown in the report, then retry. Alternative member settings are not required before extraction.')
                 JOptionPane.showMessageDialog(self.frame, view, 'Extraction not started - changes required' if extract else 'Archive dates / ensemble members',
                     JOptionPane.INFORMATION_MESSAGE if report['compatible'] else JOptionPane.WARNING_MESSAGE)
+        self.archive_report_display = display
         SwingUtilities.invokeAndWait(Call(display))
         return answer[0]
 
@@ -242,6 +246,9 @@ class Menu:
                 with open(self.log, 'r') as handle:
                     self.message(''.join(handle.readlines()[-12:]))
                 raise RuntimeError(title + ' exited with code ' + str(code) + '. See ' + self.log)
+            if job == 'archive-extract':
+                self.archive_report['import_complete'] = True
+                SwingUtilities.invokeAndWait(Call(self.archive_report_display))
             self.message('IMPORT COMPLETE: archived ensemble inputs imported successfully. Compute remains manual in ResSim.' if job == 'archive-extract' else 'Finished. Compute remains manual in ResSim.')
         except Exception as error:
             self.message('FAILED: ' + str(error))

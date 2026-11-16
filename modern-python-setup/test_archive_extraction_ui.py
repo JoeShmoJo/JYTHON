@@ -73,6 +73,7 @@ class ArchiveUITests(unittest.TestCase):
     def test_ready_confirmation_imports_and_announces_completion(self):
         self.run_job();self.assertEqual(len(self.processes),2)
         self.assertEqual(self.processes[1][-1],'archive-extract')
+        self.assertTrue(any('IMPORT COMPLETE - paste members' in d[2] for d in self.dialogs))
         self.assertTrue(any(m.startswith('IMPORTING INPUTS:') for m in self.messages))
         self.assertTrue(any(m.startswith('IMPORT COMPLETE:') for m in self.messages));self.assertFalse(self.menu.busy)
         # Another check is permitted after the job completed.

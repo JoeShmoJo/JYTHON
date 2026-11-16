@@ -102,22 +102,25 @@ def execute(watershed,simulation,alternative,job,run_type=None,report_path=None)
         values['SIMULATION_WINDOW']=simulation_window(watershed,simulation,settings.get('simulation_utc_offset_hours',-8))
         print('Saved simulation window:',json.dumps(values['SIMULATION_WINDOW']),flush=True)
     if job in ('archive-extract','archive-check'):
-        from standalone_dates import selected_ensemble_members
-        members, member_source=selected_ensemble_members(watershed,alternative,simulation,return_source=True)
-        values['SELECTED_ENSEMBLE_MEMBERS']=members
-        values['ENSEMBLE_SETTINGS_SOURCE']=member_source
-        print('Selected ensemble settings source:',member_source,flush=True)
         values['RFC_ARCHIVE_FOLDER']=settings.get('rfc_archive_folder',DEFAULTS['rfc_archive_folder'])
         if not Path(values['RFC_ARCHIVE_FOLDER']).is_dir():raise ValueError('Archive folder not found: '+values['RFC_ARCHIVE_FOLDER'])
     if job in ('archive-extract','archive-check'):
         from RFC_Archive_Module import check_archive,format_archive_check
-        report=check_archive(values['RFC_ARCHIVE_FOLDER'],values['SIMULATION_WINDOW'],members,settings['osi_source_member'])
-        report['member_source']=member_source
+        report=check_archive(values['RFC_ARCHIVE_FOLDER'],values['SIMULATION_WINDOW'],[],settings['osi_source_member'])
+        # Discover from the archive; native alternative member selections are
+        # configured by the operator after import, never a prerequisite.
+        members=report.get('available_years',[])+[3000,3001,3002] if report.get('available_years') else []
+        values['SELECTED_ENSEMBLE_MEMBERS']=members
+        report['selected_members']=members
+        report['selection_origin']='archive'
+        if not report.get('available_years') and not report['errors']:
+            report['errors'].append('No historical members available at all required stations.')
+            report['compatible']=False
         report['summary']=format_archive_check(report)
         print(report['summary'],flush=True)
         if report_path is not None:Path(report_path).write_text(json.dumps(report,indent=2),encoding='utf-8')
         if job=='archive-check':return
-        if not report['compatible']:raise ValueError('Archive compatibility check failed. Correct the dates/member selection shown above before extracting.')
+        if not report['compatible']:raise ValueError('Archive compatibility check failed. Correct the archive/date/OSI errors shown above before extracting.')
     paths=[scripts/name for name in JOBS[job]]
     for path in paths:
         if not path.is_file():raise ValueError('Missing job script: '+str(path))

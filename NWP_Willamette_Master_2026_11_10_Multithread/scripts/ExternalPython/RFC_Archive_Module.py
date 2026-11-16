@@ -209,7 +209,7 @@ def format_archive_check(report):
     lines.append('Historical years available at all 27 stations for this issue: '+member_ranges(report.get('available_years',[])))
     if report.get('available_years'):
         lines.append('Also generated: 3000=25th, 3001=50th, 3002=75th percentile; 3003=OSI copy.')
-    lines.append('ResSim selected members: '+member_ranges(report['selected_members']))
+    lines.append(('Members to paste into ResSim after import: ' if report.get('selection_origin')=='archive' else 'ResSim selected members: ')+member_ranges(report['selected_members']))
     lines.append('OSI source member: '+str(report['osi_member']))
     if report.get('first_complete_day'):
         lines.append('Complete daily forecast coverage: '+report['first_complete_day']+' through '+report['last_complete_day'])
