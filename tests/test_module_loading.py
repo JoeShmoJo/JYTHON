@@ -14,6 +14,10 @@ sys.path.insert(0, LIB)
 import cLoadModules
 
 
+def execute_fixture(text, namespace):
+    exec(compile(text, "native-wrapper", "exec"), namespace)
+
+
 class ModuleLoadingTests(unittest.TestCase):
     def setUp(self):
         self.root = tempfile.mkdtemp()
@@ -64,6 +68,55 @@ class ModuleLoadingTests(unittest.TestCase):
         self.assertEqual(module.values, ['initialized', 'cached'])
         cLoadModules.loadModule(name, self.absolute, force_reload=True)
         self.assertEqual(module.values, ['initialized'])
+
+    def test_central_scan_updates_plain_rule_wrapper_after_source_edit(self):
+        # Same call shape as IMPORT MODULES, followed by an ordinary native
+        # pass-through wrapper holding the original module object.
+        self.write('IRRM.py', 'def runRuleScript(rule, network, step):\n    network.printMessage("OLD MARKER")\n')
+        self.write('initial_rules.py', 'marker = "lowercase module"\n')
+        messages=[]
+        class Network(object):
+            def makeAbsolutePathFromWatershed(network,path):return self.absolute(path)
+            def printMessage(network,text):messages.append(text)
+        network=Network()
+        old_read=cLoadModules._readLoadSettings
+        old_mode=cLoadModules._computeReloadMode
+        old_write=cLoadModules._writeReloadDecision
+        try:
+            cLoadModules._readLoadSettings=lambda path:True
+            cLoadModules._computeReloadMode=lambda *args:('serial','POR test')
+            cLoadModules._writeReloadDecision=lambda *args:None
+            def initialize():
+                cLoadModules.loadWatershedModules(network=network,modulesToLoad=[self.name])
+            initialize()
+            wrapper={}
+            execute_fixture('from '+self.name+' import IRRM\ndef runRuleScript(rule,network,step):\n    return IRRM.runRuleScript(rule,network,step)\n',wrapper)
+            wrapper['runRuleScript'](None,network,None)
+            self.assertEqual(messages[-1],'OLD MARKER')
+            self.assertIn(self.name+'.initial_rules',sys.modules)
+            source=os.path.join(self.package,'IRRM.py');stat=os.stat(source)
+            self.write('IRRM.py','def runRuleScript(rule, network, step):\n    network.printMessage("NEW MARKER")\n')
+            # Preserve timestamp and length to expose bytecode-cache reuse.
+            os.utime(source,(stat.st_atime,stat.st_mtime))
+            initialize()
+            wrapper['runRuleScript'](None,network,None)
+            self.assertEqual(messages[-1],'NEW MARKER')
+            self.write('IRRM.py','def runRuleScript(rule, network, step):\n    network.printMessage("BAD MARKER")\n')
+            cLoadModules._computeReloadMode=lambda *args:('parallel','multithreaded test')
+            initialize()
+            wrapper['runRuleScript'](None,network,None)
+            self.assertEqual(messages[-1],'NEW MARKER')
+        finally:
+            cLoadModules._readLoadSettings=old_read
+            cLoadModules._computeReloadMode=old_mode
+            cLoadModules._writeReloadDecision=old_write
+
+    def test_module_path_conversion_accepts_native_separator_variants(self):
+        for path,root in [
+            ('C:/project/scripts/externalRules/IRRM.py','C:/project/scripts'),
+            ('C:/project/scripts/externalRules/IRRM.py','C:\\project\\scripts'),
+            ('C:\\project\\scripts\\externalRules\\IRRM.py','C:/project/scripts')]:
+            self.assertEqual(cLoadModules.convertFilePathToModuleName(path,root),'externalRules.IRRM')
 
     def test_parallel_and_unknown_override_requested_reload(self):
         for mode in ('parallel', 'unknown'):

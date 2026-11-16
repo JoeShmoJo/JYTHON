@@ -21,6 +21,7 @@ import glob
 import importlib
 import json
 import sys
+import re
 
 # Jython embeds native HEC worker threads in its threading registry when
 # LogRecord captures thread names. Interpreter cleanup can then join a live
@@ -33,18 +34,19 @@ if sys.platform.startswith('java'):
 
 
 
-def getAllFilesInDir(moduleDir, fileFilters= ["*.py","[!__init__.py]*"]):
+def getAllFilesInDir(moduleDir, fileFilters=None):
+    if fileFilters is None:fileFilters = ["*.py"]
     matches = []
     for root, dirnames, filenames in os.walk(moduleDir):
         # Avoid recursion by skipping 'cLoadModules'; ignore archived files
-        if "cLoadModules" in root or "archive" in root:
-            continue
+        dirnames[:] = [name for name in dirnames if name not in ("archive", "archives", "offline_tests", "__pycache__")]
         # Applying file filters
         for fileFilter in fileFilters:
             filenames = fnmatch.filter(filenames, fileFilter)
         
         for filename in filenames:
-            if filename == "cLoadModules.py": continue
+            if filename in ("cLoadModules.py", "__init__.py"): continue
+            if not re.match(r"^[A-Za-z_]\w*\.py$", filename):continue
             if "offline_tests" in filename or "offline_tests" in root: continue #Some AI thing, ignore this
             matches.append(os.path.join(root, filename))
     return matches
@@ -69,10 +71,14 @@ def convertFilePathToModuleName(filePath, scriptsDir):
     '''
     Converts from directory path to 
     '''
-    filePath=filePath.replace(scriptsDir+"\\","")
-    filePath=filePath.replace("\\",".")
-    filePath=filePath.replace(".py","")
-    return filePath
+    # Native Windows paths can mix forward slashes and backslashes.
+    source = os.path.normpath(filePath.replace("\\", os.sep))
+    root = os.path.normpath(scriptsDir.replace("\\", os.sep))
+    relative = os.path.relpath(source, root)
+    if os.path.isabs(relative) or relative == os.pardir or relative.startswith(os.pardir + os.sep):
+        raise ValueError('Module source is outside watershed scripts: ' + filePath)
+    if not relative.endswith('.py'):raise ValueError('Expected Python source: ' + filePath)
+    return relative[:-3].replace("\\", ".").replace("/", ".")
     
 
 def _readLoadSettings(getAbsPath):
@@ -161,11 +167,14 @@ def loadModule(moduleName, getAbsPath, force_reload=False):
     if not os.path.exists(pathname):
         return False
     if force_reload and moduleName in sys.modules:
-        try:
-            reload_module = reload  # Jython / Python 2
-        except NameError:
-            reload_module = importlib.reload  # Desktop Python tests
-        reload_module(sys.modules[moduleName])
+        # Execute the actual source, preserving module identity for pass-through
+        # wrappers. Standard reload may reuse cached bytecode after same-size,
+        # same-timestamp edits. This path is enabled only for serial computes.
+        module = sys.modules[moduleName]
+        with open(pathname, 'rb') as handle:
+            code = compile(handle.read(), pathname, 'exec')
+        module.__file__ = pathname
+        exec(code, module.__dict__)
     else:
         importlib.import_module(moduleName)
     return True
@@ -225,9 +234,12 @@ def loadWatershedModules(network=None,currentAlt=None, modulesToLoad=["NWDJyLib"
         (len(scriptFiles), "\n\t".join(scriptFiles)))
     
     # Convert the module file paths to "." convention for loading
-    for filePath in scriptFiles:
+    for filePath in sorted(set(scriptFiles)):
         moduleName = convertFilePathToModuleName(filePath, scriptsDir)
-        loadModule(moduleName, getAbsPath, force_reload)
+        if not loadModule(moduleName, getAbsPath, force_reload):
+            raise RuntimeError("Discovered module was not loaded: " + moduleName + " from " + filePath)
+        if moduleName.startswith("externalRules."):
+            p("MODULE SOURCE: %s -> %s; reload=%s" % (moduleName, filePath, force_reload))
         # Import/syntax errors propagate and fail initialization rather than
         # allowing compute to continue with a silently missing module.
     return True
