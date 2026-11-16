@@ -125,10 +125,18 @@ async function main() {
       await page.getByRole('button',{name:'Configuration Overview',exact:true}).click();
       await page.getByRole('button',{name:'Min Flow Cuts',exact:true}).click();
       assert.equal(await page.inputValue('#min-flow-cuts-active'),'off');
+      await page.getByRole('button',{name:'FIRO Space',exact:true}).click();
+      assert.equal(await page.inputValue('#firo-space-active'),'existing');
+      await page.selectOption('#firo-space-active','on');
+      await page.selectOption('#firo-space-active','off');
+      await page.getByRole('button',{name:'Configuration Overview',exact:true}).click();
+      await page.getByRole('button',{name:'FIRO Space',exact:true}).click();
+      assert.equal(await page.inputValue('#firo-space-active'),'off');
       const download=page.waitForEvent('download');await page.click('#save');
       const exported=JSON.parse(fs.readFileSync(await (await download).path(),'utf8'));
       assert.equal(exported.baseline_augmentation,'simplified');
       assert.equal(exported.rules.min_flow_cuts.settings.active,false);
+      assert.equal(exported.rules.firo_space.settings.active,false);
       assert.deepEqual(current.errors,[]);await page.close();
     }
     console.log('PASS: baseline editors preserve and export basic augmentation as part of baseline settings');

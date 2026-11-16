@@ -94,6 +94,8 @@ def alternative_overrides(network):
         if method not in ('off','simplified'):
             raise RuntimeError('Invalid baseline augmentation method')
         result['baselineFlowAugMethod']='AllocationBasedOnConservationStorage' if method=='simplified' else 'NoFlowAug'
+    firo=data['rules'].get('firo_space',{}).get('settings',{}).get('active')
+    if firo is not None:result['firoActive']=firo
     cuts=data['rules'].get('min_flow_cuts',{}).get('settings',{}).get('active')
     if cuts is not None:result['cutMinFlowsActive']=copy.deepcopy(cuts)
     result['draftToRCActive'] = copy.deepcopy(data['rules']['draft_to_rc']['settings']['active'])
@@ -176,7 +178,13 @@ def initialize_rule(module_name, rule, network, namespace=None):
         setting=network.getStateVariable('Alternative_Setup').varGet('cutMinFlowsActive')
         if isinstance(setting,dict):setting=setting.get(str(rule.getReservoirElement().toString()),True)
         cuts_disabled=setting is not None and not bool(setting)
-    if cuts_disabled:
+    firo_disabled=found and module_name=='FIRO_SPACE' and settings.get('active') is False
+    if module_name=='FIRO_SPACE':
+        rule.varPut('firoActive',True)
+    if firo_disabled:
+        rule.varPut('firoActive',False)
+        outcome=True
+    elif cuts_disabled:
         rule.varPut('active',False)
         outcome=True
     elif found and module_name == 'IRRM' and not network.getStateVariable('Alternative_Setup').varGet('irrmActive').get(str(rule.getReservoirElement().toString()), False):
@@ -205,6 +213,9 @@ def initialize_rule(module_name, rule, network, namespace=None):
             'module': module_name,
             'resolved_sha256': pointer['resolved_sha256'],
         }
+        if module_name=='FIRO_SPACE':
+            receipt['active']=not bool(firo_disabled) and rule.varGet('firoActive') is not False
+            receipt['reservoir']=str(rule.getReservoirElement().toString())
         if module_name=='MinFlowCuts':
             receipt['active']=bool(rule.varGet('active'))
             receipt['reservoir']=str(rule.getReservoirElement().toString())

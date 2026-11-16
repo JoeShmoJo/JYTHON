@@ -463,6 +463,8 @@ def initRuleScript(currentRule, network):
 
 def runRuleScript(currentRule, network, currentRuntimestep):
     """Runs every timestep of the compute."""
+    if currentRule.varGet('firoActive') is False:
+        return None
     opValue = OpValue()
     resvName = _getResvName(currentRule)
     firoCurve = currentRule.varGet("firoCurve")

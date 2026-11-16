@@ -118,6 +118,7 @@ def with_null_reservoirs(configuration):
     result=copy.deepcopy(configuration)
     rules=result.get('rules',{})
     rules.setdefault('min_flow_cuts',copy.deepcopy({'label': 'Min Flow Cuts', 'settings': {'active': None}, 'tables': {}, 'help': {'purpose': 'Reduce releases when forecast remaining inflow and storage indicate a risk of draining too deeply.', 'how_it_works': "This is a maximum-release rule that can throttle tributary minimum flows and mainstem augmentation when its priority is higher. Off removes this rule's constraint wherever it is attached; other operating rules remain in effect. Existing preserves the alternative's cutMinFlowsActive setting."}}))
+    if 'firo_space' in rules:rules['firo_space']['settings'].setdefault('active',None)
     irrm=rules.get('irrm',{}).get('settings',{})
     for name in sorted(RESERVOIRS):
         irrm.setdefault('active',{}).setdefault(name,False)
@@ -161,9 +162,11 @@ def validate_settings(settings, defaults, prefix=''):
         raise ValueError('Unknown or missing rule settings: ' + prefix)
     for key, expected in defaults.items():
         value = settings[key]
-        if prefix=='min_flow_cuts.' and key=='active':
+        if prefix in ('min_flow_cuts.','firo_space.') and key=='active':
+            if prefix=='firo_space.' and value is not None and not isinstance(value,bool):
+                raise ValueError('FIRO Space activation must be Existing, On or Off')
             if value is not None and not isinstance(value,bool) and not (isinstance(value,dict) and all(name in RESERVOIRS and isinstance(flag,bool) for name,flag in value.items())):
-                raise ValueError('Min Flow Cuts activation must be Existing, On or Off')
+                raise ValueError(('FIRO Space' if prefix=='firo_space.' else 'Min Flow Cuts')+' activation must be Existing, On or Off')
         elif prefix == 'irrm.' and key in ('active','target_elevation_ft'):
             if not isinstance(value,dict) or any(name not in RESERVOIRS for name in value):
                 raise ValueError('Invalid IRRM reservoir map')

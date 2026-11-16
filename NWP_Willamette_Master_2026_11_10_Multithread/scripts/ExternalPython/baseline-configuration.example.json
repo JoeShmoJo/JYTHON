@@ -420,7 +420,8 @@
         "glide_days": 1,
         "deadband_ft": 0.1,
         "interpolate_gaps_up_to_days": 0,
-        "require_reservoir_in_config": false
+        "require_reservoir_in_config": false,
+        "active": null
       },
       "tables": {
         "schedule": {

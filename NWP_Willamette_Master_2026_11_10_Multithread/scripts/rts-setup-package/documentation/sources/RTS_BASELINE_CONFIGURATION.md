@@ -74,3 +74,7 @@ operating constraints remain active. Native initialization receipts now include
 `module: MinFlowCuts` and the actual `active` flag for each initialized rule.
 Older saved JSON remains loadable; an omitted Min Flow Cuts group defaults to
 Existing, and previously applied snapshots without the group retain legacy behavior.
+
+## FIRO Space activation
+
+In Baseline Configuration → FIRO Space, choose Existing alternative settings, Off at all attached reservoirs, or On at all attached reservoirs. Off bypasses the rule without editing its curve or imposing a zero-release limit. On uses the configured curve; it does not attach native rules or change their priorities. Apply before computing. Older configurations without this field preserve the alternative setting. Restart ResSim/RTS after updating scripts, then reapply the configuration. FIRO_SPACE initialization receipts record activation and reservoir.
