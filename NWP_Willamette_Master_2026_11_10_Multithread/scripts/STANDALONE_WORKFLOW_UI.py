@@ -223,6 +223,24 @@ class Menu:
         SwingUtilities.invokeAndWait(Call(display))
         return answer[0]
 
+    def wait_for_job(self, process, log_path):
+        # Keep the detailed log, and mirror it to the GUI while the child runs.
+        offset = 0
+        while True:
+            if os.path.isfile(log_path):
+                with open(log_path, 'r') as handle:
+                    handle.seek(offset)
+                    update = handle.read()
+                    offset = handle.tell()
+                if update: self.message(update.rstrip())
+            if not process.isAlive():
+                # A final pass catches output written immediately before exit.
+                with open(log_path, 'r') as handle:
+                    handle.seek(offset); update = handle.read()
+                if update: self.message(update.rstrip())
+                return process.waitFor()
+            Thread.sleep(300)
+
     def run(self, title, job, simulation, alternative, run_type):
         try:
             filename = os.path.join(scripts, 'standalone_jobs.py')
@@ -241,7 +259,7 @@ class Menu:
             builder.directory(File(scripts))
             builder.redirectErrorStream(True)
             builder.redirectOutput(File(self.log))
-            code = builder.start().waitFor()
+            code = self.wait_for_job(builder.start(), self.log)
             if code != 0:
                 with open(self.log, 'r') as handle:
                     self.message(''.join(handle.readlines()[-12:]))

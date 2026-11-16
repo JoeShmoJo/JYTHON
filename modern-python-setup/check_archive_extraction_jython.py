@@ -5,7 +5,8 @@ import shutil
 import sys
 import tempfile
 import new
-from java.lang import Runnable
+from java.lang import Runnable, Thread, ProcessBuilder as NativeProcessBuilder
+from java.io import File
 from java.awt import BorderLayout
 from javax.swing import JPanel, JTextArea, JTextField, JScrollPane, JLabel, JButton, SwingUtilities
 from java.util import ArrayList
@@ -43,7 +44,7 @@ try:
         def waitFor(self):
             with open(self.command[self.command.index('--report')+1],'w') as handle:json.dump(report,handle)
             return 0
-    namespace=dict(os=os,json=json,python='unused',scripts=scripts,root=folder,Call=Call,ProcessBuilder=Builder,File=lambda path:path,
+    namespace=dict(os=os,json=json,python='unused',scripts=scripts,root=folder,Thread=Thread,Call=Call,ProcessBuilder=Builder,File=lambda path:path,
         ArrayList=ArrayList,JPanel=JPanel,JTextArea=JTextArea,JTextField=JTextField,JScrollPane=JScrollPane,
         JLabel=JLabel,JButton=JButton,BorderLayout=BorderLayout,SwingUtilities=SwingUtilities,JOptionPane=Dialog)
     with open(os.path.join(scripts,'STANDALONE_WORKFLOW_UI.py')) as handle:source=handle.read()
@@ -53,6 +54,14 @@ try:
     assert not menu.archive_check('Test','Con_Season','ensemble',True)
     report['compatible']=True
     assert menu.archive_check('Test','Con_Season','ensemble',True)
+    progress=os.path.join(folder,'progress.log')
+    command=ArrayList()
+    for arg in ['/bin/sh','-c','echo CWMS-start; sleep 1; echo CWMS-error; exit 3']:command.add(arg)
+    builder=NativeProcessBuilder(command);builder.redirectErrorStream(True);builder.redirectOutput(File(progress))
+    lines=[];menu.message=lines.append
+    assert menu.wait_for_job(builder.start(),progress)==3
+    assert 'CWMS-start' in '\n'.join(lines) and 'CWMS-error' in '\n'.join(lines)
+    print('PASS: real Java child process progress streaming and nonzero exit status')
     print('PASS: actual Swing copyable member field, EDT dispatch, blocked check and extraction confirmation')
 finally:shutil.rmtree(folder)
 from java.lang import System

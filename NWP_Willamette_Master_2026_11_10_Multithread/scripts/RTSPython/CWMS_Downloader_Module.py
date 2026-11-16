@@ -226,6 +226,45 @@ def _write_series(fid, pathname: str, series: pd.Series, units: str, interval_mi
 # CORE: download + write
 # =====================================================================
 
+class CWMSDownloadError(RuntimeError):
+    """All configured replicas failed for a required time series."""
+
+
+class _CWMSAdapter(requests.adapters.HTTPAdapter):
+    def send(self, request, **kwargs):
+        if kwargs.get('timeout') is None:
+            kwargs['timeout'] = (10, 60)  # connect / read inactivity, seconds
+        return super().send(request, **kwargs)
+
+
+def _cwms_dataframe(tsid, begin, end, office_id, hosts):
+    failures = []
+    for number, host in enumerate(list(hosts), 1):
+        api_root = f"https://wm.{host}.ds.usace.army.mil:8243/nwdp-data/"
+        print(f"[CWMS] TRY {number}/{len(hosts)} host={host} office_id={office_id} tsid={tsid} (connect=10s, read=60s, no automatic retries)", flush=True)
+        session = None
+        try:
+            session = cwms.api.init_session(api_root=api_root)
+            # Replace cwms-python's unbounded default and six automatic retries.
+            session.mount('https://', _CWMSAdapter(max_retries=0))
+            ts = cwms.get_timeseries(tsid, office_id=office_id, begin=begin, end=end)
+            df = getattr(ts, 'df', None)
+            if df is None or df.empty:
+                raise ValueError('Server returned no data for the required series/window')
+            if host != hosts[0]:
+                print(f"[CWMS] FALLBACK SUCCEEDED host={host} office_id={office_id} tsid={tsid}", flush=True)
+            hosts.remove(host);hosts.insert(0, host)
+            return df
+        except Exception as error:
+            message = f"{host}: {type(error).__name__}: {error}"
+            failures.append(message)
+            print('[CWMS] SERVER FAILED ' + message, flush=True)
+            if number < len(hosts):print('[CWMS] Trying next server with the same office, series and time window.', flush=True)
+        finally:
+            if session is not None:session.close()
+    raise CWMSDownloadError('All CWMS servers failed for ' + tsid + '; ' + ' | '.join(failures))
+
+
 def cwms_download_and_write(
     tsid_to_dss: Dict[str, str],
     begin,
@@ -241,7 +280,7 @@ def cwms_download_and_write(
     end_dt = _to_py_datetime_utc(end)
 
     api_root = f"https://wm.{office}.ds.usace.army.mil:8243/nwdp-data/"
-    cwms.api.init_session(api_root=api_root)
+    hosts = list(dict.fromkeys([office, 'nww', 'nwp', 'nws', 'nwd']))
 
     print(
         f"\n[CWMS] api_root={api_root} office_id={office_id} units={units} "
@@ -262,13 +301,7 @@ def cwms_download_and_write(
             print(f"[CWMS] ({i}/{len(tsid_to_dss)}) START  tsid={tsid} -> dss={dss_path}")
 
             try:
-                ts = cwms.get_timeseries(tsid, office_id=office_id, begin=begin_dt, end=end_dt)
-                df = getattr(ts, "df", None)
-
-                if df is None or df.empty:
-                    empty += 1
-                    print(f"[CWMS] ({i}/{len(tsid_to_dss)}) EMPTY  tsid={tsid}")
-                    continue
+                df = _cwms_dataframe(tsid, begin_dt, end_dt, office_id, hosts)
 
                 interval_min, dss_type = _infer_dss_meta_from_path(dss_path)
                 s = _df_to_series(df, calendar_daily=(interval_min == 1440))
@@ -323,6 +356,9 @@ def cwms_download_and_write(
 
             except Exception as e:
                 msg = f"{type(e).__name__}: {e}"
+                if isinstance(e, CWMSDownloadError):
+                    print('[CWMS] ERROR: required download unavailable; stopping extraction. Live DSS is not replaced by a failed staged import.', flush=True)
+                    raise
                 failed.append((tsid, msg))
                 print(f"[CWMS] ({i}/{len(tsid_to_dss)}) FAIL   tsid={tsid}  err={msg}")
 

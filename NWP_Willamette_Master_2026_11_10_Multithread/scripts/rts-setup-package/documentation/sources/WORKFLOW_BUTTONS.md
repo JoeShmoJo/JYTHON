@@ -61,3 +61,5 @@ operating constraints remain active. Native initialization receipts now include
 `module: MinFlowCuts` and the actual `active` flag for each initialized rule.
 Older saved JSON remains loadable; an omitted Min Flow Cuts group defaults to
 Existing, and previously applied snapshots without the group retain legacy behavior.
+
+CWMS downloads show live progress and errors in the standalone workflow window. They try the selected server, then nww/nwp/nws/nwd replicas without changing NWDP office or time-series identifiers. Each attempt uses a 10-second connect timeout and 60-second read-inactivity timeout, with no automatic per-server retries. A working server is preferred for later series. If all replicas fail, the required download stops and a staged archive import does not replace the live DSS. Port reachability alone does not establish access to the NWDP API or its data.

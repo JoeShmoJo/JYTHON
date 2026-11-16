@@ -40,7 +40,7 @@ class ArchiveUITests(unittest.TestCase):
                     code=0
                 else:code=owner.exit
                 Path(self.log).write_text('test process log')
-                return types.SimpleNamespace(waitFor=lambda:code)
+                return types.SimpleNamespace(waitFor=lambda:code,isAlive=lambda:False)
         class Dialog:
             DEFAULT_OPTION=0;WARNING_MESSAGE=1;INFORMATION_MESSAGE=2
             @staticmethod
@@ -56,7 +56,13 @@ class ArchiveUITests(unittest.TestCase):
                 System=types.SimpleNamespace(currentTimeMillis=lambda:12345))
         ns['BorderLayout'].__init__=lambda self,*args:None
         exec(compile(ast.Module(body=[cls],type_ignores=[]),'<actual Menu>','exec'),ns)
-        ns['Thread']=lambda call,name:types.SimpleNamespace(start=lambda:call.fn())
+        class Worker:
+            def __init__(self,call,name):self.call=call
+            def start(self):self.call.fn()
+            @staticmethod
+            def sleep(ms):pass
+        ns['Thread']=Worker
+        self.ns=ns
         self.menu=ns['Menu'].__new__(ns['Menu']);self.menu.message=self.messages.append;self.menu.frame=None;self.menu.busy=True
     def run_job(self):self.menu.run('Extract archived ensemble inputs','archive-extract','Test','Con_Season','ensemble')
     def test_incompatible_report_stops_without_import_and_offers_members(self):
@@ -89,6 +95,13 @@ class ArchiveUITests(unittest.TestCase):
     def test_no_members_offers_no_synthetic_only_range(self):
         self.report.update(available_years=[],compatible=False);self.run_job()
         self.assertEqual(self.dialogs[0][1].children[1].children[1].args[0],'')
+    def test_live_progress_and_final_lines_preserve_exit_status(self):
+        log=self.root/'progress.log';log.write_text('[CWMS] TRY nws\n')
+        polls=iter([True,False])
+        process=types.SimpleNamespace(isAlive=lambda:next(polls),waitFor=lambda:7)
+        self.ns['Thread'].sleep=lambda ms:log.write_text('[CWMS] TRY nws\n[CWMS] SERVER FAILED nws\n')
+        self.assertEqual(self.menu.wait_for_job(process,str(log)),7)
+        self.assertEqual(self.messages,['[CWMS] TRY nws','[CWMS] SERVER FAILED nws'])
     def test_distributed_ui_matches(self):
         self.assertEqual((S/'STANDALONE_WORKFLOW_UI.py').read_bytes(),(S/'rts-setup-package/STANDALONE_WORKFLOW_UI.py').read_bytes())
 
