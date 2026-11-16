@@ -93,6 +93,35 @@ class DiagnosticsTests(unittest.TestCase):
         self.assertEqual(data['member'],1981);self.assertEqual(data['configuration_id'],'current-configuration')
         self.assertEqual(data['stage'],'cleanup-finished');self.assertFalse(data['calculation_started'])
         self.assertEqual(data['rules']['Lookout Point']['calls'],1);self.assertEqual(data['rules']['Lookout Point']['positive_calls'],0)
+    def test_fresh_native_store_is_not_cleared_and_off_can_repeat(self):
+        class LazyVariable(Variable):
+            def __init__(self,path):
+                self.path=path;self.series=None;self.template=Container();self.clears=0
+            def localTimeSeriesList(self):return [] if self.series is None else list(self.series)
+            def localTimeSeriesClear(self):
+                if self.series is None:raise RuntimeError('native NullPointerException: unallocated store')
+                self.clears+=1;self.series.clear()
+            def localTimeSeriesNew(self,key,container):
+                if self.series is None:self.series={}
+                self.series[key]=container
+        variable=LazyVariable(self.path);native=native_class()()
+        stub=types.SimpleNamespace(external_trial_configuration=lambda *args:None)
+        with mock.patch.dict(sys.modules,{'standalone_augmentation_runtime':stub}):
+            self.assertTrue(native.initialization(self.network,variable))
+            self.assertEqual(variable.clears,0)
+            self.assertFalse(native.computeSV)
+            self.assertTrue(variable.series)
+            expected=set(variable.series)
+            variable.series['stale']=Container()
+            self.assertTrue(native.initialization(self.network,variable))
+            self.assertEqual(variable.clears,1)
+            self.assertEqual(set(variable.series),expected)
+        self.assertTrue(all(value==0. for series in variable.series.values() for value in series.values))
+        native.cleanup(self.network,variable)
+        with HecDss.Open(str(self.path)) as dss:
+            record=dss.read_ts('//Lookout Point-MainstemFlowAug/FLOW-SPEC//1DAY/C:001981|Con_Season0/',trim_missing=True)
+            np.testing.assert_allclose(np.array(record.values,copy=True),0.)
+
     def test_basic_status_records_returned_release_and_storage_constraint(self):
         self.values['baselineFlowAugMethod']='AllocationBasedOnConservationStorage'
         native=native_class()();native.computeSV=True;native.useExternalTS=False;native.resvNamesSupporting=['Lookout Point']

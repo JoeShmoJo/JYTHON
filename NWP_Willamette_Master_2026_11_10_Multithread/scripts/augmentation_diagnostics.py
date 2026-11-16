@@ -23,7 +23,10 @@ def initialize_off(variable,fpart,reservoirs):
     input. Do not delete inputs, pool outputs, other F-parts or archived data.
     """
     template=variable.getTimeSeries().getTimeSeriesContainer().clone()
-    variable.localTimeSeriesClear()
+    # ResSim allocates the local-series store lazily. Clearing a fresh SV
+    # dereferences a null native store; listing it is safe (as in the controller).
+    if len(variable.localTimeSeriesList()) > 0:
+        variable.localTimeSeriesClear()
     parts=str(template.fullName).split('/')
     if len(parts)!=8:raise ValueError('Malformed augmentation diagnostic pathname')
     def add(key,bpart,parameter,units,kind):
