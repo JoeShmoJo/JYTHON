@@ -9,8 +9,7 @@ Follow the [Operator SOP](WORKFLOW_SOP.md) for the normal sequence. Compute runs
 | Simulation, alternative, Simulation type | Select the actual target and Ensemble or Single POR. |
 | Baseline Configuration | Edit operating rules and job settings, save named configurations, and apply a configuration to the selected alternative. Save stores a reusable set; Apply activates it for the next compute. |
 | Extract ensemble inputs | Download the live RFC inputs and supporting data for the selected simulation. |
-| Check archive dates / members | Inspect historical archive coverage against standalone job settings before extraction. |
-| Extract archived ensemble inputs | Load historical RFC inputs using the standalone archive settings and selected simulation dates. |
+| Extract archived ensemble inputs | Check dates/members, offer a copyable available-member range, then import after explicit confirmation. If changes are required, save the selection in ResSim, close its Simulation window, and retry. Wait for IMPORT COMPLETE. |
 | Augmentation Configuration (standalone) | Select an archived unaugmented baseline, edit/save/open the two-step settings, and calculate/load release requirements before a manual augmented compute. |
 | Archive / Plot Results | Save a completed baseline or augmented result, then plot selected saved runs. |
 | Model Check | Check the selected POR output or exactly one ensemble member. Produces a report without starting compute. |

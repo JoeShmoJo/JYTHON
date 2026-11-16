@@ -53,7 +53,6 @@ class Menu:
         buttons.add(self.run_type)
         buttons.add(JButton('Baseline Configuration', actionPerformed=lambda e: self.open_baseline()))
         jobs = [('Extract ensemble inputs', 'extract'),
-                ('Check archive dates / members', 'archive-check'),
                 ('Extract archived ensemble inputs', 'archive-extract')]
         self.ensemble_buttons = []
         for title, job in jobs:
@@ -182,15 +181,40 @@ class Menu:
         self.message(report['summary'])
         answer = [False]
         def display():
-            area = JTextArea(report['summary'], 24, 95)
+            area = JTextArea(report['summary'], 18, 85)
             area.setEditable(False);area.setLineWrap(True);area.setWrapStyleWord(True)
-            view = JScrollPane(area)
+            view = JPanel(BorderLayout(5, 5))
+            view.add(JScrollPane(area), BorderLayout.CENTER)
+            # Offer all historical members available at every station, retaining
+            # only the synthetic members the operator already selected.
+            available = sorted(set(report.get('available_years', [])) |
+                               (set(report.get('selected_members', [])) & set([3000, 3001, 3002, 3003])))
+            groups = []
+            for member in available:
+                if groups and member == groups[-1][-1] + 1: groups[-1].append(member)
+                else: groups.append([member])
+            member_text = ','.join(str(group[0]) if len(group) == 1 else
+                                   str(group[0]) + '-' + str(group[-1]) for group in groups)
+            selection = JTextField(member_text if report.get('available_years') else '', 55)
+            selection.setEditable(False)
+            copy_row = JPanel(BorderLayout(5, 5))
+            copy_row.add(JLabel('Available members to paste into ResSim:'), BorderLayout.NORTH)
+            copy_row.add(selection, BorderLayout.CENTER)
+            def copy_members(event):
+                selection.selectAll();selection.copy();selection.requestFocusInWindow()
+            copy_row.add(JButton('Copy members', actionPerformed=copy_members), BorderLayout.EAST)
+            view.add(copy_row, BorderLayout.SOUTH)
             if extract and report['compatible']:
-                answer[0] = JOptionPane.showConfirmDialog(self.frame, view,
-                    'Archive ready - close DSS views and finish computes before continuing',
-                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION
+                self.message('Check passed. Waiting for Extract inputs or Cancel; no inputs have been imported yet.')
+                answer[0] = JOptionPane.showOptionDialog(self.frame, view,
+                    'Ready to extract - close Simulation windows/DSS views and finish computes first',
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, None,
+                    ['Extract inputs', 'Cancel'], 'Extract inputs') == 0
+                if not answer[0]: self.message('Extraction cancelled. No inputs imported.')
             else:
-                JOptionPane.showMessageDialog(self.frame, view, 'Archive dates / ensemble members',
+                if extract:
+                    self.message('EXTRACTION NOT STARTED: archive check requires changes. Update and save the ResSim member selection shown in the report, close the Simulation window, then retry Extract archived ensemble inputs. Other reported errors must also be corrected.')
+                JOptionPane.showMessageDialog(self.frame, view, 'Extraction not started - changes required' if extract else 'Archive dates / ensemble members',
                     JOptionPane.INFORMATION_MESSAGE if report['compatible'] else JOptionPane.WARNING_MESSAGE)
         SwingUtilities.invokeAndWait(Call(display))
         return answer[0]
@@ -205,6 +229,7 @@ class Menu:
             self.message(title + '\nLog: ' + self.log)
             if job in ('archive-check','archive-extract'):
                 if not self.archive_check(simulation, alternative, run_type, job == 'archive-extract'): return
+            self.message('IMPORTING INPUTS: extraction is running. Progress is written to ' + self.log + '. Wait for IMPORT COMPLETE before computing or starting another job.' if job == 'archive-extract' else 'Running ' + title + '. Log: ' + self.log)
             command = ArrayList()
             for arg in [python, '-u', filename, '--watershed', root, '--simulation', simulation,
                         '--alternative', alternative, '--run-type', run_type, '--job', job]: command.add(arg)
@@ -217,7 +242,7 @@ class Menu:
                 with open(self.log, 'r') as handle:
                     self.message(''.join(handle.readlines()[-12:]))
                 raise RuntimeError(title + ' exited with code ' + str(code) + '. See ' + self.log)
-            self.message('Finished. Compute remains manual in ResSim.')
+            self.message('IMPORT COMPLETE: archived ensemble inputs imported successfully. Compute remains manual in ResSim.' if job == 'archive-extract' else 'Finished. Compute remains manual in ResSim.')
         except Exception as error:
             self.message('FAILED: ' + str(error))
             if job in ('archive-check','archive-extract'):
