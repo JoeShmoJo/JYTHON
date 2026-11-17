@@ -13,7 +13,7 @@ forecast is open; verify the header before enabling it.
 
 In RTS, choose **Initial Extract (live RFC)** for the currently published issue or **Extract archived forecast** for local station ZIPs. Archived extraction checks the selected issue, reads all available member years, and gives a copyable native ensemble selection after successful loading.
 
-Standalone retains separate **Check archive dates / members** and **Extract archived ensemble inputs** actions using its applied job settings. Both applications require coverage for the selected time window. See [archived forecasts](RTS_ARCHIVED_FORECASTS.md) for issue selection, time conversion, and saved extraction evidence.
+Standalone **Extract archived ensemble inputs** checks archive dates and available years using its applied job settings, then waits for **Extract inputs** or **Cancel**. It does not require the alternative's existing ensemble selection to match. After **IMPORT COMPLETE**, copy the offered member range into the Alternative Editor and save before computing. Close Simulation Control windows and DSS views before extraction. Both applications require coverage for the selected time window. See [archived forecasts](RTS_ARCHIVED_FORECASTS.md) for issue selection, time conversion, and saved extraction evidence.
 
 ## Staging and required data
 

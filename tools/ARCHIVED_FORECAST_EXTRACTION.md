@@ -4,16 +4,20 @@ Use **Extract archived ensemble inputs** in `scripts/STANDALONE_WORKFLOW_MENU.py
 In Baseline Configuration, set **RFC archive folder**, **Simulation UTC offset
 hours** (default -8, fixed PST), and **OSI source member**, then Save/Apply.
 The folder contains the individual station ZIP files; the large OneDrive wrapper
-ZIPs are not used. Python's `pyarrow` package must be installed in hydro39.
+ZIPs are not used. The selected desktop Python environment (`hydro13Nov2026`) includes `pyarrow`.
 
-Use **Check archive dates / members** for a read-only preview. It lists the
-selected nominal cycle, common issue-date range (which may contain gaps),
-historical member years available at every station, selected ResSim members,
-OSI source, and complete daily forecast coverage. Incompatible dates, missing
-issues, unavailable years and OSI settings are reported together. This writes
-only a diagnostic JSON/log, never DSS records. **Extract archived ensemble inputs**
-also opens this summary automatically and blocks extraction when errors remain.
-CWMS availability is validated during extraction, not by the archive preview.
+**Extract archived ensemble inputs** first checks the saved simulation dates and
+opens a read-only summary of the nominal cycle, common issue-date range (which
+may contain gaps), historical years available at every station, OSI source, and
+complete daily forecast coverage. It does not read or require the alternative's
+existing ensemble selection. Errors block extraction; otherwise the dialog waits
+for **Extract inputs** or **Cancel**. No DSS records are changed before confirmation.
+CWMS availability is validated during extraction, not by this archive check.
+
+The stages are **EXTRACTION NOT STARTED**, **IMPORTING INPUTS**, and
+**IMPORT COMPLETE**. The dialog provides a copyable member range and a
+**Copy members** button. After import succeeds, paste that range into the native
+Alternative Editor's Ensemble tab and save before computing.
 
 Save Simulation Control before extracting. The job reads the selected
 `rss/<simulation>.simperiod`; it never uses `.bak`, the simulation folder name as
@@ -34,14 +38,12 @@ CONFIGURATION metadata says UNADJUSTED, including the project-inflow examples;
 archive names alone do not independently establish hydrologic equivalence to
 live products. Provenance retains the original metadata for review.
 
-Historical year columns remain those same DSS member IDs. The extractor checks
-the simulation copy's `EnsembleMembersString` (matching `RssAlt Name` under
-`rss/<simulation>/rss/`, with the shared alternative used only if no matching
-simulation copy exists) against the actual archive years
-and checks the OSI source member. It does not silently shorten the year selection
-or relabel older years. For early forecasts, change the native ensemble selection
-if it asks for years that do not yet exist in that archive. Percentile members
-3000/3001/3002 and OSI destination 3003 follow the existing workflow.
+Historical year columns remain those same DSS member IDs. Available years are
+discovered from the selected archive issue, so earlier issues can offer fewer
+years. The suggested compute range includes those historical years and percentile
+members 3000/3001/3002. OSI destination 3003 is separate; its source year must be
+available in the selected issue. Extraction does not relabel or silently shorten
+historical years to match an existing native alternative selection.
 
 KCFS values are converted to CFS; legitimate negative local flows are preserved.
 Missing codes, gaps, mixed valid-time grids, mismatched member sets, and
@@ -71,7 +73,7 @@ conversion. Check the first historical run's alignment in ResSim before relying
 on retrospective results.
 
 Run the native ResSim extract first if the simulation has no `simulation.dss`.
-Finish all computes and close DSS viewers before archive extraction. The job
+Finish all computes and close Simulation Control windows and DSS viewers before archive extraction. The job
 copies that file to staging, replaces only the 27 RFC input products, then runs
 CWMS, zero/WY dummy generation (using the saved window), and OSI copying on the
 staged file. A failure discards staging. Other input records and computed outputs
