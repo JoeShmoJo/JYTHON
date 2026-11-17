@@ -118,6 +118,15 @@ class ModuleLoadingTests(unittest.TestCase):
             ('C:\\project\\scripts\\externalRules\\IRRM.py','C:/project/scripts')]:
             self.assertEqual(cLoadModules.convertFilePathToModuleName(path,root),'externalRules.IRRM')
 
+    def test_serial_source_reload_accepts_windows_continued_strings(self):
+        name=self.name+'.windows_rule'
+        self.write('windows_rule.py','value = "initial"\n')
+        cLoadModules.loadModule(name,self.absolute)
+        source=b'value = "Windows continuation \\\r\nworks"\r\n'
+        with open(os.path.join(self.package,'windows_rule.py'),'wb') as handle:handle.write(source)
+        self.assertTrue(cLoadModules.loadModule(name,self.absolute,force_reload=True))
+        self.assertEqual(sys.modules[name].value,'Windows continuation works')
+
     def test_parallel_and_unknown_override_requested_reload(self):
         for mode in ('parallel', 'unknown'):
             self.assertFalse(cLoadModules._effectiveReload(True, mode))

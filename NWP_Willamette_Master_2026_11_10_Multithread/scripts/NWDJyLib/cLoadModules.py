@@ -172,7 +172,11 @@ def loadModule(moduleName, getAbsPath, force_reload=False):
         # same-timestamp edits. This path is enabled only for serial computes.
         module = sys.modules[moduleName]
         with open(pathname, 'rb') as handle:
-            code = compile(handle.read(), pathname, 'exec')
+            source = handle.read()
+        # Jython compile() does not apply the importer's universal-newline
+        # handling. Raw CRLF breaks backslash-continued strings on Windows.
+        source = source.replace(b'\r\n', b'\n').replace(b'\r', b'\n')
+        code = compile(source, pathname, 'exec')
         module.__file__ = pathname
         exec(code, module.__dict__)
     else:
