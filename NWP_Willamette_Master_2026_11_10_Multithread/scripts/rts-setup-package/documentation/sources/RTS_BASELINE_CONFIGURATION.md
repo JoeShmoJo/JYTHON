@@ -21,8 +21,10 @@ installer or mode switch is required.
 5. Close the browser editor, reopen the forecast and compute an unaugmented baseline
    manually. Accept only a successfully completed compute with intended coverage.
 
-Save Configuration writes a named version in `scripts/baseline-configuration-library`.
-Open Saved Configuration uses that library. Export JSON is a portable settings
+Save Configuration stores settings by name in `scripts/baseline-configuration-library`.
+Saving under an existing name asks before overwriting the most recent match.
+Select a library entry to open it or use Delete Saved Configuration to remove it
+after confirmation. Export JSON is a portable settings
 copy; the readable export is for inspection. Later Apply creates a new immutable
 set without rewriting the source schedules or native operation sets.
 

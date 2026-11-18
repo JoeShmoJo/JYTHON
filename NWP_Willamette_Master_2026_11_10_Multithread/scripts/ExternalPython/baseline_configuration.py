@@ -1,6 +1,7 @@
 """Resolve, validate and stage forecast-scoped baseline settings; serve editor."""
 import argparse
 import copy
+from contextlib import contextmanager
 import csv
 from datetime import date
 import hashlib
@@ -440,25 +441,77 @@ def configuration_library(scripts):
     return Path(scripts).parent/'baseline-configuration-library'
 
 
-def save_library_configuration(scripts, configuration):
-    if not str(configuration.get('name','')).strip():
+@contextmanager
+def configuration_library_lock(directory):
+    directory.mkdir(parents=True, exist_ok=True)
+    lock = directory / '.edit.lock'
+    try:
+        lock.touch(exist_ok=False)
+    except FileExistsError:
+        raise ValueError('The configuration library is busy. If no editor is saving or deleting, check for a stale lock at '+str(lock))
+    try:
+        yield
+    finally:
+        lock.unlink()
+
+
+def library_configuration_path(scripts, identity):
+    if not isinstance(identity, str) or not re.fullmatch('[a-f0-9]{32}', identity):
+        raise ValueError('Invalid saved configuration identifier')
+    return configuration_library(scripts) / (identity + '.json')
+
+
+def save_library_configuration(scripts, configuration, overwrite=None):
+    name = configuration.get('name')
+    if not isinstance(name, str) or not name.strip():
         raise ValueError('Enter a configuration name before saving')
-    resolved,_=resolve(configuration,scripts,Path(scripts).parent.parent)
-    # Saved reusable sets embed the actual schedule values, so they remain
-    # portable even if the original CSV is moved or subsequently edited.
-    identity=uuid.uuid4().hex
-    path=configuration_library(scripts)/(identity+'.json')
-    path.parent.mkdir(parents=True,exist_ok=True)
-    atomic_json(path,resolved)
-    return {'id':identity,'name':resolved['name'],'path':str(path)}
+    name = name.strip()
+    resolved, _ = resolve(dict(configuration, name=name), scripts, Path(scripts).parent.parent)
+    # Embed the actual schedule values so these sets stay portable.
+    directory = configuration_library(scripts)
+    with configuration_library_lock(directory):
+        matches = [item for item in list_library_configurations(scripts)
+                   if item['name'].strip().casefold() == name.casefold()]
+        if matches:
+            # Older editors could create duplicate names. Default to the newest.
+            existing = matches[0]
+            if not overwrite:
+                return {'conflict': existing, 'matches': len(matches)}
+            if overwrite['id'] != existing['id'] or overwrite['revision'] != existing['revision']:
+                raise ValueError('The saved configuration changed. Review the library and try again.')
+            identity = existing['id']
+        elif overwrite:
+            raise ValueError('The saved configuration was deleted. Try saving again.')
+        else:
+            identity = uuid.uuid4().hex
+        path = library_configuration_path(scripts, identity)
+        atomic_json(path, resolved)
+    return {'id': identity, 'name': name, 'path': str(path)}
 
 
 def list_library_configurations(scripts):
-    items=[]
-    for path in sorted(configuration_library(scripts).glob('*.json'),key=lambda p:p.stat().st_mtime,reverse=True):
-        data=json.loads(path.read_text())
-        items.append({'id':path.stem,'name':data['name']})
-    return items
+    items = []
+    for path in configuration_library(scripts).glob('*.json'):
+        if not re.fullmatch('[a-f0-9]{32}', path.stem):
+            continue
+        try:
+            raw = path.read_bytes()
+            modified = path.stat().st_mtime
+        except FileNotFoundError:
+            continue
+        data = json.loads(raw)
+        items.append({'id': path.stem, 'name': data['name'], 'modified': modified,
+                      'revision': hashlib.sha256(raw).hexdigest()})
+    return sorted(items, key=lambda item: (item['modified'], item['id']), reverse=True)
+
+
+def delete_library_configuration(scripts, identity, revision):
+    path = library_configuration_path(scripts, identity)
+    with configuration_library_lock(path.parent):
+        if not path.is_file() or digest_file(path) != revision:
+            raise ValueError('The saved configuration changed or was deleted. Refresh the library and try again.')
+        path.unlink()
+    return {'id': identity}
 
 
 def serve_editor(scripts, context=None):
@@ -493,11 +546,78 @@ applyButton.onclick=async()=>{if(!confirm('Archive current results first if you 
         page=page.replace('</html>',bridge+'</html>')
     library_bridge="""<script>
 const exportJSON=document.createElement('button');exportJSON.textContent='Export JSON';exportJSON.onclick=$('save').onclick;$('save').after(exportJSON);$('save').textContent='Save Configuration';$('open').textContent='Import JSON';
-const savedSets=document.createElement('select');savedSets.setAttribute('aria-label','Saved configurations');const loadSet=document.createElement('button');loadSet.textContent='Open Saved Configuration';document.querySelector('.toolbar').append(savedSets,loadSet);
-async function libraryRequest(path,body){const response=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','X-Editor-Token':TOKEN},body:JSON.stringify(body)});const result=await response.json();if(!response.ok)throw Error(result.error);return result}
-async function refreshLibrary(id){const items=await libraryRequest('/library',{});savedSets.replaceChildren();const placeholder=document.createElement('option');placeholder.value='';placeholder.textContent='Choose a saved configuration';savedSets.append(placeholder);for(const item of items){const option=document.createElement('option');option.value=item.id;option.textContent=item.name+' · '+item.id.slice(0,8);savedSets.append(option)}if(id)savedSets.value=id}
-$('save').onclick=async()=>{try{const saved=await libraryRequest('/save',config);await refreshLibrary(saved.id);status('Saved '+saved.name+' in the watershed configuration library. No settings were activated. Each save preserves a new version.')}catch(e){status('Save failed: '+e.message);alert(e.message)}};
-loadSet.onclick=async()=>{if(!savedSets.value)return;if(!confirm('Replace the settings currently displayed with the saved configuration?'))return;try{config=await libraryRequest('/load',{id:savedSets.value});selected='overview';render();status('Saved configuration opened. Apply separately to activate it.')}catch(e){status('Open failed: '+e.message)}};refreshLibrary().catch(e=>status('Library unavailable: '+e.message));
+const savedSets=document.createElement('select');
+savedSets.setAttribute('aria-label','Saved configurations');
+const loadSet=document.createElement('button');
+loadSet.textContent='Open Saved Configuration';
+const deleteSet=document.createElement('button');
+deleteSet.textContent='Delete Saved Configuration';
+document.querySelector('.toolbar').append(savedSets,loadSet,deleteSet);
+let libraryItems=[];
+function updateLibraryButtons(){loadSet.disabled=deleteSet.disabled=!savedSets.value}
+savedSets.onchange=updateLibraryButtons;
+updateLibraryButtons();
+
+async function libraryRequest(path,body){
+    const response=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','X-Editor-Token':TOKEN},body:JSON.stringify(body)});
+    const result=await response.json();
+    if(!response.ok)throw Error(result.error);
+    return result;
+}
+function savedDate(item){return new Date(item.modified*1000).toLocaleString()}
+async function refreshLibrary(id){
+    libraryItems=await libraryRequest('/library',{});
+    const counts=new Map();
+    for(const item of libraryItems){
+        const key=item.name.trim().toLowerCase();
+        counts.set(key,(counts.get(key)||0)+1);
+    }
+    savedSets.replaceChildren(new Option('Choose a saved configuration',''));
+    for(const item of libraryItems){
+        const duplicate=counts.get(item.name.trim().toLowerCase())>1;
+        savedSets.add(new Option(duplicate?item.name+' · Saved '+savedDate(item):item.name,item.id));
+    }
+    savedSets.value=id||'';
+    updateLibraryButtons();
+}
+$('save').onclick=async()=>{
+    $('save').disabled=true;
+    try{
+        const configuration=JSON.parse(JSON.stringify(config));
+        let saved=await libraryRequest('/save',{configuration});
+        if(saved.conflict){
+            const existing=saved.conflict;
+            const target=saved.matches>1?'the most recent configuration named ':'the saved configuration named ';
+            if(!confirm('Overwrite '+target+'"'+existing.name+'" (saved '+savedDate(existing)+')?'))return;
+            saved=await libraryRequest('/save',{configuration,overwrite:existing});
+        }
+        await refreshLibrary(saved.id);
+        status('Saved '+saved.name+' in the watershed configuration library.');
+    }catch(e){
+        status('Save failed: '+e.message);
+        alert(e.message);
+    }finally{
+        $('save').disabled=false;
+    }
+};
+loadSet.onclick=async()=>{if(!savedSets.value)return;if(!confirm('Replace the settings currently displayed with the saved configuration?'))return;try{config=await libraryRequest('/load',{id:savedSets.value});selected='overview';render();status('Saved configuration opened. Apply separately to activate it.')}catch(e){status('Open failed: '+e.message)}};
+deleteSet.onclick=async()=>{
+    const item=libraryItems.find(item=>item.id===savedSets.value);
+    if(!item||!confirm('Delete "'+item.name+'" (saved '+savedDate(item)+') from the configuration library?'))return;
+    deleteSet.disabled=true;
+    try{
+        await libraryRequest('/delete',{id:item.id,revision:item.revision});
+        await refreshLibrary();
+        status('Deleted '+item.name+' from the watershed configuration library.');
+    }catch(e){
+        status('Delete failed: '+e.message);
+        alert(e.message);
+        await refreshLibrary().catch(()=>{});
+    }finally{
+        updateLibraryButtons();
+    }
+};
+refreshLibrary().catch(e=>status('Library unavailable: '+e.message));
 </script>""".replace('TOKEN',json.dumps(token))
     page=page.replace('</html>',library_bridge+'</html>')
     close_bridge="""<script>const closeEditor=document.createElement('button');closeEditor.textContent='Close Editor';document.querySelector('.toolbar').append(closeEditor);closeEditor.onclick=async()=>{await fetch('/close',{method:'POST',headers:{'X-Editor-Token':TOKEN}});document.body.textContent='Editor closed. You can close this browser tab.'};</script>""".replace('TOKEN',json.dumps(token))
@@ -530,22 +650,23 @@ importPreset.onclick=async()=>{try{const jobSettings=config.standalone_workflow;
             if self.path=='/close' and self.headers.get('X-Editor-Token')==token:
                 self.send_response(200);self.end_headers();self.wfile.write(b'closed')
                 threading.Thread(target=server.shutdown,daemon=True).start();return
-            if self.path not in ('/apply','/save','/load','/library','/legacy') or (self.path=='/apply' and not root) or self.headers.get('X-Editor-Token')!=token:
+            if self.path not in ('/apply','/save','/load','/delete','/library','/legacy') or (self.path=='/apply' and not root) or self.headers.get('X-Editor-Token')!=token:
                 self.send_error(403);return
             try:
                 length=int(self.headers.get('Content-Length','0'))
                 if not 0 < length < 8*1024*1024: raise ValueError('Invalid configuration size')
                 payload=json.loads(self.rfile.read(length))
                 if self.path=='/apply': result=apply_configuration(root,context,payload,scripts)
-                elif self.path=='/save': result=save_library_configuration(scripts,payload)
+                elif self.path=='/save': result=save_library_configuration(scripts,payload['configuration'],payload.get('overwrite'))
+                elif self.path=='/delete': result=delete_library_configuration(scripts,payload['id'],payload['revision'])
                 elif self.path=='/library': result=list_library_configurations(scripts)
                 elif self.path=='/legacy' and standalone:
                     from standalone_configuration import import_legacy
                     result=import_legacy(root,scripts,payload['alternative'])
+                elif self.path=='/load':
+                    result=json.loads(library_configuration_path(scripts,payload['id']).read_text(encoding='utf-8'))
                 else:
-                    identity=payload.get('id','')
-                    if not re.fullmatch('[a-f0-9]{32}',identity): raise ValueError('Invalid saved configuration identifier')
-                    result=json.loads((configuration_library(scripts)/(identity+'.json')).read_text())
+                    raise ValueError('Unsupported editor action')
                 if standalone and self.path in ('/load','/legacy'):
                     result.setdefault('standalone_workflow',copy.deepcopy(config['standalone_workflow']))
                     from standalone_jobs import include
