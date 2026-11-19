@@ -51,10 +51,11 @@ def refresh_launcher_helpers(current, reference):
     names = PREVIOUS_LAUNCHER_FUNCTIONS
     latest = {node.name: ast.get_source_segment(reference, node)
               for node in ast.parse(reference).body if isinstance(node, ast.FunctionDef) and node.name in names}
-    for node in ast.parse(current).body:
+    original = current
+    for node in ast.parse(original).body:
         if not isinstance(node, ast.FunctionDef) or node.name not in names:
             continue
-        old = ast.get_source_segment(current, node)
+        old = ast.get_source_segment(original, node)
         if old != latest[node.name]:
             if hashlib.sha256(old.encode()).hexdigest() != names[node.name]:
                 print('Launcher helper left in place because it was independently edited: ' + node.name)
