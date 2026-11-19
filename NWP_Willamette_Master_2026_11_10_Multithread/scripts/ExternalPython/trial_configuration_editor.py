@@ -12,11 +12,26 @@ _LOCK = Lock()
 
 def targets(scripts):
     rss = scripts.parent.parent/'rss'
-    return {
-        folder.name: sorted(path.stem for path in (folder/'rss').glob('*.rssrun')
-                            if re.fullmatch(r'[A-Za-z0-9_.-]+-\d+', path.stem))
-        for folder in sorted(rss.iterdir()) if (folder/'rss').is_dir()
-    }
+    return {folder.name: {
+        path.stem: saved_alternative(folder, path)
+        for path in sorted((folder/'rss').glob('*.rssrun'))
+        if re.fullmatch(r'[A-Za-z0-9_.-]+-\d+', path.stem)
+    } for folder in sorted(rss.iterdir()) if (folder/'rss').is_dir()}
+
+
+def saved_alternative(root, run_file):
+    if not run_file.is_file():
+        return None
+    text = run_file.read_text(encoding='utf-8-sig', errors='replace')
+    match = re.search(r'^\s*FLD=_altPath[ \t]*\n[ \t]*STR=([^\n]+)', text, re.MULTILINE)
+    if match:
+        alternative = root/match[1].strip().replace('\\', '/')
+        if alternative.is_file():
+            text = alternative.read_text(encoding='utf-8-sig', errors='replace')
+            match = re.search(r'^RssAlt Name=([^\n]+)', text, re.MULTILINE)
+            if match:
+                return match[1].strip().rsplit(':', 1)[-1]
+    return None
 
 
 def handle(route, scripts, payload):
@@ -32,6 +47,9 @@ def handle(route, scripts, payload):
             context(watershed, alternative, simulation, 'por')
             if '=' in alternative:
                 raise ValueError('An alternative name cannot contain an equals sign.')
+            known = saved_alternative(root, root/'rss'/f'{fpart}.rssrun')
+            if known and known != alternative:
+                raise ValueError(f'{fpart} belongs to model alternative {known}.')
             saved = payload.get('saved_id')
             if 'draft' in payload:
                 saved = trial_configs.editor.save_library_configuration(scripts, payload['draft'])['id']
@@ -48,10 +66,13 @@ def handle(route, scripts, payload):
 def add_panel(page, scripts, editor_context):
     simulations = targets(scripts)
     current = editor_context['run_name'].replace(' ', '_')
-    simulations.setdefault(current, [])
-    alternatives = sorted(path.stem for path in (scripts.parent.parent/'rss').glob('*.ralt'))
-    data = json.dumps(dict(simulations=simulations, current=current, alternatives=alternatives,
-                           alternative=editor_context['model_alternative'])).replace('</', '<\\/')
+    simulations.setdefault(current, {})
+    alternative = editor_context['model_alternative']
+    alternatives = {path.stem for path in (scripts.parent.parent/'rss').glob('*.ralt')}
+    alternatives.update(name for trials in simulations.values() for name in trials.values() if name)
+    alternatives.add(alternative)
+    data = json.dumps(dict(simulations=simulations, current=current, alternatives=sorted(alternatives),
+                           alternative=alternative)).replace('</', '<\\/')
     return page.replace('</html>', PANEL.replace('__TRIAL_DATA__', data) + '</html>')
 
 
@@ -67,33 +88,41 @@ PANEL = """<script>
     const queue = node('ul');
     const message = node('p');
     message.setAttribute('role', 'status');
-    const simulation = node('select'), alternative = node('input'), fpart = node('input'), versions = node('select');
+    const simulation = node('select'), alternative = node('select'), fpart = node('input'), versions = node('select');
+    const targetText = node('p');
+    const targetOptions = node('details');
+    targetOptions.append(node('summary', 'Change simulation or alternative'));
     const parts = node('datalist');
     parts.id = 'trial-configuration-fparts';
     fpart.setAttribute('list', parts.id);
-    const alternatives = node('datalist');
-    alternatives.id = 'trial-model-alternatives';
-    alternative.setAttribute('list', alternatives.id);
     function option(value, text) {
         const item = node('option', text || value);
         item.value = value;
         return item;
     }
     for (const name of Object.keys(data.simulations)) simulation.append(option(name));
-    for (const name of data.alternatives) alternatives.append(option(name));
+    alternative.append(option('', 'Choose a model alternative'));
+    for (const name of data.alternatives) alternative.append(option(name));
     simulation.value = data.current;
     alternative.value = data.alternative;
-    for (const [title, field] of [['Simulation', simulation], ['Model alternative', alternative],
-                                  ['Full DSS F-part', fpart], ['Saved configuration', versions]]) {
+    for (const [title, field, parent] of [['Simulation', simulation, targetOptions],
+            ['Model alternative', alternative, targetOptions],
+            ['Full DSS F-part', fpart, form], ['Saved configuration', versions, form]]) {
         const label = node('label', title + ' ');
         label.append(field);
-        form.append(label);
+        parent.append(label);
     }
     const useSaved = node('button', 'Assign saved configuration');
     const useDraft = node('button', 'Save editor settings and assign');
     form.append(useSaved, useDraft);
-    panel.append(parts, alternatives, form, message, queue);
+    panel.append(parts, targetText, targetOptions, form, message, queue);
     document.querySelector('.toolbar').after(panel);
+
+    function showTarget() {
+        targetText.textContent = 'Assignment target: ' + simulation.value + ' / '
+            + (alternative.value || 'Choose a model alternative');
+    }
+    showTarget();
 
     function showQueue(result) {
         queue.replaceChildren();
@@ -105,7 +134,7 @@ PANEL = """<script>
 
     async function refreshTarget() {
         const target = simulation.value;
-        parts.replaceChildren(...data.simulations[target].map(part => option(part)));
+        parts.replaceChildren(...Object.keys(data.simulations[target]).map(part => option(part)));
         fpart.value = '';
         queue.replaceChildren();
         const result = await libraryRequest('/trial-config-list', {simulation: target});
@@ -122,7 +151,17 @@ PANEL = """<script>
     }
 
     function reportError(error) { message.textContent = error.message; }
-    simulation.onchange = () => refreshTarget().catch(reportError);
+    simulation.onchange = () => {
+        alternative.value = simulation.value === data.current ? data.alternative : '';
+        showTarget();
+        refreshTarget().catch(reportError);
+    };
+    alternative.onchange = showTarget;
+    fpart.oninput = () => {
+        const known = data.simulations[simulation.value][fpart.value.trim()];
+        if (known) alternative.value = known;
+        showTarget();
+    };
     panel.ontoggle = () => {
         if (panel.open) {
             refreshTarget().catch(reportError);

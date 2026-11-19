@@ -18,6 +18,22 @@ if script_root not in sys.path:
 from workflow_python import python_executable
 python = python_executable()
 
+def active_target():
+    from java.lang import Exception as JavaException
+    try:
+        module = ClientAppWrapper.getCurrentModule()
+        if module is None or str(module.getName()) != 'Simulation':
+            return None
+        simulation = module.getSimulation()
+        if simulation is None:
+            return None
+        runs = [run for run in module.getSimulationRuns() if run.isActiveRun()]
+        if len(runs) == 1 and runs[0].getUserName():
+            return str(simulation.getName()).replace(' ', '_'), str(runs[0].getUserName())
+    except (AttributeError, TypeError, JavaException):
+        return None
+    return None
+
 class Call(Runnable):
     def __init__(self, fn): self.fn = fn
     def run(self): self.fn()
@@ -46,6 +62,15 @@ class Menu:
         buttons.add(JLabel('Baseline target alternative (as shown in ResSim)'))
         self.alternative = JTextField('')
         buttons.add(self.alternative)
+        target = active_target()
+        if target:
+            simulation, alternative = target
+            for i in range(1, self.simulation.getItemCount()):
+                name = str(self.simulation.getItemAt(i)).replace(' ', '_')
+                if name.lower() == simulation.lower():
+                    self.simulation.setSelectedIndex(i)
+                    self.alternative.setText(alternative)
+                    break
         buttons.add(JLabel('Simulation type'))
         self.run_type = JComboBox()
         self.run_type.addItem('Ensemble')
