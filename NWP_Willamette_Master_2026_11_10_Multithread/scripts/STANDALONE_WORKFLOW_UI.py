@@ -38,9 +38,11 @@ def live_trial_inventory(simulation_name):
                     trials[part] = alternative
 
         for run in module.getSimulationRuns():
-            alternative = str(run.getUserName())
-            if not alternative:
+            parent = getattr(run, 'getRunParent', None)
+            model_run = parent() if parent is not None else run
+            if model_run is None or not model_run.getUserName():
                 continue
+            alternative = str(model_run.getUserName())
             remember(run.getKey(), alternative)
             for item in run.getAltItems('rss') or []:
                 for key in run.getTrialKeys(item.getModelPosition()) or []:
@@ -63,8 +65,12 @@ def active_target():
         if simulation is None:
             return None
         runs = [run for run in module.getSimulationRuns() if run.isActiveRun()]
-        if len(runs) == 1 and runs[0].getUserName():
-            return str(simulation.getName()).replace(' ', '_'), str(runs[0].getUserName())
+        if len(runs) == 1:
+            run = runs[0]
+            parent = getattr(run, 'getRunParent', None)
+            model_run = parent() if parent is not None else run
+            if model_run is not None and model_run.getUserName():
+                return str(simulation.getName()).replace(' ', '_'), str(model_run.getUserName())
     except (AttributeError, TypeError, JavaException):
         return None
     return None
@@ -94,7 +100,7 @@ class Menu:
                 if os.path.isdir(os.path.join(rss, name)):
                     self.simulation.addItem(name)
         buttons.add(self.simulation)
-        buttons.add(JLabel('Baseline target alternative (as shown in ResSim)'))
+        buttons.add(JLabel('Baseline target model alternative (parent of trial)'))
         self.alternative = JTextField('')
         buttons.add(self.alternative)
         target = active_target()

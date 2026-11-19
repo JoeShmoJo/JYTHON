@@ -8,6 +8,10 @@ import tempfile
 PREVIOUS_HELPER_SHA256 = '0ee9811eb49764d1059996e655af6dff8f89a2176492dfb28608416eb2235474'
 PREVIOUS_PANEL_SHA256 = '9f612700852bf5e10a35259ac746c58446296d8ba59fc421c75f98594b8975a5'
 PREFILL_PANEL_SHA256 = '275b4de5424d4a292bed45a7390d231532996b8af635c0ba052c7e94729f1916'
+PREVIOUS_LAUNCHER_FUNCTIONS = {
+    'live_trial_inventory': '533d815afcb07c5438d9778e70c9fd7c86b6c303a4a08057e8cea4efe57f5731',
+    'active_target': 'd0ee11793ef962deb085d622edb0beb6ffaeeb96c7c56f8a439b3873e046f19d',
+}
 RUNTIME_OLD = """        if os.path.isfile(marker):
             pointer = read_json(marker)
             if pointer.get('model_alternative') != str(network.getAlternative().getName()).split(':')[-1]:
@@ -41,6 +45,23 @@ def replace_once(text, old, new):
     if text.count(old) != 1:
         raise ValueError(f'Unexpected installed source near {old.splitlines()[0]!r}. No files were written.')
     return text.replace(old, new)
+
+
+def refresh_launcher_helpers(current, reference):
+    names = PREVIOUS_LAUNCHER_FUNCTIONS
+    latest = {node.name: ast.get_source_segment(reference, node)
+              for node in ast.parse(reference).body if isinstance(node, ast.FunctionDef) and node.name in names}
+    for node in ast.parse(current).body:
+        if not isinstance(node, ast.FunctionDef) or node.name not in names:
+            continue
+        old = ast.get_source_segment(current, node)
+        if old != latest[node.name]:
+            if hashlib.sha256(old.encode()).hexdigest() != names[node.name]:
+                print('Launcher helper left in place because it was independently edited: ' + node.name)
+                continue
+            current = replace_once(current, old, latest[node.name])
+    return current.replace('Baseline target alternative (as shown in ResSim)',
+                           'Baseline target model alternative (parent of trial)')
 
 
 def install(watershed):
@@ -116,6 +137,9 @@ def install(watershed):
                     print('Live trial discovery skipped because the native launcher has a different process setup.')
             else:
                 print('Live trial discovery skipped because the native launcher has a different layout.')
+        refreshed = refresh_launcher_helpers(files.get(launcher, original), reference)
+        if refreshed != original:
+            files[launcher] = refreshed
 
     for target, text in files.items():
         ast.parse(text, filename=str(target))
