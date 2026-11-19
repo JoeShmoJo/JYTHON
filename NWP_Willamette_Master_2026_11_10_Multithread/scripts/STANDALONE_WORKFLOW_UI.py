@@ -203,16 +203,24 @@ class Menu:
         target = (simulation, alternative, run_type)
         if self.editor_running():
             if target != self.editor_target:
-                self.message('The baseline editor is open for a different target. Save your edits and close it before switching targets.')
-                return
+                labels = {'por': 'Single POR', 'ensemble': 'Ensemble'}
+                current_label = ' / '.join(self.editor_target[:2] + (labels[self.editor_target[2]],))
+                selected_label = ' / '.join(target[:2] + (labels[target[2]],))
+                if JOptionPane.showConfirmDialog(
+                        self.frame, 'Open editor: ' + current_label + '\nSelected: ' + selected_label
+                        + '\n\nReopen or refresh the current editor? To switch targets, save your edits and use Close Editor.',
+                        'Baseline Configuration', JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION:
+                    return
+                simulation = self.editor_target[0]
             inventory = live_trial_inventory(simulation) or {}
             refresh = json.dumps(inventory) + '\n'
+            from java.lang import Exception as JavaException
             try:
                 stream = OutputStreamWriter(self.editor_process.getOutputStream(), 'US-ASCII')
                 stream.write(refresh)
                 stream.flush()
-                self.message('Refreshed the existing baseline editor. Return to its browser tab.')
-            except Exception:
+                self.message('Requested the baseline editor. It refreshes its open tab or reopens a closed tab.')
+            except (Exception, JavaException):
                 self.message('The baseline editor could not be refreshed. Close it and reopen it. Log: ' + self.log)
             return
         filename = os.path.join(scripts, 'standalone_configuration.py')
@@ -412,7 +420,7 @@ def show_workflow():
             pane = frame.getRootPane()
             if pane.getClientProperty('willamette.standalone.watershed') == root:
                 menu = pane.getClientProperty('willamette.standalone.menu')
-                if not menu.busy:
+                if not menu.busy and not menu.editor_running():
                     menu.refresh_active_target()
                 frame.setVisible(True)
                 frame.setState(Frame.NORMAL)

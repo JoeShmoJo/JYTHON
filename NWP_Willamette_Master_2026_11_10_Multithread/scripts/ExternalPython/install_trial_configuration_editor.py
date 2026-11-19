@@ -78,20 +78,42 @@ def reference_section(text, start, end):
 
 def install_editor_refresh(current, reference):
     if '    refresh_enabled = standalone and ' in current:
-        return current
+        if "'/tab-closed'" in current:
+            return current
+        # Upgrade only the previous installer-owned refresh code.
+        for start, end in (
+                ('    refresh_enabled = standalone and ', '    trial_editor = None'),
+                ("            if refresh_enabled and self.path == '/editor-refresh'", '            if self.path not in ('),
+                ('    if refresh_enabled:\n        def receive_refreshes():', '\n    webbrowser.open(url)')):
+            updated_start = start
+            if start.startswith('            if refresh_enabled'):
+                updated_start = "            if refresh_enabled and self.path in ('/' + token + '/tab-closed'"
+            current = replace_once(current, reference_section(current, start, end),
+                                   reference_section(reference, updated_start, end))
+        anchor = "            self.send_response(200);self.send_header('Content-Type','text/html; charset=utf-8')"
+        return replace_once(current, anchor, '            tab_open.set()\n            tab_closed.clear()\n' + anchor)
     if 'import os\n' not in current:
         current = replace_once(current, 'import math\n', 'import math\nimport os\n')
     for start, anchor in (
             ('    refresh_enabled = standalone and ', '    trial_editor = None'),
             ("            if refresh_enabled and self.path == '/editor-refresh'", '            if self.path not in ('),
-            ('    if refresh_enabled:\n        def receive_refreshes():', '    webbrowser.open(url)')):
-        current = replace_once(current, anchor, reference_section(reference, start, anchor) + anchor)
-    return current
+            ('    if refresh_enabled:\n        def receive_refreshes():', '\n    webbrowser.open(url)')):
+        current = replace_once(current, anchor, ("\n" if anchor.startswith("\n") else "") + reference_section(reference, start, anchor) + anchor)
+    anchor = "            self.send_response(200);self.send_header('Content-Type','text/html; charset=utf-8')"
+    return replace_once(current, anchor, '            tab_open.set()\n            tab_closed.clear()\n' + anchor)
 
 
 def install_single_workflow(current, reference):
     if 'def show_workflow():' in current:
-        return current
+        if 'Requested the baseline editor.' in current:
+            return current
+        old = reference_section(current, '    def open_baseline(self):', '    def open_results(')
+        if hashlib.sha256(old.strip().encode()).hexdigest() != '6e75a4d92a340bcf55ee8c7fcb9fabd2481d63d9fafde24f01929394ddb77764':
+            raise ValueError('The installed Baseline Configuration launcher was independently edited. No files were written.')
+        current = replace_once(current, old, reference_section(
+            reference, '    def open_baseline(self):', '    def open_results('))
+        return replace_once(current, '                if not menu.busy:',
+                            '                if not menu.busy and not menu.editor_running():')
     current = replace_once(current, 'from java.awt import GridLayout, BorderLayout',
                            'from java.awt import Frame, GridLayout, BorderLayout')
     current = replace_once(current, 'from java.io import File\n',

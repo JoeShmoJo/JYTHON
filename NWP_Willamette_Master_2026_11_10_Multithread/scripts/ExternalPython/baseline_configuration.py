@@ -524,8 +524,16 @@ importPreset.onclick=async()=>{try{const jobSettings=config.standalone_workflow;
         page=page.replace('</html>',legacy_bridge+'</html>')
     refresh_enabled = standalone and os.environ.get('WILLAMETTE_EDITOR_REFRESH') == '1'
     refresh_state = {'revision': 0, 'inventory': {}}
+    tab_open = threading.Event()
+    tab_closed = threading.Event()
     if refresh_enabled:
         refresh_bridge = """<script>
+window.addEventListener('pagehide', () => {
+    navigator.sendBeacon(location.pathname + '/tab-closed');
+});
+window.addEventListener('pageshow', event => {
+    if (event.persisted) navigator.sendBeacon(location.pathname + '/tab-open');
+});
 let editorRevision = 0;
 let checkingEditorRefresh = false;
 setInterval(async () => {
@@ -556,11 +564,22 @@ setInterval(async () => {
         def log_message(self,*args): pass
         def do_GET(self):
             if self.path != '/'+token: self.send_error(404);return
+            tab_open.set()
+            tab_closed.clear()
             self.send_response(200);self.send_header('Content-Type','text/html; charset=utf-8');self.end_headers();self.wfile.write(page.encode('utf-8'))
         def do_POST(self):
             if self.path=='/close' and self.headers.get('X-Editor-Token')==token:
                 self.send_response(200);self.end_headers();self.wfile.write(b'closed')
                 threading.Thread(target=server.shutdown,daemon=True).start();return
+            if refresh_enabled and self.path in ('/' + token + '/tab-closed', '/' + token + '/tab-open'):
+                if self.path.endswith('/tab-closed'):
+                    tab_closed.set()
+                else:
+                    tab_open.set()
+                    tab_closed.clear()
+                self.send_response(204)
+                self.end_headers()
+                return
             if refresh_enabled and self.path == '/editor-refresh' and self.headers.get('X-Editor-Token') == token:
                 self.send_response(200)
                 self.send_header('Content-Type', 'application/json')
@@ -608,7 +627,15 @@ setInterval(async () => {
                 except ValueError:
                     continue
                 refresh_state = {'revision': refresh_state['revision'] + 1, 'inventory': inventory}
+                # Allow a tab-close beacon already in flight to reach the server.
+                if tab_open.is_set() and tab_closed.wait(0.5):
+                    tab_open.clear()
+                    tab_closed.clear()
+                    tab_open.set()
+                    if not webbrowser.open(url):
+                        tab_closed.set()
 
+        tab_open.set()
         threading.Thread(target=receive_refreshes, daemon=True).start()
     webbrowser.open(url)
     try: server.serve_forever()
