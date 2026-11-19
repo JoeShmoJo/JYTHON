@@ -3,9 +3,9 @@ import os
 import sys
 import json
 from java.lang import Thread, Runnable, System, ProcessBuilder
-from java.io import File
+from java.io import File, OutputStreamWriter
 from java.util import ArrayList
-from java.awt import GridLayout, BorderLayout
+from java.awt import Frame, GridLayout, BorderLayout
 from javax.swing import (JFrame, JPanel, JButton, JTextArea, JScrollPane,
                          JOptionPane, SwingUtilities, WindowConstants, JLabel, JTextField, JComboBox)
 from hec.script import ClientAppWrapper
@@ -102,7 +102,11 @@ class Menu:
         self.busy = False
         self.log = None
         self.frame = JFrame('Standalone ResSim workflow')
-        self.frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE)
+        self.frame.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE)
+        self.frame.getRootPane().putClientProperty('willamette.standalone.watershed', root)
+        self.frame.getRootPane().putClientProperty('willamette.standalone.menu', self)
+        self.editor_process = None
+        self.editor_target = None
         self.text = JTextArea(5, 90)
         self.text.setEditable(False)
         self.text.setLineWrap(True)
@@ -121,21 +125,14 @@ class Menu:
         buttons.add(JLabel('Baseline target model alternative (parent of trial)'))
         self.alternative = JTextField('')
         buttons.add(self.alternative)
-        target = active_target()
-        if target:
-            simulation, alternative = target
-            for i in range(1, self.simulation.getItemCount()):
-                name = str(self.simulation.getItemAt(i)).replace(' ', '_')
-                if name.lower() == simulation.lower():
-                    self.simulation.setSelectedIndex(i)
-                    self.alternative.setText(alternative)
-                    break
+        self.refresh_active_target()
         buttons.add(JLabel('Simulation type'))
         self.run_type = JComboBox()
         self.run_type.addItem('Ensemble')
         self.run_type.addItem('Single POR')
         buttons.add(self.run_type)
         buttons.add(JButton('Baseline Configuration', actionPerformed=lambda e: self.open_baseline()))
+        buttons.add(JButton('Close Baseline Editor', actionPerformed=lambda e: self.close_baseline()))
         jobs = [('Extract ensemble inputs', 'extract'),
                 ('Extract archived ensemble inputs', 'archive-extract')]
         self.ensemble_buttons = []
@@ -155,6 +152,16 @@ class Menu:
         self.frame.pack()
         self.frame.setLocationRelativeTo(None)
         self.frame.setVisible(True)
+    def refresh_active_target(self):
+        target = active_target()
+        if target:
+            simulation, alternative = target
+            for i in range(1, self.simulation.getItemCount()):
+                name = str(self.simulation.getItemAt(i)).replace(' ', '_')
+                if name.lower() == simulation.lower():
+                    self.simulation.setSelectedIndex(i)
+                    self.alternative.setText(alternative)
+                    break
     def archive_context(self):
         if self.simulation.getSelectedIndex()==0 or not str(self.alternative.getText()).strip():
             raise RuntimeError('Select a simulation and alternative first.')
@@ -167,12 +174,46 @@ class Menu:
             button.setEnabled(self.run_type.getSelectedIndex() == 0)
     def message(self, value):
         SwingUtilities.invokeLater(Call(lambda: self.text.append(value + '\n')))
+    def editor_running(self):
+        if self.editor_process is None:
+            return False
+        from java.lang import IllegalThreadStateException
+        try:
+            self.editor_process.exitValue()
+        except IllegalThreadStateException:
+            return True
+        self.editor_process = None
+        return False
+
+    def close_baseline(self):
+        if self.editor_running() and JOptionPane.showConfirmDialog(
+                self.frame, 'Close the baseline editor and discard unsaved edits?',
+                'Close Baseline Editor', JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION:
+            self.editor_process.destroy()
+            self.message('Closing the baseline editor. You can close its browser tab.')
+
     def open_baseline(self):
         if self.busy: return
         simulation = str(self.simulation.getSelectedItem())
         alternative = str(self.alternative.getText()).strip()
         if self.simulation.getSelectedIndex() == 0 or not alternative:
             JOptionPane.showMessageDialog(self.frame, 'Select the simulation and enter the alternative shown in ResSim Simulation Control.')
+            return
+        run_type = 'por' if self.run_type.getSelectedIndex() == 1 else 'ensemble'
+        target = (simulation, alternative, run_type)
+        if self.editor_running():
+            if target != self.editor_target:
+                self.message('The baseline editor is open for a different target. Save your edits and close it before switching targets.')
+                return
+            inventory = live_trial_inventory(simulation) or {}
+            refresh = json.dumps(inventory) + '\n'
+            try:
+                stream = OutputStreamWriter(self.editor_process.getOutputStream(), 'US-ASCII')
+                stream.write(refresh)
+                stream.flush()
+                self.message('Refreshed the existing baseline editor. Return to its browser tab.')
+            except Exception:
+                self.message('The baseline editor could not be refreshed. Close it and reopen it. Log: ' + self.log)
             return
         filename = os.path.join(scripts, 'standalone_configuration.py')
         if not os.path.isfile(filename):
@@ -184,15 +225,17 @@ class Menu:
         if not os.path.isdir(directory): os.makedirs(directory)
         self.log = os.path.join(directory, 'configuration-' + str(System.currentTimeMillis()) + '.log')
         command = ArrayList()
-        for arg in [python, '-u', filename, '--watershed', root, '--simulation', simulation, '--alternative', alternative, '--run-type', 'por' if self.run_type.getSelectedIndex() == 1 else 'ensemble']: command.add(arg)
+        for arg in [python, '-u', filename, '--watershed', root, '--simulation', simulation, '--alternative', alternative, '--run-type', run_type]: command.add(arg)
         builder = ProcessBuilder(command)
+        builder.environment().put('WILLAMETTE_EDITOR_REFRESH', '1')
         inventory = live_trial_inventory(simulation)
         if inventory is not None:
             builder.environment().put('WILLAMETTE_POR_LIVE_TRIALS', json.dumps(inventory))
         builder.directory(File(scripts))
         builder.redirectErrorStream(True)
         builder.redirectOutput(File(self.log))
-        builder.start()
+        self.editor_process = builder.start()
+        self.editor_target = target
         self.message('Configuration editor starting. Browser opens after settings load. Log: ' + self.log)
     def open_results(self, model_check=False):
         if self.busy: return
@@ -363,4 +406,19 @@ class Menu:
         finally:
             self.busy = False
 
-SwingUtilities.invokeLater(Call(Menu))
+def show_workflow():
+    for frame in Frame.getFrames():
+        if isinstance(frame, JFrame):
+            pane = frame.getRootPane()
+            if pane.getClientProperty('willamette.standalone.watershed') == root:
+                menu = pane.getClientProperty('willamette.standalone.menu')
+                if not menu.busy:
+                    menu.refresh_active_target()
+                frame.setVisible(True)
+                frame.setState(Frame.NORMAL)
+                frame.toFront()
+                return
+    Menu()
+
+
+SwingUtilities.invokeLater(Call(show_workflow))

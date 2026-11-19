@@ -6,6 +6,7 @@ from datetime import date
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
 import re
 import shutil
@@ -521,6 +522,32 @@ for(const name of LEGACY){const option=document.createElement('option');option.v
 importPreset.onclick=async()=>{try{const jobSettings=config.standalone_workflow;config=await libraryRequest('/legacy',{alternative:presets.value});if(jobSettings)config.standalone_workflow=jobSettings;selected='overview';render();status('Imported baseline rule settings only. Save and Apply separately; operation sets and augmentation mappings are unchanged.')}catch(e){alert(e.message)}};
 </script>""".replace('LEGACY',json.dumps(sorted(path.stem for path in (scripts.parent/'alt_config').glob('*.txt') if path.stem!='_default')))
         page=page.replace('</html>',legacy_bridge+'</html>')
+    refresh_enabled = standalone and os.environ.get('WILLAMETTE_EDITOR_REFRESH') == '1'
+    refresh_state = {'revision': 0, 'inventory': {}}
+    if refresh_enabled:
+        refresh_bridge = """<script>
+let editorRevision = 0;
+let checkingEditorRefresh = false;
+setInterval(async () => {
+    if (checkingEditorRefresh || !closeEditor.isConnected) return;
+    checkingEditorRefresh = true;
+    try {
+        const update = await libraryRequest('/editor-refresh', {});
+        if (update.revision !== editorRevision) {
+            await refreshLibrary(savedSets.value);
+            window.dispatchEvent(new CustomEvent('standalone-editor-refresh', {detail: update.inventory}));
+            editorRevision = update.revision;
+            status('Saved configurations and trial information refreshed.');
+        }
+    } catch (error) {
+        status('Editor refresh unavailable: ' + error.message);
+    } finally {
+        checkingEditorRefresh = false;
+    }
+}, 2000);
+</script>"""
+        page = page.replace('</html>', refresh_bridge + '</html>')
+
     trial_editor = None
     if standalone and context.get('run_type') == 'por':
         import trial_configuration_editor as trial_editor
@@ -534,6 +561,12 @@ importPreset.onclick=async()=>{try{const jobSettings=config.standalone_workflow;
             if self.path=='/close' and self.headers.get('X-Editor-Token')==token:
                 self.send_response(200);self.end_headers();self.wfile.write(b'closed')
                 threading.Thread(target=server.shutdown,daemon=True).start();return
+            if refresh_enabled and self.path == '/editor-refresh' and self.headers.get('X-Editor-Token') == token:
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps(refresh_state).encode())
+                return
             if self.path not in ('/trial-config-list','/trial-config-assign','/apply','/save','/load','/library','/legacy') or (self.path=='/apply' and not root) or self.headers.get('X-Editor-Token')!=token:
                 self.send_error(403);return
             try:
@@ -563,6 +596,20 @@ importPreset.onclick=async()=>{try{const jobSettings=config.standalone_workflow;
     server=ThreadingHTTPServer(('127.0.0.1',0),Handler)
     url='http://127.0.0.1:'+str(server.server_port)+'/'+token
     print('Baseline editor opened. Use Close Editor when finished.',flush=True)
+    if refresh_enabled:
+        def receive_refreshes():
+            nonlocal refresh_state
+            import sys
+            for line in sys.stdin:
+                try:
+                    inventory = json.loads(line)
+                    if not isinstance(inventory, dict):
+                        continue
+                except ValueError:
+                    continue
+                refresh_state = {'revision': refresh_state['revision'] + 1, 'inventory': inventory}
+
+        threading.Thread(target=receive_refreshes, daemon=True).start()
     webbrowser.open(url)
     try: server.serve_forever()
     finally: server.server_close()

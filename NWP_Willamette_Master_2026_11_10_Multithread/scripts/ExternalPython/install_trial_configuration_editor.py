@@ -9,6 +9,8 @@ PREVIOUS_HELPER_SHA256 = '0ee9811eb49764d1059996e655af6dff8f89a2176492dfb2860841
 PREVIOUS_PANEL_SHA256 = '9f612700852bf5e10a35259ac746c58446296d8ba59fc421c75f98594b8975a5'
 PREFILL_PANEL_SHA256 = '275b4de5424d4a292bed45a7390d231532996b8af635c0ba052c7e94729f1916'
 LIVE_TRIAL_PANEL_SHA256 = 'ea26ecfb918d2c9113afadda6b1ad66373a686727adcad3117286877a9590bec'
+REFRESH_PANEL_SHA256 = 'b0c0e61bf34c278393738afa6175a4a067bb5a68d3f6cce69beb3762aee2fd81'
+PREVIOUS_OPEN_BASELINE_SHA256 = 'ee543af0719a2aabc5749aacb41c18a237e7c2ba2a3524ff83ed6421c2c105d7'
 PREVIOUS_LAUNCHER_FUNCTIONS = {
     'live_trial_inventory': '533d815afcb07c5438d9778e70c9fd7c86b6c303a4a08057e8cea4efe57f5731',
     'active_target': 'd0ee11793ef962deb085d622edb0beb6ffaeeb96c7c56f8a439b3873e046f19d',
@@ -69,6 +71,49 @@ def refresh_launcher_helpers(current, reference):
                            'Baseline target model alternative (parent of trial)')
 
 
+def reference_section(text, start, end):
+    offset = text.index(start)
+    return text[offset:text.index(end, offset + len(start))]
+
+
+def install_editor_refresh(current, reference):
+    if '    refresh_enabled = standalone and ' in current:
+        return current
+    if 'import os\n' not in current:
+        current = replace_once(current, 'import math\n', 'import math\nimport os\n')
+    for start, anchor in (
+            ('    refresh_enabled = standalone and ', '    trial_editor = None'),
+            ("            if refresh_enabled and self.path == '/editor-refresh'", '            if self.path not in ('),
+            ('    if refresh_enabled:\n        def receive_refreshes():', '    webbrowser.open(url)')):
+        current = replace_once(current, anchor, reference_section(reference, start, anchor) + anchor)
+    return current
+
+
+def install_single_workflow(current, reference):
+    if 'def show_workflow():' in current:
+        return current
+    current = replace_once(current, 'from java.awt import GridLayout, BorderLayout',
+                           'from java.awt import Frame, GridLayout, BorderLayout')
+    current = replace_once(current, 'from java.io import File\n',
+                           'from java.io import File, OutputStreamWriter\n')
+    current = replace_once(current, '        self.frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE)\n',
+        reference_section(reference, '        self.frame.setDefaultCloseOperation(', '        self.text = '))
+    prefill = reference_section(reference, '    def refresh_active_target(self):\n', '    def archive_context(self):')
+    current = replace_once(current, prefill.split('\n', 1)[1], '        self.refresh_active_target()\n')
+    current = replace_once(current, '    def archive_context(self):', prefill + '    def archive_context(self):')
+    close_button = reference_section(reference, "        buttons.add(JButton('Close Baseline Editor'", '        jobs = ')
+    current = replace_once(current, "        jobs = [('Extract ensemble inputs'", close_button + "        jobs = [('Extract ensemble inputs'")
+    menu = next(node for node in ast.parse(current).body if isinstance(node, ast.ClassDef) and node.name == 'Menu')
+    method = next(node for node in menu.body if isinstance(node, ast.FunctionDef) and node.name == 'open_baseline')
+    old = ast.get_source_segment(current, method)
+    if hashlib.sha256(old.encode()).hexdigest() != PREVIOUS_OPEN_BASELINE_SHA256:
+        raise ValueError('The installed Baseline Configuration launcher was independently edited. No files were written.')
+    current = replace_once(current, '    ' + old + '\n',
+        reference_section(reference, '    def editor_running(self):', '    def open_results('))
+    return replace_once(current, 'SwingUtilities.invokeLater(Call(Menu))',
+                        reference[reference.index('def show_workflow():'):].rstrip())
+
+
 def install(watershed):
     scripts = watershed/'scripts'
     backend = scripts/'ExternalPython'
@@ -91,6 +136,8 @@ def install(watershed):
     elif not all(has_hooks):
         raise ValueError('Editor trial hooks are partially installed. No files were written.')
 
+    editor_code = install_editor_refresh(editor_code, (sources/editor.name).read_text(encoding='utf-8-sig'))
+
     files = {}
     for name in ('assign_trial_configurations.py', 'trial_configuration_editor.py'):
         target = backend/name
@@ -100,7 +147,7 @@ def install(watershed):
             if old == new:
                 continue
             expected = ({PREVIOUS_HELPER_SHA256} if name == 'assign_trial_configurations.py'
-                        else {PREVIOUS_PANEL_SHA256, PREFILL_PANEL_SHA256, LIVE_TRIAL_PANEL_SHA256})
+                        else {PREVIOUS_PANEL_SHA256, PREFILL_PANEL_SHA256, LIVE_TRIAL_PANEL_SHA256, REFRESH_PANEL_SHA256})
             if hashlib.sha256(old.encode()).hexdigest() not in expected:
                 raise ValueError(f'An independently edited {target} was found. No files were written.')
         files[target] = new
@@ -143,6 +190,7 @@ def install(watershed):
             else:
                 print('Live trial discovery skipped because the native launcher has a different layout.')
         refreshed = refresh_launcher_helpers(files.get(launcher, original), reference)
+        refreshed = install_single_workflow(refreshed, reference)
         if refreshed != original:
             files[launcher] = refreshed
 

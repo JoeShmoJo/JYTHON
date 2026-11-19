@@ -85,6 +85,7 @@ def add_panel(page, scripts, editor_context):
 PANEL = """<script>
 {
     const data = __TRIAL_DATA__;
+    const savedTrials = {...data.simulations[data.current]};
     const panel = document.createElement('details');
     panel.className = 'card';
     panel.append(node('summary', 'Trial assignments for Run Manager'));
@@ -139,14 +140,14 @@ PANEL = """<script>
         if (!queue.children.length) queue.append(node('li', 'No explicit assignments saved.'));
     }
 
-    async function refreshTarget() {
+    async function refreshTarget(resetPart = true) {
         const target = simulation.value;
         inventoryNote.textContent = target === data.current && data.unresolved.length
             ? 'ResSim returned trial names without full DSS F-parts: ' + data.unresolved.join(', ')
                 + '. Enter the full F-part for any trial missing from the suggestions.'
             : '';
         parts.replaceChildren(...Object.keys(data.simulations[target]).map(part => option(part)));
-        fpart.value = '';
+        if (resetPart) fpart.value = '';
         queue.replaceChildren();
         const result = await libraryRequest('/trial-config-list', {simulation: target});
         if (target === simulation.value) showQueue(result);
@@ -166,6 +167,20 @@ PANEL = """<script>
     new MutationObserver(() => {
         if (panel.open) refreshVersions().catch(reportError);
     }).observe(savedSets, {childList: true, subtree: true});
+    window.addEventListener('standalone-editor-refresh', event => {
+        const inventory = event.detail;
+        const matches = inventory.simulation?.toLowerCase() === data.current.toLowerCase();
+        if (matches) {
+            data.simulations[data.current] = {...savedTrials, ...inventory.trials};
+            data.unresolved = inventory.unresolved || [];
+            for (const name of new Set(Object.values(inventory.trials || {}))) {
+                if (name && !Array.from(alternative.options).some(item => item.value === name)) {
+                    alternative.append(option(name));
+                }
+            }
+        }
+        if (panel.open) refreshTarget(false).catch(reportError);
+    });
     simulation.onchange = () => {
         alternative.value = simulation.value === data.current ? data.alternative : '';
         showTarget();
