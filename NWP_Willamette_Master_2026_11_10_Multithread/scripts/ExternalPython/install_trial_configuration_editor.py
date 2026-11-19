@@ -7,6 +7,7 @@ import tempfile
 
 PREVIOUS_HELPER_SHA256 = '0ee9811eb49764d1059996e655af6dff8f89a2176492dfb28608416eb2235474'
 PREVIOUS_PANEL_SHA256 = '9f612700852bf5e10a35259ac746c58446296d8ba59fc421c75f98594b8975a5'
+PREFILL_PANEL_SHA256 = '275b4de5424d4a292bed45a7390d231532996b8af635c0ba052c7e94729f1916'
 RUNTIME_OLD = """        if os.path.isfile(marker):
             pointer = read_json(marker)
             if pointer.get('model_alternative') != str(network.getAlternative().getName()).split(':')[-1]:
@@ -72,9 +73,9 @@ def install(watershed):
             old = target.read_text(encoding='utf-8-sig')
             if old == new:
                 continue
-            expected = (PREVIOUS_HELPER_SHA256 if name == 'assign_trial_configurations.py'
-                        else PREVIOUS_PANEL_SHA256)
-            if hashlib.sha256(old.encode()).hexdigest() != expected:
+            expected = ({PREVIOUS_HELPER_SHA256} if name == 'assign_trial_configurations.py'
+                        else {PREVIOUS_PANEL_SHA256, PREFILL_PANEL_SHA256})
+            if hashlib.sha256(old.encode()).hexdigest() not in expected:
                 raise ValueError(f'An independently edited {target} was found. No files were written.')
         files[target] = new
     if runtime_code != current_runtime:
@@ -85,8 +86,8 @@ def install(watershed):
     launcher = scripts/'STANDALONE_WORKFLOW_UI.py'
     if launcher.is_file():
         original = launcher.read_text(encoding='utf-8-sig')
+        reference = (sources.parent/launcher.name).read_text(encoding='utf-8-sig')
         if 'def active_target():' not in original:
-            reference = (sources.parent/launcher.name).read_text(encoding='utf-8-sig')
             helper = reference[reference.index('def active_target():'):reference.index('class Call(Runnable):')]
             anchor = '        buttons.add(self.alternative)\n'
             start = reference.index(anchor) + len(anchor)
@@ -96,6 +97,25 @@ def install(watershed):
                 files[launcher] = files[launcher].replace(anchor, anchor+prefill)
             else:
                 print('Native launcher prefill skipped because the installed launcher has a different layout.')
+        current = files.get(launcher, original)
+        if 'WILLAMETTE_POR_LIVE_TRIALS' not in current:
+            method = '    def open_baseline(self):'
+            builder = '        builder = ProcessBuilder(command)\n'
+            if current.count(method) == current.count('class Call(Runnable):') == 1:
+                start = current.index(method)
+                end = current.find('\n    def ', start + len(method))
+                end = len(current) if end == -1 else end
+                body = current[start:end]
+                if body.count(builder) == 1:
+                    start_ref = reference.index(builder, reference.index(method)) + len(builder)
+                    handoff = reference[start_ref:reference.index('        builder.directory', start_ref)]
+                    helper = reference[reference.index('def live_trial_inventory('):reference.index('def active_target():')]
+                    updated = current[:start] + body.replace(builder, builder + handoff) + current[end:]
+                    files[launcher] = updated.replace('class Call(Runnable):', helper + 'class Call(Runnable):')
+                else:
+                    print('Live trial discovery skipped because the native launcher has a different process setup.')
+            else:
+                print('Live trial discovery skipped because the native launcher has a different layout.')
 
     for target, text in files.items():
         ast.parse(text, filename=str(target))

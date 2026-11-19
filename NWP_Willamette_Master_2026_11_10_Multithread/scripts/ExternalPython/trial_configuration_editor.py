@@ -1,5 +1,6 @@
 """Trial assignment panel for the standalone POR configuration editor."""
 import json
+import os
 from pathlib import Path
 import re
 from threading import Lock
@@ -67,6 +68,9 @@ def add_panel(page, scripts, editor_context):
     simulations = targets(scripts)
     current = editor_context['run_name'].replace(' ', '_')
     simulations.setdefault(current, {})
+    live = json.loads(os.environ.get('WILLAMETTE_POR_LIVE_TRIALS', '{}'))
+    if live.get('simulation', '').casefold() == current.casefold():
+        simulations[current].update(live.get('trials', {}))
     alternative = editor_context['model_alternative']
     alternatives = {path.stem for path in (scripts.parent.parent/'rss').glob('*.ralt')}
     alternatives.update(name for trials in simulations.values() for name in trials.values() if name)

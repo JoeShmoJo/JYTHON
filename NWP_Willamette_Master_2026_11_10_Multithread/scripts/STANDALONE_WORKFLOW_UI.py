@@ -18,6 +18,41 @@ if script_root not in sys.path:
 from workflow_python import python_executable
 python = python_executable()
 
+def live_trial_inventory(simulation_name):
+    import re
+    from java.lang import Exception as JavaException
+    name = simulation_name.replace(' ', '_')
+    try:
+        module = ClientAppWrapper.getCurrentModule()
+        if module is None or str(module.getName()) != 'Simulation':
+            return None
+        simulation = module.getSimulation()
+        if simulation is None or str(simulation.getName()).replace(' ', '_').lower() != name.lower():
+            return None
+        trials = {}
+
+        def remember(key, alternative):
+            if key:
+                part = str(key).split(':', 1)[0]
+                if re.match(r'^[A-Za-z0-9_.-]+-\d+$', part):
+                    trials[part] = alternative
+
+        for run in module.getSimulationRuns():
+            alternative = str(run.getUserName())
+            if not alternative:
+                continue
+            remember(run.getKey(), alternative)
+            for item in run.getAltItems('rss') or []:
+                for key in run.getTrialKeys(item.getModelPosition()) or []:
+                    remember(key, alternative)
+            for trial in run.getTrials() or []:
+                remember(trial.getKey(), alternative)
+                remember(trial.getTrialKey(), alternative)
+        return {'simulation': name, 'trials': trials}
+    except (AttributeError, TypeError, JavaException):
+        return None
+
+
 def active_target():
     from java.lang import Exception as JavaException
     try:
@@ -127,6 +162,9 @@ class Menu:
         command = ArrayList()
         for arg in [python, '-u', filename, '--watershed', root, '--simulation', simulation, '--alternative', alternative, '--run-type', 'por' if self.run_type.getSelectedIndex() == 1 else 'ensemble']: command.add(arg)
         builder = ProcessBuilder(command)
+        inventory = live_trial_inventory(simulation)
+        if inventory is not None:
+            builder.environment().put('WILLAMETTE_POR_LIVE_TRIALS', json.dumps(inventory))
         builder.directory(File(scripts))
         builder.redirectErrorStream(True)
         builder.redirectOutput(File(self.log))
