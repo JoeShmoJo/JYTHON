@@ -50,9 +50,19 @@ def active(network):
         marker = os.path.join(directory, 'standalone-baseline-config-active.json')
         if not os.path.isfile(marker):
             marker = os.path.join(directory, 'standalone-legacy-applied-config-active.json')
-        if os.path.isfile(marker):
-            pointer = read_json(marker)
+        assignments = os.path.join(directory, 'standalone-trial-configurations.json')
+        if os.path.isfile(assignments) or os.path.isfile(marker):
+            if os.path.isfile(assignments):
+                queue = read_json(assignments)
+                fpart = str(network.getRssRun().getOutputFPart())
+                if queue.get('schema_version') != 1 or fpart not in queue.get('assignments', {}):
+                    raise RuntimeError('No explicit baseline configuration assigned for ' + fpart)
+                pointer = dict(queue['assignments'][fpart], assigned_fpart=fpart)
+            else:
+                pointer = read_json(marker)
             if pointer.get('model_alternative') != str(network.getAlternative().getName()).split(':')[-1]:
+                if 'assigned_fpart' in pointer:
+                    raise RuntimeError('Assigned baseline model alternative differs for ' + fpart)
                 return None
             source = os.path.abspath(os.path.join(directory, pointer['directory']))
             allowed = os.path.join(directory, 'baseline-configurations', 'sets') + os.sep
