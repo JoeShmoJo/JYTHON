@@ -521,6 +521,10 @@ for(const name of LEGACY){const option=document.createElement('option');option.v
 importPreset.onclick=async()=>{try{const jobSettings=config.standalone_workflow;config=await libraryRequest('/legacy',{alternative:presets.value});if(jobSettings)config.standalone_workflow=jobSettings;selected='overview';render();status('Imported baseline rule settings only. Save and Apply separately; operation sets and augmentation mappings are unchanged.')}catch(e){alert(e.message)}};
 </script>""".replace('LEGACY',json.dumps(sorted(path.stem for path in (scripts.parent/'alt_config').glob('*.txt') if path.stem!='_default')))
         page=page.replace('</html>',legacy_bridge+'</html>')
+    trial_editor = None
+    if standalone and context.get('run_type') == 'por':
+        import trial_configuration_editor as trial_editor
+        page = trial_editor.add_panel(page, scripts, context)
     class Handler(BaseHTTPRequestHandler):
         def log_message(self,*args): pass
         def do_GET(self):
@@ -530,13 +534,16 @@ importPreset.onclick=async()=>{try{const jobSettings=config.standalone_workflow;
             if self.path=='/close' and self.headers.get('X-Editor-Token')==token:
                 self.send_response(200);self.end_headers();self.wfile.write(b'closed')
                 threading.Thread(target=server.shutdown,daemon=True).start();return
-            if self.path not in ('/apply','/save','/load','/library','/legacy') or (self.path=='/apply' and not root) or self.headers.get('X-Editor-Token')!=token:
+            if self.path not in ('/trial-config-list','/trial-config-assign','/apply','/save','/load','/library','/legacy') or (self.path=='/apply' and not root) or self.headers.get('X-Editor-Token')!=token:
                 self.send_error(403);return
             try:
                 length=int(self.headers.get('Content-Length','0'))
                 if not 0 < length < 8*1024*1024: raise ValueError('Invalid configuration size')
                 payload=json.loads(self.rfile.read(length))
-                if self.path=='/apply': result=apply_configuration(root,context,payload,scripts)
+                if self.path in ('/trial-config-list','/trial-config-assign'):
+                    if trial_editor is None: raise ValueError('Trial assignments are available only in standalone POR mode.')
+                    result=trial_editor.handle(self.path,scripts,payload)
+                elif self.path=='/apply': result=apply_configuration(root,context,payload,scripts)
                 elif self.path=='/save': result=save_library_configuration(scripts,payload)
                 elif self.path=='/library': result=list_library_configurations(scripts)
                 elif self.path=='/legacy' and standalone:

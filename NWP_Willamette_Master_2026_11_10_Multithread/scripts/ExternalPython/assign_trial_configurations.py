@@ -13,7 +13,7 @@ from standalone_configuration import context
 QUEUE = 'standalone-trial-configurations.json'
 
 
-def assign(watershed, simulation, specifications):
+def assign(watershed, simulation, specifications, *, replace=True):
     scripts = watershed.resolve()/'scripts/ExternalPython'
     prepared = {}
     root = None
@@ -32,18 +32,25 @@ def assign(watershed, simulation, specifications):
     if (root/'baseline-execution-test.json').exists():
         raise ValueError('Restore configured execution mode before assigning trials.')
     snapshots = {}
+    if not replace and (root/QUEUE).is_file():
+        queue = json.loads((root/QUEUE).read_text(encoding='utf-8-sig'))
+        if queue.get('schema_version') != 1 or not isinstance(queue.get('assignments'), dict):
+            raise ValueError('Unsupported trial assignment queue')
+        snapshots.update(queue['assignments'])
     # Existing Apply generates all runtime tables and checksums. Point it at
     # staging so its active selector never replaces the simulation's selector.
     with tempfile.TemporaryDirectory(prefix='trial-configurations-', dir=root) as temporary:
         stage = Path(temporary)
+        staged = {}
         for fpart, (ctx, saved, saved_id) in prepared.items():
             pointer = editor.apply_configuration(stage, ctx, saved, scripts)
-            snapshots[fpart] = dict(pointer, saved_configuration_id=saved_id)
-        for pointer in snapshots.values():
+            staged[fpart] = dict(pointer, saved_configuration_id=saved_id)
+        for pointer in staged.values():
             relative = Path(pointer['directory'])
             target = root/relative
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.move(str(stage/relative), str(target))
+        snapshots.update(staged)
         editor.atomic_json(root/QUEUE, {'schema_version': 1, 'assignments': snapshots})
     return root, snapshots
 
