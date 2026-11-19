@@ -93,11 +93,18 @@ def active(network):
     return None
 
 
-def alternative_overrides(network):
+def alternative_overrides(network, provenance=None):
     found = active(network)
     if found is None:
         return {}
     source, data, pointer = found
+    if provenance is not None:
+        provenance.update({
+            'status': 'applied', 'pointer': copy.deepcopy(pointer),
+            'resolved': copy.deepcopy(data),
+            'tables': dict((relative, parallelSafeReadText(os.path.join(source, relative), 'UTF-8'))
+                           for relative in data['table_sha256']),
+        })
     result = dict((key, os.path.join(source, relative)) for key, relative in data['table_paths'].items())
     if 'baseline_augmentation' in data:
         method=data['baseline_augmentation']
@@ -271,8 +278,14 @@ def initialize_rule(module_name, rule, network, namespace=None):
     return _standalone_initialize_rule(module_name,rule,network,namespace)
 
 
-def alternative_overrides(network):
+def alternative_overrides(network, provenance=None):
+    if provenance is not None:
+        provenance['status'] = 'no_applied_configuration'
     if _rts_compute(network):
+        if provenance is not None:
+            provenance['status'] = 'rts_configuration_not_captured'
         from rts_baseline_runtime import alternative_overrides as rts_overrides
         return rts_overrides(network)
-    return _standalone_alternative_overrides(network)
+    if provenance is None:
+        return _standalone_alternative_overrides(network)
+    return _standalone_alternative_overrides(network, provenance)

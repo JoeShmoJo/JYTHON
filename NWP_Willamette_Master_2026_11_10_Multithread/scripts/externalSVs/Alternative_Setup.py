@@ -14,7 +14,7 @@ typical usage:
 
 
 from hec.hecmath import DSS
-from hec.rss.model import ScriptOpRule
+from hec.rss.model import ConstantRelease, ControlStructure, OpRuleRef, ReleaseFuncOpRule, ScriptOpRule
 
 # Imports for .xml parsing
 import re
@@ -22,7 +22,10 @@ import re
 # custom CRT code, stored in $WATERSHED/scripts/NWDJyLib
 from NWDJyLib import cLoadModules
 from NWDJyLib.DSS.cDSS import writeTextToDss
+from NWDJyLib.ResSim import cResSim
 from externalSVs.baseExternalSV import ExternalSV
+from java.lang import Exception as JavaException
+from externalSVs.rule_inventory import buildRuleInventory
 from NWDJyLib.cFile import (
     parallelSafeReadText,
     parallelSafeReadTextLines,
@@ -37,6 +40,115 @@ from org.hjson import JsonValue
 import os, sys
 import shutil
 import time
+import uuid
+import copy
+
+
+def pairedTableRows(elevations, values):
+    if len(elevations) != len(values):
+        raise ValueError("Elevation and value arrays have different lengths")
+    rows = []
+    for elevation, value in zip(elevations, values):
+        row = [float(elevation), float(value)]
+        if any(number != number or abs(number) == float('inf') for number in row):
+            raise ValueError("Table contains a non-finite value")
+        rows.append(row)
+    return rows
+
+
+def reservoirReportTables(network, reservoirName, reservoir):
+    """Collect configured rating data from the live network without opening DSS."""
+    tables = {"outlet_capacities": []}
+    try:
+        storage = cResSim.getElevationStorageTable(reservoirName, network)
+        tables["elevation_storage"] = {
+            "columns": ["elevation_ft", "storage_acre_ft"],
+            "rows": pairedTableRows(storage.getXArray(), storage.getYArray()),
+        }
+    except Exception as error:
+        tables["elevation_storage"] = {"unavailable": str(error)}
+
+    try:
+        outlets = list(reservoir.getElementsByClass(ControlStructure, None))
+    except Exception as error:
+        tables["outlet_capacity_error"] = str(error)
+        return tables
+
+    for outlet in outlets:
+        capacity = {"outlet": str(outlet)}
+        try:
+            function = outlet.getFunction()
+            if not hasattr(function, 'getCapacityValues'):
+                continue
+            capacity["outlet"] = str(outlet.getName())
+            if hasattr(function, 'hasMultipleGateSettings') and function.hasMultipleGateSettings():
+                capacity["unavailable"] = "Capacity table has multiple gate settings"
+            else:
+                points = list(function.getCapacityValues().getDataVector())
+                if not points:
+                    raise ValueError("Capacity table is empty")
+                capacity["rows"] = pairedTableRows(
+                    [point.xval for point in points], [point.yval for point in points])
+                capacity["columns"] = ["elevation_ft", "capacity_cfs"]
+        except Exception as error:
+            capacity["unavailable"] = str(error)
+        tables["outlet_capacities"].append(capacity)
+    return tables
+
+
+def evacuationRuleReport(zoneRule):
+    rule = zoneRule.getRule() if isinstance(zoneRule, OpRuleRef) else zoneRule
+    if isinstance(rule, ConstantRelease):
+        return {"kind": "constant", "units": "cfs", "value": rule.getReleaseValue()}
+    if not isinstance(rule, ReleaseFuncOpRule):
+        raise ValueError("Unsupported evacuation rule class")
+
+    settings = {
+        "limit_type": rule.getLimitType(),
+        "uses_day_of_week_multiplier": rule.useDayOfWeekMultiplier(),
+        "uses_time_of_day_multiplier": rule.useTimeOfDayMultiplier(),
+        "uses_period_average_limit": rule.usePeriodAverageLimit(),
+        "uses_rise_fall_condition": rule.getEnableRiseFallCondition(),
+    }
+    function = rule.getFunctionRelease()
+    if function is not None and function.getDataVector():
+        variable = rule.getIndependentVariable()
+        return {
+            "kind": "paired_values",
+            "settings": settings,
+            "independent_variable": {
+                "type": variable.getType(),
+                "model_variable_id": variable.getModelVariableId(),
+                "element_id": variable.getElementId(),
+                "time_series_function": variable.getTimeSeriesFunction(),
+                "time_series_lag": variable.getTimeSeriesLag(),
+                "time_series_period": variable.getTimeSeriesPeriod(),
+            },
+            "x_units": str(function.getParamXUnitsString()),
+            "y_units": str(function.getParamYUnitsString()),
+            "interpolation_type": function.getInterpolationType(),
+            "time_interpolation_type": function.getTimeInterpolationType(),
+            "seasonal": function.hasSeasonalVariation(),
+            "curve_times": list(function.getTimeArray() or []),
+            "points": [{"x": float(point.xval), "y": [float(value) for value in point.yval]}
+                       for point in function.getDataVector()],
+        }
+
+    record = rule.getSeasonalRecord()
+    if record is None:
+        raise ValueError("No configured release table or seasonal record")
+    times = list(record.getTimeArray() or [])
+    if not times:
+        raise ValueError("Configured seasonal record has no values")
+    return {
+        "kind": "seasonal_record",
+        "settings": settings,
+        "units": str(record.getUnitsString()),
+        "interpolation_type": record.getInterpolationType(),
+        "times": times,
+        "values": [record.getValue(index) for index in range(len(times))],
+    }
+
 
 class Alternative_Setup(ExternalSV):
     def initialization(self, network, currentVariable):
@@ -138,7 +250,8 @@ class Alternative_Setup(ExternalSV):
             altSetupConfigWAT, altConfigListWAT = self.readOverrideConfigJSON(network, altSetupConfigWAT)
             configDict.update(parseConfigListJSON(altConfigListWAT))
         from standalone_baseline_runtime import alternative_overrides
-        configDict.update(alternative_overrides(network))
+        baselineProvenance = {}
+        configDict.update(alternative_overrides(network, baselineProvenance))
         from standalone_config_runtime import package_overrides
         packageConfig = package_overrides(network)
 
@@ -204,6 +317,12 @@ class Alternative_Setup(ExternalSV):
         simulationFile = DSS.open(fileNameSimulation)
         writeTextToDss(simulationFile, pathname, altConfigMsg)
         simulationFile.close()
+        currentVariable.varPut("_computeReport", {
+            "compute_id": uuid.uuid4().hex,
+            "output_fpart": str(dssOutputFpart),
+            "baseline_configuration": baselineProvenance,
+            "effective_alternative_configuration": copy.deepcopy(configDict),
+        })
         
         #################################################
         # Finish storing variables into memory                  #
@@ -245,6 +364,8 @@ class Alternative_Setup(ExternalSV):
         # Base data can only be stored as [str, int, float] otherwise unreadable by json compiler
         variableList = []
         for entry in currentVariable.varsListKeys(): # keys
+            if entry == "_computeReport":
+                continue
             entryvalue = currentVariable.varGet(entry) # values
             # Add if values are stored as a string, list, int, or float 
             if type(entryvalue) in [str, list, int, float]: 
@@ -273,17 +394,33 @@ class Alternative_Setup(ExternalSV):
                 curZoneRules = curZone.getRules(tempRules) # Create list of StorageZoneRules objects
                 # Convert list items to string for JSON encoder
                 curZoneRules2 = []
-                for rule in curZoneRules: curZoneRules2.append(str(rule))
+                evacuationLimits = {}
+                for rule in curZoneRules:
+                    ruleName = str(rule)
+                    curZoneRules2.append(ruleName)
+                    if ruleName.lower() in ('max evacuation release', 'max evacuation rate'):
+                        try:
+                            evacuationLimits[ruleName] = evacuationRuleReport(rule)
+                        except Exception as error:
+                            evacuationLimits[ruleName] = {"unavailable": str(error)}
                 # Add individual zone data to zones list
                 tempZoneList = [{
                     "zone_name": str(curZone), # to string
-                    "rules": curZoneRules2}] 
+                    "rules": curZoneRules2}]
+                if evacuationLimits:
+                    tempZoneList[0]["evacuation_limits"] = evacuationLimits
                 zoneList += tempZoneList
             # Add zones data to current reservoir data
+            try:
+                ruleInventory = buildRuleInventory(curResActiveOpSet, evacuationRuleReport)
+            except (Exception, JavaException) as error:
+                ruleInventory = {"error": str(error)}
             tempResvList = [{
                 "reservoir": str(curResElement), # to string
                 "operation_set": str(curResActiveOpSet), # to string
-                "zones": zoneList}]
+                "zones": zoneList,
+                "rule_inventory": ruleInventory,
+                "rating_tables": reservoirReportTables(network, resv, curResElement)}]
             # Add current reservoir data to reservoir list
             resvList += tempResvList
         # Add all subdictionaries/lists to dictionary to be encoded to JSON file
@@ -298,6 +435,25 @@ class Alternative_Setup(ExternalSV):
         reportLocation = os.path.dirname(fileNameSimulation)
                                                                                                             
         reportName = os.path.join(reportLocation, "modelReport_%s.json" % (altName))
+
+        try:
+            compute = currentVariable.varGet("_computeReport")
+            if compute:
+                fpart = re.sub(r"[^A-Za-z0-9_.-]", "_", compute["output_fpart"])
+                computePath = os.path.join(reportLocation, "modelReports",
+                                           "%s_%s.json" % (fpart, compute["compute_id"]))
+                computeReport = dict(modelReportValues, compute=compute, schema_version=1)
+                parallelSafeWriteText(computePath, json.dumps(computeReport, sort_keys=True, indent=4), 'UTF-8')
+        except (Exception, JavaException) as error:
+            network.printErrorMessage("Unable to write per-compute model report: %s" % error)
+
+        # Preserve the original report schema and location for existing readers.
+        modelReportValues["operations"] = [
+            dict((key, op[key]) for key in ("reservoir", "operation_set", "zones"))
+            for op in resvList
+        ]
+        for op in modelReportValues["operations"]:
+            op["zones"] = [dict(zone_name=zone["zone_name"], rules=zone["rules"]) for zone in op["zones"]]
 
         # Write output through Java NIO instead of Jython PyFile.
         try:

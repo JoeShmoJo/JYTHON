@@ -498,7 +498,31 @@ const savedSets=document.createElement('select');savedSets.setAttribute('aria-la
 async function libraryRequest(path,body){const response=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','X-Editor-Token':TOKEN},body:JSON.stringify(body)});const result=await response.json();if(!response.ok)throw Error(result.error);return result}
 async function refreshLibrary(id){const items=await libraryRequest('/library',{});savedSets.replaceChildren();const placeholder=document.createElement('option');placeholder.value='';placeholder.textContent='Choose a saved configuration';savedSets.append(placeholder);for(const item of items){const option=document.createElement('option');option.value=item.id;option.textContent=item.name+' · '+item.id.slice(0,8);savedSets.append(option)}if(id)savedSets.value=id}
 $('save').onclick=async()=>{try{const saved=await libraryRequest('/save',config);await refreshLibrary(saved.id);status('Saved '+saved.name+' in the watershed configuration library. No settings were activated. Each save preserves a new version.')}catch(e){status('Save failed: '+e.message);alert(e.message)}};
-loadSet.onclick=async()=>{if(!savedSets.value)return;if(!confirm('Replace the settings currently displayed with the saved configuration?'))return;try{config=await libraryRequest('/load',{id:savedSets.value});selected='overview';render();status('Saved configuration opened. Apply separately to activate it.')}catch(e){status('Open failed: '+e.message)}};refreshLibrary().catch(e=>status('Library unavailable: '+e.message));
+loadSet.onclick=async()=>{
+    const id=savedSets.value;
+    if(!id){alert('Choose a saved configuration before opening it.');savedSets.focus();return}
+    const name=savedSets.selectedOptions[0].textContent;
+    if(!confirm('Open '+name+' and replace the settings currently displayed?'))return;
+    const apply=typeof applyButton==='undefined'?null:applyButton;
+    const applyWasDisabled=apply?.disabled;
+    loadSet.disabled=true;
+    if(apply)apply.disabled=true;
+    try{
+        const loaded=await libraryRequest('/load',{id});
+        if(typeof loaded?.name!=='string'||!loaded.name.trim()||!loaded.rules)throw Error('The saved version did not provide a named configuration');
+        config=loaded;
+        selected='overview';
+        render();
+        status('Opened '+config.name+'. Apply separately to activate it.');
+    }catch(e){
+        status('Open failed: '+e.message);
+        alert('Could not open '+name+': '+e.message);
+    }finally{
+        loadSet.disabled=false;
+        if(apply)apply.disabled=applyWasDisabled;
+    }
+};
+refreshLibrary().catch(e=>status('Library unavailable: '+e.message));
 </script>""".replace('TOKEN',json.dumps(token))
     page=page.replace('</html>',library_bridge+'</html>')
     close_bridge="""<script>const closeEditor=document.createElement('button');closeEditor.textContent='Close Editor';document.querySelector('.toolbar').append(closeEditor);closeEditor.onclick=async()=>{await fetch('/close',{method:'POST',headers:{'X-Editor-Token':TOKEN}});document.body.textContent='Editor closed. You can close this browser tab.'};</script>""".replace('TOKEN',json.dumps(token))
