@@ -69,14 +69,16 @@ def add_panel(page, scripts, editor_context):
     current = editor_context['run_name'].replace(' ', '_')
     simulations.setdefault(current, {})
     live = json.loads(os.environ.get('WILLAMETTE_POR_LIVE_TRIALS', '{}'))
+    unresolved = []
     if live.get('simulation', '').casefold() == current.casefold():
         simulations[current].update(live.get('trials', {}))
+        unresolved = live.get('unresolved', [])
     alternative = editor_context['model_alternative']
     alternatives = {path.stem for path in (scripts.parent.parent/'rss').glob('*.ralt')}
     alternatives.update(name for trials in simulations.values() for name in trials.values() if name)
     alternatives.add(alternative)
     data = json.dumps(dict(simulations=simulations, current=current, alternatives=sorted(alternatives),
-                           alternative=alternative)).replace('</', '<\\/')
+                           alternative=alternative, unresolved=unresolved)).replace('</', '<\\/')
     return page.replace('</html>', PANEL.replace('__TRIAL_DATA__', data) + '</html>')
 
 
@@ -94,6 +96,7 @@ PANEL = """<script>
     message.setAttribute('role', 'status');
     const simulation = node('select'), alternative = node('select'), fpart = node('input'), versions = node('select');
     const targetText = node('p');
+    const inventoryNote = node('p');
     const targetOptions = node('details');
     targetOptions.append(node('summary', 'Change simulation or alternative'));
     const parts = node('datalist');
@@ -119,7 +122,7 @@ PANEL = """<script>
     const useSaved = node('button', 'Assign saved configuration');
     const useDraft = node('button', 'Save editor settings and assign');
     form.append(useSaved, useDraft);
-    panel.append(parts, targetText, targetOptions, form, message, queue);
+    panel.append(parts, targetText, targetOptions, form, inventoryNote, message, queue);
     document.querySelector('.toolbar').after(panel);
 
     function showTarget() {
@@ -138,6 +141,10 @@ PANEL = """<script>
 
     async function refreshTarget() {
         const target = simulation.value;
+        inventoryNote.textContent = target === data.current && data.unresolved.length
+            ? 'ResSim returned trial names without full DSS F-parts: ' + data.unresolved.join(', ')
+                + '. Enter the full F-part for any trial missing from the suggestions.'
+            : '';
         parts.replaceChildren(...Object.keys(data.simulations[target]).map(part => option(part)));
         fpart.value = '';
         queue.replaceChildren();
@@ -155,6 +162,10 @@ PANEL = """<script>
     }
 
     function reportError(error) { message.textContent = error.message; }
+    // The main editor updates its saved-config options after a successful save.
+    new MutationObserver(() => {
+        if (panel.open) refreshVersions().catch(reportError);
+    }).observe(savedSets, {childList: true, subtree: true});
     simulation.onchange = () => {
         alternative.value = simulation.value === data.current ? data.alternative : '';
         showTarget();

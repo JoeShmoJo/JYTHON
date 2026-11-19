@@ -8,6 +8,7 @@ import tempfile
 PREVIOUS_HELPER_SHA256 = '0ee9811eb49764d1059996e655af6dff8f89a2176492dfb28608416eb2235474'
 PREVIOUS_PANEL_SHA256 = '9f612700852bf5e10a35259ac746c58446296d8ba59fc421c75f98594b8975a5'
 PREFILL_PANEL_SHA256 = '275b4de5424d4a292bed45a7390d231532996b8af635c0ba052c7e94729f1916'
+LIVE_TRIAL_PANEL_SHA256 = 'ea26ecfb918d2c9113afadda6b1ad66373a686727adcad3117286877a9590bec'
 PREVIOUS_LAUNCHER_FUNCTIONS = {
     'live_trial_inventory': '533d815afcb07c5438d9778e70c9fd7c86b6c303a4a08057e8cea4efe57f5731',
     'active_target': 'd0ee11793ef962deb085d622edb0beb6ffaeeb96c7c56f8a439b3873e046f19d',
@@ -57,7 +58,10 @@ def refresh_launcher_helpers(current, reference):
             continue
         old = ast.get_source_segment(original, node)
         if old != latest[node.name]:
-            if hashlib.sha256(old.encode()).hexdigest() != names[node.name]:
+            known = {names[node.name]}
+            if node.name == 'live_trial_inventory':
+                known.add('b0bbf11b5510d471c8a56bed3d4dc4280d1672aa326814fdd8df9c6d336ec875')
+            if hashlib.sha256(old.encode()).hexdigest() not in known:
                 print('Launcher helper left in place because it was independently edited: ' + node.name)
                 continue
             current = replace_once(current, old, latest[node.name])
@@ -96,7 +100,7 @@ def install(watershed):
             if old == new:
                 continue
             expected = ({PREVIOUS_HELPER_SHA256} if name == 'assign_trial_configurations.py'
-                        else {PREVIOUS_PANEL_SHA256, PREFILL_PANEL_SHA256})
+                        else {PREVIOUS_PANEL_SHA256, PREFILL_PANEL_SHA256, LIVE_TRIAL_PANEL_SHA256})
             if hashlib.sha256(old.encode()).hexdigest() not in expected:
                 raise ValueError(f'An independently edited {target} was found. No files were written.')
         files[target] = new

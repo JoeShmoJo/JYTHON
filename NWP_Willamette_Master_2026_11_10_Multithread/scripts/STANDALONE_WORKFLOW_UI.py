@@ -30,27 +30,45 @@ def live_trial_inventory(simulation_name):
         if simulation is None or str(simulation.getName()).replace(' ', '_').lower() != name.lower():
             return None
         trials = {}
+        unresolved = set()
+
+        def optional(obj, method, *args):
+            try:
+                return getattr(obj, method)(*args)
+            except (AttributeError, TypeError, RuntimeError, JavaException):
+                return None
 
         def remember(key, alternative):
             if key:
                 part = str(key).split(':', 1)[0]
                 if re.match(r'^[A-Za-z0-9_.-]+-\d+$', part):
                     trials[part] = alternative
+                    return True
+            return False
 
-        for run in module.getSimulationRuns():
+        # The model can hold trials that the Simulation module's saved run list
+        # cannot resolve before Extract.
+        runs = list(optional(module, 'getSimulationRuns') or [])
+        for run in optional(simulation, 'getSimulationRuns') or []:
+            if run not in runs:
+                runs.append(run)
+        for run in runs:
             parent = getattr(run, 'getRunParent', None)
             model_run = parent() if parent is not None else run
             if model_run is None or not model_run.getUserName():
                 continue
             alternative = str(model_run.getUserName())
-            remember(run.getKey(), alternative)
-            for item in run.getAltItems('rss') or []:
-                for key in run.getTrialKeys(item.getModelPosition()) or []:
+            remember(optional(run, 'getKey'), alternative)
+            for item in optional(run, 'getAltItems', 'rss') or []:
+                for key in optional(run, 'getTrialKeys', item.getModelPosition()) or []:
                     remember(key, alternative)
-            for trial in run.getTrials() or []:
-                remember(trial.getKey(), alternative)
-                remember(trial.getTrialKey(), alternative)
-        return {'simulation': name, 'trials': trials}
+            for trial in optional(run, 'getTrials') or []:
+                keys = [optional(trial, 'getKey'), optional(trial, 'getTrialKey')]
+                if not any([remember(key, alternative) for key in keys]):
+                    label = optional(trial, 'getUserName')
+                    if label:
+                        unresolved.add(str(label))
+        return {'simulation': name, 'trials': trials, 'unresolved': sorted(unresolved)}
     except (AttributeError, TypeError, JavaException):
         return None
 
