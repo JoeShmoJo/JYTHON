@@ -14,7 +14,7 @@ The output is basically CSV format, but it is stored as a gz file
 to reduce file size while still allowing it to be quickly read by other post-processors
 
 '''
-import os, csv, datetime, gzip, cStringIO, itertools
+import os, csv, datetime, gzip, cStringIO, itertools, re
 
 #Define output CSV file (right next to simulation.dss)
 outputDir = os.path.dirname(network.getRssRun().getDSSOutputFile())
@@ -76,11 +76,12 @@ resvNames = [
 ]
 
 outputFpart = network.getRssRun().getOutputFPart()
-if "C:" in outputFpart:
+ensembleID = re.match(r"^C:([0-9]{6})(?:\||$)", str(outputFpart))
+if ensembleID:
 	#This is an ensemble run, we want to write it out to the same CSV
 	#Define output CSV file (right next to simulation.dss)
 	outCSVFile = os.path.join(outputDir, "PeakExtract_%s.csv" %altName)
-	simulationID = int(outputFpart[2:8]) #Should be something like "000001"
+	simulationID = int(ensembleID.group(1))
 	outputHeaders = ["ResSimID", "Timestamp"]
 	outputRow = [simulationID, str(datetime.datetime.now())]
 	for i, junctionNameResSim in enumerate(junctionNamesResSim):
