@@ -1,6 +1,6 @@
 # ResSim POR workflow handoff
 
-Updated 2026-11-19. This repository owns ResSim setup, configuration, runtime
+Updated 2026-11-24. This repository owns ResSim setup, configuration, runtime
 rules, and compute exports. [Willamette_FIRO](https://github.com/JoeShmoJo/Willamette_FIRO/blob/main/POR_WORKFLOW_HANDOFF.md)
 owns offline comparisons and plots. See [AGENTS.md](AGENTS.md) for Windows handoffs
 and Git standards. Start API research with [RESSIM_API_INDEX.md](RESSIM_API_INDEX.md)
@@ -14,6 +14,31 @@ tracked sources are under `NWP_Willamette_Master_2026_11_10_Multithread`. Preser
 that translation for file-scoped sync. ResSim is 4.1.2. The external editor and
 metrics interpreter is
 `C:\Users\g2encjer\AppData\Local\miniconda3\envs\hydro13Nov2026\python.exe`.
+
+## Progressive WAT and RFC downloads
+
+- The Windows study reported eight progressive cases, `PGFIRO_A`, `C`, `E`,
+  `H`, `I`, `J`, `K`, and `M`, each using `ALL_D` and
+  `POR_1935-2019`. See the
+  [WAT setup guide](NWP_Willamette_Master_2026_11_10_Multithread/WAT_FIRO_ALTERNATIVES.md).
+  The latest offline curves and plots were rebuilt from the shared reference
+  data. Installation and recompute with those latest curves remain unverified.
+- The C simulation completed ResSim and then hit a CSV cleanup error.
+  The old script recognized any F-part containing `C:` as an ensemble,
+  so it tried to parse `FIRO_C` as an integer. JYTHON commit `40cbb5c`
+  requires a leading `C:` and a six-digit member ID. Check the watershed
+  source and the extracted C run copy when diagnosing an old run. After a
+  recompute, look for the export message and the `.csv.gz` beside the DSS.
+  A successful Windows rerun after the fix has not been confirmed.
+- The conservation-season standalone downloader was provided in chat as
+  `download_rfc_csvs.py`. It requires Python 3.9 or newer and uses only
+  `datetime`, `pathlib`, and `urllib.request`. The 27 URLs follow
+  `SPECS` in the [operational downloader](NWP_Willamette_Master_2026_11_10_Multithread/scripts/RTSPython/RFC_Downloader_Module.py).
+  There are 13 unadjusted `3XE_SQIN.ESPF10.csv` and 14 natural
+  `3N_SQIN.ESPF10.csv` products. The script saves raw bytes beside itself under
+  `raw_rfc_csv/YYYY-MM-DD/{unadjusted_3XE_SQIN,natural_3N_SQIN}`.
+  The station lists and URLs were checked against source. The cloud network
+  returned a tunnel 403 for the NOAA requests. Live downloads remain unverified.
 
 ## Configuration and compute
 
